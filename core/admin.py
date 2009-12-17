@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from tiger.core import site
 from tiger.core.models import *
 
 
@@ -45,5 +46,5 @@ class ItemModelAdmin(admin.ModelAdmin):
         return request.user == obj.user
 
 
-admin.site.register(Item, ItemModelAdmin)
-admin.site.register(Section, SectionModelAdmin)
+site.register(Item, ItemModelAdmin)
+site.register(Section, SectionModelAdmin)
