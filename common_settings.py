@@ -53,12 +53,15 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'tiger.accounts.middleware.DomainDetectionMiddleware',
 )
 
 ROOT_URLCONF = 'tiger.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, 'templates'),
+    # separately versioned custom templates
+    os.path.join(PROJECT_ROOT, '../templates/'),
 )
 
 INSTALLED_APPS = (
@@ -70,8 +73,11 @@ INSTALLED_APPS = (
     'django_extensions',
     'imagekit',
     'haystack',
+    'tiger.accounts',
     'tiger.core',
 )
 
 HAYSTACK_SITECONF = 'tiger.search'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
+
+CUSTOM_MEDIA_ROOT = os.path.join(PROJECT_ROOT, '../media/')
