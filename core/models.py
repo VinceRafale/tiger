@@ -6,6 +6,8 @@ from imagekit.models import ImageModel
 
 
 class Section(models.Model):
+    """Acts as a container for menu items. Example: "Burritos".
+    """
     name = models.CharField(max_length=50)
     user = models.ForeignKey(User, editable=False)
     description = models.TextField()
@@ -22,6 +24,8 @@ class Section(models.Model):
 
 
 class Item(ImageModel):
+    """Represents a single item on the menu in its most basic form.
+    """
     name = models.CharField(max_length=100)
     section = models.ForeignKey(Section)
     user = models.ForeignKey(User, editable=False)
@@ -33,9 +37,6 @@ class Item(ImageModel):
     class Meta:
         verbose_name = 'menu item'
 
-    class IKOptions:
-        spec_module = 'core.specs'
-
     def __unicode__(self):
         return self.name
 
@@ -44,12 +45,23 @@ class Item(ImageModel):
 
 
 class ItemImage(ImageModel):
+    """Associates an image and its sizes with a user so that images can easily
+    be swapped out on menu items.
+    """
     user = models.ForeignKey(User, editable=False)
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='menu_images')
 
+    class IKOptions:
+        spec_module = 'core.specs'
+
 
 class Variant(models.Model):
+    """Represents "column-level" extra data about a menu item.  This means information
+    like "Extra large" and the corresponding price.
+    This is what a customer will actually be selecting when ordering a menu item.  All
+    menu items must have at least one.
+    """
     item = models.ForeignKey(Item)
     description = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=5, decimal_places=2)
@@ -59,6 +71,9 @@ class Variant(models.Model):
 
 
 class Upgrade(models.Model):
+    """Provides additional cost data and/or order processing instructions. For example,
+    "Subsitute seasoned frieds for $.50" or "Add extra cheese for $1.00."
+    """
     item = models.ForeignKey(Item)
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=5, decimal_places=2)
@@ -73,15 +88,3 @@ class Upgrade(models.Model):
         return '%s %s for $%f more' % (
             'Substitute' if self.substitute else 'Add', 
             self.name, self.price)
-
-
-class Order(models.Model):
-    user = models.ForeignKey(User, editable=False)
-    timestamp = models.DateTimeField()
-    trans_id = models.IntegerField()
-    
-
-class LineItem(models.Model):
-    order = models.ForeignKey(Order)
-    description = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=5, decimal_places=2)
