@@ -3,3 +3,4 @@ sudo ../bin/easy_install authorize
 sudo ../bin/easy_install django-imagekit
 sudo ../bin/easy_install django_extensions
 sudo ../bin/easy_install django-haystack
+sudo ../bin/easy_install Whoosh
