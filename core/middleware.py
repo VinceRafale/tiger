@@ -1,10 +1,11 @@
 import hashlib
 import time
-from datetime import time
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.sessions.models import Session
 
+from tiger.accounts.middleware import DomainDetectionMiddleware
 from tiger.core.models import Item
 
 class Cart(object):
@@ -56,14 +57,22 @@ class ShoppingCartMiddleware(object):
 
     def process_response(self, request, response):
         cookie_name, session_key = self._get_cookie_pair(request)
-        if not session_key:
-            session_key = hashlib.md5(cookie_name + settings.SECRET_KEY)
-            Session.objects.save(session_key, {}, date.today() + timedelta(days=7))
-            response.set_cookie(cookie_name, session_key)
+        if session_key is None:
+            session_key = hashlib.md5(
+                cookie_name + settings.SECRET_KEY + str(time.time())
+            ).hexdigest()
+            Session.objects.create(
+                session_key=session_key, 
+                session_data=Session.objects.encode({}), 
+                expire_date=(datetime.now() + timedelta(days=7)))
+            response.set_cookie(str(cookie_name), session_key)
         return response
 
     def _get_cookie_pair(self, request):
-        site = request.site
+        site = DomainDetectionMiddleware.get_site(request)
+        if site is None:
+            # fake out the cookie setter if we're on takeouttiger.com
+            return True, False
         cookie_name = 'takeouttiger_%s' % site.domain
         session_key = request.COOKIES.get(cookie_name)
         return cookie_name, session_key
