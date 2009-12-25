@@ -1,17 +1,20 @@
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.db import models
+from django.template.defaultfilters import slugify
 
-from django_extensions.db.fields import AutoSlugField
 from imagekit.models import ImageModel
+
+from tiger.accounts.models import Site
 
 
 class Section(models.Model):
     """Acts as a container for menu items. Example: "Burritos".
     """
     name = models.CharField(max_length=50)
-    user = models.ForeignKey(User, editable=False)
+    site = models.ForeignKey(Site, editable=False)
     description = models.TextField()
-    slug = AutoSlugField(populate_from='name')
+    slug = models.SlugField(editable=False)
 
     class Meta:
         verbose_name = 'menu section'
@@ -23,6 +26,11 @@ class Section(models.Model):
         return reverse('menu_section', kwargs={'section': self.slug})
 
 
+class ItemManager(models.Manager):
+    def render_specials_to_string(self, site, template='core/specials_fax.html'):
+        items = self.filter(special=True, site=site)
+        return render_to_string(template, {'site': site, 'items': items})
+
 class Item(ImageModel):
     """Represents a single item on the menu in its most basic form.
     """
@@ -33,6 +41,7 @@ class Item(ImageModel):
     description = models.TextField()
     special = models.BooleanField()
     slug = AutoSlugField(populate_from='name')
+    objects = ItemManager()
 
     class Meta:
         verbose_name = 'menu item'

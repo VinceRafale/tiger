@@ -77,6 +77,7 @@ INSTALLED_APPS = (
     'haystack',
     'tiger.accounts',
     'tiger.core',
+    'tiger.notify',
 )
 
 BROKER_HOST = "localhost"
