@@ -19,6 +19,10 @@ class Section(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Section, self).save(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('menu_section', kwargs={'section': self.slug})
 
@@ -28,11 +32,12 @@ class Item(ImageModel):
     """
     name = models.CharField(max_length=100)
     section = models.ForeignKey(Section)
-    user = models.ForeignKey(User, editable=False)
+    site = models.ForeignKey(Site, editable=False)
     image = models.ForeignKey('ItemImage', blank=True, null=True)
     description = models.TextField()
     special = models.BooleanField()
-    slug = AutoSlugField(populate_from='name')
+    slug = models.SlugField(editable=False)
+    objects = ItemManager()
 
     class Meta:
         verbose_name = 'menu item'
@@ -40,15 +45,20 @@ class Item(ImageModel):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Section, self).save(*args, **kwargs)
+
     def get_absolute_url(self):
-        return reverse('menu_item', kwargs={'section': self.section.slug, 'item': self.slug})
+        return reverse('menu_item', 
+            kwargs={'section': self.section.slug, 'item': self.slug})
 
 
 class ItemImage(ImageModel):
-    """Associates an image and its sizes with a user so that images can easily
-    be swapped out on menu items.
+    """Associates an image and its sizes with a user so that images 
+    can easily be swapped out on menu items.
     """
-    user = models.ForeignKey(User, editable=False)
+    site = models.ForeignKey(Site, editable=False)
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='menu_images')
 
@@ -57,10 +67,10 @@ class ItemImage(ImageModel):
 
 
 class Variant(models.Model):
-    """Represents "column-level" extra data about a menu item.  This means information
-    like "Extra large" and the corresponding price.
-    This is what a customer will actually be selecting when ordering a menu item.  All
-    menu items must have at least one.
+    """Represents "column-level" extra data about a menu item.  This means
+    information like "Extra large" and the corresponding price.  This is what a
+    customer will actually be selecting when ordering a menu item.  All menu
+    items must have at least one.  
     """
     item = models.ForeignKey(Item)
     description = models.CharField(max_length=255)
@@ -71,8 +81,9 @@ class Variant(models.Model):
 
 
 class Upgrade(models.Model):
-    """Provides additional cost data and/or order processing instructions. For example,
-    "Subsitute seasoned frieds for $.50" or "Add extra cheese for $1.00."
+    """Provides additional cost data and/or order processing instructions. For
+    example, "Subsitute seasoned frieds for $.50" or "Add extra cheese for
+    $1.00." 
     """
     item = models.ForeignKey(Item)
     name = models.CharField(max_length=100)
