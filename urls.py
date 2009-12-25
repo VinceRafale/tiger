@@ -3,6 +3,9 @@ from django.conf.urls.defaults import *
 
 from tiger.core import site
 
+handler404 = 'tiger.utils.views.handler404'
+handler500 = 'tiger.utils.views.handler500'
+
 urlpatterns = patterns('',
     # Example:
     # (r'^tiger/', include('tiger.foo.urls')),
