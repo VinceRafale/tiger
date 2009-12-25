@@ -11,3 +11,7 @@ rabbitmqctl set_permissions -p tiger tiger "" ".*" ".*"
 ../bin/easy_install django-haystack
 ../bin/easy_install Whoosh
 ../bin/easy_install celery
+cd ../
+svn co http://code.djangoproject.com/svn/django/trunk/
+cd trunk
+../bin/python setup.py install

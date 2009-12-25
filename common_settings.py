@@ -54,6 +54,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'tiger.accounts.middleware.DomainDetectionMiddleware',
+    'tiger.core.middleware.ShoppingCartMiddleware',
 )
 
 ROOT_URLCONF = 'tiger.urls'
