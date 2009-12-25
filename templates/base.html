@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{{ site.name }} {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/styles.css" />
+    <!--[if IE]>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
+    <![endif]--> 
+    <style>
+        body {background-color:green;}
+        #masthead {background-color:blue;}
+        #menuWrap {background-color:red;}
+        .footer{background-color:orange;}
+        #main, #sidebar {background-color:white}
+        #menu ul li div {background-color:lightblue;}
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div id="masthead">
+            <div class="container_12">
+                <div id="menu" class="grid_8">
+                This is a logo and name
+                </div>
+                <div id="menu" class="grid_4">
+                    <ul>
+                        <li><a href="">Stuff</a></li>
+                        <li><a href="">Stuff</a></li>
+                        <li><a href="">Stuff</a></li>
+                        <li><a href="">Stuff</a></li>
+                    </ul>
+                </div>
+            </div> 
+        </div>
+        <div id="menuWrap">
+            <div class="container_12">
+                <div id="menu" class="grid_8">
+                <ul>
+                    <li><a href="">Home</a></li>
+                    <li><a href="#">Menu</a>
+                        <div>
+                            <ul>
+                                {% for section in site.section_set.all %}
+                                <li><a href="{% url menu_section section.slug %}">{{ section.name }}</a></li>
+                                {% empty %}
+                                <li>No menu sections created yet.</li>
+                                {% endfor %}
+                            </ul>
+                            <strong></strong>
+                        </div>	
+                    </li>
+                    <li><a href="">About</a></li>
+                    <li><a href="">Find Us</a></li>
+                    {% if site.blog_enabled %}
+                    <li><a href="">{{ site.blog_title }}</a></li>
+                    {% endif %}
+                </ul>
+                </div>
+                <div id="search" class="grid_4">
+                <form>
+                    <input type="text" value="Search" /><input type="submit" value="Go" />
+                </form>
+                </div>
+            </div> 
+        </div>
+        <div id="content" class="container_12">
+            <div id="main" class="grid_8">
+            {% block content %}
+                content
+            {% endblock %}
+            </div>
+            <div id="sidebar" class="grid_4">
+            {% block sidebar %}
+                <div>cart contents</div>
+                <div>Twitter stream</div>
+                <div>News</div>
+            {% endblock %}
+            </div>
+        </div>
+    <div class="shim"></div>
+    </div>
+    <div class="footer">
+        <div class="container_12">
+            <p>Powered by <a href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
+        </div> 
+    </div>
+    {% block js %}
+    {% endblock %}
+    {{ site.tracking_code|safe }}
+</body>
+</html>

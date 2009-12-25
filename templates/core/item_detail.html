@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ item.name }}
+{% endblock %}
+
+{% block content %}
+<a href="{{ item.section.get_absolute_url }}">&laquo; back to {{ item.section.name }}</a>
+<h1>{{ item.name }}</h1>
+<form class="pretty" method="POST">
+<div class="quantity">
+    <label for="qty">Quantity:</label> 
+    <input type="text" value="1" name="qty" id="id_qty" />
+</div>
+<input type="submit" class="add" value="Add to cart" />
+</form>
+<div>
+{% if item.photo %}
+<img src="{{ item.photo.image.url }}" />
+{% endif %}
+{{ item.description }}
+</div>
+{% endblock %}
+
+
