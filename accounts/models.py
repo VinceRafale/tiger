@@ -1,6 +1,8 @@
 import os
 from datetime import date
 
+from crontab import CronTab
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
@@ -50,7 +52,7 @@ class Site(models.Model):
         return os.path.join(settings.CUSTOM_MEDIA_URL, '.'.join([self.domain, self.tld]))        
 
 
-class NotificationSettings(model.Model):
+class NotificationSettings(models.Model):
     DOW_SUNDAY = 0
     DOW_MONDAY = 1
     DOW_TUESDAY = 2
