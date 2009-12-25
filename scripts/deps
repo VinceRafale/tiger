@@ -1,6 +1,13 @@
 #!/bin/bash
-sudo ../bin/easy_install authorize
-sudo ../bin/easy_install django-imagekit
-sudo ../bin/easy_install django_extensions
-sudo ../bin/easy_install django-haystack
-sudo ../bin/easy_install Whoosh
+sudo apt-get install rabbitmq-server
+sudo /etc/init.d/rabbitmq-server start
+rabbitmqctl add_user tiger h0k3yp0k3y
+rabbitmqctl add_vhost tiger
+rabbitmqctl set_permissions -p tiger tiger "" ".*" ".*"
+
+../bin/easy_install authorize
+../bin/easy_install django-imagekit
+../bin/easy_install django_extensions
+../bin/easy_install django-haystack
+../bin/easy_install Whoosh
+../bin/easy_install celery

@@ -71,11 +71,18 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django_extensions',
+    'celery',
     'imagekit',
     'haystack',
     'tiger.accounts',
     'tiger.core',
 )
+
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "tiger"
+BROKER_PASSWORD = "h0k3yp0k3y"
+BROKER_VHOST = "tiger"
 
 HAYSTACK_SITECONF = 'tiger.search'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
