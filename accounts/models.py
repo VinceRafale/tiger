@@ -13,6 +13,7 @@ class Account(models.Model):
     """Stores data for customer billing and contact.
     """
     user = models.ForeignKey(User)
+    company_name = models.CharField(max_length=200)
     email = models.EmailField()
     phone = PhoneNumberField()
     fax = PhoneNumberField()
@@ -24,9 +25,12 @@ class Account(models.Model):
     auth_net_api_key = models.CharField(max_length=255, blank=True)
     signup_date = models.DateField(editable=False)
     # Takeout Tiger's authorize.net information for this customer in CIM
-    customer_profile_id = models.IntegerField()
-    payment_profile_id = models.IntegerField()
+    customer_profile_id = models.IntegerField(null=True, blank=True)
+    payment_profile_id = models.IntegerField(null=True, blank=True)
     cc_last_4 = models.CharField(blank=True, max_length=16)
+
+    def __unicode__(self):
+        return self.company_name
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -44,6 +48,9 @@ class Site(models.Model):
     tld = models.CharField(max_length=4)
     enable_blog = models.BooleanField()
     blog_address = models.URLField(blank=True)
+
+    def __unicode__(self):
+        return '.'.join(['www', self.domain, self.tld])
 
     @property
     def custom_media_url(self):

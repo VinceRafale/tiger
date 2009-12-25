@@ -53,11 +53,12 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'tiger.accounts.middleware.DomainDetectionMiddleware',
     'tiger.core.middleware.ShoppingCartMiddleware',
+    'tiger.accounts.middleware.DomainDetectionMiddleware',
 )
 
 ROOT_URLCONF = 'tiger.urls'
+TIGER_URLCONF = 'tiger.tiger_urls'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, 'templates'),
