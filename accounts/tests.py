@@ -1,23 +1,26 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
+class NotificationSettingsTestCase(TestCase):
+    def test_add_cron(self):
+        """Tests that a new cron job is added to the crontab when
+        notification settings are saved for the first time.
         """
-        Tests that 1 + 1 always equals 2.
+        self.fail()
+
+    def test_edit_cron(self):
+        """Tests that an existing cron job is edited rather than
+        created anew when notification settings are changed.
         """
-        self.failUnlessEqual(1 + 1, 2)
+        self.fail()
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+    def test_remove_cron(self):
+        """Tests that a cron job is removed when notification
+        settings are removed.
+        """
+        self.fail()
 
->>> 1 + 1 == 2
-True
-"""}
-
+    def test_remove_cron_on_delete(self):
+        """Tests that a notification settings object properly cleans
+        up after itself when deleted.
+        """
+        self.fail()
