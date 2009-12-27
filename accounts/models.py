@@ -80,6 +80,9 @@ class NotificationSettings(models.Model):
     notification_time = models.TimeField(null=True, blank=True)
     notification_weekday = models.IntegerField(null=True, blank=True, choices=DOW_CHOICES)
 
+    def __unicode__(self):
+        return '%s notification settings' % self.site
+
     def save(self, *args, **kwargs):
         cron_command = self._get_cron_command()
         crontab = CronTab()
