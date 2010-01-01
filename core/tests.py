@@ -1,12 +1,6 @@
 from django.test import TestCase
 
 class CartMiddlewareTestCase(TestCase):
-    def test_request_has_cart(self):
-        """Tests that the ``ShoppingCartMiddleware`` successfully set the ``cart``
-        attribute on the ``HttpRequest`` object.
-        """
-        self.fail()
-
     def test_cart_add(self):
         """Tests that the ``add`` method of the shopping cart works correctly.
         """
