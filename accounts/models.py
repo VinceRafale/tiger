@@ -83,42 +83,6 @@ class NotificationSettings(models.Model):
     def __unicode__(self):
         return '%s notification settings' % self.site
 
-    def save(self, *args, **kwargs):
-        cron_command = self._get_cron_command()
-        crontab = CronTab()
-        try:
-            cron = crontab.find_command(cron_command)[0]
-        except IndexError:
-            cron = None
-        if self.notification_time is None and cron is not None:
-            crontab.remove(cron)
-        else:
-            if cron is None:
-                cron = crontab.new(cron_command)
-            cron.dow.on(self.notification_weekday)
-            cron.hour.on(self.notification_time.hour)
-            cron.minute.on(self.notification_time.minute)
-        crontab.write()
-        super(NotificationSettings, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        cron_command = self._get_cron_command()
-        crontab = CronTab()
-        try:
-            cron = crontab.find_command(cron_command)[0]
-        except IndexError:
-            pass
-        else:
-            crontab.remove(cron)
-            crontab.write()
-        super(NotificationSettings, self).delete(*args, **kwargs)
-
-    def _get_cron_command(self):
-        site_id = self.site_id
-        env_python = os.path.join(settings.PROJECT_ROOT, '../bin/python ')
-        cmd = os.path.join(settings.PROJECT_ROOT, 'notification.py')
-        return ' '.join([env_python, cmd, str(site_id)])
-
 
 class Invoice(models.Model):
     account = models.ForeignKey(Account)
