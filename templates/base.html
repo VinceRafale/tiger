@@ -11,20 +11,65 @@
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
     <![endif]--> 
     <style>
-        body {background-color:green;}
-        #masthead {background-color:blue;}
-        #menuWrap {background-color:red;}
-        .footer{background-color:orange;}
-        #main, #sidebar {background-color:white}
-        #menu ul li div {background-color:lightblue;}
+        body {background:url({{ MEDIA_URL }}img/HiRes.png);}
+        #masthead {background-color:#e0e3dc;}
+        #masthead h2 {font-size:40px;}
+        #menuWrap, .footer {background-color:#ae0001; border-top:3px black solid;}
+        #menuWrap {border-bottom:3px black solid;
+            -moz-box-shadow: black 0px 2px 10px;
+            -webkit-box-shadow: black 0px 2px 10px;}
+        #menuWrap form {margin-top:8px; text-align:right;}
+        #menuWrap form input {border:none;}
+        #mainWrap, #sidebarWrap {
+            background-color:white; border:3px black solid;
+            -moz-box-shadow: black 2px 2px 10px;
+            -webkit-box-shadow: black 2px 2px 10px;}
+        #main, #sidebar {padding:15px;}
+        #menu ul li div {background-color:#e0e3dc;}
+        a {color:#ae0001;}
+        a.lightlink {color:white;}
+
+        form.addToCart {float:right;}
+
+        div#cartControls a, a#addToCart {
+            background-color:#ae0001;
+            color:white;
+            display:block;
+            font-size:20px;
+            font-weight:bold;
+            padding:6px 0 6px 9px;
+            text-decoration:none;
+            -moz-border-radius:4px;
+            -webkit-border-radius:4px;
+        }
+        div#cartControls a {
+            width:120px;
+            float:left;
+        }
+        a#addToCart {
+            width:90px;
+            float:right;
+        }
+        #menuWrap, .footer, #menu ul li ul li a:hover, div#cartControls a, a#addToCart {
+            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#b83f3f), to(#610001));
+        }
+        div#cartControls a:hover {
+            background-color: #b83f3f;
+            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#610001), to(#b83f3f));
+        }
+
+        a#viewCart {margin-right:12px;}
+{
     </style>
+    {% block extrahead %}
+    {% endblock %}
 </head>
 <body>
     <div class="wrapper">
         <div id="masthead">
             <div class="container_12">
                 <div id="menu" class="grid_8">
-                This is a logo and name
+                <h2>{{ site.name }}</h2>
                 </div>
                 <div id="menu" class="grid_4">
                     <ul>
@@ -40,8 +85,8 @@
             <div class="container_12">
                 <div id="menu" class="grid_8">
                 <ul>
-                    <li><a href="">Home</a></li>
-                    <li><a href="#">Menu</a>
+                    <li><a class="lightlink" href="">Home</a></li>
+                    <li><a class="lightlink" href="#">Menu</a>
                         <div>
                             <ul>
                                 {% for section in site.section_set.all %}
@@ -50,13 +95,12 @@
                                 <li>No menu sections created yet.</li>
                                 {% endfor %}
                             </ul>
-                            <strong></strong>
                         </div>	
                     </li>
-                    <li><a href="">About</a></li>
-                    <li><a href="">Find Us</a></li>
+                    <li><a class="lightlink" href="">About</a></li>
+                    <li><a class="lightlink" href="">Find Us</a></li>
                     {% if site.blog_enabled %}
-                    <li><a href="">{{ site.blog_title }}</a></li>
+                    <li><a class="lightlink" href="">{{ site.blog_title }}</a></li>
                     {% endif %}
                 </ul>
                 </div>
@@ -68,24 +112,32 @@
             </div> 
         </div>
         <div id="content" class="container_12">
-            <div id="main" class="grid_8">
+            <div id="mainWrap" class="grid_8 alpha">
+            <div id="main">
             {% block content %}
                 content
             {% endblock %}
             </div>
-            <div id="sidebar" class="grid_4">
+            </div>
+            <div id="sidebarWrap" class="grid_4 omega">
+            <div id="sidebar">
             {% block sidebar %}
-                <div>cart contents</div>
+                <div id="cartControls">
+                <a id="viewCart" href=""><img src="{{ MEDIA_URL }}img/cart_edit.png" /> View cart</a> <a href=""><img src="{{ MEDIA_URL }}img/cart_go.png" / > Checkout</a>
+                </div>
+                <div class="clear"></div>
                 <div>Twitter stream</div>
                 <div>News</div>
             {% endblock %}
+            </div>
             </div>
         </div>
     <div class="shim"></div>
     </div>
     <div class="footer">
         <div class="container_12">
-            <p>Powered by <a href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
+            <address>{{ site.contact }}</address>
+            <p>Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
         </div> 
     </div>
     {% block js %}

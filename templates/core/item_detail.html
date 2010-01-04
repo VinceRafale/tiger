@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{ item.name }}
+| {{ item.section.name }} | {{ item.name }}
+{% endblock %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.fancybox-1.2.6.pack.js"></script>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery.fancybox-1.2.6.css" />
 {% endblock %}
 
 {% block content %}
+<a id="addToCart" href="{% url order_item item.id %}"><img src="{{ MEDIA_URL }}img/cart_put.png" /> Order</a>
 <a href="{{ item.section.get_absolute_url }}">&laquo; back to {{ item.section.name }}</a>
 <h1>{{ item.name }}</h1>
-<form class="pretty" method="POST">
-<div class="quantity">
-    <label for="qty">Quantity:</label> 
-    <input type="text" value="1" name="qty" id="id_qty" />
-</div>
-<input type="submit" class="add" value="Add to cart" />
-</form>
 <div>
 {% if item.photo %}
 <img src="{{ item.photo.image.url }}" />
@@ -22,4 +22,10 @@
 </div>
 {% endblock %}
 
-
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("#addToCart").fancybox();
+});
+</script>
+{% endblock %}
