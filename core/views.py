@@ -20,4 +20,11 @@ def item_detail(request, section, item):
     return HttpResponse(render_custom(request, 'core/item_detail.html', 
         {'item': i}))
 
-
+def get_form(request, item_id):
+    item = Item.objects.get(id=item_id, site=request.site)
+    OrderForm = get_order_form(item, item.variant_set.all(), item.upgrade_set.all())
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+    else:
+        form = OrderForm()
+    return render_to_response('core/order_form.html', {'item': item, 'form': form})
