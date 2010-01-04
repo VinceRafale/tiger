@@ -1,4 +1,7 @@
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render_to_response
+
+from tiger.core.forms import get_order_form
 from tiger.core.models import Section, Item
 from tiger.utils.views import render_custom
 
@@ -8,12 +11,12 @@ def section_list(request):
         {'sections': sections}))
 
 def section_detail(request, section):
-    s = Section.objects.get(slug=section, site=request.site)
+    s = get_object_or_404(Section, slug=section, site=request.site)
     return HttpResponse(render_custom(request, 'core/section_detail.html', 
         {'section': s}))
 
 def item_detail(request, section, item):
-    i = Item.objects.get(section__slug=section, slug=item, site=request.site)
+    i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
     if request.method == 'POST':
         qty = request.POST.get('qty')
         request.cart.add(i.id, int(qty))
