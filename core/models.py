@@ -55,7 +55,7 @@ class Item(ImageModel):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Section, self).save(*args, **kwargs)
+        super(Item, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('menu_item', 

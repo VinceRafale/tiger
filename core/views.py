@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from tiger.core.models import Section, Item
-from tiger.utils.views
+from tiger.utils.views import render_custom
 
 def section_list(request):
     sections = Section.objects.filter(site=request.site)
