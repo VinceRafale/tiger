@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.conf.urls.defaults import *
+from django.contrib import admin
 
-from tiger.core import site
+admin.autodiscover()
 
 handler404 = 'tiger.utils.views.handler404'
 handler500 = 'tiger.utils.views.handler500'
@@ -12,7 +13,7 @@ urlpatterns = patterns('',
     url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'base.html'}, name='home'),
     (r'^menu/', include('tiger.core.urls')),
     (r'^search/', include('haystack.urls')),
-    (r'^controlpanel/', include(site.urls)),
+    (r'^admin/', include(admin.site.urls)),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
 
