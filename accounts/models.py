@@ -108,7 +108,7 @@ class Subscriber(models.Model):
     )
     user = models.ForeignKey(User)
     site = models.ForeignKey(Site)
-    organization = models.CharField()
+    organization = models.CharField(max_length=255)
     send_updates = models.BooleanField(default=True)
     update_via = models.IntegerField(default=VIA_EMAIL, choices=VIA_CHOICES)
     fax = PhoneNumberField(blank=True)
