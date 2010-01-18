@@ -112,4 +112,6 @@ class Subscriber(models.Model):
     send_updates = models.BooleanField(default=True)
     update_via = models.IntegerField(default=VIA_EMAIL, choices=VIA_CHOICES)
     fax = PhoneNumberField(blank=True)
-    email = models.EmailField(blank=True)
+
+    def __unicode__(self):
+        return self.organization

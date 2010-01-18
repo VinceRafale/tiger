@@ -12,6 +12,7 @@ class SubscriberModelAdmin(admin.ModelAdmin):
         user = obj.user
         for attr in ('first_name', 'last_name', 'email'):
             SubscriberForm.declared_fields[attr].initial = getattr(user, attr, '')
+        return SubscriberForm
 
     def save_model(self, request, obj, form, change):
         if change:
