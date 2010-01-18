@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 
-from tiger.core import site
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
 
@@ -30,4 +29,4 @@ class SubscriberModelAdmin(admin.ModelAdmin):
 admin.site.register(Account)
 admin.site.register(NotificationSettings)
 admin.site.register(Site)
-site.register(Subscriber, SubscriberModelAdmin)
+admin.site.register(Subscriber, SubscriberModelAdmin)

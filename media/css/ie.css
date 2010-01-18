@@ -1,0 +1,7 @@
+#steps {overflow:visible;height:400px;}
+#footer li {float:left;display:block;}
+#charity, #news {margin-top:-9px; padding-top:0;}
+div.price {height:85px;padding-top:17px;}
+div.price span {margin:0;}
+div#masthead div.container_12{position:absolute; top:0;left:50%;margin-left:-480px;}
+div#pageWrap div.container_12{position:absolute; top:166px;left:50%;margin-left:-480px;}

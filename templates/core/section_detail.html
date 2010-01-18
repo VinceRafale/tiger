@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}
+| {{ section.name }}
+{% endblock %}
+
+{% block content %}
+<h1>{{ section }}</h1>
+{{ section.description|linebreaks }}
+<ul>
+{% for item in section.item_set.all %}
+    <li><a href="{{ item.get_absolute_url }}">{{ item }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}
+

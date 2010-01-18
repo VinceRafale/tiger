@@ -46,5 +46,10 @@ class ItemModelAdmin(admin.ModelAdmin):
         return request.user == obj.user
 
 
+admin.site.register(Section)
+admin.site.register(Item)
+admin.site.register(Variant)
+admin.site.register(Upgrade)
+admin.site.register(ItemImage)
 site.register(Item, ItemModelAdmin)
 site.register(Section, SectionModelAdmin)

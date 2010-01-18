@@ -12,3 +12,4 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 
 HAYSTACK_WHOOSH_PATH = '/home/jonathan/mysite_index'
 
+DISABLE_SITE_MIDDLEWARE = True

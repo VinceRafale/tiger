@@ -1,23 +1,30 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
+class CartMiddlewareTestCase(TestCase):
+    def test_cart_add(self):
+        """Tests that the ``add`` method of the shopping cart works correctly.
         """
-        Tests that 1 + 1 always equals 2.
+        self.fail()
+
+    def test_cart_remove(self):
+        """Tests that the ``remove`` method of the shopping cart works correctly.
         """
-        self.failUnlessEqual(1 + 1, 2)
+        self.fail()
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+    def test_cart_clear(self):
+        """Tests that the ``clear`` method of the shopping cart works correctly.
+        """
+        self.fail()
 
->>> 1 + 1 == 2
-True
-"""}
+    def test_cart_persists_between_requests(self):
+        """Tests that the user's shopping cart contents are correctly retrieved
+        when the cart is edited and a new HTTP request is made.
+        """
+        self.fail()
+
+    def test_cart_persists_after_login(self):
+        """Tests that the user's shopping cart contents are not lost when moving
+        from an unauthenticated to an authenticated session.
+        """
+        self.fail()
 
