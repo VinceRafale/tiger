@@ -1,8 +1,6 @@
 import os
 from datetime import date
 
-from crontab import CronTab
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
@@ -121,3 +119,19 @@ class LineItem(models.Model):
     def save(self, *args, **kwargs):
         self.total = self.price * self.qty
         super(LineItem, self).save(*args, **kwargs)
+
+
+class Subscriber(models.Model):
+    VIA_EMAIL = 1
+    VIA_FAX = 2
+    VIA_CHOICES = (
+        (VIA_EMAIL, 'E-mail'),
+        (VIA_FAX, 'Fax'),
+    )
+    user = models.ForeignKey(User)
+    site = models.ForeignKey(Site)
+    organization = models.CharField()
+    send_updates = models.BooleanField(default=True)
+    update_via = models.IntegerField(default=VIA_EMAIL, choices=VIA_CHOICES)
+    fax = PhoneNumberField(blank=True)
+    email = models.EmailField(blank=True)

@@ -80,6 +80,8 @@ INSTALLED_APPS = (
     'tiger.notify',
 )
 
+AUTH_PROFILE_MODULE = 'accounts.Subscriber'
+
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = "tiger"
