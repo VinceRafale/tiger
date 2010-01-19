@@ -102,6 +102,16 @@ class LineItem(models.Model):
         super(LineItem, self).save(*args, **kwargs)
 
 
+class FaxSubscriberManager(models.Manager):
+    def get_query_set(self):
+        return self.filter(send_updates=True, via=Subscriber.VIA_FAX)
+        
+
+class EmailSubscriberManager(models.Manager):
+    def get_query_set(self):
+        return self.filter(send_updates=True, via=Subscriber.VIA_EMAIL)
+        
+
 class Subscriber(models.Model):
     VIA_EMAIL = 1
     VIA_FAX = 2
@@ -115,6 +125,8 @@ class Subscriber(models.Model):
     send_updates = models.BooleanField(default=True)
     update_via = models.IntegerField(default=VIA_EMAIL, choices=VIA_CHOICES)
     fax = PhoneNumberField(blank=True)
+    via_fax = FaxSubscriberManager()
+    via_email = EmailSubscriberManager()
 
     def __unicode__(self):
         return self.organization
