@@ -35,6 +35,7 @@ class ItemManager(models.Manager):
         items = self.filter(special=True, site=site)
         return render_to_string(template, {'site': site, 'items': items})
 
+
 class Item(ImageModel):
     """Represents a single item on the menu in its most basic form.
     """
