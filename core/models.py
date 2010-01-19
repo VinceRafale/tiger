@@ -85,6 +85,9 @@ class Variant(models.Model):
     description = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=5, decimal_places=2)
 
+    class Meta:
+        ordering = ['price']
+
     def __unicode__(self):
         return '%s ($%s)' % (self.description, self.price)
 
