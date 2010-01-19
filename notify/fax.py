@@ -44,14 +44,14 @@ class FaxMachine(object):
             raise FaxServiceError
         doc = parse(response).getroot()
         transaction_id = doc.text
+        #TODO: check for positive value
         if len(contacts) > 1:
-            is_parent = True
+            is_batch = True
         else:
-            is_parent = False
-        faxes = self.query_by_transaction_id(transaction_id, is_parent)
-        #TODO: get sum of pages
-        return Fax.objects.create(site=self.site, page_count=page_count)
+            is_batch = False
+        # batch transactions need to have child transaction ids fetched;
+        # non-batch just need their timestamp and page count retrieved
+        return Fax.objects.create(transaction=transaction_id, batch=is_batch, site=self.site)
 
-    def query_by_transaction_id(self, transaction_id, is_parent):
-        #TODO: use suds to query
-        pass
+    def update_transactions(self):
+        

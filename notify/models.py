@@ -11,10 +11,7 @@ class Fax(models.Model):
         (DIRECTION_OUTBOUND, 'Outbound'),
     )
     site = models.ForeignKey(Site)
-    timestamp = models.DateTimeField()
-    page_count = models.IntegerField()
-    
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.timestamp = datetime.now()
-        super(Fax, self).save(*args, **kwargs)
+    timestamp = models.DateTimeField(null=True, blank=True)
+    page_count = models.IntegerField(null=True, blank=True)
+    transaction = models.CharField()
+    batch = models.BooleanField()
