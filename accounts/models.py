@@ -57,29 +57,32 @@ class Site(models.Model):
         return os.path.join(settings.CUSTOM_MEDIA_URL, '.'.join([self.domain, self.tld]))        
 
 
-class NotificationSettings(models.Model):
-    DOW_SUNDAY = 0
+class ScheduledUpdate(models.Model):
     DOW_MONDAY = 1
     DOW_TUESDAY = 2
     DOW_WEDNESDAY = 3
     DOW_THURSDAY = 4
     DOW_FRIDAY = 5
     DOW_SATURDAY = 6
+    DOW_SUNDAY = 7
     DOW_CHOICES = (
-        (DOW_SUNDAY, 'Sunday'),
         (DOW_MONDAY, 'Monday'),
         (DOW_TUESDAY, 'Tuesday'),
         (DOW_WEDNESDAY, 'Wednesday'),
         (DOW_THURSDAY, 'Thursday'),
         (DOW_FRIDAY, 'Friday'),
         (DOW_SATURDAY, 'Saturday'),
+        (DOW_SUNDAY, 'Sunday'),
     )
-    site = models.OneToOneField(Site)
-    notification_time = models.TimeField(null=True, blank=True)
-    notification_weekday = models.IntegerField(null=True, blank=True, choices=DOW_CHOICES)
+    site = models.ForeignKey(Site)
+    start_time = models.TimeField(null=True, blank=True)
+    weekday = models.IntegerField(null=True, blank=True, choices=DOW_CHOICES)
+
+    class Meta:
+        unique_together = ('site', 'notification_weekday',)
 
     def __unicode__(self):
-        return '%s notification settings' % self.site
+        return '%s at %s' % (self.get_weekday_display(), self.start_time.strftime('%x'))
 
 
 class Invoice(models.Model):
