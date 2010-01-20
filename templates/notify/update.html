@@ -1,6 +1,6 @@
 <html>
 <body>
-<h1>Specials from {{ site.title }}</h1>
+<h1>Specials from {{ site.name }}</h1>
 
 {% regroup specials by section as sections %}
 {% for section in sections %}
@@ -12,11 +12,11 @@
         {% if forloop.first and forloop.last %}
             ${{ variant.price }}
         {% else %}
-            {{ description }} - ${{ variant.price }} {% if not forloop.last %}|{% endif %}
+            {{ variant.description }} - ${{ variant.price }} {% if not forloop.last %}|{% endif %}
         {% endif %}
-        </p>
-        <p>{{ item.description }}</p>
     {% endfor %}
+    </p>
+    <p>{{ item.description }}</p>
     {% endfor %}
 {% endfor %}
 </body>
