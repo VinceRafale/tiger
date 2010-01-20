@@ -1,3 +1,5 @@
+import hashlib
+
 from django.contrib import admin
 from django.contrib.auth.models import User
 
@@ -21,6 +23,7 @@ class SubscriberModelAdmin(admin.ModelAdmin):
             user = User()
         for attr in ('first_name', 'last_name', 'email'):
             setattr(user, attr, form.cleaned_data[attr])
+        user.username = hashlib.md5(obj.organization).hexdigest() 
         user.save()
         obj.user = user
         obj.site = request.site    
@@ -28,6 +31,6 @@ class SubscriberModelAdmin(admin.ModelAdmin):
             
 
 admin.site.register(Account)
-admin.site.register(NotificationSettings)
+admin.site.register(ScheduledUpdate)
 admin.site.register(Site)
 admin.site.register(Subscriber, SubscriberModelAdmin)

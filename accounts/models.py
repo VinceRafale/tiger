@@ -79,7 +79,7 @@ class ScheduledUpdate(models.Model):
     weekday = models.IntegerField(null=True, blank=True, choices=DOW_CHOICES)
 
     class Meta:
-        unique_together = ('site', 'notification_weekday',)
+        unique_together = ('site', 'weekday',)
 
     def __unicode__(self):
         return '%s at %s' % (self.get_weekday_display(), self.start_time.strftime('%x'))
@@ -104,12 +104,14 @@ class LineItem(models.Model):
 
 class FaxSubscriberManager(models.Manager):
     def get_query_set(self):
-        return self.filter(send_updates=True, via=Subscriber.VIA_FAX)
+        return super(FaxSubscriberManager, self).get_query_set().filter(
+            send_updates=True, update_via=Subscriber.VIA_FAX)
         
 
 class EmailSubscriberManager(models.Manager):
     def get_query_set(self):
-        return self.filter(send_updates=True, via=Subscriber.VIA_EMAIL)
+        return super(FaxSubscriberManager, self).get_query_set().filter(
+            send_updates=True, update_via=Subscriber.VIA_EMAIL)
         
 
 class Subscriber(models.Model):

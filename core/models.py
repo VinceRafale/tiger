@@ -36,7 +36,7 @@ class ItemManager(models.Manager):
         return render_to_string(template, {'site': site, 'items': items})
 
 
-class Item(ImageModel):
+class Item(models.Model):
     """Represents a single item on the menu in its most basic form.
     """
     name = models.CharField(max_length=100)

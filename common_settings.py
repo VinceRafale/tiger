@@ -103,6 +103,11 @@ HAYSTACK_SEARCH_ENGINE = 'whoosh'
 
 CUSTOM_MEDIA_ROOT = os.path.join(PROJECT_ROOT, '../media/')
 
-INTERFAX_USERNAME = 'ha.chuck'
-INTERFAX_PASSWORD = 'h54g623f'
-INTERFAX_WSDL = 'http://ws.interfax.net/dfs.asmx?wsdl'
+INTERFAX_USERNAME = 'threadsafelabs'
+INTERFAX_PASSWORD = 'MAAANNNIIING'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = 'do-not-reply@takeouttiger.com'
+EMAIL_HOST_PASSWORD = 'MAAANNNIIING!'
+EMAIL_USE_TLS = True

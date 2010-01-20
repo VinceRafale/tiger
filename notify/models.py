@@ -13,5 +13,5 @@ class Fax(models.Model):
     site = models.ForeignKey(Site)
     timestamp = models.DateTimeField(null=True, blank=True)
     page_count = models.IntegerField(null=True, blank=True)
-    transaction = models.CharField()
+    transaction = models.CharField(max_length=100)
     batch = models.BooleanField()
