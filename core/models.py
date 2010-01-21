@@ -72,7 +72,7 @@ class ItemImage(ImageModel):
     image = models.ImageField(upload_to='menu_images')
 
     class IKOptions:
-        spec_module = 'core.specs'
+        spec_module = 'tiger.core.specs'
 
 
 class Variant(models.Model):
