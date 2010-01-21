@@ -25,7 +25,7 @@ class FaxMachine(object):
         self.username = username
         self.password = password
 
-    def send(self, contacts, content, content_type='TXT', **kwargs):
+    def send(self, contacts, content, content_type='PDF', **kwargs):
         b64_content = content.encode('base64')
         params = {
             'Username': self.username,

@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo apt-get install python-reportlab
 sudo apt-get install rabbitmq-server
 sudo /etc/init.d/rabbitmq-server start
 rabbitmqctl add_user tiger h0k3yp0k3y
@@ -11,6 +12,8 @@ rabbitmqctl set_permissions -p tiger tiger "" ".*" ".*"
 ../bin/easy_install django-haystack
 ../bin/easy_install Whoosh
 ../bin/easy_install celery
+../bin/easy_install html5lib
+../bin/easy_install pisa
 cd ../
 svn co http://code.djangoproject.com/svn/django/trunk/
 cd trunk

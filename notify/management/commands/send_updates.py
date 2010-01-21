@@ -5,6 +5,7 @@ from django.core.management.base import NoArgCommand
 
 from tiger.accounts.models import Subscriber, ScheduledUpdate
 from tiger.notify.tasks import SendEmailTask, SendFaxTask
+from tiger.utils.pdf import render_to_pdf
 
 class Notify(NoArgCommand):
     def handle_noargs(self, **options):
@@ -17,7 +18,7 @@ class Notify(NoArgCommand):
         msgs = []
         for update in updates:
             site = update.site
-            content = render_to_string('notify/update.html', {
+            content = render_to_pdf('notify/update.html', {
                 'specials': site.item_set.filter(special=True),
                 'site': site
             })
