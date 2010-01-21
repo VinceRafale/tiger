@@ -15,6 +15,7 @@ sudo rabbitmqctl set_permissions -p tiger tiger "" ".*" ".*"
 ../bin/easy_install celery
 ../bin/easy_install html5lib
 ../bin/easy_install pisa
+../bin/easy_install South
 cd ../
 svn co http://code.djangoproject.com/svn/django/trunk/
 cd trunk
