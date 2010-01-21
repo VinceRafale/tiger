@@ -20,6 +20,7 @@ class Notify(NoArgCommand):
             site = update.site
             content = render_to_pdf('notify/update.html', {
                 'specials': site.item_set.filter(special=True),
+                'footer': update.footer,
                 'site': site
             })
             via_email = Subscriber.objects.via_email().filter(site=site)
@@ -30,8 +31,3 @@ class Notify(NoArgCommand):
             via_fax = Subscriber.objects.via_fax().filter(site=site)
             SendFaxTask.delay(site=site, subscribers=via_fax, content=content)
         SendEmailTask.delay(msgs=msgs)
-
-
-
-            
-

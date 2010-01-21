@@ -77,6 +77,7 @@ class ScheduledUpdate(models.Model):
     site = models.ForeignKey(Site)
     start_time = models.TimeField(null=True, blank=True)
     weekday = models.IntegerField(null=True, blank=True, choices=DOW_CHOICES)
+    footer = models.TextField(help_text='This text will appear at the bottom of e-mails and faxes sent at this time.')
 
     class Meta:
         unique_together = ('site', 'weekday',)
