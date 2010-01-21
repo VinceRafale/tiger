@@ -7,6 +7,7 @@ from suds.client import Client
 
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 
 from tiger.notify.models import Fax
 
@@ -30,7 +31,7 @@ class FaxMachine(object):
         params = {
             'Username': self.username,
             'Password': self.password,
-            'FaxNumbers': ';'.join('+1 (%s) %s %s' % contact.fax.split('-') for contact in contacts),
+            'FaxNumbers': ';'.join('+1 (%s) %s %s' % tuple(contact.fax.split('-')) for contact in contacts),
             'Contacts': ';'.join(contact.user.get_full_name() for contact in contacts),
             'FilesData': b64_content,
             'FileTypes': content_type,
