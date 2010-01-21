@@ -10,7 +10,8 @@ handler500 = 'tiger.utils.views.handler500'
 urlpatterns = patterns('',
     # Example:
     # (r'^tiger/', include('tiger.foo.urls')),
-    url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'base.html'}, name='home'),
+    #url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'base.html'}, name='home'),
+    url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'temp.html'}, name='home'),
     (r'^menu/', include('tiger.core.urls')),
     (r'^search/', include('haystack.urls')),
     (r'^admin/', include(admin.site.urls)),
