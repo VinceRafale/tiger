@@ -1,6 +1,7 @@
 #!/bin/bash
 sudo apt-get install python-reportlab
-sudo apt-get install rabbitmq-server
+wget http://www.rabbitmq.com/releases/rabbitmq-server/v1.7.0/rabbitmq-server_1.7.0-1_all.deb
+sudo dpkg -i rabbitmq-server_1.7.0-1_all.deb
 sudo /etc/init.d/rabbitmq-server start
 rabbitmqctl add_user tiger h0k3yp0k3y
 rabbitmqctl add_vhost tiger
