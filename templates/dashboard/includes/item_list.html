@@ -1,0 +1,26 @@
+{% for item in items %}
+<li id="{{ item.id }}">
+    <a class="buttonTop last delete" href="{% url dashboard_delete_item item.id %}">Delete</a>
+    <a class="buttonTop" href="{% url dashboard_edit_item item.id %}">Edit</a>
+    <h3>{{ item }}</h3>
+    <span class="pricing">
+        {% for variant in item.variant_set.all %}
+            {% if forloop.first and forloop.last %}
+                ${{ variant.price|floatformat:2 }}
+            {% else %}
+                {{ variant.description }}: ${{ variant.price|floatformat:2 }} {% if not forloop.last %}&nbsp;&nbsp;//&nbsp;&nbsp;{% endif %}
+            {% endif %}
+        {% endfor %}
+    </span>
+    <p>{{ item.description }}</p>
+    {% if item.upgrade_set.count %}
+    <ul>
+    {% for upgrade in item.upgrade_set.all %}
+        <li>{{ upgrade }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+</li>
+{% empty %}
+    <li>There are no menu items in this menu section.</li>
+{% endfor %}

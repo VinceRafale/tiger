@@ -1,0 +1,80 @@
+{% extends 'dashboard.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+<h1>Menu management</h1>
+<p>Click a menu section and the corresponding menu items will appear on the right.  Reorder menu sections and items by dragging them up or down in the list.</p>
+<div class="grid_5 alpha" id="sectionWrap">
+    <a class="buttonTop last" href="{% url dashboard_add_section %}">New menu section</a>
+    <h2>Menu sections</h2>
+    <ul class="drag sections">
+    {% for section in sections %}
+        <li id="{{ section.id }}"{% if forloop.first %} class="selected"{% endif %}>
+        <a class="buttonTop last delete" href="{% url dashboard_delete_section section.id %}">Delete</a>
+        <a class="buttonTop" href="{% url dashboard_edit_section section.id %}">Edit</a>
+        <a class="buttonTop view" href="{% url dashboard_view_section section.id %}">View</a>
+        <h3>{{ section }}</h3>
+        <p>{{ section.description }}</p>
+        </li> 
+    {% empty %}
+        <li>You have not created any menu sections. <a href="{% url dashboard_add_section %}">Create one now</a></li>
+    {% endfor %}
+    </ul>
+</div>
+<div class="grid_7 omega" id="itemWrap">
+    <a class="buttonTop last" id="newItem" href="{% url dashboard_add_item %}">New menu item</a>
+    <h2>Menu items under <span>this section</span></h2>
+    <ul class="drag items">
+        <li>Loading...</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+function selectSection() {
+    viewHref = $("ul.sections li.selected a.view").attr("href");
+    $("ul.items").load(viewHref);
+    pk = viewHref.match(/\/(\d+)\//)[1];
+    $("#newItem").attr("href", $("#newItem").attr("href").split('?')[0] + "?pk=" + pk);
+    $("#itemWrap h2 span").text($("li.selected h3").text());
+}
+
+$(function () {
+    selectSection();
+    $("ul.drag.items").sortable({
+        stop: function(event, ui) { 
+            $.post("items/reorder/", $.param({
+                item_ids: $(this).sortable('toArray')
+            }, true));
+        },
+        cancel: ":input,button,a"
+    });
+    $("ul.drag.sections").sortable({
+        stop: function(event, ui) { 
+            $.post("sections/reorder/", $.param({
+                section_ids: $(this).sortable('toArray')
+            }, true));
+        },
+        cancel: ":input,button,a"
+    });
+    $("a.view").click(function () {
+        $("li.selected").removeClass("selected");
+        $(this).parent().addClass("selected");
+        selectSection();
+        return false;
+    });
+    $("a.delete").live("click", function () {
+        h3Text = $($(this).parent().find("h3")[0]).text();
+        c = confirm("Are you sure you want to delete " + h3Text + "? This action cannot be undone.");
+        if (!c)
+            return false;
+    });
+});
+</script>
+{% endblock %}

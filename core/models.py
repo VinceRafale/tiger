@@ -15,15 +15,19 @@ class Section(models.Model):
     site = models.ForeignKey(Site, editable=False)
     description = models.TextField()
     slug = models.SlugField(editable=False)
+    ordering = models.PositiveIntegerField(editable=False, default=1)
 
     class Meta:
         verbose_name = 'menu section'
+        ordering = ('ordering',)
 
     def __unicode__(self):
         return self.name
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
+        if not self.id:
+            self.ordering = 1
         super(Section, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -44,18 +48,22 @@ class Item(models.Model):
     site = models.ForeignKey(Site, editable=False)
     image = models.ForeignKey('ItemImage', blank=True, null=True)
     description = models.TextField()
-    special = models.BooleanField()
+    special = models.BooleanField('is this menu item currently a special?')
     slug = models.SlugField(editable=False)
+    ordering = models.PositiveIntegerField(editable=False, default=1)
     objects = ItemManager()
 
     class Meta:
         verbose_name = 'menu item'
+        ordering = ('ordering',)
 
     def __unicode__(self):
         return self.name
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
+        if not self.id:
+            self.ordering = 1
         super(Item, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -108,6 +116,6 @@ class Upgrade(models.Model):
         verbose_name_plural = 'upgrades/substitutions'
 
     def __unicode__(self):
-        return '%s %s for $%f more' % (
+        return '%s %s for $%.02f more' % (
             'Substitute' if self.substitute else 'Add', 
             self.name, self.price)

@@ -1,0 +1,90 @@
+{% extends 'dashboard.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.formset.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} menu item</h1>
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+<form method="POST" action=".">
+<div class="grid_6 alpha">
+{% if form.name.errors %}
+{{ form.name.errors }}
+{% endif %}
+<label>{{ form.name.label }}<br />
+{{ form.name }}
+</label>
+{% if form.description.errors %}
+{{ form.description.errors }}
+{% endif %}
+<label>{{ form.description.label }}<br />
+{{ form.description }}
+</label>
+{% if form.section.errors %}
+{{ form.section.errors }}
+{% endif %}
+<label>{{ form.section.label }}<br />
+{{ form.section }}
+</label>
+{% if form.special.errors %}
+{{ form.special.errors }}
+{% endif %}
+<label>{{ form.special }}
+{{ form.special.label }}
+</label>
+</div>
+<div class="grid_6 omega">
+<p>{% for i in "12341234" %}This is some copy. {% endfor %}</p>
+<h4>Variants</h4>
+{% if variant_formset.non_form_errors %}
+<ul class="errorlist">
+{% for e in variant_formset.non_form_errors %}
+    <li>{{ e }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+<div id="variantForms">
+{% for form in variant_formset.forms %}
+    <div>
+        {{ form }}
+    </div>
+{% endfor %}
+</div>
+{{ variant_formset.management_form }}
+<h4>Upgrades & substitutions</h4>
+<div id="upgradeForms">
+{% for form in upgrade_formset.forms %}
+    <div>
+        {{ form }}
+    </div>
+{% endfor %}
+</div>
+{{ upgrade_formset.management_form }}
+</div>
+</form>
+<div class="clear"></div>
+<a class="buttonTop last" href="{% url dashboard_menu %}">Cancel</a>
+<a class="buttonTop submit" href="#">Save</a>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+    $('#variantForms div').formset({
+        prefix: '{{ variant_formset.prefix }}',
+        formCssClass: 'variant-formset'
+    });
+    $('#upgradeForms div').formset({
+        prefix: '{{ upgrade_formset.prefix }}',
+        formCssClass: 'upgrade-formset'
+    });
+});
+</script>
+{% endblock %}

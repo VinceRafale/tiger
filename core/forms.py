@@ -18,3 +18,20 @@ def get_order_form(instance, variants, upgrades):
         attrs['upgrades'] = forms.ModelMultipleChoiceField(queryset=upgrades, widget=forms.CheckboxSelectMultiple)
     return type('OrderForm', (forms.Form,), attrs)
 
+
+class SectionForm(forms.ModelForm):
+    class Meta:
+        model = Section
+        exclude = ['site']
+
+
+def get_item_form(site):
+    class ItemForm(forms.ModelForm):
+        section = forms.ModelChoiceField(queryset=site.section_set.all())
+        class Meta:
+            model = Item
+            exclude = ['site', 'image']
+    return ItemForm
+
+
+

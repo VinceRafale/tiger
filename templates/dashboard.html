@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{{ site.name }} {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/dashboard.css" />
+    <!--[if IE]>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
+    <![endif]--> 
+    {% block extrahead %}
+    {% endblock %}
+</head>
+<body>
+    <div class="wrapper">
+        <div id="menuWrap">
+            <div class="container_12">
+                <div id="menu" class="grid_8">
+                <ul class="menu">
+                    <li><a class="lightlink" href="{% url dashboard %}">Home</a></li>
+                    <li><a class="lightlink" href="{% url dashboard_menu %}">Menu</a>
+                    {% comment %}
+                        <div>
+                            <ul>
+                                {% for section in site.section_set.all %}
+                                <li><a href="{% url menu_section section.slug %}">{{ section.name }}</a></li>
+                                {% empty %}
+                                <li>No menu sections created yet.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>	
+                    </li>
+                    {% endcomment %}
+                    <li><a class="lightlink" href="">About</a></li>
+                    <li><a class="lightlink" href="">Find Us</a></li>
+                    {% if site.blog_enabled %}
+                    <li><a class="lightlink" href="">{{ site.blog_title }}</a></li>
+                    {% endif %}
+                </ul>
+                </div>
+                <div id="search" class="grid_1 push_3">
+                <ul class="menu">
+                    <li><a class="lightlink" href="">Logout</a></li>
+                </ul>
+                </div>
+            </div> 
+        </div>
+        <div id="content" class="container_12">
+            <div id="main" class="grid_12">
+            {% block content %}
+                <h1>Dashboard</h1>
+                <div class="grid_6 alpha">
+                    <h2>Current specials</h2>
+                    <ul>
+                    {% for special in specials %}
+                        <li><a href="{% url dashboard_menu %}">{{ special }}</a></li> 
+                    {% empty %}
+                        <li>You currently have no specials. <a href="">Manage your menu</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div class="grid_6 omega">
+                    <h2>Scheduled updates</h2>
+                    <ul>
+                    {% for update in updates %}
+                        <li><a href="">{{ update }}</a></li> 
+                    {% empty %}
+                        <li>You currently have no scheduled updates. <a href="">Manage your updates</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endblock %}
+            </div>
+        </div>
+    <div class="shim"></div>
+    </div>
+    <div class="footer">
+        <div class="container_12">
+            <address>{{ site.contact }}</address>
+            <p>Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
+        </div> 
+    </div>
+    {% block js %}
+    {% endblock %}
+</body>
+</html>
+

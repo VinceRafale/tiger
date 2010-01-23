@@ -1,0 +1,73 @@
+html, body {height:100%}
+ul {list-style-type:none;}
+#masthead {height:100px; width:100%;}
+#menuWrap {width:100%; height:36px; margin-bottom: 15px;}
+.wrapper{min-height: 100%; height: auto !important; height: 100%; margin-bottom: -50px;}
+div.shim{height: 50px; clear: both;}
+.footer{width:100%; position: relative; margin-top: -50px; height: 50px; clear: both;}
+.footer p{text-align: center;}
+body {background: url(../img/dashboard_bg.png) #82ab72; font-size:16px;}
+ul.menu{margin:0; font-size:14px;}
+ul.menu li{float:left;margin:0;position:relative;}
+ul.menu li a{text-decoration:none;display:block;padding:8px 15px 5px 15px; margin:0;}
+ul.menu li a:hover{background-color:white; color:#de6210;}
+ul.menu li:hover div{display:block;}
+ul.menu li div{display:none;position:absolute;left:0;top:28px;z-index:1000; border:2px black solid;}
+ul.menu li ul {margin:0;width:179px;padding:0;overflow:auto;}
+ul.menu li ul li{float:none;margin:0;padding:0;font-weight:normal;}
+ul.menu li ul li a{display:block; padding:5px;}
+ul.menu li ul li a:hover{background-color:#de6210; color:white;}
+
+#orderForm ul {list-style-type:none;}
+#orderForm li {display:inline;}
+
+.footer {border-top:1px grey solid; font-size:14px;}
+#menuWrap {border-bottom:1px brown solid;}
+#main {padding:15px; background-color:white; border:1px grey solid; margin-bottom:15px;}
+#menu ul li div {background-color:#e0e3dc;}
+a {color:#de6210;}
+a.lightlink {color:white;}
+
+a.buttonTop {
+    background-color:#de6210;
+    color:white;
+    display:block;
+    font-size:18px;
+    font-weight:bold;
+    padding:6px 9px 6px 9px;
+    text-decoration:none;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    float:right;
+    margin-right:10px;
+}
+
+#menuWrap, .footer, #menu ul li ul li a:hover, a.buttonTop {
+    background-color: #ff8534;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ff8534), to(#bd5b19));
+}
+a.buttonTop:hover {
+    background-color: #ff8534;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bd5b19), to(#ff8534));
+}
+
+a.buttonTop.last {
+    margin-right:0;
+}
+
+input, select, textarea {border:1px solid grey; font-family:Arial; font-size:16px; background-color:white;}
+
+ul.errorlist {background-color:pink; color:red; border: 1px solid red; margin-bottom:1px;}
+
+ul.drag {margin:0; padding:0;}
+ul.drag li {margin:0 0 10px 0; padding:12px;}
+ul.drag li {background-color:#def4ad; border:1px solid grey;}
+ul.drag li p {font-size:14px; margin-bottom:0;}
+ul.drag li a {font-size:12px; padding:3px 6px;}
+ul.drag.sections li.selected {background-color:green; color:white; border-color:black;}
+
+ul.items ul {margin:0; padding:5px 0 0;}
+ul.items ul li {border:none; font-style:italic; font-size:13px; margin:0; padding:0;}
+span.pricing {font-size:13px;}
+
+label {display:block; margin-bottom:13px;}
