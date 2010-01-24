@@ -1,12 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response
 from django.views.generic.simple import direct_to_template
 
 from tiger.core.forms import *
 from tiger.core.models import *
 from tiger.utils.forms import RequireOneFormSet
+from tiger.utils.views import add_edit_site_object, delete_site_object
 
 def _reorder_objects(model, id_list):
     for i, obj_id in enumerate(id_list):
@@ -14,6 +16,7 @@ def _reorder_objects(model, id_list):
         obj.ordering = i + 1
         obj.save()
 
+@login_required
 def dashboard(request):
     site = request.site
     specials = site.item_set.filter(special=True)
@@ -23,42 +26,23 @@ def dashboard(request):
         'updates': updates
     })
 
+@login_required
 def section_list(request):
     site = request.site
     return direct_to_template(request, template='dashboard/section_list.html', extra_context={
         'sections': site.section_set.all()
     })
 
+@login_required
 def add_edit_section(request, section_id=None):
-    instance = None
-    site = request.site
-    if section_id is not None:
-        instance = Section.objects.get(id=section_id)
-        if instance.site != site:
-            raise Http404()
-    if request.method == 'POST':
-        form = SectionForm(request.POST, instance=instance)
-        if form.is_valid():
-            section = form.save(commit=False)
-            section.site = site
-            section.save()
-            return HttpResponseRedirect(reverse('dashboard_menu'))
-    else:
-        form = SectionForm(instance=instance)
-    return direct_to_template(request, template='dashboard/section_form.html', extra_context={
-        'form': form
-    })
+    return add_edit_site_object(request, Section, SectionForm, 
+        'dashboard/section_form.html', object_id=section_id)
 
-
+@login_required
 def delete_section(request, section_id):
-    site = request.site
-    instance = Section.objects.get(id=section_id)
-    if instance.site != site:
-        raise Http404()
-    instance.delete()
-    return HttpResponseRedirect(reverse('dashboard_menu'))
+    return delete_site_object(request, Section, section_id)
 
-
+@login_required
 def view_section(request, section_id):
     site = request.site
     instance = Section.objects.get(id=section_id)
@@ -66,14 +50,18 @@ def view_section(request, section_id):
         raise Http404()
     return render_to_response('dashboard/includes/item_list.html', {'items': instance.item_set.all()})
 
+@login_required
 def reorder_sections(request):
     section_ids = request.POST.getlist('section_ids')
     _reorder_objects(Section, section_ids)
     return HttpResponse('')
 
+@login_required
 def add_edit_item(request, item_id=None):
     instance = None
     site = request.site
+    if site.account.user != request.user:
+        raise Http404()
     if item_id is not None:
         instance = Item.objects.get(id=item_id)
         if instance.site != site:
@@ -115,14 +103,11 @@ def add_edit_item(request, item_id=None):
         'form': form, 'variant_formset': variant_formset, 'upgrade_formset': upgrade_formset
     })
 
+@login_required
 def delete_item(request, item_id):
-    site = request.site
-    instance = Item.objects.get(id=item_id)
-    if instance.site != site:
-        raise Http404()
-    instance.delete()
-    return HttpResponseRedirect(reverse('dashboard_menu'))
+    return delete_site_object(request, Item, item_id)
 
+@login_required
 def reorder_items(request):
     item_ids = request.POST.getlist('item_ids')
     _reorder_objects(Item, item_ids)
