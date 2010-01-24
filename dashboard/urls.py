@@ -8,7 +8,12 @@ urlpatterns = patterns('',
     url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'dashboard.html'}, name='dashboard'),
 )
 
-urlpatterns += patterns('tiger.dashboard.views',
+urlpatterns += patterns('django.contrib.auth.views',
+    url(r'^login/$', 'login', {'template_name': 'dashboard/login.html'}, name='auth_login'),
+    url(r'^logout/$', 'logout', {'template_name': 'dashboard/logout.html', 'next_page': '/dashboard/login/'}, name='auth_logout'),
+)
+
+urlpatterns += patterns('tiger.dashboard.views.menu',
     url(r'^menu/$', 'section_list', name='dashboard_menu'),
     url(r'^menu/sections/add/$', 'add_edit_section', name='dashboard_add_section'),
     url(r'^menu/sections/delete/(\d+)/$', 'delete_section', name='dashboard_delete_section'),

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{{ site.name }} {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/dashboard.css" />
+    <!--[if IE]>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
+    <![endif]--> 
+    <style type="text/css">
+        #content {margin-top:50px;}
+        #login {margin-top:60px; background-color:white; border:1px solid grey; padding:20px;}
+    </style>
+</head>
+<body>
+    <div id="content" class="container_12">
+        <div class="grid_4 alpha">
+            <img src="{{ MEDIA_URL }}img/tiger.png" />
+        </div>
+        <div class="grid_5 omega">
+            <div id="login">
+                <h2>Restaurant login</h2>
+                {% if form.errors %}
+                <p>Your username and password didn't match. Please try again.</p>
+                {% endif %}
+                <form method="post" action="{% url django.contrib.auth.views.login %}">{% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="login" />
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

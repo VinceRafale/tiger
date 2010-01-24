@@ -92,6 +92,8 @@ INSTALLED_APPS = (
 )
 
 AUTH_PROFILE_MODULE = 'accounts.Subscriber'
+LOGIN_URL = '/dashboard/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
 
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
