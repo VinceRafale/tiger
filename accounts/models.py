@@ -111,7 +111,7 @@ class FaxSubscriberManager(models.Manager):
 
 class EmailSubscriberManager(models.Manager):
     def get_query_set(self):
-        return super(FaxSubscriberManager, self).get_query_set().filter(
+        return super(EmailSubscriberManager, self).get_query_set().filter(
             send_updates=True, update_via=Subscriber.VIA_EMAIL)
         
 
