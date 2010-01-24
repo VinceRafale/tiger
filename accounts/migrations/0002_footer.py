@@ -52,7 +52,7 @@ class Migration:
         },
         'accounts.scheduledupdate': {
             'Meta': {'unique_together': "(('site', 'weekday'),)"},
-            'footer': ('django.db.models.fields.TextField', [], {}),
+            'footer': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"}),
             'start_time': ('django.db.models.fields.TimeField', [], {'null': 'True', 'blank': 'True'}),
