@@ -25,3 +25,16 @@ urlpatterns += patterns('tiger.dashboard.views.menu',
     url(r'^menu/items/edit/(\d+)/$', 'add_edit_item', name='dashboard_edit_item'),
     url(r'^menu/items/reorder/$', 'reorder_items', name='dashboard_reorder_item'),
 )
+
+urlpatterns += patterns('tiger.dashboard.views.marketing',
+    url(r'^marketing/$', 'marketing_home', name='dashboard_marketing'),
+    url(r'^marketing/blasts/$', 'marketing_blast_list', name='dashboard_blast_list'),
+    url(r'^marketing/blasts/add/$', 'marketing_add_edit_blast', name='dashboard_add_blast'),
+    url(r'^marketing/blasts/delete/(\d+)/$', 'marketing_delete_blast', name='dashboard_delete_blast'),
+    url(r'^marketing/blasts/edit/(\d+)/$', 'marketing_add_edit_blast', name='dashboard_edit_blast'),
+    url(r'^marketing/blasts/preview/(\d+)/$', 'marketing_preview_blast', name='dashboard_preview_blast'),
+    url(r'^marketing/subscribers/$', 'marketing_subscriber_list', name='dashboard_subscriber_list'),
+    url(r'^marketing/subscribers/add/$', 'marketing_add_edit_subscriber', name='dashboard_add_subscriber'),
+    url(r'^marketing/subscribers/delete/(\d+)/$', 'marketing_delete_subscriber', name='dashboard_delete_subscriber'),
+    url(r'^marketing/subscribers/edit/(\d+)/$', 'marketing_add_edit_subscriber', name='dashboard_edit_subscriber'),
+)

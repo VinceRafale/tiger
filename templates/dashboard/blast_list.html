@@ -1,0 +1,25 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+    <div class="grid_6 alpha">
+        <h2>Current specials</h2>
+        <ul>
+        {% for special in specials %}
+            <li><a href="{% url dashboard_menu %}">{{ special }}</a></li> 
+        {% empty %}
+            <li>You currently have no specials. <a href="">Manage your menu</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="grid_6 omega">
+        <h2>Scheduled updates</h2>
+        <ul>
+        {% for update in updates %}
+            <li><a href="">{{ update }}</a></li> 
+        {% empty %}
+            <li>You currently have no scheduled updates. <a href="">Manage your updates</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

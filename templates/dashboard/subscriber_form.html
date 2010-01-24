@@ -1,0 +1,31 @@
+{% extends 'dashboard.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} subscriber</h1>
+<div class="grid_7 alpha">
+<p>Add users here!</p>
+</div>
+<div class="grid_5 omega">
+<form method="POST" action=".">
+{{ form.as_p }}
+</form>
+</div>
+<div class="clear"></div>
+<a class="buttonTop last" href="{% url dashboard_menu %}">Cancel</a>
+<a class="buttonTop submit" href="#">Save</a>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+});
+</script>
+{% endblock %}
+

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from tiger.accounts.models import Subscriber
+from tiger.accounts.models import Subscriber, ScheduledUpdate
 
 
 class SubscriberForm(forms.ModelForm):
@@ -28,3 +28,8 @@ class SubscriberForm(forms.ModelForm):
             raise forms.ValidationError(msg)
         return cleaned_data
             
+
+class ScheduledUpdateForm(forms.ModelForm):
+    class Meta:
+        model = ScheduledUpdate
+        exclude = ['site']
