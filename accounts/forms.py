@@ -11,7 +11,7 @@ class SubscriberForm(forms.ModelForm):
 
     class Meta:
         model = Subscriber
-        exclude = ['user', 'site']
+        exclude = ['user', 'site', 'send_updates']
 
     def clean(self):
         super(SubscriberForm, self).clean()
