@@ -20,8 +20,10 @@
                 <div id="menu" class="grid_8">
                 <ul class="menu">
                     <li><a class="lightlink" href="{% url dashboard %}">Home</a></li>
-                    <li><a class="lightlink" href="{% url dashboard_menu %}">Menu</a>
+                    <li><a class="lightlink" href="{% url dashboard_menu %}">Menu</a></li>
+                    <li><a class="lightlink" href="{% url dashboard_marketing %}">Marketing</a></li>
                     {% comment %}
+                    <li><a class="lightlink" href="">Find Us</a>
                         <div>
                             <ul>
                                 {% for section in site.section_set.all %}
@@ -31,10 +33,7 @@
                                 {% endfor %}
                             </ul>
                         </div>	
-                    </li>
-                    {% endcomment %}
-                    <li><a class="lightlink" href="">About</a></li>
-                    <li><a class="lightlink" href="">Find Us</a></li>
+                    </li>{% endcomment %}
                     {% if site.blog_enabled %}
                     <li><a class="lightlink" href="">{{ site.blog_title }}</a></li>
                     {% endif %}
