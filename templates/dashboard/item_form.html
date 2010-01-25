@@ -98,8 +98,6 @@ $(function () {
     $('#variantForms div').formset({
         prefix: '{{ variant_formset.prefix }}',
         formCssClass: 'variant-formset',
-        addCssClass: 'buttonTop last smaller',
-        deleteCssClass: 'buttonTop last smaller padded',
         placeAddButton: function (snippet) {
             $("h4.variants").before(snippet);
             return $("h4.variants").prev();
@@ -111,8 +109,6 @@ $(function () {
     $('#upgradeForms div').formset({
         prefix: '{{ upgrade_formset.prefix }}',
         formCssClass: 'upgrade-formset',
-        addCssClass: 'buttonTop last smaller',
-        deleteCssClass: 'buttonTop last smaller padded',
         placeAddButton: function (snippet) {
             $("h4.upgrades").before(snippet);
             return $("h4.upgrades").prev();

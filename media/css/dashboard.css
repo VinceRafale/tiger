@@ -28,7 +28,7 @@ ul.menu li ul li a:hover{background-color:#004c00; color:white;}
 a {color:#004c00;}
 a.lightlink {color:white;}
 
-a.buttonTop {
+a.buttonTop, a.add-row, a.delete-row {
     background-color:#004c00;
     color:white;
     display:block;
@@ -42,12 +42,12 @@ a.buttonTop {
     margin-right:10px;
 }
 
-#menuWrap, .footer, #menu ul li ul li a:hover, a.buttonTop {
+#menuWrap, .footer, #menu ul li ul li a:hover, a.buttonTop, a.add-row, a.delete-row {
     background-color: #004c00;
     background-image: -moz-linear-gradient(90deg, #004c00, #009800);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#004c00), to(#009800));
 }
-a.buttonTop:hover {
+a.buttonTop:hover, a.add-row:hover, a.delete-row:hover {
     background-color: #004c00;
     background-image: -moz-linear-gradient(90deg, #009800, #004c00);
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#009800), to(#004c00));
@@ -65,7 +65,7 @@ ul.drag {margin:0; padding:0;}
 ul.drag li {margin:0 0 10px 0; padding:12px;}
 ul.drag li, #variantForms div, #upgradeForms div {background-color:#cfbf9f; border:1px solid grey;}
 ul.drag li p {font-size:14px; margin-bottom:0;}
-ul.drag li a, a.buttonTop.smaller {font-size:12px; padding:3px 6px;}
+ul.drag li a, a.add-row, a.delete-row {font-size:12px; padding:3px 6px;}
 ul.drag.sections li.selected {background-color:#5c461d; color:white; border-color:black;}
 
 ul.items ul {margin:0; padding:5px 0 0;}
@@ -80,4 +80,4 @@ label.price input {width:40px;}
 
 #variantForms div, #upgradeForms div {padding:15px; margin-bottom:10px;}
 #variantForms label, #upgradeForms label {font-size:14px;}
-a.padded {margin:20px auto auto 20px;}
+a.delete-row {margin:20px auto auto 20px;}
