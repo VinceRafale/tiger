@@ -6,16 +6,16 @@
 
 {% block content %}
 <h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} menu section</h1>
-<div class="grid_7 alpha">
-<p>Give this menu section a name and a description.  These will appear on the menu on your and in scheduled updates via e-mail and fax.</p>
-<p>Example:</p>
-<p><strong>Name:</strong> Breakfast</p>
-<p><strong>Description:</strong> We serve breakfast all day.  Our house specialties are Eggs Benedict and Belgian Waffles.</p>
-</div>
-<div class="grid_5 omega">
+<div class="grid_5 alpha">
 <form method="POST" action=".">
 {{ form.as_p }}
 </form>
+</div>
+<div class="grid_7 omega">
+<p class="help">Give this menu section a name and a description.  These will appear on the menu on your and in scheduled updates via e-mail and fax.</p>
+<p class="help">Example:</p>
+<p class="help"><strong>Name:</strong> Breakfast</p>
+<p class="help"><strong>Description:</strong> We serve breakfast all day.  Our house specialties are Eggs Benedict and Belgian Waffles.</p>
 </div>
 <div class="clear"></div>
 <a class="buttonTop last" href="{% url dashboard_menu %}">Cancel</a>

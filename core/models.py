@@ -108,8 +108,8 @@ class Upgrade(models.Model):
     item = models.ForeignKey(Item)
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=5, decimal_places=2)
-    substitute = models.BooleanField(help_text='if selected, the display text \
-        for this item will say "Substitute" instead of "Add"')
+    substitute = models.BooleanField('Check here for the display text \
+        for this item to say "Substitute" instead of "Add"')
 
     class Meta:
         verbose_name = 'upgrade/substitution'

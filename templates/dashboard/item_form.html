@@ -12,6 +12,7 @@
 {% endif %}
 <form method="POST" action=".">
 <div class="grid_6 alpha">
+<p class="help">Enter the menu text for this item below and flag it as a special if appropriate. On the right, you can define the price points and sizes for this menu item and any available upgrades or substitutions.  If there is only one price point for this item, just leave the description as "default".</p>
 {% if form.name.errors %}
 {{ form.name.errors }}
 {% endif %}
@@ -38,8 +39,7 @@
 </label>
 </div>
 <div class="grid_6 omega">
-<p>{% for i in "12341234" %}This is some copy. {% endfor %}</p>
-<h4>Variants</h4>
+<h4 class="variants">Price points</h4>
 {% if variant_formset.non_form_errors %}
 <ul class="errorlist">
 {% for e in variant_formset.non_form_errors %}
@@ -49,17 +49,35 @@
 {% endif %}
 <div id="variantForms">
 {% for form in variant_formset.forms %}
+    {% if form.description.errors %}
+    {{ form.description.errors }}
+    {% endif %}
+    {% if form.price.errors %}
+    {{ form.price.errors }}
+    {% endif %}
     <div>
-        {{ form }}
+        <label class="price">{{ form.price.label }}:<br /> ${{ form.price }}</label>
+        <label>{{ form.description.label }}:<br />
+        {{ form.description }}</label>
     </div>
 {% endfor %}
 </div>
 {{ variant_formset.management_form }}
-<h4>Upgrades & substitutions</h4>
+<div class="clear"></div>
+<h4 class="upgrades">Upgrades & substitutions</h4>
 <div id="upgradeForms">
 {% for form in upgrade_formset.forms %}
+    {% if form.name.errors %}
+    {{ form.name.errors }}
+    {% endif %}
+    {% if form.price.errors %}
+    {{ form.price.errors }}
+    {% endif %}
     <div>
-        {{ form }}
+        <label class="price">{{ form.price.label }}:<br /> ${{ form.price }}</label>
+        <label>{{ form.name.label }}:<br />
+        {{ form.name }}</label>
+        <label>{{ form.substitute }} {{ form.substitute.label }}</label>
     </div>
 {% endfor %}
 </div>
@@ -79,11 +97,29 @@ $(function () {
     });
     $('#variantForms div').formset({
         prefix: '{{ variant_formset.prefix }}',
-        formCssClass: 'variant-formset'
+        formCssClass: 'variant-formset',
+        addCssClass: 'buttonTop last smaller',
+        deleteCssClass: 'buttonTop last smaller padded',
+        placeAddButton: function (snippet) {
+            $("h4.variants").before(snippet);
+            return $("h4.variants").prev();
+        },
+        placeDeleteButton: function (formrow, buttonHtml) {
+            $(formrow).prepend(buttonHtml);
+        }
     });
     $('#upgradeForms div').formset({
         prefix: '{{ upgrade_formset.prefix }}',
-        formCssClass: 'upgrade-formset'
+        formCssClass: 'upgrade-formset',
+        addCssClass: 'buttonTop last smaller',
+        deleteCssClass: 'buttonTop last smaller padded',
+        placeAddButton: function (snippet) {
+            $("h4.upgrades").before(snippet);
+            return $("h4.upgrades").prev();
+        },
+        placeDeleteButton: function (formrow, buttonHtml) {
+            $(formrow).prepend(buttonHtml);
+        }
     });
 });
 </script>

@@ -25,7 +25,10 @@
 
         $$.each(function(i) {
             $(this).addClass(options.formCssClass);
-            if ($(this).is('TR')) {
+            if (options.placeDeleteButton) {
+                console.log('foo');
+                options.placeDeleteButton(this, '<a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a>');
+            } else if ($(this).is('TR')) {
                 // If the forms are laid out in table rows, insert
                 // the remove button into the last table cell:
                 $(this).children(':last').append('<a class="' + options.deleteCssClass +'" href="javascript:void(0)">' + options.deleteText + '</a>');
@@ -62,7 +65,11 @@
 
         if ($(this).length) {
             var addButton;
-            if ($(this).attr('tagName') == 'TR') {
+            if (options.placeAddButton) {
+                snippet = '<a class="' + options.addCssClass + '" href="javascript:void(0)">' + options.addText + '</a>';
+                addButton = options.placeAddButton(snippet);
+            }
+            else if ($(this).attr('tagName') == 'TR') {
                 // If forms are laid out as table rows, insert the
                 // "add" button in a new table row:
                 var numCols = this.eq(0).children().length;
@@ -113,6 +120,6 @@
         deleteCssClass: 'delete-row',    // CSS class applied to the delete link
         formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset
         added: null,                     // Function called each time a new form is added
-        removed: null                    // Function called each time a form is deleted
+        removed: null,                    // Function called each time a form is deleted
     }
 })(jQuery)

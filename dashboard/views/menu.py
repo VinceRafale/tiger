@@ -92,13 +92,15 @@ def add_edit_item(request, item_id=None):
             return HttpResponseRedirect(reverse('dashboard_menu'))
     else:
         form_kwds = {}
-        if instance is not None:
-            form_kwds['instance'] = instance 
-        elif request.GET.get('pk'):
-            form_kwds['initial'] = {'section': request.GET['pk']}
-        form = ItemForm(**form_kwds)
         variant_formset = VariantFormSet(instance=instance, prefix='variants')
         upgrade_formset = UpgradeFormSet(instance=instance, prefix='upgrades')
+        if instance is None:
+            if request.GET.get('pk'):
+                form_kwds['initial'] = {'section': request.GET['pk']}
+            variant_formset.forms[0].fields['description'].initial = 'default'
+        else:
+            form_kwds['instance'] = instance 
+        form = ItemForm(**form_kwds)
     return direct_to_template(request, template='dashboard/item_form.html', extra_context={
         'form': form, 'variant_formset': variant_formset, 'upgrade_formset': upgrade_formset
     })
