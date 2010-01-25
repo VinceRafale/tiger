@@ -1,4 +1,5 @@
-from django.http import HttpResponseNotFound, HttpResponseServerError, Http404
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.template import loader, RequestContext
 from django.views.generic.simple import direct_to_template
 

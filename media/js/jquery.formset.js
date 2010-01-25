@@ -26,7 +26,6 @@
         $$.each(function(i) {
             $(this).addClass(options.formCssClass);
             if (options.placeDeleteButton) {
-                console.log('foo');
                 options.placeDeleteButton(this, '<a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a>');
             } else if ($(this).is('TR')) {
                 // If the forms are laid out in table rows, insert
