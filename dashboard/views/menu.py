@@ -82,13 +82,15 @@ def add_edit_item(request, item_id=None):
                 upgrade_formset.save()
             else:
                 for form in variant_formset.forms:
-                    variant = form.save(commit=False)
-                    variant.item = item
-                    variant.save()
+                    if form.has_changed():
+                        variant = form.save(commit=False)
+                        variant.item = item
+                        variant.save()
                 for form in upgrade_formset.forms:
-                    upgrade = form.save(commit=False)
-                    upgrade.item = item
-                    upgrade.save()
+                    if form.has_changed():
+                        upgrade = form.save(commit=False)
+                        upgrade.item = item
+                        upgrade.save()
             return HttpResponseRedirect(reverse('dashboard_menu'))
     else:
         form_kwds = {}
