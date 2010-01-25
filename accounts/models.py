@@ -83,7 +83,7 @@ class ScheduledUpdate(models.Model):
         unique_together = ('site', 'weekday',)
 
     def __unicode__(self):
-        return '%s at %s' % (self.get_weekday_display(), self.start_time.strftime('%x'))
+        return '%s at %s' % (self.get_weekday_display(), self.start_time.strftime('%X'))
 
 
 class Invoice(models.Model):
