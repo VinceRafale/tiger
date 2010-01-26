@@ -36,11 +36,11 @@ def section_list(request):
 @login_required
 def add_edit_section(request, section_id=None):
     return add_edit_site_object(request, Section, SectionForm, 
-        'dashboard/section_form.html', object_id=section_id)
+        'dashboard/section_form.html', 'dashboard_menu', object_id=section_id)
 
 @login_required
 def delete_section(request, section_id):
-    return delete_site_object(request, Section, section_id)
+    return delete_site_object(request, Section, section_id, 'dashboard_menu')
 
 @login_required
 def view_section(request, section_id):
@@ -109,7 +109,7 @@ def add_edit_item(request, item_id=None):
 
 @login_required
 def delete_item(request, item_id):
-    return delete_site_object(request, Item, item_id)
+    return delete_site_object(request, Item, item_id, 'dashboard_menu')
 
 @login_required
 def reorder_items(request):

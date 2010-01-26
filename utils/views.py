@@ -20,7 +20,7 @@ def handler500(request):
     return HttpResponseServerError(t)
 
 
-def add_edit_site_object(request, model, form_class, template, object_id=None):
+def add_edit_site_object(request, model, form_class, template, reverse_on, object_id=None):
     instance = None
     site = request.site
     if site.account.user != request.user:
@@ -35,7 +35,7 @@ def add_edit_site_object(request, model, form_class, template, object_id=None):
             obj = form.save(commit=False)
             obj.site = site
             obj.save()
-            return HttpResponseRedirect(reverse('dashboard_menu'))
+            return HttpResponseRedirect(reverse(reverse_on))
     else:
         form = form_class(instance=instance)
     return direct_to_template(request, template=template, extra_context={
@@ -43,7 +43,7 @@ def add_edit_site_object(request, model, form_class, template, object_id=None):
     })
 
 
-def delete_site_object(request, model, object_id):
+def delete_site_object(request, model, object_id, reverse_on):
     site = request.site
     if site.account.user != request.user:
         raise Http404()
@@ -51,4 +51,4 @@ def delete_site_object(request, model, object_id):
     if instance.site != site:
         raise Http404()
     instance.delete()
-    return HttpResponseRedirect(reverse('dashboard_menu'))
+    return HttpResponseRedirect(reverse(reverse_on))

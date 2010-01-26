@@ -28,11 +28,11 @@ def marketing_blast_list(request):
 @login_required
 def marketing_add_edit_blast(request, blast_id=None):
     return add_edit_site_object(request, ScheduledUpdate, ScheduledUpdateForm, 
-        'dashboard/blast_form.html', object_id=blast_id)
+        'dashboard/blast_form.html', 'dashboard_marketing', object_id=blast_id)
 
 @login_required
 def marketing_delete_blast(request, blast_id):
-    return delete_site_object(request, ScheduledUpdate, blast_id)
+    return delete_site_object(request, ScheduledUpdate, blast_id, 'dashboard_marketing')
 
 @login_required
 def marketing_preview_blast(request, blast_id):
@@ -45,9 +45,9 @@ def marketing_subscriber_list(request):
 @login_required
 def marketing_add_edit_subscriber(request, subscriber_id=None):
     return add_edit_site_object(request, Subscriber, SubscriberForm, 
-        'dashboard/subscriber_form.html', object_id=subscriber_id)
+        'dashboard/subscriber_form.html', 'dashboard_menu', object_id=subscriber_id)
 
 @login_required
 def marketing_delete_subscriber(request, subscriber_id):
-    return delete_site_object(request, Subscriber, subscriber_id)
+    return delete_site_object(request, Subscriber, subscriber_id, 'dashboard_menu')
 
