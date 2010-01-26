@@ -59,6 +59,8 @@
         <label class="price">{{ form.price.label }}:<br /> ${{ form.price }}</label>
         <label>{{ form.description.label }}:<br />
         {{ form.description }}</label>
+    {{ form.id }}
+    {{ form.DELETE.as_hidden }}
     </div>
 {% endfor %}
 </div>
@@ -79,6 +81,8 @@
         {{ form.name }}</label>
         <label>{{ form.substitute }} {{ form.substitute.label }}</label>
     </div>
+    {{ form.id }}
+    {{ form.DELETE.as_hidden }}
 {% endfor %}
 </div>
 {{ upgrade_formset.management_form }}
