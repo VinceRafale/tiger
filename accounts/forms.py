@@ -1,3 +1,5 @@
+import hashlib
+
 from django import forms
 from django.contrib.auth.models import User
 
@@ -27,6 +29,22 @@ class SubscriberForm(forms.ModelForm):
             msg = "You must enter a fax number to use fax updates."
             raise forms.ValidationError(msg)
         return cleaned_data
+
+    def save(self, commit=True):
+        try:
+            user = self.instance.user
+        except User.DoesNotExist:
+            user = User()
+        for attr in ('first_name', 'last_name', 'email'):
+            setattr(user, attr, self.cleaned_data[attr])
+        if not user.username:
+            user.username = hashlib.md5(''.join(str(v) for v in self.cleaned_data.values())).hexdigest() 
+        user.save()
+        self.instance.user = user
+        if commit:
+            self.instance.save()
+        return self.instance
+        
             
 
 class ScheduledUpdateForm(forms.ModelForm):
