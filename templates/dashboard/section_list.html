@@ -30,7 +30,7 @@
     <a class="buttonTop last" id="newItem" href="{% url dashboard_add_item %}">New menu item</a>
     <h2>Menu items under <span>this section</span></h2>
     <ul class="drag items">
-        <li>Loading...</li>
+        <li>No items to display.</li>
     </ul>
 </div>
 {% endblock %}
@@ -39,7 +39,10 @@
 <script type="text/javascript">
 function selectSection() {
     viewHref = $("ul.sections li.selected a.view").attr("href");
-    $("ul.items").load(viewHref);
+    $("ul.items").children().fadeOut("def", function () {
+        $("ul.items").children().remove();
+        $("ul.items").load(viewHref);
+    });
     pk = viewHref.match(/\/(\d+)\//)[1];
     $("#newItem").attr("href", $("#newItem").attr("href").split('?')[0] + "?pk=" + pk);
     $("#itemWrap h2 span").text($("li.selected h3").text());
