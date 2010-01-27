@@ -1,8 +1,12 @@
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
+from tiger.notify.models import Fax
 from tiger.utils.views import add_edit_site_object
 
 @login_required
@@ -11,10 +15,16 @@ def marketing_home(request):
     updates = site.scheduledupdate_set.all()
     email_subscribers = Subscriber.via_email.filter(site=site)
     fax_subscribers = Subscriber.via_fax.filter(site=site)
+    total_pages = Fax.objects.filter(site=site).aggregate(Max('page_count'))['page_count__max']
+    this_month = datetime(datetime.now().year, datetime.now().month, 1)
+    pages_for_month = Fax.objects.filter(
+        site=site, timestamp__gt=this_month).aggregate(Max('page_count'))['page_count__max']
     return direct_to_template(request, template='dashboard/marketing.html', extra_context={
         'updates': updates,
         'email_subscribers': email_subscribers,
-        'fax_subscribers': fax_subscribers
+        'fax_subscribers': fax_subscribers,
+        'total_pages': total_pages,
+        'pages_for_month': pages_for_month
     })
 
 @login_required

@@ -63,10 +63,10 @@ ul.errorlist {background-color:pink; color:red; border: 1px solid red; margin-bo
 
 ul.drag {margin:0; padding:0;}
 ul.drag li {margin:0 0 10px 0; padding:12px;}
-ul.drag.sections li, #variantForms div, #upgradeForms div {background-color:#bfb7a9; border:1px solid grey; color:#635d50;}
+ul.drag.sections li, #variantForms div, #upgradeForms div, p.usage {background-color:#bfb7a9; border:1px solid grey; color:#635d50;}
 ul.drag li p {font-size:14px; margin-bottom:0;}
 ul.drag li a, a.add-row, a.delete-row {font-size:12px; padding:3px 6px;}
-ul.drag.items li, ul.drag.sections li.selected {background-color:#cde0e8; color:#02405a; border-color:black;}
+ul.drag.items li, ul.drag.sections li.selected {background-color:#cde0e8; color:#02405a; border:black solid 1px;}
 
 ul.items ul {margin:0; padding:5px 0 0;}
 ul.items li li {border:none; font-style:italic; font-size:13px; margin:0; padding:0;}
@@ -81,3 +81,6 @@ label.price input {width:40px;}
 #variantForms div, #upgradeForms div {padding:15px; margin-bottom:10px;}
 #variantForms label, #upgradeForms label {font-size:14px;}
 a.delete-row {margin:20px auto auto 20px;}
+
+p.subscribers {background-color:#cde0e8; color:#02405a; border:black solid 1px;}
+p.subscribers, p.usage {padding:10px;}
