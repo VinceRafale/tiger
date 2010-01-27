@@ -1,4 +1,5 @@
 import hashlib
+from datetime import time
 
 from django import forms
 from django.contrib.auth.models import User
@@ -44,10 +45,32 @@ class SubscriberForm(forms.ModelForm):
         if commit:
             self.instance.save()
         return self.instance
+
+
+class AmPmTimeWidget(forms.widgets.Input):
+    input_type = 'text'
+
+    def render(self, name, value, attrs=None):
+        value = value.strftime('%I:%M %p')
+        return super(AmPmTimeWidget, self).render(name, value, attrs)
         
             
+class AmPmTimeField(forms.Field):
+    widget = AmPmTimeWidget
+
+    def to_python(self, value):
+        t, meridian = value.split()
+        h, m = [int(v) for v in t.split(':')]
+        if meridian == 'PM' and h != 12:
+            h += 12
+        elif meridian == 'AM' and h == 12:
+            h = 0
+        return time(h, m)
+        
 
 class ScheduledUpdateForm(forms.ModelForm):
+    start_time = AmPmTimeField()
+
     class Meta:
         model = ScheduledUpdate
         exclude = ['site']
