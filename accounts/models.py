@@ -128,6 +128,7 @@ class Subscriber(models.Model):
     send_updates = models.BooleanField(default=True)
     update_via = models.IntegerField(default=VIA_EMAIL, choices=VIA_CHOICES)
     fax = PhoneNumberField(blank=True)
+    objects = models.Manager()
     via_fax = FaxSubscriberManager()
     via_email = EmailSubscriberManager()
 

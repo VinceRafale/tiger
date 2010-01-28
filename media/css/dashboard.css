@@ -58,6 +58,7 @@ a.buttonTop.last {
 }
 
 input, select, textarea {border:1px solid grey; font-family:Arial; font-size:16px; background-color:white;}
+input:focus, select:focus, textarea:focus {background-color:#cde0e8; border-color:black;}
 
 ul.errorlist {background-color:pink; color:red; border: 1px solid red; margin-bottom:1px;}
 
@@ -84,3 +85,10 @@ a.delete-row {margin:20px auto auto 20px;}
 
 p.subscribers {background-color:#cde0e8; color:#02405a; border:black solid 1px;}
 p.subscribers, p.usage {padding:10px;}
+
+#subscribers {width:100%; font-size:13px;}
+#subscribers thead {color:white; background-color:#02405a;}
+#subscribers tr.shaded {background-color:#cde0e8;}
+#subscribers {margin-bottom:0;}
+
+div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}

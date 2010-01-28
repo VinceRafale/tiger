@@ -1,0 +1,83 @@
+{% extends 'dashboard.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<a class="buttonTop last" href="{% url dashboard_add_subscriber %}">Add</a>
+<h1>Subscribers</h1>
+
+<div class="pagination">
+    <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">&laquo; previous</a>
+    {% endif %}
+
+    <span class="current">
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">next &raquo;</a>
+    {% endif %}
+    </span>
+</div>
+
+<table id="subscribers">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Active</th>
+            <th>Organization</th>
+            <th>E-mail address</th>
+            <th>Fax number</th>
+            <th>Deliver via</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for subscriber in object_list %}
+        <tr class="{% cycle '' 'shaded' %}">
+            <td>{{ subscriber.user.get_full_name|default:"-" }}</td>
+            <td>{{ subscriber.send_updates }}</td>
+            <td>{{ subscriber.organization|default:"-" }}</td>
+            <td>{{ subscriber.user.email|default:"-" }}</td>
+            <td>{{ subscriber.fax|default:"-" }}</td>
+            <td>{{ subscriber.get_update_via_display }}</td>
+            <td><a href="{% url dashboard_edit_subscriber subscriber.id %}">Edit</a> / <a class="delete" href="{% url dashboard_delete_subscriber subscriber.id %}">Delete</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">&laquo; previous</a>
+    {% endif %}
+
+    <span class="current">
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">next &raquo;</a>
+    {% endif %}
+    </span>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.delete").live("click", function () {
+        h3Text = $($(this).parent().find("h3")[0]).text();
+        c = confirm("Are you sure you want to delete " + h3Text + "? This action cannot be undone.");
+        if (!c)
+            return false;
+    });
+});
+</script>
+{% endblock %}

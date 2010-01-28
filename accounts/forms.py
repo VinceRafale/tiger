@@ -16,6 +16,17 @@ class SubscriberForm(forms.ModelForm):
         model = Subscriber
         exclude = ['user', 'site', 'send_updates']
 
+    def __init__(self, data=None, files=None, *args, **kwargs):
+        super(SubscriberForm, self).__init__(data, files, *args, **kwargs)
+        if 'instance' in kwargs:
+            user = kwargs['instance'].user
+            self.initial.update({
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email
+            })
+            
+
     def clean(self):
         super(SubscriberForm, self).clean()
         cleaned_data = self.cleaned_data
