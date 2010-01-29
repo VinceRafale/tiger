@@ -18,7 +18,7 @@ class SubscriberForm(forms.ModelForm):
 
     def __init__(self, data=None, files=None, *args, **kwargs):
         super(SubscriberForm, self).__init__(data, files, *args, **kwargs)
-        if 'instance' in kwargs:
+        if kwargs.get('instance'):
             user = kwargs['instance'].user
             self.initial.update({
                 'first_name': user.first_name,
