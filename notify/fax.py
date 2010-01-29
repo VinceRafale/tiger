@@ -51,8 +51,4 @@ class FaxMachine(object):
         if transaction_id < 0:
             #TODO: log negative values
             raise FaxServiceError()
-        if len(contacts) > 1:
-            is_batch = True
-        else:
-            is_batch = False
-        return Fax.objects.create(transaction=transaction_id, batch=is_batch, site=self.site)
+        return Fax.objects.create(transaction=transaction_id, site=self.site)

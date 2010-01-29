@@ -14,4 +14,5 @@ class Fax(models.Model):
     timestamp = models.DateTimeField(null=True, blank=True)
     page_count = models.IntegerField(null=True, blank=True)
     transaction = models.CharField(max_length=100)
-    batch = models.BooleanField()
+    completion_time = models.CharField(max_length=100, null=True, blank=True)
+    destination = models.CharField(max_length=20, null=True, blank=True)
