@@ -68,15 +68,6 @@ class AmPmTimeWidget(forms.widgets.Input):
             
 class AmPmTimeField(forms.Field):
     widget = AmPmTimeWidget
-
-    def to_python(self, value):
-        t, meridian = value.split()
-        h, m = [int(v) for v in t.split(':')]
-        if meridian == 'PM' and h != 12:
-            h += 12
-        elif meridian == 'AM' and h == 12:
-            h = 0
-        return time(h, m)
         
 
 class ScheduledUpdateForm(forms.ModelForm):
@@ -85,3 +76,15 @@ class ScheduledUpdateForm(forms.ModelForm):
     class Meta:
         model = ScheduledUpdate
         exclude = ['site']
+
+    # move this into form field later
+    def clean_start_time(self):
+        value = self.cleaned_data['start_time']
+        t, meridian = value.split()
+        h, m = [int(v) for v in t.split(':')]
+        if meridian == 'PM' and h != 12:
+            h += 12
+        elif meridian == 'AM' and h == 12:
+            h = 0
+        return time(h, m)
+
