@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.template import loader, RequestContext
@@ -6,17 +7,23 @@ from django.views.generic.simple import direct_to_template
 from tiger.utils.template import load_custom
 
 
-def render_custom(request, template, context):
+def render_custom(request, template, context=None):
     t = load_custom(request, template)
     c = RequestContext(request, context)
     return t.render(c)
     
 def handler404(request):
-    t = render_custom(request, '404.html')
+    if request.path.startswith('/dashboard'):
+        t = loader.render_to_string('tiger/404.html', {'MEDIA_URL': settings.MEDIA_URL})
+    else:
+        t = render_custom(request, '404.html')
     return HttpResponseNotFound(t)
 
 def handler500(request):
-    t = render_custom(request, '500.html')
+    if request.path.startswith('/dashboard'):
+        t = loader.render_to_string('tiger/500.html', {'MEDIA_URL': settings.MEDIA_URL})
+    else:
+        t = render_custom(request, '500.html')
     return HttpResponseServerError(t)
 
 
