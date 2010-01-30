@@ -8,8 +8,8 @@ from tiger.accounts.models import Subscriber, ScheduledUpdate
 
 
 class SubscriberForm(forms.ModelForm):
-    first_name = forms.CharField()
-    last_name = forms.CharField()
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
     email = forms.EmailField(required=False)
 
     class Meta:
@@ -40,6 +40,11 @@ class SubscriberForm(forms.ModelForm):
         if update_via == Subscriber.VIA_FAX and not cleaned_data.get('fax'):
             msg = "You must enter a fax number to use fax updates."
             raise forms.ValidationError(msg)
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        organization = cleaned_data.get('organization')
+        if not ((first_name and last_name) or organization):
+            raise forms.ValidationError('You must enter either an organization or a first and last name.')
         return cleaned_data
 
     def save(self, commit=True):
