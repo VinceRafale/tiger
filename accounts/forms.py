@@ -30,9 +30,6 @@ class SubscriberForm(forms.ModelForm):
     def clean(self):
         super(SubscriberForm, self).clean()
         cleaned_data = self.cleaned_data
-        send_updates = cleaned_data.get('send_updates')
-        if not send_updates:
-            return cleaned_data
         update_via = cleaned_data['update_via']
         if update_via == Subscriber.VIA_EMAIL and not cleaned_data.get('email'):
             msg = "You must enter an e-mail address to use e-mail updates."
@@ -48,8 +45,9 @@ class SubscriberForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
+        subscriber = super(SubscriberForm, self).save(commit=False)
         try:
-            user = self.instance.user
+            user = subscriber.user
         except User.DoesNotExist:
             user = User()
         for attr in ('first_name', 'last_name', 'email'):
@@ -57,10 +55,10 @@ class SubscriberForm(forms.ModelForm):
         if not user.username:
             user.username = hashlib.md5(''.join(str(v) for v in self.cleaned_data.values())).hexdigest()[:30] 
         user.save()
-        self.instance.user = user
+        subscriber.user = user
         if commit:
-            self.instance.save()
-        return self.instance
+            subscriber.save()
+        return subscriber
 
 
 class AmPmTimeWidget(forms.widgets.Input):
