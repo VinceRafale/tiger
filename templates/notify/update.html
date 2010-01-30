@@ -1,32 +1,36 @@
 <html>
 <head>
 <style>
-@page {size:letter; top:2cm; left:2cm;}
+@page {size:letter; top:1.5cm; left:1.5cm;bottom:1.5cm; right:1.5cm;}
 @font-face {
     font-family: Opticon;
     src: url({{ MEDIA_URL }}fonts/Optio___.ttf);
 }
 * {font-family: Arial, sans-serif;}
 h1, h2, h4 {font-family: Opticon;}
-h1 {font-size:28px;}
-h2 {font-size:20px; text-decoration:underline; margin-bottom:0;}
-h4 {font-size:16px; margin:auto auto 0 auto;}
-p {font-size:14px; margin-top:0; padding-top:0;}
+h1 {font-size:24px;}
+h2 {font-size:18px; text-decoration:underline; margin-bottom:0;}
+h4 {font-size:14px; margin:auto auto 0 auto; display:inline; padding-bottom:0;}
+p {font-size:12px; margin-top:0; padding-top:0;}
 em {font-family: Arial, sans-serif; font-weight:normal; font-size:13px; margin:0 auto 0 auto;}
+td {vertical-align:top; padding:0.5em;}
 </style>
 </head>
 <body>
 <h1>Current specials from {{ site.name }}</h1>
 
 {% regroup specials by section as sections %}
+<table>
+<tr>
 {% for section in sections %}
+<td>
 <h2>{{ section.grouper }}</h2>
     {% for item in section.list %}
     <h4>{{ item.name }}
     <em>&nbsp;&nbsp;&nbsp;&nbsp;
     {% for variant in item.variant_set.all %}
         {% if forloop.first and forloop.last %}
-            ${{ variant|floatformat:2 }}
+            ${{ variant.price|floatformat:2 }}
         {% else %}
             {{ variant.description }} - ${{ variant.price|floatformat:2 }} {% if not forloop.last %}&nbsp;&nbsp;&bull;&nbsp;&nbsp;{% endif %}
         {% endif %}
@@ -34,8 +38,20 @@ em {font-family: Arial, sans-serif; font-weight:normal; font-size:13px; margin:0
     </em></h4>
     <p>{{ item.description }}</p>
     {% endfor %}
+</td>
+{% if forloop.counter|divisibleby:2 %}
+</tr>
+	{% if not forloop.last %}
+	<tr>
+	{% endif %}
+{% else %}
+	{% if forloop.last %}
+	<td></td></tr>
+	{% endif %}
+{% endif %}
 {% endfor %}
-<br />
+</tr>
+</table>
 <br />
 <p>{{ footer }}</p>
 </body>

@@ -53,7 +53,7 @@ def preview_blast(request, blast_id):
     response = HttpResponse(mimetype='application/pdf')
     response['Content-Disposition'] = 'filename=blast-preview.pdf'
     content = render_to_pdf('notify/update.html', {
-        'specials': request.site.item_set.filter(special=True),
+        'specials': request.site.item_set.filter(special=True).order_by('section__id'),
         'footer': update.footer,
         'site': request.site
     })

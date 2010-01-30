@@ -38,7 +38,7 @@ class RunScheduledBlastTask(PeriodicTask):
         for update in updates:
             site = update.site
             content = render_to_pdf('notify/update.html', {
-                'specials': site.item_set.filter(special=True),
+                'specials': request.site.item_set.filter(special=True).order_by('section__id'),
                 'footer': update.footer,
                 'site': site
             })
