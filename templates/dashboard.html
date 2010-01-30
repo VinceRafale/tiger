@@ -54,19 +54,19 @@
                     <h2>Current specials</h2>
                     <ul>
                     {% for special in specials %}
-                        <li><a href="{% url dashboard_menu %}">{{ special }}</a></li> 
+                        <li><a href="{% url dashboard_edit_item special.id %}">{{ special }}</a></li> 
                     {% empty %}
-                        <li>You currently have no specials. <a href="">Manage your menu</a></li>
+                        <li>You currently have no specials. <a href="{% url dashboard_menu %}">Manage your menu</a></li>
                     {% endfor %}
                     </ul>
                 </div>
                 <div class="grid_6 omega">
-                    <h2>Scheduled updates</h2>
+                    <h2>Marketing blasts</h2>
                     <ul>
                     {% for update in updates %}
                         <li><a href="">{{ update }}</a></li> 
                     {% empty %}
-                        <li>You currently have no scheduled updates. <a href="">Manage your updates</a></li>
+                        <li>You currently have no blasts scheduled. <a href="{%  url dashboard_marketing %}">Edit marketing settings</a></li>
                     {% endfor %}
                     </ul>
                 </div>
