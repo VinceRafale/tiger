@@ -50,7 +50,7 @@ class SubscriberForm(forms.ModelForm):
         for attr in ('first_name', 'last_name', 'email'):
             setattr(user, attr, self.cleaned_data[attr])
         if not user.username:
-            user.username = hashlib.md5(''.join(str(v) for v in self.cleaned_data.values())).hexdigest() 
+            user.username = hashlib.md5(''.join(str(v) for v in self.cleaned_data.values())).hexdigest()[:30] 
         user.save()
         self.instance.user = user
         if commit:
