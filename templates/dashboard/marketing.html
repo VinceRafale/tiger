@@ -7,9 +7,13 @@
         <h2>Scheduled blasts</h2>
         <ul class="drag sections">
         {% for update in updates %}
-            <li>{{ update }} 
-            <a class="buttonTop last" href="{% url dashboard_delete_blast update.id  %}">Delete</a>
-            <a class="buttonTop" href="{% url dashboard_edit_blast update.id %}">Edit</a>
+            <li> 
+                <a class="buttonTop last" href="{% url dashboard_delete_blast update.id  %}">Delete</a>
+                <a class="buttonTop" href="{% url dashboard_preview_blast update.id %}">Preview</a>
+                <a class="buttonTop" href="{% url dashboard_edit_blast update.id %}">Edit</a>
+                <div class="clear"></div>
+                <h3>{{ update }}</h3>
+                <p>{{ update.footer }}</p>
             </li> 
         {% empty %}
             <li>You currently have no blasts scheduled. <a href="">Create a blast</a></li>

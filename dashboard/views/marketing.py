@@ -2,12 +2,14 @@ from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max
+from django.http import HttpResponse
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
 from tiger.notify.models import Fax
+from tiger.utils.pdf import render_to_pdf
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 @login_required
@@ -47,7 +49,16 @@ def delete_blast(request, blast_id):
 
 @login_required
 def preview_blast(request, blast_id):
-    pass
+    update = ScheduledUpdate.objects.get(id=blast_id)
+    response = HttpResponse(mimetype='application/pdf')
+    response['Content-Disposition'] = 'filename=blast-preview.pdf'
+    content = render_to_pdf('notify/update.html', {
+        'specials': request.site.item_set.filter(special=True),
+        'footer': update.footer,
+        'site': request.site
+    })
+    response.write(content)
+    return response
 
 @login_required
 def subscriber_list(request):
