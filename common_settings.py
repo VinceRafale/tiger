@@ -3,7 +3,7 @@ import os
 PROJECT_ROOT = os.path.dirname(__file__)
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Jonathan Lukens', 'jonathan@threadsafelabs.com'),
 )
 
 MANAGERS = ADMINS
