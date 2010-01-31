@@ -15,6 +15,8 @@ from tiger.utils.pdf import render_to_pdf
 class SendFaxTask(Task):
     def run(self, site, subscribers, content, **kwargs):
         fax_machine = FaxMachine(site)
+        logger = self.get_logger(**kwargs)
+        logger.info("Faxing...")
         return fax_machine.send(subscribers, content, **kwargs)
 
 
@@ -49,7 +51,8 @@ class RunScheduledBlastTask(PeriodicTask):
             msgs.append(msg)
             via_fax = Subscriber.via_fax.filter(site=site)
             SendFaxTask.delay(site=site, subscribers=via_fax, content=content)
-        SendEmailTask.delay(msgs=msgs)
+        if len(msgs):
+            SendEmailTask.delay(msgs=msgs)
     
 
 tasks.register(RunScheduledBlastTask)
