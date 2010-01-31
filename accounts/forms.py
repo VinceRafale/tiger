@@ -65,9 +65,10 @@ class AmPmTimeWidget(forms.widgets.Input):
     input_type = 'text'
 
     def render(self, name, value, attrs=None):
-        value = ''
         if value:
             value = value.strftime('%I:%M %p')
+        else:
+            value = ''
         return super(AmPmTimeWidget, self).render(name, value, attrs)
         
             
