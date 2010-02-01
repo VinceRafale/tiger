@@ -7,7 +7,7 @@ from celery.task import Task, PeriodicTask
 from celery.registry import tasks
 
 from tiger.accounts.models import Subscriber, ScheduledUpdate
-from tiger.notify.fax import FaxMachine
+from tiger.notify.fax import FaxMachine, FaxServiceError
 from tiger.utils.pdf import render_to_pdf
 
 
@@ -15,7 +15,12 @@ from tiger.utils.pdf import render_to_pdf
 class SendFaxTask(Task):
     def run(self, site, subscribers, content, **kwargs):
         fax_machine = FaxMachine(site)
-        return fax_machine.send(subscribers, content, **kwargs)
+        try:
+            return fax_machine.send(subscribers, content, **kwargs)
+        except FaxServiceError, e:
+            self.retry([site, subscribers, content], kwargs,
+                countdown=60 * 1, exc=e)
+
 
 
 class SendEmailTask(Task):
@@ -38,7 +43,7 @@ class RunScheduledBlastTask(PeriodicTask):
         for update in updates:
             site = update.site
             content = render_to_pdf('notify/update.html', {
-                'specials': request.site.item_set.filter(special=True).order_by('section__id'),
+                'specials': site.item_set.filter(special=True).order_by('section__id'),
                 'footer': update.footer,
                 'site': site
             })

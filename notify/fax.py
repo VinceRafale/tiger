@@ -42,13 +42,14 @@ class FaxMachine(object):
             'IsHighResolution': False,
             'IsFineRendering': False
         }
-        c = Client('https://ws.interfax.net/dfs.asmx?WSDL')
         try:
-            result = c.service.SendfaxEx_2(**params)
+            c = Client('https://ws.interfax.net/dfs.asmx?WSDL', cache=None)
         except Exception, e:
             raise FaxServiceError()
+        result = c.service.SendfaxEx_2(**params)
         transaction_id = result
         if transaction_id < 0:
             #TODO: log negative values
             raise FaxServiceError()
-        return Fax.objects.create(transaction=transaction_id, site=self.site)
+        return Fax.objects.create(parent_transaction=transaction_id, 
+            transaction=transaction_id, site=self.site)

@@ -17,7 +17,9 @@ def record_fax(request):
         except Fax.DoesNotExist:
             return HttpResponse('')
         site = parent_fax.site
-        Fax.objects.create(transaction=transaction_id, page_count=page_count, completion_time=completion_time, destination=destination)
+        Fax.objects.create(transaction=transaction_id, page_count=page_count, 
+            parent_transaction=parent_transaction_id, site=site,
+            completion_time=completion_time, destination=destination)
         return HttpResponse('')
     fax.page_count = page_count
     fax.completion_time = completion_time
