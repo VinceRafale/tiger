@@ -15,5 +15,5 @@ class Fax(models.Model):
     page_count = models.IntegerField(null=True, blank=True)
     parent_transaction = models.CharField(max_length=100, null=True)
     transaction = models.CharField(max_length=100)
-    completion_time = models.CharField(max_length=100, null=True, blank=True)
+    completion_time = models.DateTimeField(null=True, blank=True)
     destination = models.CharField(max_length=20, null=True, blank=True)
