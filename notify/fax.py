@@ -3,6 +3,7 @@ import urllib
 import urllib2
 
 from lxml.etree import parse
+from suds.client import Client
 
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -41,11 +42,12 @@ class FaxMachine(object):
             'IsHighResolution': False,
             'IsFineRendering': False
         }
+        c = Client('https://ws.interfax.net/dfs.asmx?WSDL')
         try:
-            response = urllib2.urlopen('http://ws.interfax.net/dfs.asmx/SendfaxEx_2', urllib.urlencode(params))
+            result = c.service.SendfaxEx_2(**params)
         except Exception, e:
             raise FaxServiceError()
-        transaction_id = parse(response).getroot().text
+        transaction_id = result
         if transaction_id < 0:
             #TODO: log negative values
             raise FaxServiceError()
