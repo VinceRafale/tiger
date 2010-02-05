@@ -25,7 +25,6 @@ class SubscriberForm(forms.ModelForm):
                 'last_name': user.last_name,
                 'email': user.email
             })
-            
 
     def clean(self):
         super(SubscriberForm, self).clean()
