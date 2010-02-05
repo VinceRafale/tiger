@@ -6,6 +6,8 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import LocationForm
 from tiger.accounts.models import TimeSlot, Site
+from tiger.content.forms import ContentForm
+from tiger.content.models import Content
 
 
 def home(request):
@@ -16,6 +18,12 @@ def home(request):
 def location(request):
     return update_object(request, form_class=LocationForm, object_id=request.site.id, 
         template_name='dashboard/location_form.html', post_save_redirect='/dashboard/restaurant/')
+        
+
+def edit_content(request, slug):
+    c = Content.objects.get(site=request.site, slug=slug)
+    return update_object(request, form_class=ContentForm, object_id=c.id, 
+        template_name='dashboard/%s_form.html' % slug, post_save_redirect='/dashboard/restaurant/')
         
 
 def create_update_timeslot(request, get_id=False):

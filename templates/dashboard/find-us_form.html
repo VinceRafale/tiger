@@ -1,0 +1,32 @@
+{% extends 'dashboard.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>Edit your "Find Us" blurb</h1>
+<div class="grid_5 alpha">
+<form method="POST" action=".">
+{{ form }}
+</form>
+</div>
+<div class="grid_7 omega">
+<p>This text, along with a map using the address you entered in the "Location" section, will appear on the "Find Us" page.</p>
+</div>
+<div class="clear"></div>
+<a class="buttonTop last" href="{% url dashboard_restaurant %}">Cancel</a>
+<a class="buttonTop submit" href="#">Save</a>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+});
+</script>
+{% endblock %}
+
+

@@ -46,7 +46,7 @@ class Item(models.Model):
     name = models.CharField(max_length=100)
     section = models.ForeignKey(Section)
     site = models.ForeignKey(Site, editable=False)
-    image = models.ForeignKey('ItemImage', blank=True, null=True)
+    image = models.ForeignKey('content.ItemImage', blank=True, null=True)
     description = models.TextField()
     special = models.BooleanField('is this menu item currently a special?')
     slug = models.SlugField(editable=False)
@@ -69,18 +69,6 @@ class Item(models.Model):
     def get_absolute_url(self):
         return reverse('menu_item', 
             kwargs={'section': self.section.slug, 'item': self.slug})
-
-
-class ItemImage(ImageModel):
-    """Associates an image and its sizes with a user so that images 
-    can easily be swapped out on menu items.
-    """
-    site = models.ForeignKey(Site, editable=False)
-    title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='menu_images')
-
-    class IKOptions:
-        spec_module = 'tiger.core.specs'
 
 
 class Variant(models.Model):

@@ -86,6 +86,7 @@ INSTALLED_APPS = (
     #'haystack',
     'south',
     'tiger.accounts',
+    'tiger.content',
     'tiger.core',
     'tiger.dashboard',
     'tiger.notify',
