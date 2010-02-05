@@ -55,7 +55,8 @@ def preview_blast(request, blast_id):
     content = render_to_pdf('notify/update.html', {
         'specials': request.site.item_set.filter(special=True).order_by('section__id'),
         'footer': update.footer,
-        'site': request.site
+        'site': request.site,
+        'show_descriptions': update.show_descriptions
     })
     response.write(content)
     return response

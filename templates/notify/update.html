@@ -36,7 +36,11 @@ td {vertical-align:top; padding:0.5em;}
         {% endif %}
     {% endfor %}
     </em></h4>
+    {% if show_descriptions %}
     <p>{{ item.description }}</p>
+    {% else %}
+    <br />
+    {% endif %}
     {% endfor %}
 </td>
 {% if forloop.counter|divisibleby:2 %}

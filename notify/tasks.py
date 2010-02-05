@@ -45,7 +45,8 @@ class RunScheduledBlastTask(PeriodicTask):
             content = render_to_pdf('notify/update.html', {
                 'specials': site.item_set.filter(special=True).order_by('section__id'),
                 'footer': update.footer,
-                'site': site
+                'site': site,
+                'show_descriptions': update.show_descriptions
             })
             via_email = Subscriber.via_email.filter(site=site)
             emails = [s.user.email for s in via_email]
