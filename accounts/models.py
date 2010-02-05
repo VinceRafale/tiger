@@ -57,6 +57,44 @@ class Site(models.Model):
         return os.path.join(settings.CUSTOM_MEDIA_URL, '.'.join([self.domain, self.tld]))        
 
 
+class TimeSlot(models.Model):
+    DOW_MONDAY = 0
+    DOW_TUESDAY = 1
+    DOW_WEDNESDAY = 2
+    DOW_THURSDAY = 3
+    DOW_FRIDAY = 4
+    DOW_SATURDAY = 5
+    DOW_SUNDAY = 6
+    DOW_CHOICES = (
+        (DOW_MONDAY, 'Monday'),
+        (DOW_TUESDAY, 'Tuesday'),
+        (DOW_WEDNESDAY, 'Wednesday'),
+        (DOW_THURSDAY, 'Thursday'),
+        (DOW_FRIDAY, 'Friday'),
+        (DOW_SATURDAY, 'Saturday'),
+        (DOW_SUNDAY, 'Sunday'),
+    )
+    site = models.ForeignKey(Site)
+    dow = models.IntegerField(choices=DOW_CHOICES)
+    start = models.TimeField()
+    stop = models.TimeField()
+
+    def _pretty_time(self, time_obj):
+        hour = '12' if time_obj.hour == 12 else str(time_obj.hour % 12)
+        if time_obj.minute:
+            return hour + time_obj.strftime(':%M%P')
+        else:
+            return hour + time_obj.strftime('%P')
+
+    @property
+    def pretty_start(self):
+        return self._pretty_time(self.start)
+
+    @property
+    def pretty_stop(self):
+        return self._pretty_time(self.stop)
+
+
 class ScheduledUpdate(models.Model):
     DOW_MONDAY = 1
     DOW_TUESDAY = 2

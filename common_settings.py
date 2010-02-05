@@ -87,6 +87,7 @@ INSTALLED_APPS = (
     'south',
     'tiger.accounts',
     'tiger.core',
+    'tiger.dashboard',
     'tiger.notify',
 )
 
