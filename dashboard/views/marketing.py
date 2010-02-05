@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Max
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
@@ -18,10 +18,10 @@ def home(request):
     updates = site.scheduledupdate_set.all()
     email_subscribers = Subscriber.via_email.filter(site=site)
     fax_subscribers = Subscriber.via_fax.filter(site=site)
-    total_pages = Fax.objects.filter(site=site).aggregate(Max('page_count'))['page_count__max']
+    total_pages = Fax.objects.filter(site=site).aggregate(Sum('page_count'))['page_count__sum']
     this_month = datetime(datetime.now().year, datetime.now().month, 1)
     pages_for_month = Fax.objects.filter(
-        site=site, timestamp__gt=this_month).aggregate(Max('page_count'))['page_count__max']
+        site=site, completion_time__gte=this_month).aggregate(Sum('page_count'))['page_count__sum']
     return direct_to_template(request, template='dashboard/marketing.html', extra_context={
         'updates': updates,
         'email_subscribers': email_subscribers,

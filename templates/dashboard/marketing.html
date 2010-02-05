@@ -33,7 +33,7 @@
         <h2>Fax usage</h2>
         <p class="usage">
             <strong>Total pages sent:</strong> {{ total_pages }}<br />
-            {# <strong>Pages sent this month:</strong> {{ pages_for_month }} #}
+            <strong>Pages sent in {% now "F" %}:</strong> {{ pages_for_month }}
         </p>
     </div>
 {% endblock %}
