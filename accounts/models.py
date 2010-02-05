@@ -46,6 +46,11 @@ class Site(models.Model):
     tld = models.CharField(max_length=4)
     enable_blog = models.BooleanField()
     blog_address = models.URLField(blank=True)
+    street = models.CharField(max_length=255, default='')
+    state = USStateField(max_length=255, default='')
+    zip = models.CharField(max_length=10, default='')
+    phone = PhoneNumberField(default='')
+    fax_number = PhoneNumberField(default='')
 
     def __unicode__(self):
         return '.'.join(['www', self.domain, self.tld])
@@ -55,6 +60,33 @@ class Site(models.Model):
         """Returns a path where site-specific static files can be accessed.
         """
         return os.path.join(settings.CUSTOM_MEDIA_URL, '.'.join([self.domain, self.tld]))        
+
+    @property
+    def hours(self):
+        """Returns a nicely formatted string representing availability based on the
+        site's associated ``TimeSlot`` objects.
+        """
+        # this implementation is a little naive, but let's just assume our customers
+        # don't keep ridiculous hours
+        timeslots = self.timeslot_set.order_by('dow')
+        times = {}
+        for timeslot in timeslots:
+            time_range = '%s-%s' % (timeslot.pretty_start, timeslot.pretty_stop)
+            if times.has_key(time_range):
+                times[time_range].append(timeslot.dow)
+            else:
+                times[time_range] = [timeslot.dow]
+        time_dict = dict(TimeSlot.DOW_CHOICES)
+        time_strings = []
+        for k, v in times.items():
+            # test if the dow ints are consecutive
+            if v == range(v[0], v[-1] + 1) and len(v) > 1:
+                s = '%s-%s %s' % (time_dict[v[0]][:2], time_dict[v[-1]][:2], k)
+            else:
+                s = '%s %s' % ('/'.join(time_dict[n][:2] for n in v), k)
+            time_strings.append(s)
+        return ', '.join(time_strings)
+
 
 
 class TimeSlot(models.Model):

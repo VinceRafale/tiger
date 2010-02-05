@@ -1,0 +1,36 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <h1>Restaurant info</h1>
+    <div class="grid_4 alpha">
+        <a class="buttonTop last" href="">Edit</a>
+        <h2>Location</h2>
+        <ul class="drag sections">
+            <li> 
+                <div class="clear"></div>
+                <address>
+                {{ site.street }}<br />
+                {{ site.city }}, {{ site.state }} {{ site.zip }}
+                </address>
+                <p>
+                Phone: {{ site.phone }}<br />
+                Fax: {{ site.fax }}<br />
+                </p>
+            </li> 
+        </ul>
+    </div>
+    <div class="grid_4">
+        <a class="buttonTop last" href="{% url dashboard_subscriber_list %}">Edit</a>
+        <h2>Restaurant Hours</h2>
+        <p class="subscribers">
+            {{ site.hours }}
+        </p>
+    </div>
+    <div class="grid_4 omega">
+        <h2>Profile</h2>
+        <p class="usage">
+            <strong>Total pages sent:</strong> {{ total_pages }}<br />
+            {# <strong>Pages sent this month:</strong> {{ pages_for_month }} #}
+        </p>
+    </div>
+{% endblock %}

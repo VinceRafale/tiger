@@ -6,6 +6,11 @@ from django.views.generic.simple import direct_to_template
 from tiger.accounts.models import TimeSlot
 
 
+def home(request):
+    return direct_to_template(request, template='dashboard/restaurant.html', extra_context={
+    })
+        
+
 def create_update_timeslot(request, get_id=False):
     if request.method != 'POST':
         raise Http404
