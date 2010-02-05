@@ -11,14 +11,16 @@
 {% endblock %}
 
 {% block content %}
+{% comment %}
 <a id="addToCart" href="{% url order_item item.id %}"><img src="{{ MEDIA_URL }}img/cart_put.png" /> Order</a>
-<a href="{{ item.section.get_absolute_url }}">&laquo; back to {{ item.section.name }}</a>
+{% endcomment %}
 <h1>{{ item.name }}</h1>
 <div>
 {% if item.photo %}
 <img src="{{ item.photo.image.url }}" />
 {% endif %}
-{{ item.description }}
+{{ item.description|linebreaks }}
+<a href="{{ item.section.get_absolute_url }}">&laquo; back to {{ item.section.name }}</a>
 </div>
 {% endblock %}
 

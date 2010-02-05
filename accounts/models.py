@@ -63,6 +63,10 @@ class Site(models.Model):
         return os.path.join(settings.CUSTOM_MEDIA_URL, '.'.join([self.domain, self.tld]))        
 
     @property
+    def address(self):
+        return ' '.join([self.street, self.city, self.state, self.zip])
+
+    @property
     def hours(self):
         """Returns a nicely formatted string representing availability based on the
         site's associated ``TimeSlot`` objects.
