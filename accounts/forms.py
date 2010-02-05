@@ -4,7 +4,7 @@ from datetime import time
 from django import forms
 from django.contrib.auth.models import User
 
-from tiger.accounts.models import Subscriber, ScheduledUpdate
+from tiger.accounts.models import Subscriber, ScheduledUpdate, Site
 
 
 class SubscriberForm(forms.ModelForm):
@@ -93,3 +93,8 @@ class ScheduledUpdateForm(forms.ModelForm):
             h = 0
         return time(h, m)
 
+
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = Site
+        fields = ['street', 'city', 'state', 'zip', 'phone', 'fax_number']

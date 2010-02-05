@@ -47,10 +47,11 @@ class Site(models.Model):
     enable_blog = models.BooleanField()
     blog_address = models.URLField(blank=True)
     street = models.CharField(max_length=255, default='')
+    city = models.CharField(max_length=255, default='')
     state = USStateField(max_length=255, default='')
     zip = models.CharField(max_length=10, default='')
     phone = PhoneNumberField(default='')
-    fax_number = PhoneNumberField(default='')
+    fax_number = PhoneNumberField(default='', blank=True)
 
     def __unicode__(self):
         return '.'.join(['www', self.domain, self.tld])
