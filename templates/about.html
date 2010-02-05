@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load content_tags %}
+<h1>{% get_title site "about" %}</h1>
+{% get_body site "about" %}
+{% endblock %}
