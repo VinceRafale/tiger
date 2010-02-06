@@ -19,7 +19,9 @@
 {% if item.photo %}
 <img src="{{ item.photo.image.url }}" />
 {% endif %}
+{% if item.description %}
 {{ item.description|linebreaks }}
+{% endif %}
 <a href="{{ item.section.get_absolute_url }}">&laquo; back to {{ item.section.name }}</a>
 </div>
 {% endblock %}

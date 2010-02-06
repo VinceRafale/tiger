@@ -47,7 +47,7 @@ class Item(models.Model):
     section = models.ForeignKey(Section)
     site = models.ForeignKey(Site, editable=False)
     image = models.ForeignKey('content.ItemImage', blank=True, null=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     special = models.BooleanField('is this menu item currently a special?')
     slug = models.SlugField(editable=False)
     ordering = models.PositiveIntegerField(editable=False, default=1)

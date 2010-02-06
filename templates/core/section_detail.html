@@ -19,7 +19,9 @@
             {% endif %}
         {% endfor %}
         </ul>
+        {% if item.description %}
         {{ item.description|linebreaks }}
+        {% endif %}
     </li>
 {% endfor %}
 </ul>
