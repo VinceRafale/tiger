@@ -46,9 +46,6 @@
             width:90px;
             float:right;
         }
-        #menuWrap, .footer, #menu ul li ul li a:hover, div#cartControls a, a#addToCart {
-            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#b83f3f), to(#610001));
-        }
         div#cartControls a:hover {
             background-color: #b83f3f;
             background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#610001), to(#b83f3f));
