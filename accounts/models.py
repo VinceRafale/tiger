@@ -53,9 +53,14 @@ class Site(models.Model):
     phone = PhoneNumberField(default='')
     fax_number = PhoneNumberField(default='', blank=True)
     google_analytics = models.CharField(max_length=50, blank=True)
+    custom_domain = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return '.'.join(['www', self.domain, self.tld])
+        if self.custom_domain:
+            domain = '.'.join(['www', self.domain, self.tld])
+        else:
+            domain = '%s.takeouttiger.com' % self.domain
+        return 'http://' + domain
 
     @property
     def custom_media_url(self):
