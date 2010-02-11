@@ -52,6 +52,7 @@ class Site(models.Model):
     zip = models.CharField(max_length=10, default='')
     phone = PhoneNumberField(default='')
     fax_number = PhoneNumberField(default='', blank=True)
+    google_analytics = models.CharField(max_length=50, blank=True)
 
     def __unicode__(self):
         return '.'.join(['www', self.domain, self.tld])
