@@ -1,11 +1,13 @@
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
 from imagekit.models import ImageModel
 
 from tiger.accounts.models import Site
+from tiger.notify.handlers import item_social_handler
 
 
 class Section(models.Model):
@@ -107,3 +109,6 @@ class Upgrade(models.Model):
         return '%s %s for $%.02f more' % (
             'Substitute' if self.substitute else 'Add', 
             self.name, self.price)
+
+
+post_save.connect(item_social_handler, sender=Item)
