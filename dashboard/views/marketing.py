@@ -1,8 +1,9 @@
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
@@ -83,7 +84,7 @@ def add_twitter(request):
         form = TwitterForm(request.POST, instance=social)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('http://www.takeouttiger.com' + reverse('twitter_connect'))
+            return HttpResponseRedirect('http://www.takeouttiger.com/twitter/connect/')
     else:
         form = TwitterForm(instance=social)
     return direct_to_template(request, template='dashboard/twitter_connect.html', 

@@ -10,8 +10,8 @@ REQUEST_TOKEN_URL = getattr(settings, 'OAUTH_REQUEST_TOKEN_URL', 'https://%s/oau
 ACCESS_TOKEN_URL = getattr(settings, 'OAUTH_ACCESS_TOKEN_URL', 'https://%s/oauth/access_token' % SERVER)
 AUTHORIZATION_URL = getattr(settings, 'OAUTH_AUTHORIZATION_URL', 'http://%s/oauth/authenticate' % SERVER)
 
-CONSUMER_KEY = getattr(settings, 'CONSUMER_KEY', 'YOUR_KEY')
-CONSUMER_SECRET = getattr(settings, 'CONSUMER_SECRET', 'YOUR_SECRET')
+CONSUMER_KEY = getattr(settings, 'TWITTER_CONSUMER_KEY', 'YOUR_KEY')
+CONSUMER_SECRET = getattr(settings, 'TWITTER_CONSUMER_SECRET', 'YOUR_SECRET')
 
 # We use this URL to check if Twitters oAuth worked
 TWITTER_CHECK_AUTH = 'https://twitter.com/account/verify_credentials.json'
@@ -67,3 +67,14 @@ def is_authenticated(consumer, connection, access_token):
     if 'screen_name' in _json:
         return _json
     return False
+
+def update_status(consumer, connection, access_token, status):
+    """Update twitter status, i.e., post a tweet"""
+    TWITTER_UPDATE_STATUS = 'https://twitter.com/statuses/update.json'
+    oauth_request = request_oauth_resource(consumer,
+                                           TWITTER_UPDATE_STATUS,
+                                           access_token,
+                                           {'status': status},
+                                           http_method='POST')
+    _json = fetch_response(oauth_request, connection)
+    return _json

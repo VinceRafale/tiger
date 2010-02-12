@@ -28,12 +28,23 @@
             <strong>Via e-mail:</strong> {{ email_subscribers.count }}<br />
             <strong>Via fax:</strong> {{ fax_subscribers.count }}
         </p>
-    </div>
-    <div class="grid_4 omega">
         <h2>Fax usage</h2>
         <p class="usage">
             <strong>Total pages sent:</strong> {{ total_pages }}<br />
             <strong>Pages sent in {% now "F" %}:</strong> {{ pages_for_month }}
+        </p>
+    </div>
+    <div class="grid_4 omega">
+        <h2>Social media</h2>
+        <p class="usage">
+	<strong>Twitter:</strong>
+	{% with site.social as social %}
+	{% if social.twitter_token and social.twitter_secret %}
+		currently integrated with @{{ social.twitter_screen_name }}
+	{% else %}
+		<a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
+	{% endif %}
+	{% endwith %}
         </p>
     </div>
 {% endblock %}

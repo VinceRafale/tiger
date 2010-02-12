@@ -15,7 +15,7 @@ from tiger.notify.utils import *
 
 TWITTER_CONSUMER = oauth.OAuthConsumer(settings.TWITTER_CONSUMER_KEY, 
     settings.TWITTER_CONSUMER_SECRET)
-TWITTER_CONNECTION = httplib.HTTPSConnection(settings.TWITTER_SERVER)
+TWITTER_CONNECTION = httplib.HTTPSConnection('twitter.com')
 TWITTER_REQUEST_TOKEN_URL = 'https://twitter.com/oauth/request_token'
 TWITTER_AUTHORIZATION_URL = 'https://twitter.com/oauth/authenticate'
 TWITTER_ACCESS_TOKEN_URL = 'https://twitter.com/oauth/access_token'

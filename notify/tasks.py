@@ -1,4 +1,5 @@
 import httplib
+import urllib2
 from datetime import datetime, timedelta
 
 from django.core import mail
@@ -8,7 +9,7 @@ from django.db.models import get_model
 from celery.task import Task, PeriodicTask
 from celery.registry import tasks
 
-import oauth
+from oauth import oauth
 
 from tiger.accounts.models import Subscriber, ScheduledUpdate
 from tiger.notify.fax import FaxMachine, FaxServiceError
@@ -69,7 +70,7 @@ class TweetNewItemTask(Task):
         CONNECTION = httplib.HTTPSConnection(SERVER)
         access_token = oauth.OAuthToken(token, secret) 
         try:
-            return update_status(CONSUMER, CONNECTION, token, msg)
+            return update_status(CONSUMER, CONNECTION, access_token, msg)
         except urllib2.HTTPError:
             self.retry([msg, token, secret], kwargs,
                 countdown=60 * 5, exc=e)
