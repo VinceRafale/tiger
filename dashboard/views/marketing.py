@@ -8,6 +8,7 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
+from tiger.notify.forms import TwitterForm
 from tiger.notify.models import Fax
 from tiger.utils.pdf import render_to_pdf
 from tiger.utils.views import add_edit_site_object, delete_site_object
@@ -74,4 +75,17 @@ def add_edit_subscriber(request, subscriber_id=None):
 @login_required
 def delete_subscriber(request, subscriber_id):
     return delete_site_object(request, Subscriber, subscriber_id, 'dashboard_subscriber_list')
+
+@login_required
+def add_twitter(request):
+    social = request.site.social
+    if request.method == 'POST':
+        form = TwitterForm(request.POST, instance=social)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('http://www.takeouttiger.com' + reverse('twitter_connect'))
+    else:
+        form = TwitterForm(instance=social)
+    return direct_to_template(request, template='dashboard/twitter_connect.html', 
+        extra_context={'form': form})
 
