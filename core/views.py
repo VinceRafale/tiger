@@ -1,4 +1,5 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.http import base36_to_int
 from django.shortcuts import get_object_or_404, render_to_response
 
 from tiger.core.forms import get_order_form
@@ -31,3 +32,8 @@ def get_form(request, item_id):
     else:
         form = OrderForm()
     return render_to_response('core/order_form.html', {'item': item, 'form': form})
+
+def short_code(request, item_id):
+    item_id = base36_to_int(item_id)
+    item = get_object_or_404(Item, id=item_id, site=request.site)
+    return HttpResponseRedirect(item.get_absolute_url())

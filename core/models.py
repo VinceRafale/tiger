@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
+from django.utils.http import int_to_base36
 
 from imagekit.models import ImageModel
 
@@ -71,6 +72,9 @@ class Item(models.Model):
     def get_absolute_url(self):
         return reverse('menu_item', 
             kwargs={'section': self.section.slug, 'item': self.slug})
+
+    def get_short_url(self):
+        return reverse('short_code', kwargs={'item_id': int_to_base36(self.id)})
 
 
 class Variant(models.Model):

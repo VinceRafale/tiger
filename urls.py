@@ -17,6 +17,7 @@ urlpatterns += patterns('',
     (r'^menu/', include('tiger.core.urls')),
     #(r'^search/', include('haystack.urls')),
     (r'^admin/', include(admin.site.urls)),
+    url(r'^m/(?P<item_id>\w+)/$', 'tiger.core.views.short_code', name='short_code'),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
 )
