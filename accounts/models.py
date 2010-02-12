@@ -88,12 +88,13 @@ class Site(models.Model):
                 times[time_range] = [timeslot.dow]
         time_dict = dict(TimeSlot.DOW_CHOICES)
         time_strings = []
+        abbr_length = 3
         for k, v in times.items():
             # test if the dow ints are consecutive
             if v == range(v[0], v[-1] + 1) and len(v) > 1:
-                s = '%s-%s %s' % (time_dict[v[0]][:2], time_dict[v[-1]][:2], k)
+                s = '%s-%s %s' % (time_dict[v[0]][:abbr_length], time_dict[v[-1]][:abbr_length], k)
             else:
-                s = '%s %s' % ('/'.join(time_dict[n][:2] for n in v), k)
+                s = '%s %s' % ('/'.join(time_dict[n][:abbr_length] for n in v), k)
             time_strings.append(s)
         return ', '.join(time_strings)
 
