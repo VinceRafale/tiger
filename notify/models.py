@@ -17,10 +17,3 @@ class Fax(models.Model):
     transaction = models.CharField(max_length=100)
     completion_time = models.DateTimeField(null=True, blank=True)
     destination = models.CharField(max_length=20, null=True, blank=True)
-
-
-class Social(models.Model):
-    site = models.OneToOneField(Site)
-    twitter_screen_name = models.CharField(max_length=20, blank=True)
-    twitter_token = models.CharField(max_length=255, blank=True)
-    twitter_secret = models.CharField(max_length=255, blank=True)

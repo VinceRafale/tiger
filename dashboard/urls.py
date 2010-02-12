@@ -34,7 +34,6 @@ marketing_patterns = patterns('tiger.dashboard.views.marketing',
     url(r'^subscribers/add/$', 'add_edit_subscriber', name='dashboard_add_subscriber'),
     url(r'^subscribers/delete/(\d+)/$', 'delete_subscriber', name='dashboard_delete_subscriber'),
     url(r'^subscribers/edit/(\d+)/$', 'add_edit_subscriber', name='dashboard_edit_subscriber'),
-    url(r'^twitter/$', 'add_twitter', name='dashboard_add_twitter'),
 )
 
 restaurant_patterns = patterns('tiger.dashboard.views.restaurant',

@@ -1,21 +1,15 @@
-import httplib
 from datetime import datetime, timedelta
 
 from django.core import mail
 from django.core.management.base import NoArgsCommand
-from django.db.models import get_model
 
 from celery.task import Task, PeriodicTask
 from celery.registry import tasks
 
-import oauth
-
 from tiger.accounts.models import Subscriber, ScheduledUpdate
 from tiger.notify.fax import FaxMachine, FaxServiceError
-from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
 from tiger.utils.pdf import render_to_pdf
 
-Social = get_model('notify', 'Social')
 
 
 class SendFaxTask(Task):
@@ -26,6 +20,7 @@ class SendFaxTask(Task):
         except FaxServiceError, e:
             self.retry([site, subscribers, content], kwargs,
                 countdown=60 * 1, exc=e)
+
 
 
 class SendEmailTask(Task):
@@ -62,17 +57,5 @@ class RunScheduledBlastTask(PeriodicTask):
             SendFaxTask.delay(site=site, subscribers=via_fax, content=content)
         SendEmailTask.delay(msgs=msgs)
     
-
-class TweetNewItemTask(Task):
-    def run(self, msg, token, secret, **kwargs):
-        CONSUMER = oauth.OAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET)
-        CONNECTION = httplib.HTTPSConnection(SERVER)
-        access_token = oauth.OAuthToken(token, secret) 
-        try:
-            return update_status(CONSUMER, CONNECTION, token, msg)
-        except urllib2.HTTPError:
-            self.retry([msg, token, secret], kwargs,
-                countdown=60 * 5, exc=e)
-
 
 tasks.register(RunScheduledBlastTask)
