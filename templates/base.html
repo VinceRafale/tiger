@@ -85,9 +85,14 @@
                 <p>{{ site.hours }}</p>
                 <address>
                 {{ site.street }}<br>
-                {{ site.city }}, {{ site.state }}, {{ site.zip }}
+                {{ site.city }}, {{ site.state }} {{ site.zip }}
                 </address>
                 <p>T: {{ site.phone }}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
+                {% if site.twitter %}
+                <div id="twitter">
+                   You should <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a> to get menu updates and more!
+                </div>
+                {% endif %}
             {% endblock %}
             </div>
             </div>

@@ -98,6 +98,12 @@ class Site(models.Model):
             time_strings.append(s)
         return ', '.join(time_strings)
 
+    def twitter(self):
+        social = self.social
+        if social.twitter_token and social.twitter_secret:
+            return social.twitter_screen_name
+        return False
+
 
 
 class TimeSlot(models.Model):
