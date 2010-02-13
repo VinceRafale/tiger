@@ -1,4 +1,5 @@
 html, body {height:100%}
+a:focus {outline:none;}
 #masthead {height:100px; width:100%;}
 #menuWrap {width:100%; height:36px; margin-bottom: 15px;}
 .wrapper{min-height: 100%; height: auto !important; height: 100%; margin-bottom: -50px;}
@@ -15,10 +16,24 @@ div.shim{height: 50px; clear: both;}
 #menu ul li ul li{float:none;margin:0;padding:0;font-weight:normal;}
 #menu ul li ul li a{display:block; padding:5px;}
 #menuitems {list-style-type:none;}
+#menuitems h4 {margin-bottom:0;}
 #menuitems li {margin:0; padding:10px;}
 #menuitems li p {margin-bottom:0; padding-bottom:0;}
-#menuitems ul {float:right; list-style-type:none;}
-#menuitems ul li {display:inline; font-style:italic;}
+#menuitems ul {float:right; list-style-type:none; margin-bottom:5px;clear:right;}
+#menuitems ul li {display:inline; font-style:italic; padding-right:0;}
+
+div.prices {text-align:right;}
+#menuitems a.add {
+    display:block; 
+    float:right;
+    width:78px;
+    font-size:10px;
+    padding:2px 4px;
+}
 
 #orderForm ul {list-style-type:none;}
-#orderForm li {display:inline;}
+#orderForm li {display:inline; margin-left:0;}
+#orderForm #qty {float:left;}
+#orderForm .upgrades li {display:block;}
+#orderForm span.totalPrice {float:right; font-size:16px;}
+#id_quantity {width:30px;}

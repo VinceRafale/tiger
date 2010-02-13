@@ -52,7 +52,7 @@ class ShoppingCartMiddleware(object):
     def process_request(self, request):
         cookie_name, session_key = self._get_cookie_pair(request)
         if session_key:
-            s = Session.objects.get(session_key=session_key)
+            s, created = Session.objects.get_or_create(session_key=session_key)
             request.cart = Cart(s)
 
     def process_response(self, request, response):

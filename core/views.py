@@ -24,14 +24,15 @@ def item_detail(request, section, item):
     return HttpResponse(render_custom(request, 'core/item_detail.html', 
         {'item': i}))
 
-def get_form(request, item_id):
-    item = Item.objects.get(id=item_id, site=request.site)
-    OrderForm = get_order_form(item, item.variant_set.all(), item.upgrade_set.all())
+def order_item(request, section, item):
+    i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
+    OrderForm = get_order_form(i, i.variant_set.all(), i.upgrade_set.all())
     if request.method == 'POST':
         form = OrderForm(request.POST)
     else:
         form = OrderForm()
-    return render_to_response('core/order_form.html', {'item': item, 'form': form})
+        total = i.variant_set.order_by('-price')[0].price
+    return HttpResponse(render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': total}))
 
 def short_code(request, item_id):
     item_id = base36_to_int(item_id)

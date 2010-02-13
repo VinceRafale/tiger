@@ -1,54 +1,53 @@
-        #menu ul li a:hover{background-color:#ae0001;color:white;}
-        #masthead h2 {font-size:40px; margin:60px 0 0 0; padding-bottom:0; color:#ae0001;}
-        h1 {
-            border-bottom:1px solid grey;
-            border-top:1px solid grey;
-            font-family:Opticon;
-            padding:20px 0 0;
-        }
-        #menuWrap {border-top:1px grey solid;}
-        .footer {border-top:4px #ae0001 solid;}
-        #menuWrap {border-bottom:1px grey solid;}
-        #menuWrap form {margin-top:8px; text-align:right;}
-        #menuWrap form input {border:none;}
-        #mainWrap, #sidebarWrap {background-color:white;}
-        #main, #sidebar {padding:15px;}
-        #menu ul li div{border:1px grey solid;border-top:none;background-color:white;}
-        #menu a, #menuitems li a {font-size:14px; font-weight:bold; text-transform:uppercase; text-decoration:none;}
-        #menuitems li a:hover {text-decoration:underline;}
-        #menu ul ul li a {font-size:13px; text-transform:none; color:black;}
-        #menu ul ul li a:hover{color:#ae0001; background-color:white;}
-        a {color:#ae0001;}
-        a.lightlink {color:black;}
+#menu ul li a:hover{background-color:#ae0001;color:white;}
+#masthead h2 {font-size:40px; margin:60px 0 0 0; padding-bottom:0; color:#ae0001;}
+h1 {
+    border-bottom:1px solid grey;
+    border-top:1px solid grey;
+    font-family:Opticon;
+    padding:20px 0 0;
+}
+#menuWrap {border-top:1px grey solid;}
+.footer {border-top:4px #ae0001 solid;}
+#menuWrap {border-bottom:1px grey solid;}
+#menuWrap form {margin-top:8px; text-align:right;}
+#menuWrap form input {border:none;}
+#mainWrap, #sidebarWrap {background-color:white;}
+#main, #sidebar {padding:15px;}
+#menu ul li div{border:1px grey solid;border-top:none;background-color:white;}
+#menu a, #menuitems li a {font-size:14px; font-weight:bold; text-transform:uppercase; text-decoration:none;}
+#menuitems li a:hover {text-decoration:underline;}
+#menu ul ul li a {font-size:13px; text-transform:none; color:black;}
+#menu ul ul li a:hover{color:#ae0001; background-color:white;}
+a {color:#ae0001;}
+a.lightlink {color:black;}
 
-        * {font-family: Arial, sans-serif;}
-        h1, h2, h4 {font-family: Opticon; line-height:1;}
-        li.shaded {background-color:#e0e0e0;}
+* {font-family: Arial, sans-serif;}
+h1, h2, h4 {font-family: Opticon; line-height:1;}
+li.shaded {background-color:#e0e0e0;}
 
-        form.addToCart {float:right;}
+a#viewCart {margin-right:12px;}
 
-        div#cartControls a, a#addToCart {
-            background-color:#ae0001;
-            color:white;
-            display:block;
-            font-size:20px;
-            font-weight:bold;
-            padding:6px 0 6px 9px;
-            text-decoration:none;
-            -moz-border-radius:4px;
-            -webkit-border-radius:4px;
-        }
-        div#cartControls a {
-            width:120px;
-            float:left;
-        }
-        a#addToCart {
-            width:90px;
-            float:right;
-        }
-        div#cartControls a:hover {
-            background-color: #b83f3f;
-            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#610001), to(#b83f3f));
-        }
+#menuitems a.add {
+background-color:#ae0001;
+color:white;
+-moz-border-radius:4px;
+-webkit-border-radius:4px;
+}
 
-        a#viewCart {margin-right:12px;}
+#orderForm {
+    padding:20px;
+    border:4px #ae0001 solid;
+    margin-bottom:15px;
+}
+#orderForm h3 {
+    margin-bottom:5px;
+}
+
+#submit {
+background-color:#ae0001;
+color:white;
+-moz-border-radius:4px;
+-webkit-border-radius:4px;
+border:none;
+float:right;
+}

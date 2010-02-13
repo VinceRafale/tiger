@@ -13,7 +13,8 @@ def get_order_form(instance, variants, upgrades):
         'quantity': forms.IntegerField(min_value=1, initial=1)
     }
     if variants.count() > 1:
-        attrs['variant'] = forms.ModelChoiceField(queryset=variants, widget=forms.RadioSelect, empty_label=None)
+        max = variants.order_by('-price')[0].id
+        attrs['variant'] = forms.ModelChoiceField(queryset=variants, widget=forms.RadioSelect, empty_label=None, initial=max)
     if upgrades.count():
         attrs['upgrades'] = forms.ModelMultipleChoiceField(queryset=upgrades, widget=forms.CheckboxSelectMultiple)
     return type('OrderForm', (forms.Form,), attrs)
