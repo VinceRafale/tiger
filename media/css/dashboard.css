@@ -91,5 +91,6 @@ p.subscribers, p.usage {padding:10px;}
 #subscribers thead {color:white; background-color:#02405a;}
 #subscribers tr.shaded {background-color:#cde0e8;}
 #subscribers {margin-bottom:0;}
+#subscribers th a {color:white;text-decoration:none;}
 
 div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
