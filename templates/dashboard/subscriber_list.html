@@ -1,4 +1,6 @@
 {% extends 'dashboard.html' %}
+{% load sorting_tags %}
+{% load pagination_tags %}
 
 {% block extrahead %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
@@ -8,31 +10,22 @@
 <a class="buttonTop last" href="{% url dashboard_add_subscriber %}">Add</a>
 <h1>Subscribers</h1>
 
+{% autosort object_list %}
+{% autopaginate object_list 50 %}
+
 <div class="pagination">
-    <span class="step-links">
-    {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}">&laquo; previous</a>
-    {% endif %}
-
-    <span class="current">
-    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-    </span>
-
-    {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}">next &raquo;</a>
-    {% endif %}
-    </span>
+    {% paginate %}
 </div>
 
 <table id="subscribers">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Active</th>
-            <th>Organization</th>
-            <th>E-mail address</th>
-            <th>Fax number</th>
-            <th>Deliver via</th>
+            <th>{% anchor user__last_name Name %}</th>
+            <th>{% anchor send_updates Active %}</th>
+            <th>{% anchor organization %}</th>
+            <th>{% anchor user__email "E-mail address" %}</th>
+            <th>{% anchor fax "Fax number" %}</th>
+            <th>{% anchor update_via "Deliver via" %}</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -52,19 +45,7 @@
 </table>
 
 <div class="pagination">
-    <span class="step-links">
-    {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}">&laquo; previous</a>
-    {% endif %}
-
-    <span class="current">
-    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-    </span>
-
-    {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}">next &raquo;</a>
-    {% endif %}
-    </span>
+    {% paginate %}
 </div>
 
 {% endblock %}

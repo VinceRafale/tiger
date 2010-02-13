@@ -54,6 +54,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
+    'django.core.context_processors.request',
     'tiger.accounts.context_processors.site',
 )
 
@@ -63,6 +64,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'tiger.core.middleware.ShoppingCartMiddleware',
     'tiger.accounts.middleware.DomainDetectionMiddleware',
+    'django_sorting.middleware.SortingMiddleware',
+    'pagination.middleware.PaginationMiddleware',
 )
 
 ROOT_URLCONF = 'tiger.urls'
@@ -82,8 +85,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django_extensions',
     'celery',
+    'django_sorting',
     'imagekit',
     #'haystack',
+    'pagination',
     'south',
     'tiger.accounts',
     'tiger.content',
@@ -119,3 +124,5 @@ EMAIL_USE_TLS = True
 TWITTER_CONSUMER_KEY = 'cabtnGRRAtJSrz6yuVXg'
 TWITTER_CONSUMER_SECRET = 'SjbNcDBOsHsGSNuPRA3lCOf95sVBH9O2aHbUVGfILxs'
 
+DEFAULT_SORT_UP = '&Delta;' 
+DEFAULT_SORT_DOWN = '&nabla;' 

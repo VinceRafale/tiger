@@ -66,7 +66,7 @@ def preview_blast(request, blast_id):
 @login_required
 def subscriber_list(request):
     return object_list(request, Subscriber.objects.filter(site=request.site), 
-        template_name='dashboard/subscriber_list.html', paginate_by=15)
+        template_name='dashboard/subscriber_list.html')
 
 @login_required
 def add_edit_subscriber(request, subscriber_id=None):
