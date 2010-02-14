@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table id="orderPreview">
+<tr>
+    <th>Item</th>
+    <th>Price</th>
+    <th>Qty</th>
+    <th>Total</th>
+    <th></th>
+</tr>
+{% for id, item in cart %}
+    <tr>
+        <td class="item">
+        {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}
+        {% if item.upgrades or item.notes %}
+            <ul>
+            {% for upgrade in item.upgrades %}
+                <li>{{ upgrade.name }}: ${{ upgrade.price|floatformat:"-2" }} per item</li>
+            {% endfor %}
+            {% if item.notes %}
+                <li>{{ item.notes }}</li>
+            {% endif %}
+            </ul>
+        {% endif %}
+        </td>
+        <td>${{ item.variant.price|floatformat:"-2" }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>${{ item.total|floatformat:"-2" }}</td>
+        <td class="remove"><a href="{% url remove_item %}?id={{ id }}">[x]</a></td>
+    </tr>
+{% endfor %}
+<tr class="total">
+    <td class="item">Total</td>
+    <td></td>
+    <td></td>
+    <td>${{ cart.total|floatformat:"-2" }}</td>
+    <td class="remove"></td>
+</tr>
+</table>
+<a class="button" href="{% url send_order %}">Send order</a>
+{% endblock %}

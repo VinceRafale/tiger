@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.localflavor.us.forms import USPhoneNumberField
 
 from tiger.core.models import *
 
@@ -18,7 +19,7 @@ def get_order_form(instance):
         max = variants.order_by('-price')[0].id
         attrs['variant'] = forms.ModelChoiceField(queryset=variants, widget=forms.RadioSelect, empty_label=None, initial=max)
     if upgrades.count():
-        attrs['upgrades'] = forms.ModelMultipleChoiceField(queryset=upgrades, widget=forms.CheckboxSelectMultiple)
+        attrs['upgrades'] = forms.ModelMultipleChoiceField(queryset=upgrades, widget=forms.CheckboxSelectMultiple, required=False)
     return type('OrderForm', (forms.Form,), attrs)
 
 
@@ -37,4 +38,7 @@ def get_item_form(site):
     return ItemForm
 
 
-
+class OrderForm(forms.Form):
+    name = forms.CharField()
+    phone = USPhoneNumberField()
+    pickup = forms.CharField()

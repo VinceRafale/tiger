@@ -23,7 +23,7 @@ class Cart(object):
         return iter(self.contents.items())
 
     def __len__(self):
-        return len(self.contents)
+        return sum(v['quantity'] for k, v in self)
 
     def add(self, item, form):
         cleaned_data = form.cleaned_data
@@ -31,6 +31,7 @@ class Cart(object):
         if not cleaned_data.has_key('variant'):
             cleaned_data['variant'] = item.variant_set.all()[0]
         cleaned_data['total'] = self.tally(cleaned_data)
+        cleaned_data['name'] = '%s - %s' % (item.section.name, cleaned_data['name'])
         contents = self.contents
         contents[len(self) + 1] = cleaned_data
         self.session.session_data = Session.objects.encode(contents)
