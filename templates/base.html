@@ -76,12 +76,10 @@
             <div id="sidebarWrap" class="grid_4 omega">
             <div id="sidebar">
             {% block sidebar %}
-                {% comment %}
-                <div id="cartControls">
-                <a id="viewCart" href=""><img src="{{ MEDIA_URL }}img/cart_edit.png" /> View cart</a> <a href=""><img src="{{ MEDIA_URL }}img/cart_go.png" / > Checkout</a>
-                </div>
-                <div class="clear"></div>
-                {% endcomment %}
+                {% if cart|length %}
+                <h3>Your order</h3>
+                <p>You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}">Complete your order</a></p>
+                {% endif %}
                 <p>{{ site.hours }}</p>
                 <address>
                 {{ site.street }}<br>

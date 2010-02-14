@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.sessions.models import Session
 
 from tiger.accounts.middleware import DomainDetectionMiddleware
+from tiger.core.forms import get_order_form
 from tiger.core.models import Item
 
 class Cart(object):
@@ -19,23 +20,25 @@ class Cart(object):
         """Iterating over the cart returns a list of tuples consisting of
         the Item in the cart and the corresponding quantity.
         """
-        return iter((Item.objects.get(id=k), v) for k, v in self.contents.items())
+        return iter(self.contents.items())
 
     def __len__(self):
         return len(self.contents)
 
-    def add(self, obj_id, qty):
+    def add(self, item, form):
+        cleaned_data = form.cleaned_data
+        cleaned_data.update(item.__dict__)
+        if not cleaned_data.has_key('variant'):
+            cleaned_data['variant'] = item.variant_set.all()[0]
+        cleaned_data['total'] = self.tally(cleaned_data)
         contents = self.contents
-        if contents.has_key(obj_id):
-            contents[obj_id] = contents[obj_id] + qty
-        else:
-            contents[obj_id] = qty
+        contents[len(self) + 1] = cleaned_data
         self.session.session_data = Session.objects.encode(contents)
         self.session.save()
 
-    def remove(self, obj_id):
+    def remove(self, key):
         contents = self.contents
-        contents.pop(obj_id, None)
+        contents.pop(int(key), None)
         self.session.session_data = Session.objects.encode(contents)
         self.session.save()
 
@@ -43,6 +46,16 @@ class Cart(object):
         self.session.session_data = Session.objects.encode({})
         self.session.save()
 
+    def tally(self, item):
+        qty = item['quantity']
+        base_price = item['variant'].price
+        upgrades = 0
+        if item.has_key('upgrades'):
+            upgrades = sum(upgrade.price for upgrade in item['upgrades'])
+        return (base_price + upgrades) * qty
+
+    def total(self):
+        return sum(item['total'] for k, item in self)
 
 class ShoppingCartMiddleware(object):
     """Middleware to add a ``Cart`` object to the request.  Must come after the

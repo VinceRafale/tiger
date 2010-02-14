@@ -3,12 +3,14 @@ from django import forms
 from tiger.core.models import *
 
 
-def get_order_form(instance, variants, upgrades):
+def get_order_form(instance):
     """For a given ``instance`` of ``core.models.Item``, returns a form 
     appropriate for completing an order, with a quantity field for all forms,
     radio select for variant (if applicable), and checkboxes for substitutions/
     upgrades (if applicable).
     """
+    variants = instance.variant_set.all()
+    upgrades = instance.upgrade_set.all()
     attrs = {
         'quantity': forms.IntegerField(min_value=1, initial=1)
     }

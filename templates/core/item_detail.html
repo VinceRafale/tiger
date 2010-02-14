@@ -12,7 +12,7 @@
 
 {% block content %}
 {% if not form %}
-<a class="add" href="{% url order_item section.slug item.slug %}">add to order</a>
+<a class="add" href="{% url order_item item.section.slug item.slug %}">add to order</a>
 {% endif %}
 <h1>{{ item.name }}</h1>
 <div>

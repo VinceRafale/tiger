@@ -55,6 +55,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'tiger.accounts.context_processors.site',
+    'tiger.core.context_processors.cart',
 )
 
 MIDDLEWARE_CLASSES = (

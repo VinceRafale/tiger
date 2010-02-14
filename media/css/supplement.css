@@ -23,7 +23,7 @@ a.lightlink {color:black;}
 
 * {font-family: Arial, sans-serif;}
 h1, h2, h4 {font-family: Opticon; line-height:1;}
-li.shaded {background-color:#e0e0e0;}
+.shaded {background-color:#e0e0e0;}
 
 a#viewCart {margin-right:12px;}
 
@@ -51,3 +51,8 @@ color:white;
 border:none;
 float:right;
 }
+
+#orderPreview td {border-top:1px grey solid;}
+#orderPreview td ul {margin-bottom:0;}
+#orderPreview tr.total td {border-top:4px #ae0001 solid;}
+#orderPreview td.remove, #orderPreview tr.total td.remove {border-top:none;}

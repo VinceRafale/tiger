@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.template import loader, RequestContext
 from django.views.generic.simple import direct_to_template
 
@@ -10,7 +10,7 @@ from tiger.utils.template import load_custom
 def render_custom(request, template, context=None):
     t = load_custom(request, template)
     c = RequestContext(request, context)
-    return t.render(c)
+    return HttpResponse(t.render(c))
     
 def handler404(request):
     if request.path.startswith('/dashboard'):
