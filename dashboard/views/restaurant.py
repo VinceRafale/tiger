@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views.generic.create_update import update_object
 from django.views.generic.simple import direct_to_template
 
-from tiger.accounts.forms import LocationForm
+from tiger.accounts.forms import LocationForm, TimeSlotForm
 from tiger.accounts.models import TimeSlot, Site
 from tiger.content.forms import ContentForm
 from tiger.content.models import Content
@@ -26,28 +26,28 @@ def edit_content(request, slug):
         template_name='dashboard/%s_form.html' % slug, post_save_redirect='/dashboard/restaurant/')
         
 
-def create_update_timeslot(request, get_id=False):
-    if request.method != 'POST':
-        raise Http404
-    start = parser.parse(request.POST['start'])
-    stop = parser.parse(request.POST['end'])
-    if get_id:
-        timeslot = TimeSlot.objects.get(id=request.POST['id'])
+def edit_hours(request):
+    def get_forms(data=None):
+        forms = []
+        for dow, label in TimeSlot.DOW_CHOICES:
+            try:
+                instance = TimeSlot.objects.get(site=request.site, dow=dow)
+            except TimeSlot.DoesNotExist:
+                instance = None
+            form = TimeSlotForm(data=data, instance=instance, prefix=dow)
+            forms.append(form)
+        return forms
+    if request.method == 'POST':
+        forms = get_forms(request.POST)
+        if all(form.is_valid() for form in forms):
+            for dow, form in zip([dow for dow, label in TimeSlot.DOW_CHOICES], forms):
+                instance = form.save()
+                # overridden save() will return None if no times are given for a day
+                if instance is not None:
+                    instance.dow = dow
+                    instance.site = request.site
+                    instance.save()
     else:
-        timeslot = TimeSlot(site=request.site)
-    timeslot.start = start.strftime('%H:%M')
-    timeslot.stop = stop.strftime('%H:%M')
-    timeslot.dow = start.weekday()
-    timeslot.save()
-    return HttpResponse('')
-
-def save_timeslot(request):
-    return create_update_timeslot(request)
-    
-def update_timeslot(request):
-    return create_update_timeslot(request, get_id=True)
-
-def delete_timeslot(request):
-    timeslot = TimeSlot.objects.get(id=request.POST['id'])
-    timeslot.delete()
-    return HttpResponse('')
+        forms = get_forms()
+    form_list = zip([label for dow, label in TimeSlot.DOW_CHOICES], forms)
+    return direct_to_template(request, template='dashboard/hours.html', extra_context={'form_list': form_list})

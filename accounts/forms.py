@@ -4,7 +4,7 @@ from datetime import time
 from django import forms
 from django.contrib.auth.models import User
 
-from tiger.accounts.models import Subscriber, ScheduledUpdate, Site
+from tiger.accounts.models import Subscriber, ScheduledUpdate, Site, TimeSlot
 
 
 class SubscriberForm(forms.ModelForm):
@@ -64,16 +64,25 @@ class AmPmTimeWidget(forms.widgets.Input):
     input_type = 'text'
 
     def render(self, name, value, attrs=None):
-        if value:
+        if type(value) == time:
             value = value.strftime('%I:%M %p')
-        else:
-            value = ''
         return super(AmPmTimeWidget, self).render(name, value, attrs)
         
             
 class AmPmTimeField(forms.Field):
     widget = AmPmTimeWidget
         
+    def clean(self, value):
+        if value:
+            t, meridian = value.split()
+            h, m = [int(v) for v in t.split(':')]
+            if meridian == 'PM' and h != 12:
+                h += 12
+            elif meridian == 'AM' and h == 12:
+                h = 0
+            return time(h, m)
+        return None
+
 
 class ScheduledUpdateForm(forms.ModelForm):
     start_time = AmPmTimeField()
@@ -82,19 +91,34 @@ class ScheduledUpdateForm(forms.ModelForm):
         model = ScheduledUpdate
         exclude = ['site']
 
-    # move this into form field later
-    def clean_start_time(self):
-        value = self.cleaned_data['start_time']
-        t, meridian = value.split()
-        h, m = [int(v) for v in t.split(':')]
-        if meridian == 'PM' and h != 12:
-            h += 12
-        elif meridian == 'AM' and h == 12:
-            h = 0
-        return time(h, m)
-
 
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Site
         fields = ['street', 'city', 'state', 'zip', 'phone', 'fax_number']
+
+
+class TimeSlotForm(forms.ModelForm):
+    start = AmPmTimeField(label='Open', required=False)
+    stop = AmPmTimeField(label='Close', required=False)
+
+    class Meta:
+        model = TimeSlot
+        fields = ['start', 'stop']
+
+    def clean(self):
+        super(TimeSlotForm, self).clean()
+        cleaned_data = self.cleaned_data
+        if all(cleaned_data.values()):
+            self.noop = False
+            return cleaned_data
+        if not any(cleaned_data.values()):
+            self.noop = True
+            return cleaned_data
+        raise forms.ValidationError('You must specify an opening and closing time.')
+
+    def save(self, commit=False):
+        if self.noop:
+            return
+        return super(TimeSlotForm, self).save(commit)
+        

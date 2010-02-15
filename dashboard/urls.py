@@ -41,10 +41,7 @@ restaurant_patterns = patterns('tiger.dashboard.views.restaurant',
     url(r'^$', 'home', name='dashboard_restaurant'),
     url(r'^location/$', 'location', name='dashboard_location'),
     url(r'^profile/(?P<slug>[\w-]+)/$', 'edit_content', name='dashboard_edit_content'),
-    url(r'^hours/$', direct_to_template, {'template': 'dashboard/hours.html'}, name='mns_editor_settings'),
-    url(r'^save-timeslot/$', 'save_timeslot', name='save_timeslot'),
-    url(r'^update-timeslot/$', 'update_timeslot', name='update_timeslot'),
-    url(r'^delete-timeslot/$', 'delete_timeslot', name='delete_timeslot'),
+    url(r'^hours/$', 'edit_hours', name='edit_hours'),
 )
 
 urlpatterns += patterns('',
