@@ -162,10 +162,14 @@ class ScheduledUpdate(models.Model):
         (DOW_SUNDAY, 'Sunday'),
     )
     site = models.ForeignKey(Site)
+    name = models.CharField(max_length=100, help_text='This description is for your reference only.  It will not appear in your blasts.', default='')
+    title = models.CharField(max_length=255, blank=True, help_text='The title as it will appear in the blast.', default='')
     start_time = models.TimeField(null=True, blank=True)
     weekday = models.IntegerField(null=True, blank=True, choices=DOW_CHOICES)
-    footer = models.TextField(help_text='This text will appear at the bottom of e-mails and faxes sent at this time.')
-    show_descriptions = models.BooleanField(default=True)
+    columns = models.SmallIntegerField('number of columns', default=2)
+    column_height = models.DecimalField('column height (in inches)', default='7.0', decimal_places=1, max_digits=3)
+    footer = models.TextField(blank=True, help_text='This text will appear at the bottom of e-mails and faxes sent at this time.')
+    show_descriptions = models.BooleanField('check to include the descriptions of your menu items', default=True)
 
     class Meta:
         unique_together = ('site', 'weekday',)

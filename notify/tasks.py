@@ -48,11 +48,19 @@ class RunScheduledBlastTask(PeriodicTask):
         msgs = []
         for update in updates:
             site = update.site
+            columns = []
+            for i in range(update.columns):
+                height = update.column_height
+                width = Decimal('7.3') / update.columns - Decimal('0.125')
+                left = Decimal('0.6') + Decimal('0.125') * i + (Decimal('7.3') / update.columns) * i
+                columns.append(dict(height=height, width=width, left=left))
             content = render_to_pdf('notify/update.html', {
                 'specials': site.item_set.filter(special=True).order_by('section__id'),
+                'title': update.title,
                 'footer': update.footer,
-                'site': site,
-                'show_descriptions': update.show_descriptions
+                'site': request.site,
+                'show_descriptions': update.show_descriptions,
+                'columns': columns
             })
             via_email = Subscriber.via_email.filter(site=site)
             emails = [s.user.email for s in via_email]

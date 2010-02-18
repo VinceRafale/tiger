@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -52,13 +53,21 @@ def delete_blast(request, blast_id):
 @login_required
 def preview_blast(request, blast_id):
     update = ScheduledUpdate.objects.get(id=blast_id)
+    columns = []
+    for i in range(update.columns):
+        height = update.column_height
+        width = Decimal('7.3') / update.columns - Decimal('0.125')
+        left = Decimal('0.6') + Decimal('0.125') * i + (Decimal('7.3') / update.columns) * i
+        columns.append(dict(height=height, width=width, left=left))
     response = HttpResponse(mimetype='application/pdf')
     response['Content-Disposition'] = 'filename=blast-preview.pdf'
     content = render_to_pdf('notify/update.html', {
         'specials': request.site.item_set.filter(special=True).order_by('section__id'),
+        'title': update.title,
         'footer': update.footer,
         'site': request.site,
-        'show_descriptions': update.show_descriptions
+        'show_descriptions': update.show_descriptions,
+        'columns': columns
     })
     response.write(content)
     return response
