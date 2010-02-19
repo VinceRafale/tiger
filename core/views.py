@@ -37,6 +37,8 @@ def item_detail(request, section, item):
 
 def order_item(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
+    if not request.site.enable_orders:
+        return HttpResponseRedirect(i.get_absolute_url())
     OrderForm = get_order_form(i)
     total = i.variant_set.order_by('-price')[0].price
     if request.method == 'POST':

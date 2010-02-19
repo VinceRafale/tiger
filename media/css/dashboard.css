@@ -94,3 +94,12 @@ p.subscribers, p.usage {padding:10px;}
 #subscribers th a {color:white;text-decoration:none;}
 
 div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
+
+.messages {list-style-type:none;}
+.messages li {
+    border:1px solid;
+    margin-left:0;
+    padding:6px;
+}
+.messages li.success {color:green;background-color:#d3ead3;border-color:green;}
+.messages li.warning {color:#704308;background-color:#f9f7c3;border-color:#704308;}

@@ -27,12 +27,13 @@ h1, h2, h4 {font-family: Opticon; line-height:1;}
 
 a#viewCart {margin-right:12px;}
 
-#menuitems a.add {
+a.add {
 background-color:#ae0001;
 color:white;
 -moz-border-radius:4px;
 -webkit-border-radius:4px;
 }
+a.add.top {font-weight:bold; text-transform:uppercase; text-decoration:none; margin-bottom:10px;}
 
 #orderForm {
     padding:20px;

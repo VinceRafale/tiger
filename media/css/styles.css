@@ -7,6 +7,7 @@ div.shim{height: 50px; clear: both;}
 .footer{width:100%; position: relative; margin-top: -50px; height: 50px; clear: both;}
 .footer p{text-align: center;}
 
+h1 {clear:right;}
 #menu ul{margin:0; list-style-type:none;}
 #menu ul li{float:left;margin:0;position:relative;}
 #menu ul li a{text-decoration:none;display:block;padding:8px 15px 5px 15px; margin:0;}
@@ -23,12 +24,12 @@ div.shim{height: 50px; clear: both;}
 #menuitems ul li {display:inline; font-style:italic; padding-right:0;}
 
 div.prices {text-align:right;}
-#menuitems a.add {
+a.add {
     display:block; 
-    float:right;
     width:78px;
-    font-size:10px;
+    font-size:10px !important;
     padding:2px 4px;
+    float:right;
 }
 
 #orderForm ul {list-style-type:none;}

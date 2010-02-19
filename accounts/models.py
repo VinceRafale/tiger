@@ -53,6 +53,7 @@ class Site(models.Model):
     phone = PhoneNumberField(default='')
     fax_number = PhoneNumberField(default='', blank=True)
     custom_domain = models.BooleanField(default=False)
+    enable_orders = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.custom_domain:
