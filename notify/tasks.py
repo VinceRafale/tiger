@@ -20,12 +20,12 @@ Social = get_model('notify', 'Social')
 
 
 class SendFaxTask(Task):
-    def run(self, site, subscribers, content, **kwargs):
+    def run(self, site, recipients, content, **kwargs):
         fax_machine = FaxMachine(site)
         try:
-            return fax_machine.send(subscribers, content, **kwargs)
+            return fax_machine.send(recipients, content, **kwargs)
         except FaxServiceError, e:
-            self.retry([site, subscribers, content], kwargs,
+            self.retry([site, recipients, content], kwargs,
                 countdown=60 * 1, exc=e)
 
 
@@ -68,7 +68,9 @@ class RunScheduledBlastTask(PeriodicTask):
                 content, bcc=emails)
             msgs.append(msg)
             via_fax = Subscriber.via_fax.filter(site=site)
-            SendFaxTask.delay(site=site, subscribers=via_fax, content=content)
+            numbers = [s.fax for s in via_fax]
+            names = [contact.user.get_full_name() for contact in contacts]
+            SendFaxTask.delay(site=site, recipients=numbers, content=content, names=names)
         SendEmailTask.delay(msgs=msgs)
     
 

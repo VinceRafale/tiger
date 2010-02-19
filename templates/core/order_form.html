@@ -1,14 +1,19 @@
-<h2>{{ item.name }}</h2>
+{% extends 'core/item_detail.html' %}
 
-<form id="orderForm" method="POST" action="{% url order_item item.id %}">
+{% block form %}
+<form id="orderForm" method="POST" action=".">
+<span class="totalPrice">${{ total }}</span>
+<h3>Order now!</h3>
 {% if form.non_field_errors %}
 {{ form.non_field_errors }}
 {% endif %}
 {% if form.quantity.errors %}
 {{ form.quantity.errors }}
 {% endif %}
-{{ form.quantity.label_tag }}
+<label id="qty">
+{{ form.quantity.label }}
 {{ form.quantity }}
+</label>
 {% if form.variant %}
     {% if form.variant.errors %}
     {{ form.variant.errors }}
@@ -16,10 +21,41 @@
     {{ form.variant }}
 {% endif %}
 {% if form.upgrades %}
+    <div class="upgrades">
     {% if form.upgrades.errors %}
     {{ form.upgrades.errors }}
     {% endif %}
     {{ form.upgrades }}
+    </div>
 {% endif %}
-<input type="submit" value="Add to cart" />
+<input id="submit" type="submit" value="Add to cart" />
+<div class="clear"></div>
 </form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+function getLabelNum(selector) {
+    val = $(selector).parent().find('span').text();
+    return Number(val);
+}
+
+function calculate() {
+    qty = Number($("#id_quantity").val());
+    basePrice = getLabelNum("[name='variant']:checked") || Number($("span.totalPrice").text().slice(1));
+    upgrades = 0;
+    $("[name='upgrades']:checked").each(function () {
+        upgrades += getLabelNum(this);
+    });
+    total = (basePrice + upgrades) * qty;
+    nonDecimalDigits = (Math.floor(total) + "").length;
+    return total.toPrecision(nonDecimalDigits + 2);
+}
+
+$(function () {
+    $("#orderForm :text,#orderForm :radio,#orderForm :checkbox").change(function () {
+        $("span.totalPrice").text("$" + calculate());
+    });
+});
+</script>
+{% endblock %}

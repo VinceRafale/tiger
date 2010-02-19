@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <style>
+        @page {size:letter; top:1.5cm; left:1.5cm;bottom:1.5cm; right:1.5cm;}
+        * {font-family: Arial, sans-serif;}
+        h1 {font-size:24px; margin-bottom:0;}
+        h2 {font-size:18px; text-decoration:underline; margin-bottom:0;}
+        h4 {font-size:14px; margin:auto auto 0 auto; display:inline; padding-bottom:0;}
+        p {font-size:12px; margin-top:0; padding-top:0;}
+        em {font-family: Arial, sans-serif; font-weight:normal; font-size:13px; margin:0 auto 0 auto;}
+        /*td {vertical-align:top; padding:0.5em;}*/
+        #orderPreview {width:100%; font-size:14px;}
+        #orderPreview td {text-align:right;}
+        #orderPreview td.item {width:70%; text-align:left;}
+        #orderPreview tr {border-top:1px grey solid; padding-top:0.5em;}
+        #orderPreview tr ul {margin-bottom:0;}
+        #orderPreview tr.total {border-top:4px grey solid;}
+        td.order-info {width:75%;}
+        p {font-size:14px;}
+        </style>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td>
+                    <img src="{{ MEDIA_URL }}img/tiger-outline.png" />
+                </td>
+                <td class="order-info">
+                    <h1>Takeout Tiger Order #</h1>
+                    <p>
+                        <strong>For:</strong> {{ data.name }}<br/>
+                        <strong>Phone number:</strong> {{ data.phone }}</br>
+                        <strong>Pickup time:</strong> {{ data.pickup }}
+                    </p>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table id="orderPreview">
+        <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+        </tr>
+        {% for id, item in cart %}
+            <tr>
+                <td class="item">
+                {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}
+                {% if item.upgrades or item.notes %}
+                    <ul>
+                    {% for upgrade in item.upgrades %}
+                        <li>{{ upgrade.name }}: ${{ upgrade.price|floatformat:"-2" }} per item</li>
+                    {% endfor %}
+                    {% if item.notes %}
+                        <li>{{ item.notes }}</li>
+                    {% endif %}
+                    </ul>
+                {% endif %}
+                </td>
+                <td>${{ item.variant.price|floatformat:"-2" }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.total|floatformat:"-2" }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="total">
+            <td class="item">Total</td>
+            <td></td>
+            <td></td>
+            <td>${{ cart.total|floatformat:"-2" }}</td>
+        </tr>
+        </table>
+    </body>
+</html>

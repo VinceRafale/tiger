@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils.http import int_to_base36
+from django.utils.safestring import mark_safe
 
 from imagekit.models import ImageModel
 
@@ -91,7 +92,8 @@ class Variant(models.Model):
         ordering = ['price']
 
     def __unicode__(self):
-        return '%s ($%s)' % (self.description, self.price)
+        s = '%s ($<span>%s</span>)' % (self.description, self.price)
+        return mark_safe(s)
 
 
 class Upgrade(models.Model):
@@ -110,9 +112,10 @@ class Upgrade(models.Model):
         verbose_name_plural = 'upgrades/substitutions'
 
     def __unicode__(self):
-        return '%s %s for $%.02f more' % (
+        s = '%s %s for $<span>%.02f</span> more' % (
             'Substitute' if self.substitute else 'Add', 
             self.name, self.price)
+        return mark_safe(s)
 
 
 post_save.connect(item_social_handler, sender=Item)

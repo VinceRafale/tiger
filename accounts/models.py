@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import date, datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -104,6 +104,16 @@ class Site(models.Model):
             return social.twitter_screen_name
         return False
 
+    @property
+    def is_open(self):
+        now = datetime.now()
+        timeslots = self.timeslot_set.filter(dow=now.weekday())
+        if not timeslots.count():
+            return False
+        for timeslot in timeslots:
+            if timeslot.start < now.time() < timeslot.stop:
+                return True
+        return False
 
 
 class TimeSlot(models.Model):

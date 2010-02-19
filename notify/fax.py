@@ -26,13 +26,17 @@ class FaxMachine(object):
         self.username = username
         self.password = password
 
-    def send(self, contacts, content, content_type='PDF', **kwargs):
+    def send(self, fax_numbers, content, content_type='PDF', names=None, **kwargs):
         b64_content = content.encode('base64')
+        if not isinstance(fax_numbers, list):
+            fax_numbers = [fax_numbers]
+        if names is None:
+            names = [self.site.name]
         params = {
             'Username': self.username,
             'Password': self.password,
-            'FaxNumbers': ';'.join('+1 (%s) %s %s' % tuple(contact.fax.split('-')) for contact in contacts),
-            'Contacts': ';'.join(contact.user.get_full_name() for contact in contacts),
+            'FaxNumbers': ';'.join('+1 (%s) %s %s' % tuple(num.split('-')) for num in fax_numbers),
+            'Contacts': ';'.join(names), 
             'FilesData': b64_content,
             'FileTypes': content_type,
             'FileSizes': len(content),
@@ -42,6 +46,7 @@ class FaxMachine(object):
             'IsHighResolution': False,
             'IsFineRendering': False
         }
+        params.update(kwargs)
         try:
             c = Client('https://ws.interfax.net/dfs.asmx?WSDL', cache=None)
         except Exception, e:

@@ -11,9 +11,9 @@
 {% endblock %}
 
 {% block content %}
-{% comment %}
-<a id="addToCart" href="{% url order_item item.id %}"><img src="{{ MEDIA_URL }}img/cart_put.png" /> Order</a>
-{% endcomment %}
+{% if not form %}
+<a class="add" href="{% url order_item item.section.slug item.slug %}">add to order</a>
+{% endif %}
 <h1>{{ item.name }}</h1>
 <div>
 {% if item.photo %}
@@ -22,6 +22,8 @@
 {% if item.description %}
 {{ item.description|linebreaks }}
 {% endif %}
+{% block form %}
+{% endblock %}
 <a href="{{ item.section.get_absolute_url }}">&laquo; back to {{ item.section.name }}</a>
 </div>
 {% endblock %}
@@ -29,7 +31,11 @@
 {% block js %}
 <script type="text/javascript">
 $(function () {
-    $("#addToCart").fancybox();
+    $("#addToCart").fancybox({
+        autoDimensions: false,
+        width:400,
+        height:300
+    });
 });
 </script>
 {% endblock %}
