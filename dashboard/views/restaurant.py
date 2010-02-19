@@ -57,6 +57,9 @@ def edit_hours(request):
 
 def toggle_order_status(request):
     site = request.site
+    if not site.fax_number:
+        messages.error(request, "You must enter a fax number to receive online orders.") 
+        return HttpResponseRedirect(reverse('dashboard_restaurant'))
     if site.enable_orders:
         site.enable_orders = False
         messages.warning(request, "You have disabled online orders.") 

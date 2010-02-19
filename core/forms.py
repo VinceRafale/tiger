@@ -13,7 +13,8 @@ def get_order_form(instance):
     variants = instance.variant_set.all()
     upgrades = instance.upgrade_set.all()
     attrs = {
-        'quantity': forms.IntegerField(min_value=1, initial=1)
+        'quantity': forms.IntegerField(min_value=1, initial=1),
+        'notes': forms.CharField(required=False)
     }
     if variants.count() > 1:
         max = variants.order_by('-price')[0].id
@@ -41,4 +42,4 @@ def get_item_form(site):
 class OrderForm(forms.Form):
     name = forms.CharField()
     phone = USPhoneNumberField()
-    pickup = forms.CharField()
+    pickup = forms.CharField(label='Time you will pick up your order')

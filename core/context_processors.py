@@ -1,2 +1,2 @@
 def cart(request):
-    return {'cart': request.cart}
+    return {'cart': getattr(request, 'cart', '')}

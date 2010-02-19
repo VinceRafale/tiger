@@ -103,3 +103,4 @@ div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
 }
 .messages li.success {color:green;background-color:#d3ead3;border-color:green;}
 .messages li.warning {color:#704308;background-color:#f9f7c3;border-color:#704308;}
+.messages li.error {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}

@@ -32,13 +32,14 @@ a.add {
     float:right;
 }
 
-#orderForm ul {list-style-type:none;}
+#orderForm ul {list-style-type:none; margin-bottom:10px;}
 #orderForm li {display:inline; margin-left:0;}
-#orderForm #qty {float:left;}
+#orderForm #qty {float:left; margin-bottom:10px;}
+#orderForm .upgrades {clear:left;}
 #orderForm .upgrades li {display:block;}
 #orderForm span.totalPrice {float:right; font-size:16px;}
 #id_quantity {width:30px;}
-
+#id_notes {width:300px;}
 #orderPreview {width:100%; font-size:14px;}
 #orderPreview td {text-align:right;}
 #orderPreview td.item {width:70%; text-align:left;}

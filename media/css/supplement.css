@@ -1,4 +1,4 @@
-#menu ul li a:hover{background-color:#ae0001;color:white;}
+#menu ul li a:hover, #menu ul li:hover a{background-color:#ae0001;color:white;}
 #masthead h2 {font-size:40px; margin:60px 0 0 0; padding-bottom:0; color:#ae0001;}
 h1 {
     border-bottom:1px solid grey;
@@ -54,6 +54,7 @@ color:white;
 -webkit-border-radius:4px;
 border:none;
 float:right;
+clear:right;
 }
 
 #orderPreview td {border-top:1px grey solid;}
