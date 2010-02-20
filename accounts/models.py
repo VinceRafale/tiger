@@ -12,7 +12,7 @@ class Account(models.Model):
     """
     user = models.ForeignKey(User)
     company_name = models.CharField(max_length=200)
-    email = models.EmailField()
+    email = models.EmailField('billing e-mail address')
     phone = PhoneNumberField()
     fax = PhoneNumberField()
     street = models.CharField(max_length=255)
@@ -21,11 +21,7 @@ class Account(models.Model):
     # customer's authorize.net information for online orders
     auth_net_api_login = models.CharField(max_length=255, blank=True)
     auth_net_api_key = models.CharField(max_length=255, blank=True)
-    signup_date = models.DateField(editable=False)
-    # Takeout Tiger's authorize.net information for this customer in CIM
-    customer_profile_id = models.IntegerField(null=True, blank=True)
-    payment_profile_id = models.IntegerField(null=True, blank=True)
-    cc_last_4 = models.CharField(blank=True, max_length=16)
+    signup_date = models.DateField(editable=False, default=datetime.now)
 
     def __unicode__(self):
         return self.company_name
@@ -43,8 +39,8 @@ class Site(models.Model):
     account = models.ForeignKey(Account)
     name = models.CharField(max_length=200)
     domain = models.CharField(max_length=200)
-    tld = models.CharField(max_length=4)
-    enable_blog = models.BooleanField()
+    tld = models.CharField(max_length=4, blank=True, null=True)
+    enable_blog = models.BooleanField(default=False)
     blog_address = models.URLField(blank=True)
     street = models.CharField(max_length=255, default='')
     city = models.CharField(max_length=255, default='')

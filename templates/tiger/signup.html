@@ -1,0 +1,88 @@
+{% extends 'tiger/base.html' %}
+
+{% block content %}
+
+<h3>Your web address</h3>
+<p>What would you like your Takeout Tiger address to be?</p>
+{% if form.subdomain.errors %}
+{{ form.subdomain.errors }}
+{% endif %}
+<label>{{ form.subdomain }}.takeouttiger.com</label>
+<p>You can add a custom domain (like www.yourcafe.com) later.</p>
+
+<h3>Your user account</h3>
+{% if form.first_name.errors %}
+{{ form.first_name.errors }}
+{% endif %}
+<label>{{ form.first_name.label }} <br />{{ form.first_name }}</label>
+
+{% if form.last_name.errors %}
+{{ form.last_name.errors }}
+{% endif %}
+<label>{{ form.last_name.label }} <br />{{ form.last_name }}</label>
+
+{% if form.user_email.errors %}
+{{ form.user_email.errors }}
+{% endif %}
+<label>{{ form.user_email.label }} <br />{{ form.user_email }}</label>
+
+{% if form.password1.errors %}
+{{ form.password1.errors }}
+{% endif %}
+<label>{{ form.password1.label }} <br />{{ form.password1 }}</label>
+
+{% if form.password2.errors %}
+{{ form.password2.errors }}
+{% endif %}
+<label>{{ form.password2.label }} <br />{{ form.password2 }}</label>
+
+<h3>Your business</h3>
+
+{% if form.company_name.errors %}
+{{ form.company_name.errors }}
+{% endif %}
+<label>{{ form.company_name.label }} <br />{{ form.company_name }}</label>
+
+{% if form.street.errors %}
+{{ form.street.errors }}
+{% endif %}
+<label>{{ form.street.label }} <br />{{ form.street }}</label>
+
+{% if form.state.errors %}
+{{ form.state.errors }}
+{% endif %}
+<label>{{ form.state.label }} <br />{{ form.state }}</label>
+
+{% if form.zip.errors %}
+{{ form.zip.errors }}
+{% endif %}
+<label>{{ form.zip.label }} <br />{{ form.zip }}</label>
+
+{% if form.email.errors %}
+{{ form.email.errors }}
+{% endif %}
+<label>{{ form.email.label }} <br />{{ form.email }}</label>
+
+{% if form.phone.errors %}
+{{ form.phone.errors }}
+{% endif %}
+<label>{{ form.phone.label }} <br />{{ form.phone }}</label>
+
+{% if form.fax.errors %}
+{{ form.fax.errors }}
+{% endif %}
+<label>{{ form.fax.label }} <br />{{ form.fax }}</label>
+
+<h3>Payment info</h3>
+
+{% if form.cc_number.errors %}
+{{ form.cc_number.errors }}
+{% endif %}
+<label>{{ form.cc_number.label }} <br />{{ form.cc_number }}</label>
+
+{% if form.cc_expiration.errors %}
+{{ form.cc_expiration.errors }}
+{% endif %}
+<label>{{ form.cc_expiration.label }} <br />{{ form.cc_expiration }}</label>
+
+{% endblock %}
