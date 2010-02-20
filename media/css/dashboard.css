@@ -87,11 +87,14 @@ a.delete-row {margin:20px auto auto 20px;}
 p.subscribers {background-color:#cde0e8; color:#02405a; border:black solid 1px;}
 p.subscribers, p.usage {padding:10px;}
 
-#subscribers {width:100%; font-size:13px;}
-#subscribers thead {color:white; background-color:#02405a;}
-#subscribers tr.shaded {background-color:#cde0e8;}
-#subscribers {margin-bottom:0;}
-#subscribers th a {color:white;text-decoration:none;}
+table {width:100%; font-size:13px;}
+table thead {color:white; background-color:#02405a;}
+table tr.shaded {background-color:#cde0e8;}
+table tr.total {border-top:1px solid #02405a;}
+table td {padding:1px 4px;}
+table td.qty {text-align:center;}
+table {margin-bottom:0;}
+table th a {color:white;text-decoration:none;}
 
 div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
 
@@ -104,3 +107,5 @@ div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
 .messages li.success {color:green;background-color:#d3ead3;border-color:green;}
 .messages li.warning {color:#704308;background-color:#f9f7c3;border-color:#704308;}
 .messages li.error {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}
+
+td.total {text-align:right;}

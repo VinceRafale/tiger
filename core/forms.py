@@ -1,6 +1,9 @@
+from datetime import date
+
 from django import forms
 from django.contrib.localflavor.us.forms import USPhoneNumberField
 
+from tiger.accounts.forms import AmPmTimeField
 from tiger.core.models import *
 
 
@@ -39,7 +42,12 @@ def get_item_form(site):
     return ItemForm
 
 
-class OrderForm(forms.Form):
-    name = forms.CharField()
-    phone = USPhoneNumberField()
-    pickup = forms.CharField(label='Time you will pick up your order')
+class OrderForm(forms.ModelForm):
+    pickup = AmPmTimeField()
+
+    class Meta:
+        model = Order
+
+    def clean_pickup(self):
+        pickup = self.cleaned_data['pickup']
+        return datetime.combine(date.today(), pickup)

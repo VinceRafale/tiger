@@ -45,8 +45,14 @@ restaurant_patterns = patterns('tiger.dashboard.views.restaurant',
     url(r'^toggle-order-status/$', 'toggle_order_status', name='toggle_order_status'),
 )
 
+order_patterns = patterns('tiger.dashboard.views.orders',
+    url(r'^$', 'home', name='dashboard_orders'),
+    url(r'^(\d+)/$', 'order_detail', name='order_detail'),
+)
+
 urlpatterns += patterns('',
     (r'^menu/', include(menu_patterns)),
     (r'^marketing/', include(marketing_patterns)),
     (r'^restaurant/', include(restaurant_patterns)),
+    (r'^orders/', include(order_patterns)),
 )

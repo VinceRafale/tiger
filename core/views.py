@@ -70,10 +70,14 @@ def send_order(request):
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
-            # log the sale
+            order = form.save(commit=False)
+            order.total = request.cart.total()
+            order.cart = request.cart.session.get_decoded()
+            order.save()
             content = render_to_pdf('notify/order.html', {
                 'data': form.cleaned_data,
-                'cart': request.cart
+                'cart': request.cart,
+                'order_no': order.id
             })
             SendFaxTask.delay(request.site, request.site.fax_number, content, IsFineRendering=True)
             request.cart.clear()

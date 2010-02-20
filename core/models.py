@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.localflavor.us.models import PhoneNumberField
 from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
@@ -10,6 +13,7 @@ from imagekit.models import ImageModel
 
 from tiger.accounts.models import Site
 from tiger.notify.handlers import item_social_handler
+from tiger.utils.fields import PickledObjectField
 
 
 class Section(models.Model):
@@ -116,6 +120,19 @@ class Upgrade(models.Model):
             'Substitute' if self.substitute else 'Add', 
             self.name, self.price)
         return mark_safe(s)
+
+
+class Order(models.Model):
+    name = models.CharField(max_length=50)
+    phone = PhoneNumberField()
+    pickup = models.DateTimeField()
+    total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
+    cart = PickledObjectField(editable=False)
+    timestamp = models.DateTimeField(default=datetime.now, editable=False)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return 'order_detail', [self.id], {}
 
 
 post_save.connect(item_social_handler, sender=Item)

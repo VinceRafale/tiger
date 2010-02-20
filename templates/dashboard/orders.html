@@ -1,0 +1,78 @@
+{% extends 'dashboard.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/raphael-min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/g.raphael-min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/g.bar-min.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Online ordering</h1>
+    <div class="grid_6 alpha">
+        <h2>Latest orders</h2>
+        <table id="subscribers">
+            <thead>
+                <tr>
+                    <th>For</th>
+                    <th>Placed at</th>
+                    <th>Ready by</th>
+                    <th>Phone</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+                <tr class="{% cycle '' 'shaded' %}">
+                    <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
+                    <td><a href="{{ order.get_absolute_url }}">{{ order.timestamp|date:"fa m/d" }}</a></td>
+                    <td><a href="{{ order.get_absolute_url }}">{{ order.pickup|date:"fa m/d" }}</a></td>
+                    <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
+                    <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total|floatformat:"-2" }}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="grid_6 omega">
+        <h2>Status</h2>
+        <p class="usage">
+            {% if site.enable_orders %}
+            You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a>
+            {% else %}
+            You are not currently taking online orders.  <a href="{% url toggle_order_status %}">Enable now</a>
+            {% endif %}
+        </p>
+        <div id="chart"></div>
+    </div>
+{% endblock %}
+
+{% block js %}
+{% comment %}
+<script type="text/javascript">
+window.onload = function () {
+    var r = Raphael("chart"),
+        fin = function () {
+            this.flag = r.g.popup(this.bar.x, this.bar.y, "$" + this.bar.value || "0").insertBefore(this);
+        },
+        fout = function () {
+            this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+        },
+        fin2 = function () {
+            var y = [], res = [];
+            for (var i = this.bars.length; i--;) {
+                y.push(this.bars[i].y);
+                res.push(this.bars[i].value || "0");
+            }
+            this.flag = r.g.popup(this.bars[0].x, Math.min.apply(Math, y), res.join(", ")).insertBefore(this);
+        },
+        fout2 = function () {
+            this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+        };
+    r.g.txtattr.font = "16px 'Fontin Sans', Fontin-Sans, sans-serif";
+    r.g.text(230, 10, "Online sales volume");
+    
+    r.g.barchart(10, 20, 445, 260, [[155, 20, 13, 0, 5, 1, 2, 20, 13, 32, 5, 1, 2, 20, 13, 32, 5, 1, 2, 10]]).hover(fin, fout);
+};
+</script>
+{% endcomment %}
+{% endblock %}

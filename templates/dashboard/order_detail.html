@@ -1,0 +1,50 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+    <h1>Order #{{ order.id }}</h1>
+    <div class="alpha grid_4">
+        <strong>Customer:</strong> {{ order.name }}<br />
+        <strong>Time placed:</strong> {{ order.timestamp|date:"fa m/d/y" }}<br />
+        <strong>Pickup/delivery time:</strong> {{ order.pickup|date:"fa m/d/y" }}<br />
+        <strong>Phone number:</strong> {{ order.phone }}<br />
+    </div>
+    <div class="omega grid_8">
+        <table id="subscribers">
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+        {% for id, item in order.cart.items %}
+            <tr class="{% cycle '' 'shaded' %}">
+                <td class="item">
+                {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}
+                {% if item.upgrades or item.notes %}
+                    <ul>
+                    {% for upgrade in item.upgrades %}
+                        <li>{{ upgrade.name }}: ${{ upgrade.price|floatformat:"-2" }} per item</li>
+                    {% endfor %}
+                    {% if item.notes %}
+                        <li>{{ item.notes }}</li>
+                    {% endif %}
+                    </ul>
+                {% endif %}
+                </td>
+                <td class="total">${{ item.variant.price|floatformat:"-2" }}</td>
+                <td class="qty">{{ item.quantity }}</td>
+                <td class="total">${{ item.total|floatformat:"-2" }}</td>
+            </tr>
+        {% endfor %}
+        <tr class="total">
+            <td class="item">Total</td>
+            <td></td>
+            <td></td>
+            <td class="total">${{ order.total|floatformat:"-2" }}</td>
+        </tr>
+        </table>
+    </div>
+{% endblock %}
+
