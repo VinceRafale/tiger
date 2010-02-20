@@ -11,7 +11,7 @@ from celery.registry import tasks
 
 from oauth import oauth
 
-from tiger.accounts.models import Subscriber, ScheduledUpdate
+from tiger.accounts.models import Subscriber
 from tiger.notify.fax import FaxMachine, FaxServiceError
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
 from tiger.utils.pdf import render_to_pdf

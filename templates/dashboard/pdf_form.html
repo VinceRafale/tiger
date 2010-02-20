@@ -1,0 +1,105 @@
+{% extends 'dashboard.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+<style>
+    ul, li {margin-left:0;}
+    li, li label {display:inline;}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} PDF menu</h1>
+<form method="POST" action=".">
+    <div class="grid_6 alpha">
+        <h2>Content</h2>
+        {% if form.name.errors %}
+        {{ form.name.errors }}
+        <label class="errorname">
+        {% else %}
+        <label>
+        {% endif %}
+        {{ form.name.label }}<br />{{ form.name }}
+        </label>
+
+        {% if form.title.errors %}
+        {{ form.title.errors }}
+        <label class="errortitle">
+        {% else %}
+        <label>
+        {% endif %}
+        {{ form.title.label }}<br />{{ form.title }}
+        </label>
+    
+        {% if form.content.errors %}
+        {{ form.content.errors }}
+        <label class="errorcontent">
+        {% else %}
+        <label>
+        {% endif %}
+        {{ form.content.label }}<br />{{ form.content }}
+        </label>
+    
+        {% if form.show_descriptions.errors %}
+        {{ form.show_descriptions.errors }}
+        <label class="errorshow_descriptions">
+        {% else %}
+        <label>
+        {% endif %}
+        {{ form.show_descriptions }} {{ form.show_descriptions.label }}
+        </label>
+    
+        {% if form.footer.errors %}
+        {{ form.footer.errors }}
+        <label class="errorshow_descriptions">
+        {% else %}
+        <label>
+        {% endif %}
+        {{ form.footer.label }}<br />{{ form.footer }} 
+        </label>
+    </div>
+    <div class="grid_6 omega">
+        <h2>Layout</h2>
+        {% if form.columns.errors %}
+        {{ form.columns.errors }}
+        <label class="errorname">
+        {% else %}
+        <label>
+        {% endif %}
+        {{ form.columns.label }}<br />{{ form.columns }}
+        </label>
+
+        {% if form.column_height.errors %}
+        {{ form.column_height.errors }}
+        <label class="errortitle">
+        {% else %}
+        <label>
+        {% endif %}
+        {{ form.column_height.label }}<br />{{ form.column_height }}
+        </label>
+    
+        {% if form.orientation.errors %}
+        {{ form.orientation.errors }}
+        <label class="errorcontent">
+        {% else %}
+        <label>
+        {% endif %}
+        {{ form.orientation.label }}<br />{{ form.orientation }}
+        </label>
+    </div>
+</form>
+<div class="clear"></div>
+<a class="buttonTop last" href="{% url dashboard_menu %}">Cancel</a>
+<a class="buttonTop submit" href="#">Save</a>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+});
+</script>
+{% endblock %}
+

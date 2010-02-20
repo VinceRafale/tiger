@@ -2,7 +2,7 @@
 <head>
 <style>
 @page {
-    size:letter;
+    size:letter{% if landscape %} landscape{% endif %};
     {% for column in columns %}
     @frame col{{ forloop.counter }} {
         margin-left:{{ column.left }}in; 
@@ -43,25 +43,26 @@ td {vertical-align:top; padding:0.5em;}
 <body>
 <h1 id="header">{{ title }}</h1>
 
-{% regroup specials by section as sections %}
 {% for section in sections %}
-<h2>{{ section.grouper }}</h2>
-    {% for item in section.list %}
-    <h4>{{ item.name }}
-    <em>&nbsp;&nbsp;&nbsp;&nbsp;
-    {% for variant in item.variant_set.all %}
-        {% if forloop.first and forloop.last %}
-            ${{ variant.price|floatformat:2 }}
-        {% else %}
-            {{ variant.description }} - ${{ variant.price|floatformat:2 }} {% if not forloop.last %}&nbsp;&nbsp;&bull;&nbsp;&nbsp;{% endif %}
+<h2>{{ section.name }}</h2>
+    {% for item in section.item_set.all %}
+        {% if show_all or not item.special %}
+            <h4>{{ item.name }}
+            <em>&nbsp;&nbsp;&nbsp;&nbsp;
+            {% for variant in item.variant_set.all %}
+                {% if forloop.first and forloop.last %}
+                    ${{ variant.price|floatformat:2 }}
+                {% else %}
+                    {{ variant.description }} - ${{ variant.price|floatformat:2 }} {% if not forloop.last %}&nbsp;&nbsp;&bull;&nbsp;&nbsp;{% endif %}
+                {% endif %}
+            {% endfor %}
+            </em></h4>
+            {% if show_descriptions %}
+                <p>{{ item.description }}</p>
+            {% else %}
+                <br />
+            {% endif %}
         {% endif %}
-    {% endfor %}
-    </em></h4>
-    {% if show_descriptions %}
-    <p>{{ item.description }}</p>
-    {% else %}
-    <br />
-    {% endif %}
     {% endfor %}
 {% endfor %}
 <p id="footer">{{ footer }}</p>

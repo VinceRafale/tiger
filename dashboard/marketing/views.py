@@ -32,25 +32,6 @@ def home(request):
     })
 
 @login_required
-def blast_list(request):
-    site = request.site
-    return direct_to_template(request, template='dashboard/blast_list.html', extra_context={
-    })
-
-@login_required
-def add_edit_blast(request, blast_id=None):
-    return add_edit_site_object(request, None, None, 
-        'dashboard/blast_form.html', 'dashboard_marketing', object_id=blast_id)
-
-@login_required
-def delete_blast(request, blast_id):
-    return delete_site_object(request, None, blast_id, 'dashboard_marketing')
-
-@login_required
-def preview_blast(request, blast_id):
-    return None
-
-@login_required
 def subscriber_list(request):
     return object_list(request, Subscriber.objects.filter(site=request.site), 
         template_name='dashboard/subscriber_list.html')

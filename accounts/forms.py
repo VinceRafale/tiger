@@ -4,7 +4,7 @@ from datetime import time
 from django import forms
 from django.contrib.auth.models import User
 
-from tiger.accounts.models import Subscriber, ScheduledUpdate, Site, TimeSlot
+from tiger.accounts.models import Subscriber, Site, TimeSlot
 
 
 class SubscriberForm(forms.ModelForm):
@@ -82,14 +82,6 @@ class AmPmTimeField(forms.Field):
                 h = 0
             return time(h, m)
         return None
-
-
-class ScheduledUpdateForm(forms.ModelForm):
-    start_time = AmPmTimeField()
-
-    class Meta:
-        model = ScheduledUpdate
-        exclude = ['site']
 
 
 class LocationForm(forms.ModelForm):

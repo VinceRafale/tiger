@@ -7,14 +7,6 @@ from tiger.accounts.forms import *
 from tiger.accounts.models import *
 
 
-class ScheduledUpdateModelAdmin(admin.ModelAdmin):
-    exclude = ['site']
-
-    def save_model(self, request, obj, form, change):
-        obj.site = request.site    
-        obj.save()
-
-
 class SubscriberModelAdmin(admin.ModelAdmin):
     exclude = ['site']
 
@@ -41,6 +33,5 @@ class SubscriberModelAdmin(admin.ModelAdmin):
             
 
 admin.site.register(Account)
-admin.site.register(ScheduledUpdate, ScheduledUpdateModelAdmin)
 admin.site.register(Site)
 admin.site.register(Subscriber, SubscriberModelAdmin)

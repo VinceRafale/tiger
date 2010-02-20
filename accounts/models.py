@@ -155,40 +155,6 @@ class TimeSlot(models.Model):
         return self._pretty_time(self.stop)
 
 
-class ScheduledUpdate(models.Model):
-    DOW_MONDAY = 1
-    DOW_TUESDAY = 2
-    DOW_WEDNESDAY = 3
-    DOW_THURSDAY = 4
-    DOW_FRIDAY = 5
-    DOW_SATURDAY = 6
-    DOW_SUNDAY = 7
-    DOW_CHOICES = (
-        (DOW_MONDAY, 'Monday'),
-        (DOW_TUESDAY, 'Tuesday'),
-        (DOW_WEDNESDAY, 'Wednesday'),
-        (DOW_THURSDAY, 'Thursday'),
-        (DOW_FRIDAY, 'Friday'),
-        (DOW_SATURDAY, 'Saturday'),
-        (DOW_SUNDAY, 'Sunday'),
-    )
-    site = models.ForeignKey(Site)
-    name = models.CharField(max_length=100, help_text='This description is for your reference only.  It will not appear in your blasts.', default='')
-    title = models.CharField(max_length=255, blank=True, help_text='The title as it will appear in the blast.', default='')
-    start_time = models.TimeField(null=True, blank=True)
-    weekday = models.IntegerField(null=True, blank=True, choices=DOW_CHOICES)
-    columns = models.SmallIntegerField('number of columns', default=2)
-    column_height = models.DecimalField('column height (in inches)', default='7.0', decimal_places=1, max_digits=3)
-    footer = models.TextField(blank=True, help_text='This text will appear at the bottom of e-mails and faxes sent at this time.')
-    show_descriptions = models.BooleanField('check to include the descriptions of your menu items', default=True)
-
-    class Meta:
-        unique_together = ('site', 'weekday',)
-
-    def __unicode__(self):
-        return '%s at %s' % (self.get_weekday_display(), self.start_time.strftime('%I:%M %p'))
-
-
 class Invoice(models.Model):
     account = models.ForeignKey(Account)
     date = models.DateField()

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.core.mail import EmailMessage
 from django.core.management.base import NoArgCommand
 
-from tiger.accounts.models import Subscriber, ScheduledUpdate
+from tiger.accounts.models import Subscriber
 from tiger.notify.tasks import SendEmailTask, SendFaxTask
 from tiger.utils.pdf import render_to_pdf
 
