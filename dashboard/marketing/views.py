@@ -18,7 +18,6 @@ from tiger.utils.views import add_edit_site_object, delete_site_object
 @login_required
 def home(request):
     site = request.site
-    updates = site.scheduledupdate_set.all()
     email_subscribers = Subscriber.via_email.filter(site=site)
     fax_subscribers = Subscriber.via_fax.filter(site=site)
     total_pages = Fax.objects.filter(site=site).aggregate(Sum('page_count'))['page_count__sum']
@@ -26,7 +25,6 @@ def home(request):
     pages_for_month = Fax.objects.filter(
         site=site, completion_time__gte=this_month).aggregate(Sum('page_count'))['page_count__sum']
     return direct_to_template(request, template='dashboard/marketing.html', extra_context={
-        'updates': updates,
         'email_subscribers': email_subscribers,
         'fax_subscribers': fax_subscribers,
         'total_pages': total_pages,
@@ -36,41 +34,21 @@ def home(request):
 @login_required
 def blast_list(request):
     site = request.site
-    specials = site.scheduledupdate_set.all()
     return direct_to_template(request, template='dashboard/blast_list.html', extra_context={
-        'updates': updates
     })
 
 @login_required
 def add_edit_blast(request, blast_id=None):
-    return add_edit_site_object(request, ScheduledUpdate, ScheduledUpdateForm, 
+    return add_edit_site_object(request, None, None, 
         'dashboard/blast_form.html', 'dashboard_marketing', object_id=blast_id)
 
 @login_required
 def delete_blast(request, blast_id):
-    return delete_site_object(request, ScheduledUpdate, blast_id, 'dashboard_marketing')
+    return delete_site_object(request, None, blast_id, 'dashboard_marketing')
 
 @login_required
 def preview_blast(request, blast_id):
-    update = ScheduledUpdate.objects.get(id=blast_id)
-    columns = []
-    for i in range(update.columns):
-        height = update.column_height
-        width = Decimal('7.3') / update.columns - Decimal('0.125')
-        left = Decimal('0.6') + Decimal('0.125') * i + (Decimal('7.3') / update.columns) * i
-        columns.append(dict(height=height, width=width, left=left))
-    response = HttpResponse(mimetype='application/pdf')
-    response['Content-Disposition'] = 'filename=blast-preview.pdf'
-    content = render_to_pdf('notify/update.html', {
-        'specials': request.site.item_set.filter(special=True).order_by('section__id'),
-        'title': update.title,
-        'footer': update.footer,
-        'site': request.site,
-        'show_descriptions': update.show_descriptions,
-        'columns': columns
-    })
-    response.write(content)
-    return response
+    return None
 
 @login_required
 def subscriber_list(request):

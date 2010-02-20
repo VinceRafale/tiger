@@ -17,16 +17,6 @@ def _reorder_objects(model, id_list):
         obj.save()
 
 @login_required
-def dashboard(request):
-    site = request.site
-    specials = site.item_set.filter(special=True)
-    updates = site.scheduledupdate_set.all() 
-    return direct_to_template(request, template='dashboard.html', extra_context={
-        'specials': specials,
-        'updates': updates
-    })
-
-@login_required
 def section_list(request):
     site = request.site
     return direct_to_template(request, template='dashboard/section_list.html', extra_context={
