@@ -1,1 +1,0 @@
-[{% for day in schedule %}{% for slot in day %} {"id": "{{ slot.id }}", "start": "{{ slot.start.isoformat }}", "end": "{{ slot.end.isoformat }}", "title": "Open"},{% endfor %}{% endfor %}]
