@@ -53,6 +53,7 @@ class PdfMenu(models.Model):
     footer = models.TextField(blank=True, help_text='This text will appear at the bottom of e-mails and faxes sent at this time.')
     content = models.CharField(max_length=1, choices=CONTENT_CHOICES)
     show_descriptions = models.BooleanField('check to include the descriptions of your menu items', default=True)
+    featured = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name

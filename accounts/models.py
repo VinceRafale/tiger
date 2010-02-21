@@ -4,6 +4,7 @@ from datetime import date, datetime
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 
@@ -116,6 +117,13 @@ class Site(models.Model):
                 return True
         return False
 
+    @property
+    def menu(self):
+        try:
+            return self.pdfmenu_set.get(featured=True)
+        except ObjectDoesNotExist:
+            return None
+
 
 class TimeSlot(models.Model):
     DOW_MONDAY = 0
@@ -182,7 +190,7 @@ class EmailSubscriberManager(models.Manager):
     def get_query_set(self):
         return super(EmailSubscriberManager, self).get_query_set().filter(
             send_updates=True, update_via=Subscriber.VIA_EMAIL)
-        
+
 
 class Subscriber(models.Model):
     VIA_EMAIL = 1
@@ -202,4 +210,4 @@ class Subscriber(models.Model):
     via_email = EmailSubscriberManager()
 
     def __unicode__(self):
-        return self.organization
+        return self.organization or self.user.get_full_name()

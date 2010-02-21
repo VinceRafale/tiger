@@ -9,10 +9,13 @@
         {% for pdf in pdfs %}
             <li> 
                 <a class="buttonTop last" href="{% url dashboard_delete_pdf pdf.id  %}">Delete</a>
-                <a class="buttonTop" href="{% url dashboard_preview_pdf pdf.id %}">Preview</a>
                 <a class="buttonTop" href="{% url dashboard_edit_pdf pdf.id %}">Edit</a>
+                <a class="buttonTop" href="{% url dashboard_preview_pdf pdf.id %}">Preview</a>
+                {% if not pdf.featured %}
+                <a class="buttonTop" href="{% url dashboard_edit_pdf pdf.id %}">Feature</a>
+                {% endif %}
                 <div class="clear"></div>
-                <h3>{{ pdf }}</h3>
+                <h3>{{ pdf }}{% if pdf.featured %} (featured on site){% endif %}</h3>
                 <p>{{ pdf.footer }}</p>
             </li> 
         {% empty %}

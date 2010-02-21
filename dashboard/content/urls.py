@@ -7,6 +7,7 @@ urlpatterns = patterns('tiger.dashboard.content.views',
     url(r'^pdf/delete/(\d+)/$', 'delete_pdf', name='dashboard_delete_pdf'),
     url(r'^pdf/edit/(\d+)/$', 'add_edit_pdf', name='dashboard_edit_pdf'),
     url(r'^pdf/preview/(\d+)/$', 'preview_pdf', name='dashboard_preview_pdf'),
+    url(r'^pdf/feature/(\d+)/$', 'feature_pdf', name='dashboard_feature_pdf'),
 )
 
 

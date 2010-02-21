@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.http import base36_to_int
 from django.shortcuts import get_object_or_404, render_to_response
+from django.template.defaultfilters import slugify
 
 from tiger.core.forms import get_order_form, OrderForm
 from tiger.core.models import Section, Item
@@ -87,4 +88,13 @@ def send_order(request):
     return render_custom(request, 'core/send_order.html', {'form': form})
 
 def order_success(request):
-    return  render_custom(request, 'core/order_success.html')
+    return render_custom(request, 'core/order_success.html')
+
+def download_menu(request):
+    menu = request.site.menu
+    if menu is None:
+        return HttpResponseRedirect(reverse('section_detail'))
+    response = HttpResponse(mimetype='application/pdf')
+    response['Content-Disposition'] = 'filename=%s.pdf' % slugify(request.site.name)
+    response.write(menu.render())
+    return response

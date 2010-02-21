@@ -4,19 +4,19 @@
     <h1>Dashboard</h1>
     <div class="grid_4 alpha">
         <a class="buttonTop last" href="{% url dashboard_add_blast %}">Add</a>
-        <h2>Scheduled blasts</h2>
+        <h2>Blasts</h2>
         <ul class="drag sections">
-        {% for update in updates %}
+        {% for blast in blasts %}
             <li> 
-                <a class="buttonTop last" href="{% url dashboard_delete_blast update.id  %}">Delete</a>
-                <a class="buttonTop" href="{% url dashboard_preview_blast update.id %}">Preview</a>
-                <a class="buttonTop" href="{% url dashboard_edit_blast update.id %}">Edit</a>
+                <a class="buttonTop last" href="{% url dashboard_delete_blast blast.id  %}">Delete</a>
+                <a class="buttonTop" href="{% url dashboard_edit_blast blast.id %}">Edit</a>
+                <a class="buttonTop" href="{% url dashboard_send_blast blast.id %}">Send</a>
                 <div class="clear"></div>
-                <h3>{{ update }}</h3>
-                <p>{{ update.footer }}</p>
+                <h3>{{ blast }}</h3>
+                <p>{{ blast.footer }}</p>
             </li> 
         {% empty %}
-            <li>You currently have no blasts scheduled. <a href="">Create a blast</a></li>
+            <li>You have not created any blasts. <a href="{% url dashboard_add_blast %}">Create one now</a></li>
         {% endfor %}
         </ul>
     </div>

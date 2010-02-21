@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
@@ -10,8 +11,8 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
-from tiger.notify.forms import TwitterForm
-from tiger.notify.models import Fax
+from tiger.notify.forms import TwitterForm, BlastForm
+from tiger.notify.models import Fax, Blast
 from tiger.utils.pdf import render_to_pdf
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
@@ -28,8 +29,26 @@ def home(request):
         'email_subscribers': email_subscribers,
         'fax_subscribers': fax_subscribers,
         'total_pages': total_pages,
-        'pages_for_month': pages_for_month
+        'pages_for_month': pages_for_month,
+        'blasts': site.blast_set.all()
     })
+
+@login_required
+def add_edit_blast(request, blast_id=None):
+    return add_edit_site_object(request, Blast, BlastForm, 
+        'dashboard/blast_form.html', 'dashboard_marketing', object_id=blast_id)
+
+@login_required
+def delete_blast(request, blast_id):
+    return delete_site_object(request, Blast, blast_id, 'dashboard_marketing')
+
+@login_required
+def send_blast(request, blast_id):
+    blast = Blast.objects.get(id=blast_id, site=request.site)
+    blast.send()
+    messages.success(request, 'Blast "%s" has been started.' % blast.name)
+    return delete_site_object(request, Blast, blast_id, 'dashboard_marketing')
+
 
 @login_required
 def subscriber_list(request):

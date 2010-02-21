@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 from tiger.accounts.models import Site
@@ -24,3 +26,23 @@ class Social(models.Model):
     twitter_screen_name = models.CharField(max_length=20, blank=True)
     twitter_token = models.CharField(max_length=255, blank=True)
     twitter_secret = models.CharField(max_length=255, blank=True)
+
+
+class Blast(models.Model):
+    site = models.ForeignKey(Site)
+    name = models.CharField(max_length=50)
+    pdf = models.ForeignKey('content.PdfMenu')
+    subscribers = models.ManyToManyField('accounts.Subscriber')
+    last_sent = models.DateTimeField(editable=False, null=True)
+    send_count = models.PositiveIntegerField(default=0)
+
+    def __unicode__(self):
+        return self.name
+
+    def send(self):
+        from tiger.notify.tasks import RunBlastTask
+        self.last_sent = datetime.now()
+        self.send_count += 1
+        self.save()
+        RunBlastTask.delay()
+

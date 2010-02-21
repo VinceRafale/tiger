@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.template import loader, RequestContext
@@ -42,6 +43,10 @@ def add_edit_site_object(request, model, form_class, template, reverse_on, objec
             obj = form.save(commit=False)
             obj.site = site
             obj.save()
+            verb = 'updated' if instance else 'created'
+            msg = '%s "%s" has been %s successfully.' % (
+                model._meta.verbose_name, unicode(obj), verb)
+            messages.success(request, msg)
             return HttpResponseRedirect(reverse(reverse_on))
     else:
         form = form_class(instance=instance)

@@ -1,5 +1,7 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
 from tiger.content.forms import *
@@ -29,3 +31,12 @@ def preview_pdf(request, pdf_id):
     response['Content-Disposition'] = 'filename=menu-preview.pdf'
     response.write(pdf.render())
     return response
+
+@login_required
+def feature_pdf(request, pdf_id):
+    pdf = PdfMenu.objects.get(id=pdf_id)
+    pdf.featured = True
+    pdf.save()
+    PdfMenu.objects.exclude(id=pdf_id).update(featured=False)
+    messages.success(request, '"%s" has been added to your home page.' % pdf.name)
+    return HttpResponseRedirect(reverse('dashboard_content'))
