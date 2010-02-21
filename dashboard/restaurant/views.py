@@ -13,19 +13,19 @@ from tiger.content.models import Content
 
 
 def home(request):
-    return direct_to_template(request, template='dashboard/restaurant.html', extra_context={
+    return direct_to_template(request, template='dashboard/restaurant/home.html', extra_context={
     })
 
 
 def location(request):
     return update_object(request, form_class=LocationForm, object_id=request.site.id, 
-        template_name='dashboard/location_form.html', post_save_redirect='/dashboard/restaurant/')
+        template_name='dashboard/restaurant/location_form.html', post_save_redirect='/dashboard/restaurant/')
         
 
 def edit_content(request, slug):
     c = Content.objects.get(site=request.site, slug=slug)
     return update_object(request, form_class=ContentForm, object_id=c.id, 
-        template_name='dashboard/%s_form.html' % slug, post_save_redirect='/dashboard/restaurant/')
+        template_name='dashboard/restaurant/%s_form.html' % slug, post_save_redirect='/dashboard/restaurant/')
         
 
 def edit_hours(request):
@@ -52,7 +52,7 @@ def edit_hours(request):
     else:
         forms = get_forms()
     form_list = zip([label for dow, label in TimeSlot.DOW_CHOICES], forms)
-    return direct_to_template(request, template='dashboard/hours.html', extra_context={'form_list': form_list})
+    return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context={'form_list': form_list})
 
 
 def toggle_order_status(request):

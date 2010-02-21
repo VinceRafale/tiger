@@ -25,7 +25,7 @@ def home(request):
     this_month = datetime(datetime.now().year, datetime.now().month, 1)
     pages_for_month = Fax.objects.filter(
         site=site, completion_time__gte=this_month).aggregate(Sum('page_count'))['page_count__sum']
-    return direct_to_template(request, template='dashboard/marketing.html', extra_context={
+    return direct_to_template(request, template='dashboard/marketing/home.html', extra_context={
         'email_subscribers': email_subscribers,
         'fax_subscribers': fax_subscribers,
         'total_pages': total_pages,
@@ -36,7 +36,7 @@ def home(request):
 @login_required
 def add_edit_blast(request, blast_id=None):
     return add_edit_site_object(request, Blast, BlastForm, 
-        'dashboard/blast_form.html', 'dashboard_marketing', object_id=blast_id)
+        'dashboard/marketing/blast_form.html', 'dashboard_marketing', object_id=blast_id)
 
 @login_required
 def delete_blast(request, blast_id):
@@ -53,12 +53,12 @@ def send_blast(request, blast_id):
 @login_required
 def subscriber_list(request):
     return object_list(request, Subscriber.objects.filter(site=request.site), 
-        template_name='dashboard/subscriber_list.html')
+        template_name='dashboard/marketing/subscriber_list.html')
 
 @login_required
 def add_edit_subscriber(request, subscriber_id=None):
     return add_edit_site_object(request, Subscriber, SubscriberForm, 
-        'dashboard/subscriber_form.html', 'dashboard_subscriber_list', object_id=subscriber_id)
+        'dashboard/marketing/subscriber_form.html', 'dashboard_subscriber_list', object_id=subscriber_id)
 
 @login_required
 def delete_subscriber(request, subscriber_id):
@@ -74,6 +74,6 @@ def add_twitter(request):
             return HttpResponseRedirect('http://www.takeouttiger.com/twitter/connect/')
     else:
         form = TwitterForm(instance=social)
-    return direct_to_template(request, template='dashboard/twitter_connect.html', 
+    return direct_to_template(request, template='dashboard/marketing/twitter_connect.html', 
         extra_context={'form': form})
 

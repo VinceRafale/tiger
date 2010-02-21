@@ -19,14 +19,14 @@ def _reorder_objects(model, id_list):
 @login_required
 def section_list(request):
     site = request.site
-    return direct_to_template(request, template='dashboard/section_list.html', extra_context={
+    return direct_to_template(request, template='dashboard/menu/section_list.html', extra_context={
         'sections': site.section_set.all()
     })
 
 @login_required
 def add_edit_section(request, section_id=None):
     return add_edit_site_object(request, Section, SectionForm, 
-        'dashboard/section_form.html', 'dashboard_menu', object_id=section_id)
+        'dashboard/menu/section_form.html', 'dashboard_menu', object_id=section_id)
 
 @login_required
 def delete_section(request, section_id):
@@ -93,7 +93,7 @@ def add_edit_item(request, item_id=None):
         else:
             form_kwds['instance'] = instance 
         form = ItemForm(**form_kwds)
-    return direct_to_template(request, template='dashboard/item_form.html', extra_context={
+    return direct_to_template(request, template='dashboard/menu/item_form.html', extra_context={
         'form': form, 'variant_formset': variant_formset, 'upgrade_formset': upgrade_formset
     })
 

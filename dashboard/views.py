@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 def dashboard(request):
     site = request.site
     specials = site.item_set.filter(special=True)
-    return direct_to_template(request, template='dashboard.html', extra_context={
+    return direct_to_template(request, template='dashboard/base.html', extra_context={
         'specials': specials,
     })
 

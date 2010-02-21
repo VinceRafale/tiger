@@ -11,14 +11,14 @@ from tiger.utils.views import add_edit_site_object, delete_site_object
 
 @login_required
 def home(request):
-    return direct_to_template(request, template='dashboard/content.html', extra_context={
+    return direct_to_template(request, template='dashboard/content/home.html', extra_context={
         'pdfs': PdfMenu.objects.all()
     })
 
 @login_required
 def add_edit_pdf(request, pdf_id=None):
     return add_edit_site_object(request, PdfMenu, PdfMenuForm, 
-        'dashboard/pdf_form.html', 'dashboard_content', object_id=pdf_id)
+        'dashboard/content/pdf_form.html', 'dashboard_content', object_id=pdf_id)
 
 @login_required
 def delete_pdf(request, pdf_id):
