@@ -1,4 +1,4 @@
-{% extends 'dashboard.html' %}
+{% extends 'dashboard/base.html' %}
 
 {% block extrahead %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
@@ -39,9 +39,9 @@
 <script type="text/javascript">
 function selectSection() {
     viewHref = $("ul.sections li.selected a.view").attr("href");
-    $("ul.items").children().fadeOut("def", function () {
-        $("ul.items").children().remove();
-        $("ul.items").load(viewHref);
+    $("ul.items").fadeOut("def", function () {
+        $(this).children().remove();
+        $(this).load(viewHref).fadeIn();
     });
     pk = viewHref.match(/\/(\d+)\//)[1];
     $("#newItem").attr("href", $("#newItem").attr("href").split('?')[0] + "?pk=" + pk);

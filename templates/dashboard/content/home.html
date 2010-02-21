@@ -1,4 +1,4 @@
-{% extends 'dashboard.html' %}
+{% extends 'dashboard/base.html' %}
 
 {% block content %}
     <h1>Dashboard</h1>
@@ -24,6 +24,7 @@
         </ul>
     </div>
     <div class="grid_4">
+    {% comment %}
         <a class="buttonTop last" href="{% url dashboard_add_subscriber %}">Add</a>
         <a class="buttonTop" href="{% url dashboard_subscriber_list %}">View</a>
         <h2>Image library</h2>
@@ -31,6 +32,7 @@
             <strong>Via e-mail:</strong> {{ email_subscribers.count }}<br />
             <strong>Via fax:</strong> {{ fax_subscribers.count }}
         </p>
+    {% endcomment %}
     </div>
     <div class="grid_4 omega">
         <h2>Site copy</h2>
