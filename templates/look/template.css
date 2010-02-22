@@ -1,0 +1,20 @@
+{% autoescape off %}
+body {{% with skin.background as bg %}
+    background-color: #{{ bg.color }};
+    {% if bg.image %} background-image: url({{ bg.image.url }});
+    background-repeat: {{ bg.repeat }};
+    background-position: {{ bg.position }};
+    background-attachment: {{ bg.attachment }}; {% endif %} {% endwith %}
+    font-family: {{ skin.body_font }};    
+}
+
+{% with skin.header_font as hf %}
+@font-face {
+    font-family: Opticon;
+    src: url({{ hf.ttf.url }});
+}
+h1, h2, h4 {font-family: Opticon, {{ hf.stack}};}
+{% endwith %}
+
+{{ skin.css }}
+{% endautoescape %}
