@@ -7,6 +7,8 @@ from django.contrib.localflavor.us.models import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
+from tiger.look.models import Skin
+
 
 class Account(models.Model):
     """Stores data for customer billing and contact.
@@ -55,6 +57,7 @@ class Site(models.Model):
     fax_number = PhoneNumberField(default='', blank=True)
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
+    skin = models.ForeignKey(Skin, default=1)
 
     def __unicode__(self):
         if self.custom_domain:

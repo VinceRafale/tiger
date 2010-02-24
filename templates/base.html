@@ -10,17 +10,13 @@
     <!--[if IE]>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
     <![endif]--> 
-    <style>
-        @font-face {
-            font-family: Opticon;
-            src: url({{ MEDIA_URL }}fonts/Optio___.ttf);
-        }
-    </style>
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/supplement.css" />
+    <link rel="stylesheet" type="text/css" href="{{ site.skin.url }}" />
     {% block extrahead %}
     {% endblock %}
 </head>
 <body>
+    {% block toolbar %}
+    {% endblock %}
     <div class="wrapper">
         <div id="masthead">
             <div class="container_12">

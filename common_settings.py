@@ -58,7 +58,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'tiger.accounts.context_processors.site',
     'tiger.core.context_processors.cart',
-    'tiger.look.context_processors.skin',
 )
 
 MIDDLEWARE_CLASSES = (

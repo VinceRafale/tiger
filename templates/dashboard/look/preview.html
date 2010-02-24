@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<style type="text/css">
+#toolbar {
+    background-color: #d2d2d2;
+    border-bottom: 1px solid grey;
+    width:100%;
+}
+#toolbar div {
+    padding:6px 10px;
+}
+#toolbar ul {
+    float:right;
+    list-style-type:none;
+    margin:0;
+}
+
+#toolbar li {
+    display:inline;
+}
+
+#toolbar form {
+    padding:6px 10px;
+}
+
+#toolbar select {
+    border: 1px solid grey;
+    background-color:white;
+    margin-left:10px;
+}
+</style>
+{% endblock %}
+
+{% block toolbar %}
+<div id="toolbar">
+<div>
+<ul>
+    <li><a class="back" href="{% url dashboard %}">Back to dashboard</a></li>
+</ul>
+{{ form }}
+</div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("#id_skin").change(function () {
+        $("link:last").attr("href", $(this).val());
+    });
+});
+</script>
+{% endblock %}

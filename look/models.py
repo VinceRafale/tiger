@@ -5,6 +5,7 @@ from datetime import datetime
 import cssmin
 
 from django.conf import settings
+from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.loader import render_to_string
@@ -18,10 +19,21 @@ FONT_TIMES = 'Cambria, "Hoefler Text", Utopia, "Liberation Serif", "Nimbus Roman
 FONT_TREBUCHET = '"Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Bitstream Vera Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif'
 FONT_VERDANA = 'Corbel, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", Verdana, "Verdana Ref", sans-serif'
 
+FONT_CHOICES = (
+    (FONT_ARIAL, 'Arial'),
+    (FONT_GARAMOND, 'Garamond'),
+    (FONT_GEORGIA, 'Georgia'),
+    (FONT_IMPACT, 'Impact'),
+    (FONT_MONOSPACE, 'Monospace'),
+    (FONT_TIMES, 'Times New Roman'),
+    (FONT_TREBUCHET, 'Trebuchet'),
+    (FONT_VERDANA, 'Verdana'),
+)
+
 class FontFace(models.Model):
     name = models.CharField(max_length=20)
     ttf = models.FileField(upload_to='fonts')
-    stack = models.CharField(max_length=255)
+    stack = models.CharField(max_length=255, choices=FONT_CHOICES)
 
     def __unicode__(self):
         return self.name
@@ -40,16 +52,6 @@ class Background(models.Model):
 
 
 class Skin(models.Model):
-    FONT_CHOICES = (
-        (FONT_ARIAL, 'Arial'),
-        (FONT_GARAMOND, 'Garamond'),
-        (FONT_GEORGIA, 'Georgia'),
-        (FONT_IMPACT, 'Impact'),
-        (FONT_MONOSPACE, 'Monospace'),
-        (FONT_TIMES, 'Times New Roman'),
-        (FONT_TREBUCHET, 'Trebuchet'),
-        (FONT_VERDANA, 'Verdana'),
-    )
     name = models.CharField(max_length=20)
     header_font = models.ForeignKey(FontFace, null=True, blank=True)
     body_font = models.CharField(max_length=255, choices=FONT_CHOICES)
@@ -66,15 +68,24 @@ class Skin(models.Model):
         f = open(self.path, 'w')
         f.write(self.bundle())
 
-    def get_absolute_url(self):
-        return reverse('render_skin', kwargs={'skin_id': self.id, 'timestamp': int(time.mktime(self.timestamp.timetuple()))})
+    @property
+    def _tail(self):
+        return 'skins/%d-%d.css' % (self.id, int(time.mktime(self.timestamp.timetuple())))
 
     @property
     def path(self):
-        return os.path.join(settings.MEDIA_ROOT, 'skins/%d.css' % self.id)
+        return os.path.join(settings.MEDIA_ROOT, self._tail)
+
+    @property
+    def url(self):
+        return settings.MEDIA_URL + self._tail
 
     def bundle(self):
         uncompressed = render_to_string('look/template.css', {'skin': self})
-        #compressed = cssmin.cssmin(uncompressed)
-        compressed = uncompressed
+        compressed = cssmin.cssmin(uncompressed)
         return compressed
+
+
+admin.site.register(FontFace)
+admin.site.register(Background)
+admin.site.register(Skin)

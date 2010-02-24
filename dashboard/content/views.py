@@ -12,7 +12,7 @@ from tiger.utils.views import add_edit_site_object, delete_site_object
 @login_required
 def home(request):
     return direct_to_template(request, template='dashboard/content/home.html', extra_context={
-        'pdfs': PdfMenu.objects.all()
+        'pdfs': request.site.pdfmenu_set.all()
     })
 
 @login_required
