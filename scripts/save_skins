@@ -1,0 +1,7 @@
+#!/bin/bash
+
+./manage.py dumpdata look > look/fixtures/skins.json
+git add look/fixtures
+git add media/fonts
+git add media/img/backgrounds
+git commit -m "Updated skins from script."
