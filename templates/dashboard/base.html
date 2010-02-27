@@ -10,6 +10,7 @@
     <!--[if IE]>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
     <![endif]--> 
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     {% block extrahead %}
     {% endblock %}
 </head>
@@ -26,21 +27,6 @@
                     <li><a class="lightlink" href="{% url dashboard_orders %}">Orders</a></li>
                     <li><a class="lightlink" href="{% url dashboard_content %}">Content</a></li>
                     <li><a class="lightlink" href="{% url dashboard_look %}">Look &amp; feel</a></li>
-                    {% comment %}
-                    <li><a class="lightlink" href="">Find Us</a>
-                        <div>
-                            <ul>
-                                {% for section in site.section_set.all %}
-                                <li><a href="{% url menu_section section.slug %}">{{ section.name }}</a></li>
-                                {% empty %}
-                                <li>No menu sections created yet.</li>
-                                {% endfor %}
-                            </ul>
-                        </div>	
-                    </li>{% endcomment %}
-                    {% if site.blog_enabled %}
-                    <li><a class="lightlink" href="">{{ site.blog_title }}</a></li>
-                    {% endif %}
                 </ul>
                 </div>
                 <div id="search" class="grid_1 push_3">
@@ -92,6 +78,11 @@
             <p>Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
         </div> 
     </div>
+    <script type="text/javascript">
+    $(function () {
+        $("ul.messages").delay(5000).slideUp();
+    });
+    </script>
     {% block js %}
     {% endblock %}
 </body>
