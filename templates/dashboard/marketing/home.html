@@ -10,7 +10,7 @@
             <li> 
                 <a class="buttonTop last" href="{% url dashboard_delete_blast blast.id  %}">Delete</a>
                 <a class="buttonTop" href="{% url dashboard_edit_blast blast.id %}">Edit</a>
-                <a class="buttonTop" href="{% url dashboard_send_blast blast.id %}">Send</a>
+                <a class="buttonTop sendButton" rel="{{ blast.pdf.page_count }}" href="{% url dashboard_send_blast blast.id %}">Send</a>
                 <div class="clear"></div>
                 <h3>{{ blast }}</h3>
                 <p>{{ blast.footer }}</p>
@@ -46,4 +46,17 @@
 	{% endif %}
         </p>
     </div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.sendButton").click(function () {
+        c = confirm("This blast will send " + $(this).attr("rel") + " page(s) per fax subscriber.  Please make sure that you've previewed your PDF before continuing.");
+        if (!c) {
+            return false;
+        }
+    });
+});
+</script>
 {% endblock %}
