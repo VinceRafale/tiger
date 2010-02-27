@@ -99,6 +99,13 @@ class PdfMenu(models.Model):
         return columns
 
     @property
+    def _tail(self):
+        return 'pdfmenus/%s-%d.pdf' % (slugify(self.name), self.id)
+
+    @property
     def path(self):
-        return os.path.join(settings.MEDIA_ROOT, 'pdfmenus', 
-            '%s-%d.pdf' % (slugify(self.name), self.id))
+        return os.path.join(settings.MEDIA_ROOT, self._tail)
+
+    @property
+    def url(self):
+        return settings.MEDIA_URL + self._tail

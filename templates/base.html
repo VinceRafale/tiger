@@ -96,7 +96,7 @@
                 <p>T: {{ site.phone }}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
                 {% if site.menu %}
                 <p>
-                    <a href="{% url download_menu %}">Download our menu</a> as a PDF!  Always guaranteed to be up-to-date.
+                    <a href="{{ site.menu.url }}">Download our menu</a> as a PDF!  Always guaranteed to be up-to-date.
                 </p>
                 {% endif %}
                 {% if site.twitter %}
