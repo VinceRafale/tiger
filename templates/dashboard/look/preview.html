@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <style type="text/css">
 #toolbar {
     background-color: #d2d2d2;
@@ -36,6 +37,7 @@
 <div id="toolbar">
 <div>
 <ul>
+    <li><button id="save">Save</button></li>
     <li><a class="back" href="{% url dashboard %}">Back to dashboard</a></li>
 </ul>
 {{ form }}
@@ -45,9 +47,19 @@
 
 {% block js %}
 <script type="text/javascript">
+var skinIdRegex = new RegExp("^{{ MEDIA_URL }}skins/(\\d+)-\\d+\.css$");
 $(function () {
     $("#id_skin").change(function () {
         $("link:last").attr("href", $(this).val());
+    });
+    $("#save").click(function () {
+        linkToCss = $(":selected").val();
+        console.log(linkToCss);
+        console.log(skinIdRegex);
+        postVars = $.param({id: skinIdRegex.exec(linkToCss)[1]});
+        $.post("{% url select_skin %}", postVars, function (data) {
+            alert(data); 
+        }, "text");
     });
 });
 </script>
