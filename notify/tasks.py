@@ -42,7 +42,7 @@ class RunBlastTask(Task):
         via_fax = blast.subscribers.filter(update_via=Subscriber.VIA_FAX)
         numbers = [s.fax for s in via_fax]
         names = [contact.user.get_full_name() for contact in via_fax]
-        SendFaxTask.delay(site=site, recipients=numbers, content=content, names=names)
+        SendFaxTask.delay(site=site, recipients=numbers, content=content, names=names, PageOrientation=blast.pdf.get_orientation_display())
         # need HTML content or attachment....
         # via_email = Subscriber.via_email.filter(site=site)
         # emails = [s.user.email for s in via_email]
