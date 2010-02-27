@@ -41,6 +41,9 @@ class Section(models.Model):
     def get_absolute_url(self):
         return reverse('menu_section', kwargs={'section': self.slug})
 
+    def has_specials(self):
+        return any(item.special for item in self.item_set.all())
+
 
 class ItemManager(models.Manager):
     def render_specials_to_string(self, site, template='core/specials_fax.html'):

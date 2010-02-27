@@ -43,6 +43,7 @@ def add_edit_site_object(request, model, form_class, template, reverse_on, objec
             obj = form.save(commit=False)
             obj.site = site
             obj.save()
+            form.save_m2m()
             verb = 'updated' if instance else 'created'
             msg = '%s "%s" has been %s successfully.' % (
                 model._meta.verbose_name, unicode(obj), verb)

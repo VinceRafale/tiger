@@ -47,8 +47,7 @@ def send_blast(request, blast_id):
     blast = Blast.objects.get(id=blast_id, site=request.site)
     blast.send()
     messages.success(request, 'Blast "%s" has been started.' % blast.name)
-    return delete_site_object(request, Blast, blast_id, 'dashboard_marketing')
-
+    return HttpResponseRedirect(reverse('dashboard_marketing'))
 
 @login_required
 def subscriber_list(request):

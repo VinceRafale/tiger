@@ -44,9 +44,10 @@ td {vertical-align:top; padding:0.5em;}
 <h1 id="header">{{ title }}</h1>
 
 {% for section in sections %}
+{% if show_all or section.has_specials %}
 <h2>{{ section.name }}</h2>
     {% for item in section.item_set.all %}
-        {% if show_all or not item.special %}
+        {% if show_all or item.special %}
             <h4>{{ item.name }}
             <em>&nbsp;&nbsp;&nbsp;&nbsp;
             {% for variant in item.variant_set.all %}
@@ -64,6 +65,7 @@ td {vertical-align:top; padding:0.5em;}
             {% endif %}
         {% endif %}
     {% endfor %}
+{% endif %}
 {% endfor %}
 <p id="footer">{{ footer }}</p>
 </body>

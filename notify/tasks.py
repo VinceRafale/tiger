@@ -37,13 +37,8 @@ class RunBlastTask(Task):
     def run(self, blast_id, **kwargs):
         Blast = get_model('notify', 'Blast')
         blast = Blast.objects.get(id=blast_id)
-        site = update.site
+        site = blast.site
         content = blast.pdf.render()
-        for i in range(update.columns):
-            height = update.column_height
-            width = Decimal('7.3') / update.columns - Decimal('0.125')
-            left = Decimal('0.6') + Decimal('0.125') * i + (Decimal('7.3') / update.columns) * i
-            columns.append(dict(height=height, width=width, left=left))
         via_fax = blast.subscribers.filter(update_via=Subscriber.VIA_FAX)
         numbers = [s.fax for s in via_fax]
         names = [contact.user.get_full_name() for contact in via_fax]

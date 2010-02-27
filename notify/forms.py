@@ -12,7 +12,7 @@ class TwitterForm(forms.ModelForm):
 
 
 class BlastForm(forms.ModelForm):
-    subscribers = forms.ModelMultipleChoiceField(queryset=Subscriber.objects.all(), widget=FilteredSelectMultiple('foo', False))
+    subscribers = forms.ModelMultipleChoiceField(queryset=Subscriber.objects.all(), widget=FilteredSelectMultiple('subscribers', False))
 
     class Meta:
         model = Blast

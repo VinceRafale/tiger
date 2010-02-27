@@ -44,5 +44,5 @@ class Blast(models.Model):
         self.last_sent = datetime.now()
         self.send_count += 1
         self.save()
-        RunBlastTask.delay()
+        RunBlastTask.delay(self.id)
 
