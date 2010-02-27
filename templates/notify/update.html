@@ -7,22 +7,22 @@
     @frame col{{ forloop.counter }} {
         margin-left:{{ column.left }}in; 
         width: {{ column.width }}in;
-        top:1.2in; 
+        top:1.7in; 
         height: {{ column.height }}in;
     }
     {% endfor %}
     @frame headerFrame {
         -pdf-frame-content: header;
-        width: 7.3in;
+        width: {% if landscape %}9.3{% else %}6.8{% endif %}in;
+        height:0.6in;
         top:0.6in; 
         left:0.6in; 
     }
     @frame footerFrame {
         -pdf-frame-content: footer;
-        width: 7.3in;
+        width: {% if landscape %}9.3{% else %}6.8{% endif %}in;
         bottom:0.3in; 
         left:0.6in; 
-        right:0.6in; 
         height:0.6in;
     }
 }
@@ -38,10 +38,27 @@ h4 {font-size:14px; margin:auto auto 0 auto; display:inline; padding-bottom:0;}
 p {font-size:12px; margin-top:0; padding-top:0;}
 em {font-family: Arial, sans-serif; font-weight:normal; font-size:13px; margin:0 auto 0 auto;}
 td {vertical-align:top; padding:0.5em;}
+
+#header address {font-size:13px;}
+#header td {padding:0;}
+#footer {text-align:center; font-size:14px;}
 </style>
 </head>
 <body>
-<h1 id="header">{{ title }}</h1>
+<div id="header">
+    <table>
+        <tr>
+            <td id="h1"><h1>{{ title }}</h1></td>
+            <td>
+                <address>
+                    {{ site.hours }}<br />
+                    {{ site.street }} &bull; {{ site.city }}, {{ site.state }} {{ site.zip }} &bull; {{ site.phone }}<br />
+                    {% if site.enable_orders %}Order online{% else %}On the web{% endif %} at {{ site }}
+                </address>
+            </td>
+        </tr>
+    </table>
+</div>
 
 {% for section in sections %}
 {% if show_all or section.has_specials %}
@@ -67,6 +84,6 @@ td {vertical-align:top; padding:0.5em;}
     {% endfor %}
 {% endif %}
 {% endfor %}
-<p id="footer">{{ footer }}</p>
+<div id="footer">{{ footer }}</div>
 </body>
 </html>
