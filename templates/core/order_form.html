@@ -3,6 +3,7 @@
 {% block form %}
 <form id="orderForm" method="POST" action=".">
 <span class="totalPrice">${{ total }}</span>
+<span style="display:none;" class="originalPrice">${{ total }}</span>
 <h3>Order now!</h3>
 {% if form.non_field_errors %}
 {{ form.non_field_errors }}
@@ -46,7 +47,7 @@ function getLabelNum(selector) {
 
 function calculate() {
     qty = Number($("#id_quantity").val());
-    basePrice = getLabelNum("[name='variant']:checked") || Number($("span.totalPrice").text().slice(1));
+    basePrice = getLabelNum("[name='variant']:checked") || Number($("span.originalPrice").text().slice(1));
     upgrades = 0;
     $("[name='upgrades']:checked").each(function () {
         upgrades += getLabelNum(this);
