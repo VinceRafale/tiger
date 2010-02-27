@@ -94,7 +94,9 @@ class Site(models.Model):
         time_dict = dict(TimeSlot.DOW_CHOICES)
         time_strings = []
         abbr_length = 3
-        for k, v in times.items():
+        time_list = times.items()
+        time_list.sort(key=lambda obj: obj[1][0])
+        for k, v in time_list:
             # test if the dow ints are consecutive
             if v == range(v[0], v[-1] + 1) and len(v) > 1:
                 s = '%s-%s %s' % (time_dict[v[0]][:abbr_length], time_dict[v[-1]][:abbr_length], k)
