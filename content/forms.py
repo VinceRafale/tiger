@@ -13,4 +13,4 @@ class PdfMenuForm(forms.ModelForm):
     content = forms.ChoiceField(choices=PdfMenu.CONTENT_CHOICES, widget=forms.RadioSelect)
     class Meta:
         model = PdfMenu
-        exclude = ['site']
+        exclude = ['site', 'page_count']

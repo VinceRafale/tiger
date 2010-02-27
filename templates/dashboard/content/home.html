@@ -16,6 +16,7 @@
                 {% endif %}
                 <div class="clear"></div>
                 <h3>{{ pdf }}{% if pdf.featured %} (featured on site){% endif %}</h3>
+                <p>Pages: {{ pdf.page_count }}</p>
                 <p>{{ pdf.footer }}</p>
             </li> 
         {% empty %}

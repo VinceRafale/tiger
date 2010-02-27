@@ -19,6 +19,7 @@ sudo rabbitmqctl set_permissions -p tiger tiger "" ".*" ".*"
 ../bin/easy_install html5lib
 ../bin/easy_install oauth
 ../bin/easy_install pisa
+../bin/easy_install pypdf
 ../bin/easy_install South
 ../bin/easy_install suds
 ../bin/easy_install Whoosh

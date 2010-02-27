@@ -1,8 +1,12 @@
 from decimal import Decimal
+import os.path
 
+from django.conf import settings
 from django.db import models
+from django.template.defaultfilters import slugify
 
 from imagekit.models import ImageModel
+from pyPdf import PdfFileReader
 
 from tiger.accounts.models import Site
 from tiger.utils.pdf import render_to_pdf
@@ -48,15 +52,26 @@ class PdfMenu(models.Model):
     name = models.CharField(max_length=100, help_text='This description is for your reference only.  It will not appear in your blasts.', default='')
     title = models.CharField(max_length=255, blank=True, help_text='The title as it will appear in the blast.', default='')
     columns = models.SmallIntegerField('number of columns', default=2)
-    column_height = models.DecimalField('column height (in inches)', default='7.0', decimal_places=1, max_digits=3)
+    column_height = models.DecimalField('column height (in inches)', default='7.0', decimal_places=1, max_digits=3) 
     orientation = models.CharField(max_length=1, choices=(('P', 'Portrait'), ('L', 'Landscape')))
     footer = models.TextField(blank=True, help_text='This text will appear at the bottom of e-mails and faxes sent at this time.')
     content = models.CharField(max_length=1, choices=CONTENT_CHOICES)
     show_descriptions = models.BooleanField('check to include the descriptions of your menu items', default=True)
     featured = models.BooleanField(default=False)
+    page_count = models.PositiveIntegerField(default=1)
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            super(PdfMenu, self).save(*args, **kwargs)
+        f = open(self.path, 'w')
+        f.write(self.render())
+        f.close()
+        reader = PdfFileReader(open(self.path))
+        self.page_count = reader.getNumPages()
+        super(PdfMenu, self).save(*args, **kwargs)
 
     def render(self):
         columns = self._get_columns() 
@@ -82,3 +97,8 @@ class PdfMenu(models.Model):
             left = margin + gutter * i + (page_width / self.columns) * i
             columns.append(dict(height=height, width=width, left=left))
         return columns
+
+    @property
+    def path(self):
+        return os.path.join(settings.MEDIA_ROOT, 'pdfmenus', 
+            '%s-%d.pdf' % (slugify(self.name), self.id))

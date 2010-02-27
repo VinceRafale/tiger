@@ -10,8 +10,8 @@ from django.utils.http import int_to_base36
 from django.utils.safestring import mark_safe
 
 from imagekit.models import ImageModel
-
 from tiger.accounts.models import Site
+from tiger.content.handlers import pdf_caching_handler
 from tiger.notify.handlers import item_social_handler
 from tiger.utils.fields import PickledObjectField
 
@@ -139,3 +139,4 @@ class Order(models.Model):
 
 
 post_save.connect(item_social_handler, sender=Item)
+post_save.connect(pdf_caching_handler, sender=Item)
