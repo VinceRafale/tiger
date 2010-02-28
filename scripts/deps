@@ -17,6 +17,7 @@ sudo rabbitmqctl set_permissions -p tiger tiger "" ".*" ".*"
 ../bin/easy_install django-pagination
 ../bin/easy_install django-sorting
 ../bin/easy_install html5lib
+../bin/easy_install lxml
 ../bin/easy_install oauth
 ../bin/easy_install pisa
 ../bin/easy_install pypdf
