@@ -37,17 +37,7 @@
                 <div id="menu" class="grid_8">
                 <ul>
                     <li><a class="lightlink" href="/">Home</a></li>
-                    <li><a class="lightlink" href="#">Menu</a>
-                        <div>
-                            <ul>
-                                {% for section in site.section_set.all %}
-                                <li><a href="{% url menu_section section.slug %}">{{ section.name }}</a></li>
-                                {% empty %}
-                                <li>No menu sections created yet.</li>
-                                {% endfor %}
-                            </ul>
-                        </div>	
-                    </li>
+                    <li><a class="lightlink" href="{% url menu_home %}">Menu</a></li>
                     <li><a class="lightlink" href="/about/">About</a></li>
                     <li><a class="lightlink" href="/find-us/">Find Us</a></li>
                     {% if site.blog_enabled %}
