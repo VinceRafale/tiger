@@ -1,4 +1,5 @@
 from django import template
+from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import linebreaks
 
 from tiger.content.models import Content
@@ -13,3 +14,13 @@ def get_title(site, slug):
 @register.simple_tag
 def get_body(site, slug):
     return linebreaks(Content.objects.get(site=site, slug=slug).text)
+    
+@register.simple_tag
+def get_image(site, slug, size):
+    c = Content.objects.get(site=site, slug=slug)
+    try:
+        img = c.image
+    except ObjectDoesNotExist:
+        return ''
+    img_size = getattr(img, size)
+    return img_size.url

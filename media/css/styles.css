@@ -34,6 +34,7 @@ a.add {
     float:right;
 }
 
+#orderForm {clear:both;}
 #orderForm ul {list-style-type:none; margin-bottom:10px;}
 #orderForm li {display:inline; margin-left:0;}
 #orderForm #qty {float:left; margin-bottom:10px;}
@@ -56,3 +57,6 @@ a.add {
 .messages li.warning {color:#704308;background-color:#f9f7c3;border-color:#704308;}
 
 a.button {float:right; display:block;}
+
+img.inset-left {float:left; margin:0 10px 8px 0;}
+img.inset-right {float:right; margin:0 0 8px 10px;}

@@ -1,12 +1,12 @@
 from django import forms
 
-from tiger.content.models import Content, PdfMenu
+from tiger.content.models import Content, PdfMenu, ItemImage
 
 
 class ContentForm(forms.ModelForm):
     class Meta:
         model = Content
-        exclude = ['image', 'site']
+        exclude = ['site']
 
 
 class PdfMenuForm(forms.ModelForm):
@@ -14,3 +14,15 @@ class PdfMenuForm(forms.ModelForm):
     class Meta:
         model = PdfMenu
         exclude = ['site', 'page_count', 'featured']
+
+
+class AddImageForm(forms.ModelForm):
+    class Meta:
+        model = ItemImage
+        exclude = ['site']
+
+
+class EditImageForm(forms.ModelForm):
+    class Meta:
+        model = ItemImage
+        fields = ['title']

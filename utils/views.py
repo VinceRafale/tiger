@@ -38,7 +38,7 @@ def add_edit_site_object(request, model, form_class, template, reverse_on, objec
         if instance.site != site:
             raise Http404()
     if request.method == 'POST':
-        form = form_class(request.POST, instance=instance)
+        form = form_class(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.site = site

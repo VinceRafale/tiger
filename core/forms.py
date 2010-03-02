@@ -38,7 +38,7 @@ def get_item_form(site):
         section = forms.ModelChoiceField(queryset=site.section_set.all())
         class Meta:
             model = Item
-            exclude = ['site', 'image']
+            exclude = ['site']
     return ItemForm
 
 

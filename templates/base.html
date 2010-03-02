@@ -72,7 +72,10 @@
             {% block content %}
             {% load content_tags %}
             <h1>{% get_title site "homepage" %}</h1>
+            <div>
+            <img class="inset-left" src="{% get_image site "homepage" "medium" %}" />
             {% get_body site "homepage" %}
+            </div>
             {% endblock %}
             </div>
             </div>

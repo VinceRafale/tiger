@@ -25,15 +25,12 @@
         </ul>
     </div>
     <div class="grid_4">
-    {% comment %}
-        <a class="buttonTop last" href="{% url dashboard_add_subscriber %}">Add</a>
-        <a class="buttonTop" href="{% url dashboard_subscriber_list %}">View</a>
+        <a class="buttonTop last" href="{% url dashboard_add_img %}">Add</a>
+        <a class="buttonTop" href="{% url dashboard_img_list %}">View</a>
         <h2>Image library</h2>
         <p class="subscribers">
-            <strong>Via e-mail:</strong> {{ email_subscribers.count }}<br />
-            <strong>Via fax:</strong> {{ fax_subscribers.count }}
+            You have {{ site.itemimage_set.count }} images.
         </p>
-    {% endcomment %}
     </div>
     <div class="grid_4 omega">
         <h2>Site copy</h2>

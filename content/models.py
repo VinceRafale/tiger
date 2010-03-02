@@ -35,12 +35,15 @@ class ItemImage(ImageModel):
     """Associates an image and its sizes with a user so that images 
     can easily be swapped out on menu items.
     """
-    site = models.ForeignKey(Site, editable=False)
+    site = models.ForeignKey(Site)
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='uploaded_images')
 
     class IKOptions:
         spec_module = 'tiger.content.specs'
+
+    def __unicode__(self):
+        return self.title
 
 
 class PdfMenu(models.Model):

@@ -40,3 +40,24 @@ def feature_pdf(request, pdf_id):
     PdfMenu.objects.exclude(id=pdf_id).update(featured=False)
     messages.success(request, '"%s" has been added to your home page.' % pdf.name)
     return HttpResponseRedirect(reverse('dashboard_content'))
+
+
+@login_required
+def img_list(request):
+    return direct_to_template(request, template='dashboard/content/img_list.html', extra_context={
+        'images': request.site.itemimage_set.all()
+    })
+
+@login_required
+def add_img(request):
+    return add_edit_site_object(request, ItemImage, AddImageForm, 
+        'dashboard/content/img_form.html', 'dashboard_content')
+
+@login_required
+def edit_img(request, img_id):
+    return add_edit_site_object(request, ItemImage, EditImageForm, 
+        'dashboard/content/img_form.html', 'dashboard_content', object_id=img_id)
+
+@login_required
+def delete_img(request, img_id):
+    return delete_site_object(request, ItemImage, img_id, 'dashboard_content')

@@ -25,7 +25,7 @@ def location(request):
 def edit_content(request, slug):
     c = Content.objects.get(site=request.site, slug=slug)
     return update_object(request, form_class=ContentForm, object_id=c.id, 
-        template_name='dashboard/restaurant/%s_form.html' % slug, post_save_redirect='/dashboard/restaurant/')
+        template_name='dashboard/content/%s_form.html' % slug, post_save_redirect='/dashboard/content/')
         
 
 def edit_hours(request):

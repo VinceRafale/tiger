@@ -14,8 +14,8 @@
 {% endif %}
 <h1>{{ item.name }}</h1>
 <div>
-{% if item.photo %}
-<img src="{{ item.photo.image.url }}" />
+{% if item.image %}
+<img class="inset-left" src="{{ item.image.medium.url }}" />
 {% endif %}
 {% if item.description %}
 {{ item.description|linebreaks }}

@@ -36,6 +36,12 @@
 <label>{{ form.special }}
 {{ form.special.label }}
 </label>
+{% if form.image.errors %}
+{{ form.image.errors }}
+{% endif %}
+<label>{{ form.image.label }}<br />
+{{ form.image }}
+</label>
 </div>
 <div class="grid_6 omega">
 <h4 class="variants">Price points</h4>

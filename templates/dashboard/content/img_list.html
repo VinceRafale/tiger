@@ -1,0 +1,18 @@
+{% extends 'dashboard/base.html' %}
+
+{% block extrahead %}
+<style type="text/css">
+li {display:inline;}
+li img {border:8px #dedede solid; cursor:pointer;}
+li img:hover {border-color:#94cad0;}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Your image library</h1>
+<ul>
+{% for img in images %}
+    <li><img src="{{ img.thumb.url }}" /></li>
+{% endfor %}
+</ul>
+{% endblock %}
