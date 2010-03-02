@@ -12,7 +12,7 @@
                 <a class="buttonTop" href="{% url dashboard_edit_pdf pdf.id %}">Edit</a>
                 <a class="buttonTop" href="{% url dashboard_preview_pdf pdf.id %}">Preview</a>
                 {% if not pdf.featured %}
-                <a class="buttonTop" href="{% url dashboard_edit_pdf pdf.id %}">Feature</a>
+                <a class="buttonTop" href="{% url dashboard_feature_pdf pdf.id %}">Feature</a>
                 {% endif %}
                 <div class="clear"></div>
                 <h3>{{ pdf }}{% if pdf.featured %} (featured on site){% endif %}</h3>
