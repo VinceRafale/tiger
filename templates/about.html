@@ -3,6 +3,6 @@
 {% block content %}
 {% load content_tags %}
 <h1>{% get_title site "about" %}</h1>
-<img class="inset-left" src="{% get_image site "about" "medium" %}" />
+{% get_image site "about" "medium" %}
 {% get_body site "about" %}
 {% endblock %}

@@ -1,6 +1,7 @@
 from django import template
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import linebreaks
+from django.utils.safestring import mark_safe
 
 from tiger.content.models import Content
 
@@ -22,5 +23,7 @@ def get_image(site, slug, size):
         img = c.image
     except ObjectDoesNotExist:
         return ''
+    if img is None:
+        return ''
     img_size = getattr(img, size)
-    return img_size.url
+    return mark_safe('<img class="inset-left" src="%s" />' % img_size.url)

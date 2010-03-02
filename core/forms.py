@@ -43,7 +43,7 @@ def get_item_form(site):
 
 
 class OrderForm(forms.ModelForm):
-    pickup = AmPmTimeField()
+    pickup = AmPmTimeField(label='Time you will pick up your order')
 
     class Meta:
         model = Order
