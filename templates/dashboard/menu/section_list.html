@@ -2,73 +2,86 @@
 
 {% block extrahead %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<style>
+div.sections {clear:right;}
+ul.section {font-size:13px; border:1px solid gray;}
+ul.section ul {margin-bottom:0;}
+ul.section li {margin:0;}
+li.section-header {color:white; background-color:#02405a; font-size:14px; padding:5px;}
+li.menu-items li {
+    height:22px;
+    padding:1px;
+    background-color:white;
+}
+li.menu-items li.shaded {background-color:#cde0e8;}
+div.controls {float:right; clear:right;}
+div.controls a {
+    float:right; 
+    display:block; 
+    color:#4b4b4b; 
+    padding:0 5px; 
+    border: 1px grey solid; 
+    background-color:#dedede;
+    text-decoration:none;
+    margin:1px 2px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    font-size:12px;
+}
+li.menu-items div.controls a {
+    font-size:11px;
+}
+</style>
 {% endblock %}
 
 {% block content %}
 <h1>Menu management</h1>
-<p>Click "View" on a menu section and the corresponding menu items will appear on the right.  Reorder menu sections and items by dragging them up or down in the list.</p>
-<div class="grid_5 alpha" id="sectionWrap">
-    <a class="buttonTop last" href="{% url dashboard_add_section %}">New menu section</a>
-    <h2>Menu sections</h2>
-    <ul class="drag sections">
+<div class="grid_12 alpha omega">
+    <a href="{% url dashboard_add_section %}">New menu section</a>
+    <div class="sections">
     {% for section in sections %}
-        <li id="{{ section.id }}"{% if forloop.first %} class="selected"{% endif %}>
-        <a class="buttonTop last delete" href="{% url dashboard_delete_section section.id %}">Delete</a>
-        <a class="buttonTop" href="{% url dashboard_edit_section section.id %}">Edit</a>
-        <a class="buttonTop view" href="{% url dashboard_view_section section.id %}">View</a>
-        <h3>{{ section }}</h3>
-        <p>{{ section.description }}</p>
-        </li> 
+    <ul class="section" id="{{ section.id }}">
+        <li class="section-header">
+            <div class="controls">
+                <a id="newItem" href="{% url dashboard_add_item %}?pk={{ section.id }}">New menu item</a>
+                <a href="{% url dashboard_delete_section section.id %}">Delete</a>
+                <a href="{% url dashboard_edit_section section.id %}">Edit</a>
+            </div>
+            {{ section.name }}
+        </li>
+        <li class="menu-items">
+            <ul>
+            {% include 'dashboard/includes/item_list.html' %}
+            </ul>
+        </li>
+    </ul>
     {% empty %}
-        <li>You have not created any menu sections. <a href="{% url dashboard_add_section %}">Create one now</a></li>
+        You have not created any menu sections. <a href="{% url dashboard_add_section %}">Create one now</a>
     {% endfor %}
-    </ul>
-</div>
-<div class="grid_7 omega" id="itemWrap">
-    <a class="buttonTop last" id="newItem" href="{% url dashboard_add_item %}">New menu item</a>
-    <h2>Menu items under <span>this section</span></h2>
-    <ul class="drag items">
-        <li>No items to display.</li>
-    </ul>
+    </div>
 </div>
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
-function selectSection() {
-    viewHref = $("ul.sections li.selected a.view").attr("href");
-    $("ul.items").fadeOut("def", function () {
-        $(this).children().remove();
-        $(this).load(viewHref).fadeIn();
-    });
-    pk = viewHref.match(/\/(\d+)\//)[1];
-    $("#newItem").attr("href", $("#newItem").attr("href").split('?')[0] + "?pk=" + pk);
-    $("#itemWrap h2 span").text($("li.selected h3").text());
-}
-
 $(function () {
-    selectSection();
-    $("ul.drag.items").sortable({
+    $("li.menu-items ul").sortable({
         stop: function(event, ui) { 
             $.post("items/reorder/", $.param({
                 item_ids: $(this).sortable('toArray')
             }, true));
+            $(this).children().filter(":odd").addClass("shaded");
+            $(this).children().filter(":even").removeClass("shaded");
         },
-        cancel: ":input,button,a"
+        cancel: "a,label"
     });
-    $("ul.drag.sections").sortable({
+    $("div.sections").sortable({
         stop: function(event, ui) { 
             $.post("sections/reorder/", $.param({
                 section_ids: $(this).sortable('toArray')
             }, true));
         },
-        cancel: ":input,button,a"
-    });
-    $("a.view").click(function () {
-        $("li.selected").removeClass("selected");
-        $(this).parent().addClass("selected");
-        selectSection();
-        return false;
+        cancel: "li.menu-items,a"
     });
     $("a.delete").live("click", function () {
         h3Text = $($(this).parent().find("h3")[0]).text();
