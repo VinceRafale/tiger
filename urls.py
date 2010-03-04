@@ -23,6 +23,7 @@ urlpatterns += patterns('',
     url(r'^order/send/$', 'tiger.core.views.send_order', name='send_order'),
     url(r'^order/success/$', 'tiger.core.views.order_success', name='order_success'),
     url(r'^m/(?P<item_id>\w+)/$', 'tiger.core.views.short_code', name='short_code'),
+    url(r'^sitemap.xml$', 'tiger.sitemaps.sitemap'),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
 )
