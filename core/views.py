@@ -74,6 +74,7 @@ def send_order(request):
             order = form.save(commit=False)
             order.total = request.cart.total()
             order.cart = request.cart.session.get_decoded()
+            order.site = request.site
             order.save()
             content = render_to_pdf('notify/order.html', {
                 'data': form.cleaned_data,
