@@ -4,6 +4,7 @@
     <h1>Order #{{ order.id }}</h1>
     <div class="alpha grid_4">
         <strong>Customer:</strong> {{ order.name }}<br />
+        <strong>For:</strong> {{ order.get_method_display }}<br />
         <strong>Time placed:</strong> {{ order.timestamp|date:"fa m/d/y" }}<br />
         <strong>Pickup/delivery time:</strong> {{ order.pickup|date:"fa m/d/y" }}<br />
         <strong>Phone number:</strong> {{ order.phone }}<br />

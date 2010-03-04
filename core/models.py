@@ -126,12 +126,20 @@ class Upgrade(models.Model):
 
 
 class Order(models.Model):
+    METHOD_TAKEOUT = 1
+    METHOD_DINEIN = 2
+    METHOD_CHOICES = (
+        (METHOD_TAKEOUT, 'Takeout'),
+        (METHOD_DINEIN, 'Dine in'),
+    )
+    site = models.ForeignKey(Site, null=True, editable=False)
     name = models.CharField(max_length=50)
     phone = PhoneNumberField()
     pickup = models.DateTimeField()
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
     cart = PickledObjectField(editable=False)
     timestamp = models.DateTimeField(default=datetime.now, editable=False)
+    method = models.IntegerField(default=1, choices=METHOD_CHOICES)
 
     @models.permalink
     def get_absolute_url(self):

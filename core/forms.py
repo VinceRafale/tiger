@@ -44,6 +44,7 @@ def get_item_form(site):
 
 class OrderForm(forms.ModelForm):
     pickup = AmPmTimeField(label='Time you will pick up your order', required=True)
+    method = forms.ChoiceField(label='This order is for:', widget=forms.RadioSelect, choices=Order.METHOD_CHOICES)
 
     class Meta:
         model = Order

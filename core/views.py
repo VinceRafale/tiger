@@ -78,7 +78,8 @@ def send_order(request):
             content = render_to_pdf('notify/order.html', {
                 'data': form.cleaned_data,
                 'cart': request.cart,
-                'order_no': order.id
+                'order_no': order.id,
+                'method': order.get_method_display()
             })
             SendFaxTask.delay(request.site, request.site.fax_number, content, IsFineRendering=True)
             request.cart.clear()
