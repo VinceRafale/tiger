@@ -56,7 +56,7 @@ li.menu-items div.controls a.out-of-stock {
         <li class="section-header">
             <div class="controls section-controls">
                 <a id="newItem" href="{% url dashboard_add_item %}?pk={{ section.id }}">New menu item</a>
-                <a href="{% url dashboard_delete_section section.id %}">Delete</a>
+                <a class="delete" href="{% url dashboard_delete_section section.id %}">Delete</a>
                 <a href="{% url dashboard_edit_section section.id %}">Edit</a>
             </div>
             {{ section.name }}
@@ -96,8 +96,8 @@ $(function () {
         cancel: "li.menu-items,a"
     });
     $("a.delete").live("click", function () {
-        h3Text = $(this).parent().parent().text();
-        c = confirm("Are you sure you want to delete " + h3Text + "? This action cannot be undone.");
+        h3Text = $(this).parent().hasClass("section-controls") ? "section" : "item";
+        c = confirm("Are you sure you want to delete this " + h3Text + "? This action cannot be undone.");
         if (!c)
             return false;
     });
