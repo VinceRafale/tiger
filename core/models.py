@@ -62,6 +62,8 @@ class Item(models.Model):
     special = models.BooleanField('is this menu item currently a special?')
     slug = models.SlugField(editable=False)
     ordering = models.PositiveIntegerField(editable=False, default=1)
+    spicy = models.BooleanField(default=False)
+    vegetarian = models.BooleanField(default=False)
     objects = ItemManager()
 
     class Meta:

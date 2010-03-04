@@ -36,10 +36,16 @@
 <label>{{ form.special }}
 {{ form.special.label }}
 </label>
+<label>{{ form.spicy }}
+{{ form.spicy.label }}
+</label>
+<label>{{ form.vegetarian }}
+{{ form.vegetarian.label }}
+</label>
 {% if form.image.errors %}
 {{ form.image.errors }}
 {% endif %}
-<label>{{ form.image.label }}<br />
+<label>Choose an image for this item (optional):<br />
 {{ form.image }}
 </label>
 </div>

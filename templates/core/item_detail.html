@@ -12,7 +12,7 @@
 {% if not form and site.enable_orders %}
 <a class="add top" href="{% url order_item item.section.slug item.slug %}">add to order</a>
 {% endif %}
-<h1>{{ item.name }}</h1>
+<h1>{{ item.name }}{% if item.spicy %} <span class="pepper">❧</span>{% endif %}{% if item.vegetarian %} <span class="veg">veg</span>{% endif %}</h1>
 <div>
 {% if item.image %}
 <img class="inset-left" src="{{ item.image.medium.url }}" />
