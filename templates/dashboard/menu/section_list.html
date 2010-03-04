@@ -20,16 +20,28 @@ div.controls a {
     display:block; 
     color:#4b4b4b; 
     padding:0 5px; 
-    border: 1px grey solid; 
-    background-color:#dedede;
     text-decoration:none;
     margin:1px 2px;
-    -moz-border-radius:3px;
-    -webkit-border-radius:3px;
     font-size:12px;
 }
+div.section-controls a {
+    border: 1px grey solid; 
+    background-color:#dedede;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+}
 li.menu-items div.controls a {
-    font-size:11px;
+    height:16px;
+    width:16px;
+}
+li.menu-items div.controls a.stock {
+    width:auto;
+    display:none;
+}
+li.menu-items div.controls a.out-of-stock {
+    font-weight:bold;
+    color:red;
+    display:block;
 }
 </style>
 {% endblock %}
@@ -42,7 +54,7 @@ li.menu-items div.controls a {
     {% for section in sections %}
     <ul class="section" id="{{ section.id }}">
         <li class="section-header">
-            <div class="controls">
+            <div class="controls section-controls">
                 <a id="newItem" href="{% url dashboard_add_item %}?pk={{ section.id }}">New menu item</a>
                 <a href="{% url dashboard_delete_section section.id %}">Delete</a>
                 <a href="{% url dashboard_edit_section section.id %}">Edit</a>
@@ -84,7 +96,7 @@ $(function () {
         cancel: "li.menu-items,a"
     });
     $("a.delete").live("click", function () {
-        h3Text = $($(this).parent().find("h3")[0]).text();
+        h3Text = $(this).parent().parent().text();
         c = confirm("Are you sure you want to delete " + h3Text + "? This action cannot be undone.");
         if (!c)
             return false;
