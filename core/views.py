@@ -31,7 +31,7 @@ def short_code(request, item_id):
 def item_detail(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
     return render_custom(request, 'core/item_detail.html', 
-        {'item': i})
+        {'item': i, 'sections': request.site.section_set.all()})
 
 def order_item(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
@@ -66,7 +66,7 @@ def order_item(request, section, item):
         print form._errors
     else:
         form = OrderForm()
-    return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': total})
+    return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': total, 'sections': request.site.section_set.all()})
 
 def remove_item(request):
     request.cart.remove(request.GET.get('id'))
