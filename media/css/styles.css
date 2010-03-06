@@ -47,11 +47,15 @@ a.add {
 #orderPreview td {text-align:right;}
 #orderPreview td.item {width:70%; text-align:left;}
 
-.messages {list-style-type:none;}
-.messages li {
+.messages, .errorlist {list-style-type:none;}
+.errorlist {margin:15px 0 0;}
+.messages li, .errorlist li {
     border:1px solid;
     margin-left:0;
     padding:6px;
+}
+.errorlist li {
+color:#67202d;background-color:#ffbfbf;border-color:#67202d;
 }
 .messages li.success {color:green;background-color:#d3ead3;border-color:green;}
 .messages li.warning {color:#704308;background-color:#f9f7c3;border-color:#704308;}
