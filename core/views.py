@@ -30,9 +30,6 @@ def short_code(request, item_id):
 
 def item_detail(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
-    if request.method == 'POST':
-        qty = request.POST.get('qty')
-        request.cart.add(i.id, int(qty))
     return render_custom(request, 'core/item_detail.html', 
         {'item': i})
 
@@ -40,12 +37,22 @@ def order_item(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
     if not request.site.enable_orders:
         return HttpResponseRedirect(i.get_absolute_url())
+    if not i.available:
+        msg = """%s is currently not available. Please try one of our other
+        menu items.""" % i.name
+        messages.warning(request, msg) 
+        return HttpResponseRedirect(i.section.get_absolute_url())
     OrderForm = get_order_form(i)
     total = i.variant_set.order_by('-price')[0].price
     if request.method == 'POST':
         if not request.site.is_open:
             msg = """%s is currently closed. Please try ordering during normal
             restaurant hours, %s.""" % (request.site.name, request.site.hours)
+            messages.warning(request, msg) 
+            return HttpResponseRedirect(i.section.get_absolute_url())
+        if not i.available:
+            msg = """%s is currently not available. Please try one of our other
+            menu items.""" % i.name
             messages.warning(request, msg) 
             return HttpResponseRedirect(i.section.get_absolute_url())
         form = OrderForm(request.POST)

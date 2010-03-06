@@ -107,4 +107,11 @@ def reorder_items(request):
     _reorder_objects(Item, item_ids)
     return HttpResponse('')
 
-
+@login_required
+def flag_item(request):
+    lookup, val = request.POST.items()[0]
+    attr, pk = lookup.split('-')
+    item = Item.objects.get(id=pk)
+    setattr(item, attr, True if val == 'true' else False)
+    item.save()
+    return HttpResponse('')

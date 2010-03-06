@@ -3,7 +3,16 @@
         <div class="controls">
             <a class="delete" href="{% url dashboard_delete_item item.id %}"><img src="{{ MEDIA_URL }}img/delete.png" /></a>
             <a href="{% url dashboard_edit_item item.id %}"><img src="{{ MEDIA_URL }}img/page_white_edit.png" /></a>
-            {# <a class="stock out-of-stock" href=""><input type="checkbox" /> Out of stock</span></a> #}
+        </div>
+        <div class="controls special">
+            <label class="archived">
+                <input type="checkbox" name="archived-{{ item.id }}" {% if item.archived %}checked{% endif %} />
+                <span{% if item.archived %} class="archived"{% endif %}>Archived</span>
+            </label>
+            <label class="out">
+                <input type="checkbox" name="out_of_stock-{{ item.id }}" {% if item.out_of_stock %}checked{% endif %} />
+                <span{% if item.out_of_stock %} class="out"{% endif %}>Out of stock</span>
+            </label>
         </div>
         {{ item }}
         <em>

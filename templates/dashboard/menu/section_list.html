@@ -34,14 +34,30 @@ li.menu-items div.controls a {
     height:16px;
     width:16px;
 }
-li.menu-items div.controls a.stock {
+li.menu-items div.controls.special {
+    float:right;
+    clear:none;
+}
+li.menu-items div.controls.special label {
+    display:inline;
+}
+li.menu-items div.controls.special span, li.menu-items div.controls.special input {
     width:auto;
     display:none;
 }
-li.menu-items div.controls a.out-of-stock {
-    font-weight:bold;
+li.menu-items div.controls.special label.hover span, li.menu-items div.controls.special label.hover input {
+    display:inline;
+    vertical-align:middle;
+}
+li.menu-items div.controls.special span.out {
+    display:inline;
     color:red;
-    display:block;
+    font-weight:bold;
+}
+li.menu-items div.controls.special span.archived {
+    display:inline;
+    color:grey;
+    font-weight:bold;
 }
 </style>
 {% endblock %}
@@ -100,6 +116,20 @@ $(function () {
         c = confirm("Are you sure you want to delete this " + h3Text + "? This action cannot be undone.");
         if (!c)
             return false;
+    });
+    $("li.menu-items li").hover(
+        function () { $(this).find("label").addClass("hover"); },
+        function () { $(this).find("label").removeClass("hover"); }
+    );
+    $("div.controls.special input").click(function () {
+        if (!$(this).attr("checked")) {
+            $(this).next().removeClass($(this).parent().attr("class"));
+        } else {
+            $(this).next().addClass($(this).parent().attr("class"));
+        }
+        params = {};
+        params[$(this).attr("name")] = $(this).attr("checked");
+        $.post("{% url dashboard_flag_item %}", $.param(params));
     });
 });
 </script>

@@ -18,7 +18,7 @@
     <dd>Vegetarian menu item</dd>
 </dl>
 <ul id="menuitems">
-{% for item in section.item_set.all %}
+{% for item in section.item_set.active %}
     <li{% cycle ' class="shaded"' '' %}>
         <div class="grid_4 alpha">
             <h4><a href="{{ item.get_absolute_url }}">{{ item }}</a>{% if item.spicy %} <span class="pepper">❧</span>{% endif %}{% if item.vegetarian %} <span class="veg">veg</span>{% endif %}</h4>

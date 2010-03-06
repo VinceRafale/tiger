@@ -12,6 +12,7 @@ urlpatterns = patterns('tiger.dashboard.menu.views',
     url(r'^items/delete/(\d+)/$', 'delete_item', name='dashboard_delete_item'),
     url(r'^items/edit/(\d+)/$', 'add_edit_item', name='dashboard_edit_item'),
     url(r'^items/reorder/$', 'reorder_items', name='dashboard_reorder_item'),
+    url(r'^items/flag/$', 'flag_item', name='dashboard_flag_item'),
 )
 
 

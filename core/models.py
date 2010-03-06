@@ -46,9 +46,14 @@ class Section(models.Model):
 
 
 class ItemManager(models.Manager):
+    use_for_related_fields = True
+
     def render_specials_to_string(self, site, template='core/specials_fax.html'):
         items = self.filter(special=True, site=site)
         return render_to_string(template, {'site': site, 'items': items})
+
+    def active(self):
+        return self.filter(archived=False)
 
 
 class Item(models.Model):
@@ -64,6 +69,8 @@ class Item(models.Model):
     ordering = models.PositiveIntegerField(editable=False, default=1)
     spicy = models.BooleanField(default=False)
     vegetarian = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
+    out_of_stock = models.BooleanField(default=False)
     objects = ItemManager()
 
     class Meta:
@@ -85,6 +92,11 @@ class Item(models.Model):
 
     def get_short_url(self):
         return reverse('short_code', kwargs={'item_id': int_to_base36(self.id)})
+
+    @property
+    def available(self):
+        return not (self.archived or self.out_of_stock)
+            
 
 
 class Variant(models.Model):

@@ -63,7 +63,7 @@ td {vertical-align:top; padding:0.5em;}
 {% for section in sections %}
 {% if show_all or section.has_specials %}
 <h2>{{ section.name }}</h2>
-    {% for item in section.item_set.all %}
+    {% for item in section.item_set.active %}
         {% if show_all or item.special %}
             <h4>{{ item.name }}
             <em>&nbsp;&nbsp;&nbsp;&nbsp;
