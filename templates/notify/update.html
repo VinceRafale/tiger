@@ -67,13 +67,7 @@ td {vertical-align:top; padding:0.5em;}
         {% if show_all or item.special %}
             <h4>{{ item.name }}
             <em>&nbsp;&nbsp;&nbsp;&nbsp;
-            {% for variant in item.variant_set.all %}
-                {% if forloop.first and forloop.last %}
-                    ${{ variant.price|floatformat:2 }}
-                {% else %}
-                    {{ variant.description }} - ${{ variant.price|floatformat:2 }} {% if not forloop.last %}&nbsp;&nbsp;&bull;&nbsp;&nbsp;{% endif %}
-                {% endif %}
-            {% endfor %}
+            {{ item.price_list|join:"&nbsp;&nbsp;&bull;&nbsp;&nbsp;" }}
             </em></h4>
             {% if show_descriptions %}
                 <p>{{ item.description }}</p>

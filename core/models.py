@@ -94,6 +94,15 @@ class Item(models.Model):
         return reverse('short_code', kwargs={'item_id': int_to_base36(self.id)})
 
     @property
+    def price_list(self):
+        if self.variant_set.count() == 1:
+            return ['$%.2f' % self.variant_set.all()[0].price]  
+        return [
+            '%s: $%.2f' % (v.description, v.price)
+            for v in self.variant_set.all()
+        ]
+
+    @property
     def available(self):
         return not (self.archived or self.out_of_stock)
             
