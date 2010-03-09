@@ -25,4 +25,4 @@ class AddImageForm(forms.ModelForm):
 class EditImageForm(forms.ModelForm):
     class Meta:
         model = ItemImage
-        fields = ['title']
+        fields = ['title', 'description']

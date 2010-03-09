@@ -2,10 +2,14 @@
 
 {% block content %}
 <h1>{% if instance %}Edit{% else %}Add{% endif %} image</h1>
-{% if instance %}<img src="{{ instance.thumb.url }}" />{% endif %}
+<div class="grid_5 alpha">
 <form method="POST" enctype="multipart/form-data">
 {{ form.as_p }}
 <input type="submit" value="Save">
 </form>
+</div>
+<div class="grid_7 omega">
+{% if instance %}<img src="{{ instance.large.url }}" />{% endif %}
+</div>
 {% endblock %}
 

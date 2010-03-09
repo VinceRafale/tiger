@@ -52,7 +52,8 @@ def add_edit_site_object(request, model, form_class, template, reverse_on, objec
     else:
         form = form_class(instance=instance)
     return direct_to_template(request, template=template, extra_context={
-        'form': form
+        'form': form,
+        'instance': instance
     })
 
 
