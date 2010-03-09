@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block extrahead %}
+<style type="text/css">
+img {
+    margin:auto;
+}
+#main {
+    text-align:center;
+}
+h1, p {
+    text-align:left;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>{{ img.title }}</h1>
+<img src="{{ img.large.url }}" title="{{ img.title }}" alt="{{ img.title }}" />
+{% if img.description %}
+{{ img.description|linebreaks }}
+{% endif %}
+{% endblock %}

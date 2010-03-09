@@ -2,6 +2,7 @@ from decimal import Decimal
 import os.path
 
 from django.conf import settings
+from django.contrib import admin
 from django.db import models
 from django.template.defaultfilters import slugify
 
@@ -38,12 +39,23 @@ class ItemImage(ImageModel):
     site = models.ForeignKey(Site)
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='uploaded_images')
+    slug = models.SlugField(editable=False, default='')
+    description = models.TextField(blank=True, default='')
 
     class IKOptions:
         spec_module = 'tiger.content.specs'
 
     def __unicode__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.slug = slugify(self.title)
+        super(ItemImage, self).save(*args, **kwargs)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return 'image_detail', (), {'image_id': self.id, 'slug': self.slug}
 
 
 class PdfMenu(models.Model):
@@ -112,3 +124,6 @@ class PdfMenu(models.Model):
     @property
     def url(self):
         return settings.MEDIA_URL + self._tail
+
+
+admin.site.register(ItemImage)

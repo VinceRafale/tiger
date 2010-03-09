@@ -26,4 +26,4 @@ def get_image(site, slug, size):
     if img is None:
         return ''
     img_size = getattr(img, size)
-    return mark_safe('<img class="inset-left" src="%s" />' % img_size.url)
+    return mark_safe('<a href="%s"><img class="inset-left" src="%s" /></a>' % (img.get_absolute_url(), img_size.url))
