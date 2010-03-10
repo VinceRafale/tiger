@@ -11,6 +11,8 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
+from tiger.core.forms import CouponCreationForm
+from tiger.core.models import Coupon
 from tiger.notify.forms import TwitterForm, BlastForm
 from tiger.notify.models import Fax, Blast
 from tiger.utils.pdf import render_to_pdf
@@ -48,6 +50,15 @@ def send_blast(request, blast_id):
     blast.send()
     messages.success(request, 'Blast "%s" has been started.' % blast.name)
     return HttpResponseRedirect(reverse('dashboard_marketing'))
+
+@login_required
+def add_edit_coupon(request, coupon_id=None):
+    return add_edit_site_object(request, Coupon, CouponCreationForm, 
+        'dashboard/marketing/coupon_form.html', 'dashboard_marketing', object_id=coupon_id)
+
+@login_required
+def delete_coupon(request, coupon_id):
+    return delete_site_object(request, Coupon, coupon_id, 'dashboard_marketing')
 
 @login_required
 def subscriber_list(request):

@@ -1,0 +1,31 @@
+{% extends 'dashboard/base.html' %}
+
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="/media/css/widgets.css" />
+{% endblock %}
+
+{% block content %}
+<h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} coupon</h1>
+<div class="grid_5 alpha">
+<form method="POST" action=".">
+{{ form.as_p }}
+</form>
+</div>
+<div class="grid_7 omega">
+<p>Coupons are a great way to boost sales!</p>
+</div>
+<div class="clear"></div>
+<a class="buttonTop last" href="{% url dashboard_marketing %}">Cancel</a>
+<a class="buttonTop submit" href="#">Save</a>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+});
+</script>
+{% endblock %}
+

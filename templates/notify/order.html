@@ -64,6 +64,14 @@
                 <td>${{ item.total|floatformat:"-2" }}</td>
             </tr>
         {% endfor %}
+        {% if cart.has_coupon %}
+        <tr class="discount">
+            <td class="item">Coupon code {{ cart.coupon.short_code }} - {{ cart.coupon.discount }}% off</td>
+            <td></td>
+            <td></td>
+            <td>-${{ cart.discount|floatformat:"-2" }}</td>
+        </tr>
+        {% endif %}
         <tr class="total">
             <td class="item">Total</td>
             <td></td>

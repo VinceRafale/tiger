@@ -7,7 +7,7 @@ from django.utils.http import base36_to_int
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template.defaultfilters import slugify
 
-from tiger.core.forms import get_order_form, OrderForm
+from tiger.core.forms import get_order_form, OrderForm, CouponForm
 from tiger.core.models import Section, Item
 from tiger.notify.tasks import SendFaxTask
 from tiger.utils.pdf import render_to_pdf
@@ -68,6 +68,23 @@ def order_item(request, section, item):
         form = OrderForm()
     return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': total, 'sections': request.site.section_set.all()})
 
+def preview_order(request):
+    if request.method == 'POST':
+        form = CouponForm(request.site, request.POST)
+        if request.cart.has_coupon:
+            messages.error(request, 'You have already added coupon to this order.')   
+        elif form.is_valid():
+            coupon = form.coupon
+            request.cart.add_coupon(coupon)
+            return HttpResponseRedirect(reverse('preview_order'))
+    else:
+        if request.cart.has_coupon:
+            form = None
+        else:
+            form = CouponForm()
+    return render_custom(request, 'core/preview_order.html', 
+        {'form': form})
+
 def remove_item(request):
     request.cart.remove(request.GET.get('id'))
     return HttpResponseRedirect(reverse('preview_order'))
@@ -83,6 +100,9 @@ def send_order(request):
             order.cart = request.cart.session.get_decoded()
             order.site = request.site
             order.save()
+            if request.cart.has_coupon:
+                coupon = Coupon.objects.get(id=request.cart['coupon']['id'])
+                coupon.log_use(order)
             content = render_to_pdf('notify/order.html', {
                 'data': form.cleaned_data,
                 'cart': request.cart,

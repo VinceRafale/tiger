@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
@@ -167,6 +168,40 @@ class Order(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return 'order_detail', [self.id], {}
+
+
+class Coupon(models.Model):
+    site = models.ForeignKey(Site, editable=False)
+    short_code = models.CharField(max_length=20, help_text='Uppercase letters and numbers only. Leave this blank to have a randomly generated coupon code.')
+    exp_date = models.DateField('Expiration date', null=True, blank=True)
+    click_count = models.IntegerField('Number of uses', editable=False, default=0)
+    max_clicks = models.IntegerField('Max. allowed uses', null=True, blank=True)
+    discount = models.IntegerField()
+
+    def save(self, *args, **kwargs):
+        if not self.id and not self.short_code:
+            self.short_code = int_to_base36(int(time.time())).upper()
+        super(Coupon, self).save(*args, **kwargs)
+
+    def log_use(self, order):
+        if self.max_clicks:
+            self.click_count += 1
+        self.save()
+        CouponUse.objects.create(order=order, coupon=coupon)
+
+    @property
+    def is_open(self):
+        date_is_valid = self.exp_date is None or self.exp_date <= date.today()
+        has_clicks_available = self.max_clicks is None or self.click_count < self.max_clicks
+        if not (date_is_valid and has_clicks_available):
+            return False
+        return True
+
+
+class CouponUse(models.Model):
+    coupon = models.ForeignKey(Coupon)
+    order = models.ForeignKey(Order)
+    timestamp = models.DateTimeField(default=datetime.now)
 
 
 post_save.connect(item_social_handler, sender=Item)

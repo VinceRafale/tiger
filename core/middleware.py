@@ -1,6 +1,7 @@
 import hashlib
 import time
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.sessions.models import Session
@@ -8,6 +9,7 @@ from django.contrib.sessions.models import Session
 from tiger.accounts.middleware import DomainDetectionMiddleware
 from tiger.core.forms import get_order_form
 from tiger.core.models import Item
+
 
 class Cart(object):
     contents = {}
@@ -20,10 +22,30 @@ class Cart(object):
         """Iterating over the cart returns a list of tuples consisting of
         the Item in the cart and the corresponding quantity.
         """
-        return iter(self.contents.items())
+        return iter((k, v) for k, v in self.contents.items() if type(k) == int)
 
     def __len__(self):
-        return sum(v['quantity'] for k, v in self)
+        return sum(v['quantity'] for k, v in self if type(k) == int)
+
+    def __getitem__(self, key):
+        return self.contents[key]
+
+    def __setitem__(self, key, value):
+        contents = self.contents
+        contents[key] = value
+        self._save(contents)
+
+    def __contains__(self, item):
+        return item in self.contents
+
+    def _save(self, contents):
+        self.session.session_data = Session.objects.encode(contents)
+        self.session.save()
+
+    def _pop(self, key):
+        contents = self.contents
+        contents.pop(key, None)
+        self._save(contents)
 
     def add(self, item, form):
         cleaned_data = form.cleaned_data
@@ -32,20 +54,23 @@ class Cart(object):
             cleaned_data['variant'] = item.variant_set.all()[0]
         cleaned_data['total'] = self.tally(cleaned_data)
         cleaned_data['name'] = '%s - %s' % (item.section.name, cleaned_data['name'])
-        contents = self.contents
-        contents[len(self) + 1] = cleaned_data
-        self.session.session_data = Session.objects.encode(contents)
-        self.session.save()
+        self[len(self) + 1] = cleaned_data
 
     def remove(self, key):
-        contents = self.contents
-        contents.pop(int(key), None)
-        self.session.session_data = Session.objects.encode(contents)
-        self.session.save()
+        self._pop(int(key))
 
     def clear(self):
-        self.session.session_data = Session.objects.encode({})
-        self.session.save()
+        self._save({})
+
+    def add_coupon(self, coupon):
+        self['coupon'] = coupon.__dict__
+
+    def remove_coupon(self, coupon):
+        self._pop('coupon')
+        
+    @property
+    def has_coupon(self):
+        return 'coupon' in self
 
     def tally(self, item):
         qty = item['quantity']
@@ -55,8 +80,18 @@ class Cart(object):
             upgrades = sum(upgrade.price for upgrade in item['upgrades'])
         return (base_price + upgrades) * qty
 
+    def subtotal(self):
+        return sum(item['total'] for k, item in self if type(k) == int)
+
+    def discount(self):
+        if not self.has_coupon:
+            return 0
+        percent = self['coupon']['discount'] / Decimal('100.00')
+        return percent * self.subtotal()
+
     def total(self):
-        return sum(item['total'] for k, item in self)
+        return self.subtotal() - self.discount()
+
 
 class ShoppingCartMiddleware(object):
     """Middleware to add a ``Cart`` object to the request.  Must come after the

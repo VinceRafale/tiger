@@ -54,3 +54,27 @@ class OrderForm(forms.ModelForm):
         if pickup is None:
             raise forms.ValidationError('This field is required.')
         return datetime.combine(date.today(), pickup)
+
+
+class CouponForm(forms.Form):
+    coupon_code = forms.CharField(required=False)
+
+    def __init__(self, site=None, *args, **kwargs):
+        self.site = site
+        super(CouponForm, self).__init__(*args, **kwargs)
+
+    def clean_coupon_code(self):
+        code = self.cleaned_data.get('coupon_code')
+        if not code:
+            raise forms.ValidationError('You did not enter a coupon code.')
+        try:
+            c = Coupon.objects.get(site=self.site, short_code__iexact=code)
+        except Coupon.DoesNotExist:
+            raise forms.ValidationError('Please enter a valid coupon code.')
+        self.coupon = c
+        return code
+
+
+class CouponCreationForm(forms.ModelForm):
+    class Meta:
+        model = Coupon
