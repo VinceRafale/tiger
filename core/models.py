@@ -1,5 +1,6 @@
 import time
-from datetime import datetime
+from datetime import datetime, date
+from decimal import Decimal
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -126,7 +127,7 @@ class Variant(models.Model):
         return mark_safe(s)
 
     def save(self, *args, **kwargs):
-        self.price = '%.2f' % self.price
+        self.price = self.price.quantize(Decimal('0.01'))
         super(Variant, self).save(*args, **kwargs)
 
 

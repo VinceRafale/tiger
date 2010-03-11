@@ -71,6 +71,8 @@ class CouponForm(forms.Form):
             c = Coupon.objects.get(site=self.site, short_code__iexact=code)
         except Coupon.DoesNotExist:
             raise forms.ValidationError('Please enter a valid coupon code.')
+        if not c.is_open:
+            raise forms.ValidationError('That coupon code is no longer valid.')
         self.coupon = c
         return code
 

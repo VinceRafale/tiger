@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template.defaultfilters import slugify
 
 from tiger.core.forms import get_order_form, OrderForm, CouponForm
-from tiger.core.models import Section, Item
+from tiger.core.models import Section, Item, Coupon
 from tiger.notify.tasks import SendFaxTask
 from tiger.utils.pdf import render_to_pdf
 from tiger.utils.views import render_custom
