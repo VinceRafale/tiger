@@ -195,7 +195,7 @@ class Coupon(models.Model):
         if self.max_clicks:
             self.click_count += 1
         self.save()
-        CouponUse.objects.create(order=order, coupon=coupon)
+        CouponUse.objects.create(order=order, coupon=self)
 
     @property
     def is_open(self):
