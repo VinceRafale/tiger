@@ -2,7 +2,8 @@ from datetime import datetime
 
 from django.db import models
 
-from tiger.accounts.models import Site
+from tiger.accounts.models import Site, Subscriber
+from tiger.content.models import PdfMenu
 
 
 class Fax(models.Model):
@@ -31,8 +32,8 @@ class Social(models.Model):
 class Blast(models.Model):
     site = models.ForeignKey(Site)
     name = models.CharField(max_length=50)
-    pdf = models.ForeignKey('content.PdfMenu')
-    subscribers = models.ManyToManyField('accounts.Subscriber')
+    pdf = models.ForeignKey(PdfMenu)
+    subscribers = models.ManyToManyField(Subscriber)
     last_sent = models.DateTimeField(editable=False, null=True)
     send_count = models.PositiveIntegerField(default=0)
 

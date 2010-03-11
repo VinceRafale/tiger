@@ -66,7 +66,7 @@ def order_item(request, section, item):
         print form._errors
     else:
         form = OrderForm()
-    return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': total, 'sections': request.site.section_set.all()})
+    return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': '%.2f' % total, 'sections': request.site.section_set.all()})
 
 def preview_order(request):
     if request.method == 'POST':

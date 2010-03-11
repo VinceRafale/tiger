@@ -91,7 +91,7 @@ INSTALLED_APPS = (
     'celery',
     'django_sorting',
     'imagekit',
-    #'haystack',
+    'haystack',
     'pagination',
     'south',
     'tiger.accounts',
@@ -112,7 +112,7 @@ BROKER_USER = "tiger"
 BROKER_PASSWORD = "h0k3yp0k3y"
 BROKER_VHOST = "tiger"
 
-HAYSTACK_SITECONF = 'tiger.search'
+HAYSTACK_SITECONF = 'tiger.search.conf'
 HAYSTACK_SEARCH_ENGINE = 'whoosh'
 
 CUSTOM_MEDIA_ROOT = os.path.join(PROJECT_ROOT, '../media/')

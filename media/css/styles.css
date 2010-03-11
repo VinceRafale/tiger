@@ -9,6 +9,10 @@ div.shim{height: 50px; clear: both;}
 .footer address {text-align:center; margin-bottom:5px;}
 .footer p{text-align: center; font-size:12px;}
 
+#search h4 {
+    margin:15px 0 0;
+}
+
 h1 {clear:right;}
 #menu ul{margin:0; list-style-type:none;}
 #menu ul li{float:left;margin:0;position:relative;}

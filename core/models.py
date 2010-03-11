@@ -82,9 +82,8 @@ class Item(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
         if not self.id:
-            self.ordering = 1
+            self.slug = slugify(self.name)
         super(Item, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -126,6 +125,10 @@ class Variant(models.Model):
         s = '%s ($<span>%s</span>)' % (self.description, self.price)
         return mark_safe(s)
 
+    def save(self, *args, **kwargs):
+        self.price = '%.2f' % self.price
+        super(Variant, self).save(*args, **kwargs)
+
 
 class Upgrade(models.Model):
     """Provides additional cost data and/or order processing instructions. For
@@ -147,6 +150,10 @@ class Upgrade(models.Model):
             'Substitute' if self.substitute else 'Add', 
             self.name, self.price)
         return mark_safe(s)
+
+    def save(self, *args, **kwargs):
+        self.price = '%.2f' % self.price
+        super(Variant, self).save(*args, **kwargs)
 
 
 class Order(models.Model):
