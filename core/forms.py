@@ -43,17 +43,8 @@ def get_item_form(site):
 
 
 class OrderForm(forms.ModelForm):
-    pickup = AmPmTimeField(label='Time you will pick up your order', required=True)
-    method = forms.ChoiceField(label='This order is for:', widget=forms.RadioSelect, choices=Order.METHOD_CHOICES)
-
     class Meta:
         model = Order
-
-    def clean_pickup(self):
-        pickup = self.cleaned_data['pickup']
-        if pickup is None:
-            raise forms.ValidationError('This field is required.')
-        return datetime.combine(date.today(), pickup)
 
 
 class CouponForm(forms.Form):

@@ -166,12 +166,12 @@ class Order(models.Model):
     )
     site = models.ForeignKey(Site, null=True, editable=False)
     name = models.CharField(max_length=50)
-    phone = PhoneNumberField()
-    pickup = models.DateTimeField()
+    phone = models.CharField(max_length=20)
+    pickup = models.CharField('Time you will pick up your order', max_length=20)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
     cart = PickledObjectField(editable=False)
     timestamp = models.DateTimeField(default=datetime.now, editable=False)
-    method = models.IntegerField(default=1, choices=METHOD_CHOICES)
+    method = models.IntegerField('This order is for', default=1, choices=METHOD_CHOICES)
 
     @models.permalink
     def get_absolute_url(self):
