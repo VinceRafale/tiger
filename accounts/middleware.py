@@ -41,7 +41,7 @@ class DomainDetectionMiddleware(object):
             if subdomain == 'www':
                 raise Site.DoesNotExist
             domain = subdomain
-        return Site.objects.get(domain=domain, tld=tld)
+        return Site.objects.get(domain=domain)
 
     @staticmethod
     def get_site(request):
