@@ -63,7 +63,6 @@ def order_item(request, section, item):
                 i.name, reverse('preview_order'))
             messages.success(request, msg) 
             return HttpResponseRedirect(i.section.get_absolute_url())
-        print form._errors
     else:
         form = OrderForm()
     return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': '%.2f' % total, 'sections': request.site.section_set.all()})
