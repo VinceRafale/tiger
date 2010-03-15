@@ -63,8 +63,11 @@ class Site(models.Model):
         if self.custom_domain:
             domain = '.'.join(['www', self.domain, self.tld])
         else:
-            domain = '%s.takeouttiger.com' % self.domain
+            return self.tiger_domain()
         return 'http://' + domain
+
+    def tiger_domain(self):
+        return 'http://%s.takeouttiger.com' % self.domain
 
     @property
     def custom_media_url(self):

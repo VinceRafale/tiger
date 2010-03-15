@@ -67,6 +67,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'tiger.core.middleware.ShoppingCartMiddleware',
     'tiger.accounts.middleware.DomainDetectionMiddleware',
+    'tiger.dashboard.middleware.DashboardSecurityMiddleware',
     'django_sorting.middleware.SortingMiddleware',
     'pagination.middleware.PaginationMiddleware',
 )
@@ -105,6 +106,8 @@ INSTALLED_APPS = (
 AUTH_PROFILE_MODULE = 'accounts.Subscriber'
 LOGIN_URL = '/dashboard/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
+
+AUTHENTICATION_BACKENDS = ('tiger.dashboard.backends.DashboardAccessBackend',)
 
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672

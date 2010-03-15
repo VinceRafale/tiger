@@ -2,10 +2,10 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tiger.dashboard.views',
     url(r'^$', 'dashboard', name='dashboard'),
+    url(r'^login/$', 'login', name='auth_login'),
 )
 
 urlpatterns += patterns('django.contrib.auth.views',
-    url(r'^login/$', 'login', {'template_name': 'dashboard/login.html'}, name='auth_login'),
     url(r'^logout/$', 'logout', {'template_name': 'dashboard/logout.html', 'next_page': '/dashboard/login/'}, name='auth_logout'),
 )
 
