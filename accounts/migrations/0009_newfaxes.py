@@ -19,9 +19,6 @@ class Migration:
         # Adding field 'ScheduledUpdate.columns'
         db.add_column('accounts_scheduledupdate', 'columns', orm['accounts.scheduledupdate:columns'])
         
-        # Deleting field 'Site.google_analytics'
-        db.delete_column('accounts_site', 'google_analytics')
-        
         # Changing field 'Site.phone'
         # (to signature: django.contrib.localflavor.us.models.PhoneNumberField(max_length=20))
         db.alter_column('accounts_site', 'phone', orm['accounts.site:phone'])

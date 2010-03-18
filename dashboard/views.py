@@ -54,5 +54,3 @@ def dashboard(request):
     return direct_to_template(request, template='dashboard/base.html', extra_context={
         'specials': specials,
     })
-
-
