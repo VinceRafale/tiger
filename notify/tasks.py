@@ -38,7 +38,7 @@ class RunBlastTask(Task):
         Blast = get_model('notify', 'Blast')
         blast = Blast.objects.get(id=blast_id)
         site = blast.site
-        content = blast.pdf.render()
+        content = open(blast.pdf.path).read()
         via_fax = blast.subscribers.filter(update_via=Subscriber.VIA_FAX)
         numbers = [s.fax for s in via_fax]
         names = [contact.user.get_full_name() for contact in via_fax]
