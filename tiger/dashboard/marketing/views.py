@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -32,7 +33,8 @@ def home(request):
         'fax_subscribers': fax_subscribers,
         'total_pages': total_pages,
         'pages_for_month': pages_for_month,
-        'blasts': site.blast_set.all()
+        'blasts': site.blast_set.all(),
+        'FB_API_KEY': settings.FB_API_KEY
     })
 
 @login_required
@@ -87,3 +89,5 @@ def add_twitter(request):
     return direct_to_template(request, template='dashboard/marketing/twitter_connect.html', 
         extra_context={'form': form})
 
+def xd_receiver(request):
+    return direct_to_template(request, template='dashboard/marketing/xd_receiver.htm')

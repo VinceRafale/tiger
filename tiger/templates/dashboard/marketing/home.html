@@ -1,5 +1,7 @@
 {% extends 'dashboard/base.html' %}
 
+{% block namespace %}xmlns:fb="http://www.facebook.com/2008/fbml"{% endblock %}
+
 {% block content %}
     <h1>Dashboard</h1>
     <div class="grid_4 alpha">
@@ -46,9 +48,19 @@
 	{% endif %}
         </p>
     </div>
+	<strong>Facebook:</strong>
+	{% if site.facebook %}
+		currently integrated with <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
+		<a href="{% url dashboard_add_twitter %}">(change)</a>
+	{% else %}
+        <fb:prompt-permission perms="email">Would you like to receive email from our application?</fb:prompt-permission>
+	{% endif %}
+        </p>
+    </div>
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
 <script type="text/javascript">
 $(function () {
     $("a.sendButton").click(function () {
@@ -57,6 +69,7 @@ $(function () {
             return false;
         }
     });
+    FB.init("{{ FB_API_KEY }}","{% url xd_receiver %}");
 });
 </script>
 {% endblock %}
