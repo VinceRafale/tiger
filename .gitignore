@@ -1,4 +1,12 @@
 *.pyc
-*.db
+*.pyo
 *.swp
-*.jar
+*.db
+.installed.cfg
+bin
+develop-eggs
+dist
+downloads
+eggs
+parts
+src/*.egg-info
