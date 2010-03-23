@@ -27,6 +27,7 @@ class Social(models.Model):
     twitter_screen_name = models.CharField(max_length=20, blank=True)
     twitter_token = models.CharField(max_length=255, blank=True)
     twitter_secret = models.CharField(max_length=255, blank=True)
+    facebook_id = models.CharField(max_length=20, blank=True, null=True)
 
 
 class Blast(models.Model):

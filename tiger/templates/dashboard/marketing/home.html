@@ -39,29 +39,35 @@
     <div class="grid_4 omega">
         <h2>Social media</h2>
         <p class="usage">
-	<strong>Twitter:</strong>
-	{% if site.twitter %}
-		currently integrated with <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
-		<a href="{% url dashboard_add_twitter %}">(change)</a>
-	{% else %}
-		<a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
-	{% endif %}
+        <strong>Twitter:</strong>
+        {% if site.twitter %}
+            currently integrated with <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
+            <a href="{% url dashboard_add_twitter %}">(change)</a>
+        {% else %}
+            <a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
+        {% endif %}
         </p>
-    </div>
-	<strong>Facebook:</strong>
-	{% if site.facebook %}
-		currently integrated with <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
-		<a href="{% url dashboard_add_twitter %}">(change)</a>
-	{% else %}
-        <fb:prompt-permission perms="email">Would you like to receive email from our application?</fb:prompt-permission>
-	{% endif %}
+    {% if user.is_superuser %}
+        <p class="usage" id="facebook">
+        <fb:login-button onlogin="getPerms();"></fb:login-button>
         </p>
+    {% endif %}
     </div>
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
 <script type="text/javascript">
+FB.init("{{ FB_API_KEY }}","{% url xd_receiver %}");
+
+function getPerms() {
+	FB.Connect.showPermissionDialog('publish_stream', function (perms) {
+        if (perms) {
+            $.post("{% url register_id %}", $.param({id: FB.Connect.get_loggedInUser()}));
+        }
+	});
+}
+
 $(function () {
     $("a.sendButton").click(function () {
         c = confirm("This blast will send " + $(this).attr("rel") + " page(s) per fax subscriber.  Please make sure that you've previewed your PDF before continuing.");
@@ -69,7 +75,6 @@ $(function () {
             return false;
         }
     });
-    FB.init("{{ FB_API_KEY }}","{% url xd_receiver %}");
 });
 </script>
 {% endblock %}

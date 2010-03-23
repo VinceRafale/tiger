@@ -91,3 +91,9 @@ def add_twitter(request):
 
 def xd_receiver(request):
     return direct_to_template(request, template='dashboard/marketing/xd_receiver.htm')
+
+def register_id(request):
+    social = request.site.social
+    social.facebook_id = request.POST.get('id')
+    social.save()
+    return HttpResponse('')
