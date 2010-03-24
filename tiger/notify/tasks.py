@@ -2,6 +2,7 @@ import httplib
 import urllib2
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.core import mail
 from django.core.management.base import NoArgsCommand
 from django.db.models import get_model
@@ -67,7 +68,7 @@ class TweetNewItemTask(Task):
 
 class PublishToFacebookTask(Task):
     def run(self, uid, msg, link_title=None, href=None, **kwargs):
-        fb = Facebook(api_key, secret_key)
+        fb = Facebook(settings.FB_API_KEY, settings.FB_API_SECRET)
         kwargs = dict(uid=uid, msg=msg)
         if href is not None:
             kwargs.update({'action_links': [{'title': 'View on our site', 'href': href}]})
