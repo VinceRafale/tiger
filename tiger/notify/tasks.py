@@ -8,6 +8,7 @@ from django.db.models import get_model
 
 from celery.task import Task, PeriodicTask
 from celery.registry import tasks
+from facebook import Facebook, FacebookError
 
 from oauth import oauth
 
@@ -59,6 +60,19 @@ class TweetNewItemTask(Task):
         access_token = oauth.OAuthToken(token, secret) 
         try:
             return update_status(CONSUMER, CONNECTION, access_token, msg)
-        except urllib2.HTTPError:
+        except urllib2.HTTPError, e:
             self.retry([msg, token, secret], kwargs,
+                countdown=60 * 5, exc=e)
+
+
+class PublishToFacebookTask(Task):
+    def run(self, uid, msg, link_title=None, href=None, **kwargs):
+        fb = Facebook(api_key, secret_key)
+        kwargs = dict(uid=uid, msg=msg)
+        if href is not None:
+            kwargs.update({'action_links': [{'title': 'View on our site', 'href': href}]})
+        try:
+            fb.stream.publish(**kwargs)
+        except FacebookError, e:
+            self.retry([uid, msg, url], kwargs,
                 countdown=60 * 5, exc=e)

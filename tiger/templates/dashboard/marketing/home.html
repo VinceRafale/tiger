@@ -47,11 +47,9 @@
             <a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
         {% endif %}
         </p>
-    {% if user.is_superuser %}
         <p class="usage" id="facebook">
         <fb:login-button onlogin="getPerms();"></fb:login-button>
         </p>
-    {% endif %}
     </div>
 {% endblock %}
 
