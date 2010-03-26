@@ -3,6 +3,7 @@ import urllib
 import urllib2
 
 from django import forms
+from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.forms import USPhoneNumberField
 from django.utils import simplejson
 
@@ -12,6 +13,18 @@ from tiger.accounts.forms import AmPmTimeField
 from tiger.core.models import *
 
 GEOCODE_URL = 'http://maps.google.com/maps/api/geocode/json'
+
+def geocode(address):
+    params = {
+        'sensor': 'false',
+        'address': address
+    }
+    response = urllib2.urlopen('%s?%s' % (GEOCODE_URL, urllib.urlencode(params)))
+    json = simplejson.loads(response.read())
+    location = json['results'][0]['geometry']['location']
+    lon = location['lng']
+    lat = location['lat']
+    return lon, lat
 
 def get_order_form(instance):
     """For a given ``instance`` of ``core.models.Item``, returns a form 
@@ -51,6 +64,45 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
 
+    def __init__(self, data=None, site=None, *args, **kwargs):
+        super(OrderForm, self).__init__(data, *args, **kwargs)
+        self.fields['method'] = forms.TypedChoiceField(
+            label='This order is for:',
+            coerce=int,
+            choices=site.ordersettings.choices,
+            widget=forms.RadioSelect
+        )
+        self.delivery_minimum = site.ordersettings.delivery_minimum
+        self.site = site
+
+    def clean_method(self):
+        method = self.cleaned_data.get('method')
+        if self.total < self.delivery_minimum and method == Order.METHOD_DELIVERY:
+            msg = 'Delivery orders must be %.2f or more.' % self.delivery_minimum 
+            raise forms.ValidationError(msg)
+        return method
+
+    def clean(self):
+        cleaned_data = super(OrderForm, self).clean()
+        method = self.cleaned_data.get('method')
+        if method == Order.METHOD_DELIVERY:
+            address_fields = ['street', 'city', 'state', 'zip']
+            if not all(cleaned_data.get(field) for field in address_fields):
+                msg = 'You must enter an address for delivery.'
+                raise forms.ValidationError(msg)
+            address = ' '.join(cleaned_data.get(field) for field in address_fields)
+            msg = """We apologize, but it appears you are outside of our delivery area.
+            Please choose one of the other options or call us at %s.""" % self.site.phone
+            try:
+                lon, lat = geocode(address)
+            except:
+                raise forms.ValidationError(msg)
+            point = Point(lon, lat)
+            area = self.site.ordersettings.delivery_area
+            if not area.contains(point):
+                raise forms.ValidationError(msg)
+        return cleaned_data
+
 
 class CouponForm(forms.Form):
     coupon_code = forms.CharField(required=False)
@@ -86,15 +138,7 @@ class OrderSettingsForm(forms.ModelForm):
         exclude = ('site',)
 
     def __init__(self, data=None, site=None, *args, **kwargs):
-        params = {
-            'sensor': 'false',
-            'address': site.address
-        }
-        response = urllib2.urlopen('%s?%s' % (GEOCODE_URL, urllib.urlencode(params)))
-        json = simplejson.loads(response.read())
-        location = json['results'][0]['geometry']['location']
-        lon = location['lng']
-        lat = location['lat']
+        lon, lat = geocode(site.address)
         super(OrderSettingsForm, self).__init__(data, *args, **kwargs)
         self.fields['delivery_area'].widget = EditableMap(options={
             'geometry': 'polygon',

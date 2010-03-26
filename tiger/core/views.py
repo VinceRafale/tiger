@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template.defaultfilters import slugify
 
 from tiger.core.forms import get_order_form, OrderForm, CouponForm
-from tiger.core.models import Section, Item, Coupon
+from tiger.core.models import Section, Item, Coupon, Order
 from tiger.notify.tasks import SendFaxTask
 from tiger.utils.pdf import render_to_pdf
 from tiger.utils.views import render_custom
@@ -89,10 +89,9 @@ def remove_item(request):
     return HttpResponseRedirect(reverse('preview_order'))
 
 def send_order(request):
-    now = datetime.now()
-    # filter initial time values to exclude all times not during working hours
     if request.method == 'POST':
-        form = OrderForm(request.POST)
+        form = OrderForm(request.POST, site=request.site)
+        form.total = request.cart.total()
         if form.is_valid():
             order = form.save(commit=False)
             order.total = request.cart.total()
@@ -112,8 +111,12 @@ def send_order(request):
             request.cart.clear()
             return HttpResponseRedirect(reverse('order_success'))
     else:
-        form = OrderForm()
-    return render_custom(request, 'core/send_order.html', {'form': form})
+        form = OrderForm(site=request.site)
+        show_address_section = False
+    context = {
+        'form': form
+    }
+    return render_custom(request, 'core/send_order.html', context)
 
 def order_success(request):
     return render_custom(request, 'core/order_success.html')

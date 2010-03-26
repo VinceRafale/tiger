@@ -160,16 +160,18 @@ class Upgrade(models.Model):
 class Order(models.Model):
     METHOD_TAKEOUT = 1
     METHOD_DINEIN = 2
+    METHOD_DELIVERY = 3
     METHOD_CHOICES = (
         (METHOD_TAKEOUT, 'Takeout'),
         (METHOD_DINEIN, 'Dine in'),
+        (METHOD_DELIVERY, 'Delivery'),
     )
     site = models.ForeignKey(Site, null=True, editable=False)
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
     street = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
-    state = USStateField(blank=True, null=True)
+    state = models.CharField(max_length=2, blank=True, null=True)
     zip = models.CharField(max_length=10, blank=True, null=True)
     pickup = models.CharField('Time you will pick up your order', max_length=20)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
@@ -189,6 +191,23 @@ class OrderSettings(models.Model):
     delivery = models.BooleanField(default=True) 
     delivery_minimum = models.DecimalField('minimum amount for delivery orders', max_digits=5, decimal_places=2, default='0.00') 
     delivery_area = models.MultiPolygonField(null=True, blank=True) 
+
+    @property
+    def choices(self):
+        choice_list = []
+        #TODO: make this list of options and the associated numbers
+        # sit somewhere in one place in case more options are added 
+        # in the future
+        for i, choice in enumerate(('takeout', 'dine_in', 'delivery',)):
+            if getattr(self, choice, None):
+                choice_list.append(i + 1)
+        min_order = ' (minimum order of %.2f)' % self.delivery_minimum \
+            if self.delivery_minimum else ''
+        return [
+            c if c[0] != Order.METHOD_DELIVERY else (c[0], c[1] + min_order)
+            for c in Order.METHOD_CHOICES 
+            if c[0] in choice_list
+        ]
 
 
 class Coupon(models.Model):
