@@ -1,0 +1,59 @@
+{% extends 'dashboard/base.html' %}
+
+{% block extrahead %}
+{{ form.media }}
+<style>
+p span {
+background-image:url(http://openlayers.org/api/2.8/theme/default/img/editing_tool_bar.png);
+background-repeat:no-repeat;
+height:23px;
+width:23px;
+display:inline-block;
+}
+p .olControlDrawFeaturePolygonItemInactive {
+background-position:-26px 0;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Edit your online ordering options</h1>
+<form method="POST" action=".">
+<div class="grid_5 alpha">
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+{{ form.dine_in }} {{ form.dine_in.label }}
+{{ form.takeout }} {{ form.takeout.label }}
+{{ form.delivery }} {{ form.delivery.label }}
+{% if form.delivery_minimum.errors %}
+{{ form.delivery_minimum.errors }}
+{% endif %}
+<label>{{ form.delivery_minimum.label }} {{ form.delivery_minimum }}</label>
+</div>
+<div class="grid_7 omega">
+<p>Check off the ordering options that you want to offer.  Make sure to fill in your minimum order for deliveries and your delivery area if you offer delivery orders.
+</div>
+<div class="clear"></div>
+<div class="grid_8 alpha">
+{{ form.delivery_area }}
+</div>
+<div class="grid_4 omega">
+<p>To mark your delivery area on the map, click on the <span class="olControlDrawFeaturePolygonItemInactive"></span> tool and click on the map to draw.  When you have completed an area, double-click to finish.  You may draw as many different areas as you like.</p>
+</div>
+<div class="clear"></div>
+</form>
+<a class="buttonTop last" href="{% url dashboard_restaurant %}">Cancel</a>
+<a class="buttonTop submit" href="#">Save</a>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+});
+</script>
+{% endblock %}
+

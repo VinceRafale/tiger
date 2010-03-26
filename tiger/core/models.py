@@ -4,8 +4,8 @@ from decimal import Decimal
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
-from django.contrib.localflavor.us.models import PhoneNumberField
-from django.db import models
+from django.contrib.gis.db import models
+from django.contrib.localflavor.us.models import *
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils.http import int_to_base36
@@ -167,6 +167,10 @@ class Order(models.Model):
     site = models.ForeignKey(Site, null=True, editable=False)
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
+    street = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    state = USStateField(blank=True, null=True)
+    zip = models.CharField(max_length=10, blank=True, null=True)
     pickup = models.CharField('Time you will pick up your order', max_length=20)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
     cart = PickledObjectField(editable=False)
@@ -176,6 +180,15 @@ class Order(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return 'order_detail', [self.id], {}
+
+
+class OrderSettings(models.Model):
+    site = models.OneToOneField(Site)
+    dine_in = models.BooleanField(default=True) 
+    takeout = models.BooleanField(default=True) 
+    delivery = models.BooleanField(default=True) 
+    delivery_minimum = models.DecimalField('minimum amount for delivery orders', max_digits=5, decimal_places=2, default='0.00') 
+    delivery_area = models.MultiPolygonField(null=True, blank=True) 
 
 
 class Coupon(models.Model):
