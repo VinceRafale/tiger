@@ -6,26 +6,3 @@ sudo /etc/init.d/rabbitmq-server start
 sudo rabbitmqctl add_user tiger h0k3yp0k3y
 sudo rabbitmqctl add_vhost tiger
 sudo rabbitmqctl set_permissions -p tiger tiger "" ".*" ".*"
-
-../bin/easy_install authorize
-../bin/easy_install celery
-../bin/easy_install cssmin
-../bin/easy_install django_extensions
-../bin/easy_install django-filter
-../bin/easy_install django-imagekit
-../bin/easy_install django-haystack
-../bin/easy_install django-pagination
-../bin/easy_install django-sorting
-../bin/easy_install html5lib
-../bin/easy_install lxml
-../bin/easy_install oauth
-../bin/easy_install pisa
-../bin/easy_install pypdf
-../bin/easy_install South
-../bin/easy_install suds
-../bin/easy_install Whoosh
-
-cd ../
-svn co http://code.djangoproject.com/svn/django/trunk/
-cd trunk
-../bin/python setup.py install

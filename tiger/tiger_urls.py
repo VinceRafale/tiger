@@ -14,6 +14,11 @@ urlpatterns = patterns('',
             {'document_root': settings.MEDIA_ROOT}),
 )
 
+urlpatterns += patterns('tiger.accounts.views',
+    url(r'^signup/$', 'signup', name='tiger_signup'),
+)
+
+# Social API connectivity URLS
 urlpatterns += patterns('tiger.notify.views',
     url(r'^record-fax/$', 'record_fax', name='record_fax'),
     url(r'^twitter/connect/$', 'twitter_connect', name='twitter_connect'),
