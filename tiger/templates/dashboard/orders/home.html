@@ -25,7 +25,7 @@
                 <tr class="{% cycle '' 'shaded' %}">
                     <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
                     <td><a href="{{ order.get_absolute_url }}">{{ order.timestamp|date:"fa m/d" }}</a></td>
-                    <td><a href="{{ order.get_absolute_url }}">{{ order.pickup|date:"fa m/d" }}</a></td>
+                    <td><a href="{{ order.get_absolute_url }}">{{ order.pickup }}</a></td>
                     <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
                     <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total|floatformat:"-2" }}</a></td>
                 </tr>
@@ -37,7 +37,7 @@
         <h2>Status</h2>
         <p class="usage">
             {% if site.enable_orders %}
-            You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a>
+            You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a> / <a href="{% url order_options %}">Edit settings</a>
             {% else %}
             You are not currently taking online orders.  <a href="{% url toggle_order_status %}">Enable now</a>
             {% endif %}
