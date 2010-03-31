@@ -60,10 +60,17 @@ FB.init("{{ FB_API_KEY }}","{% url xd_receiver %}");
 
 function getPerms() {
 	FB.Connect.showPermissionDialog('publish_stream', function (perms) {
-        if (perms) {
-            $.post("{% url register_id %}", $.param({id: FB.Connect.get_loggedInUser()}));
-        }
-	});
+		if (perms) {
+			api = FB.Facebook.apiClient;
+			api.fql_query('SELECT uid, publish_stream FROM permissions WHERE publish_stream=1 AND ' +
+			'uid IN (SELECT page_id FROM page_admin WHERE uid=' + FB.Connect.get_loggedInUser() + ')', function (rows) {
+				page_id = rows[0]['uid'];
+				api.fql_query('SELECT page_url FROM page WHERE page_id=' + page_id, function (rows) {
+					$.post("{% url register_id %}", $.param({id: page_id, url: rows[0]['page_url'])}));
+				});
+});
+		}
+	}, true);
 }
 
 $(function () {

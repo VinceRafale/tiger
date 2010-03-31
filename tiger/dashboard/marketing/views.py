@@ -95,5 +95,6 @@ def xd_receiver(request):
 def register_id(request):
     social = request.site.social
     social.facebook_id = request.POST.get('id')
+    social.facebook_url = request.POST.get('url')
     social.save()
     return HttpResponse('')

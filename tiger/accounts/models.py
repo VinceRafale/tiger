@@ -110,6 +110,12 @@ class Site(models.Model):
             return social.twitter_screen_name
         return False
 
+    def facebook(self):
+        social = self.social
+        if social.facebook_id and social.facebook_url:
+            return social.facebook_url
+        return False
+
     @property
     def is_open(self):
         now = datetime.now()
