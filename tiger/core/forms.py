@@ -3,7 +3,7 @@ import urllib
 import urllib2
 
 from django import forms
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, fromstr, GEOSException
 from django.contrib.localflavor.us.forms import USPhoneNumberField
 from django.utils import simplejson
 
@@ -157,3 +157,13 @@ class OrderSettingsForm(forms.ModelForm):
         if cleaned_data.get('delivery') and not cleaned_data.get('delivery_area'):
             raise forms.ValidationError('You must map out your delivery area to offer delivery orders.')
         return cleaned_data
+
+    def _post_clean(self):
+        delivery_area = self.cleaned_data.get('delivery_area')
+        if delivery_area is not None:
+            try:
+                fromstr(delivery_area)
+            except GEOSException:
+                self._update_errors({'delivery_area': 'FAIL'})
+                return
+        super(OrderSettingsForm, self)._post_clean()

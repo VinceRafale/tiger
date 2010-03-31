@@ -23,6 +23,11 @@ def order_options(request):
             options = form.save()
             messages.success(request, 'Your order options have been updated.')
             return HttpResponseRedirect(reverse('dashboard_orders'))
+        #TODO: olwidget doesn't handle malformed data very nicely.  This is a
+        # hackish workaround for the time being.
+        if 'delivery_area' in form._errors:
+            form = OrderSettingsForm(site=request.site, instance=request.site.ordersettings)
+            messages.error(request, 'Some of your shape data was corrupted. Please redraw your area.')
     else:
         form = OrderSettingsForm(site=request.site, instance=request.site.ordersettings)
     return direct_to_template(request, template='dashboard/orders/order_options.html', extra_context={
