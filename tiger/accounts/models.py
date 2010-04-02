@@ -7,7 +7,12 @@ from django.contrib.localflavor.us.models import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
+import pytz
+from pytz import timezone
+
 from tiger.look.models import Skin
+
+TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replace('_', ' ') for tz in pytz.country_timezones('us')])
 
 
 class Account(models.Model):
@@ -51,6 +56,7 @@ class Site(models.Model):
     zip = models.CharField(max_length=10, default='')
     phone = PhoneNumberField(default='')
     fax_number = PhoneNumberField(default='', blank=True)
+    timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
     skin = models.ForeignKey(Skin, default=1)
@@ -118,12 +124,16 @@ class Site(models.Model):
 
     @property
     def is_open(self):
-        now = datetime.now()
+        server_tz = timezone(settings.TIME_ZONE)
+        site_tz = timezone(self.timezone)
+        now = server_tz.localize(datetime.now())
         timeslots = self.timeslot_set.filter(dow=now.weekday())
         if not timeslots.count():
             return False
         for timeslot in timeslots:
-            if timeslot.start < now.time() < timeslot.stop:
+            start_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.start))
+            stop_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.stop))
+            if start_dt < now < stop_dt:
                 return True
         return False
 
