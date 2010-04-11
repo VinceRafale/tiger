@@ -46,8 +46,8 @@ class Site(models.Model):
     """
     account = models.ForeignKey(Account)
     name = models.CharField(max_length=200)
-    domain = models.CharField(max_length=200)
-    tld = models.CharField(max_length=4, blank=True, null=True)
+    subdomain = models.CharField(max_length=200)
+    domain = models.CharField(max_length=200, null=True, blank=True)
     enable_blog = models.BooleanField(default=False)
     blog_address = models.URLField(blank=True)
     street = models.CharField(max_length=255, default='')

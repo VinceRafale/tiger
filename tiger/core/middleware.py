@@ -9,6 +9,7 @@ from django.contrib.sessions.models import Session
 from tiger.accounts.middleware import DomainDetectionMiddleware
 from tiger.core.forms import get_order_form
 from tiger.core.models import Item
+from tiger.utils.site import RequestSite
 
 
 class Cart(object):
@@ -121,8 +122,9 @@ class ShoppingCartMiddleware(object):
         return response
 
     def _get_cookie_pair(self, request):
-        site = DomainDetectionMiddleware.get_site(request)
-        if site is None:
+        site = RequestSite(request)
+        site_obj = site.get_site_object()
+        if site_obj is None:
             # fake out the cookie setter if we're on takeouttiger.com
             return True, False
         cookie_name = 'takeouttiger_%s' % site.domain
