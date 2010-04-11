@@ -120,12 +120,3 @@ def send_order(request):
 
 def order_success(request):
     return render_custom(request, 'core/order_success.html')
-
-def download_menu(request):
-    menu = request.site.menu
-    if menu is None:
-        return HttpResponseRedirect(reverse('section_detail'))
-    response = HttpResponse(mimetype='application/pdf')
-    response['Content-Disposition'] = 'filename=%s.pdf' % slugify(request.site.name)
-    response.write(menu.render())
-    return response
