@@ -201,3 +201,9 @@ class SignupForm(forms.ModelForm):
         site.fax_number = instance.fax
         site.name = instance.company_name
         site.save()
+
+
+class DomainForm(forms.ModelForm):
+    class Meta:
+        model = Site
+        fields = ('domain',)

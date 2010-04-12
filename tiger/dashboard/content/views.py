@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
+from tiger.accounts.forms import DomainForm
 from tiger.content.forms import *
 from tiger.content.models import *
 
@@ -66,3 +68,17 @@ def edit_img(request, img_id):
 @login_required
 def delete_img(request, img_id):
     return delete_site_object(request, ItemImage, img_id, 'dashboard_content')
+
+@login_required
+def custom_domain(request):
+    if request.method == 'POST':
+        form = DomainForm(request.POST, instance=request.site)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Custom domain added successfully.')
+    else:
+        form = DomainForm(instance=request.site)
+    return direct_to_template(request, template='dashboard/content/custom_domain.html', extra_context={
+        'form': form,
+        'NGINX_IP_ADDRESS': settings.NGINX_IP_ADDRESS
+    })

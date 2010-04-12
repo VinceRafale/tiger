@@ -13,6 +13,7 @@ urlpatterns = patterns('tiger.dashboard.content.views',
     url(r'^img/add/$', 'add_img', name='dashboard_add_img'),
     url(r'^img/edit/(\d+)/$', 'edit_img', name='dashboard_edit_img'),
     url(r'^img/delete/(\d+)/$', 'delete_img', name='dashboard_delete_img'),
+    url(r'^domain/$', 'custom_domain', name='dashboard_domain'),
 )
 
 
