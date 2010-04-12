@@ -1,21 +1,10 @@
 {% extends 'dashboard/base.html' %}
 
-{% block body-class %}content {% endblock %}
+{% block body-class %}site {% endblock %}
 
 {% block submenu %}
 <li><a class="content" href="{% url dashboard_content %}">Content</a></li>
 <li><a class="images" href="{% url dashboard_img_list %}">Images</a></li>
 <li><a class="pdfs" href="{% url dashboard_pdf_list %}">PDF menus</a></li>
 <li><a class="look" href="{% url dashboard_look %}">Look & Feel</a></li>
-{% endblock %}
-
-{% block content %}
-    <div class="grid_4 omega">
-        <h2>Site copy</h2>
-        <p class="usage">
-            <a href="{% url dashboard_edit_content "homepage" %}">Edit your homepage</a><br>
-            <a href="{% url dashboard_edit_content "about" %}">Edit your "About" page</a><br>
-            <a href="{% url dashboard_edit_content "find-us" %}">Edit your "Find us" page</a><br>
-        </p>
-    </div>
 {% endblock %}

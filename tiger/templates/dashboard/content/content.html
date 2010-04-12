@@ -1,0 +1,25 @@
+{% extends 'dashboard/content/home.html' %}
+
+{% block body-class %}{{ block.super }}content{% endblock %}
+
+{% load content_tags %}
+{% block content %}
+    <div class="grid_4 alpha">
+        <h3>Your homepage</h3>
+        <a href="{% url dashboard_edit_content "homepage" %}">Edit</a><br>
+        <h4>{% get_title site "homepage" %}</h4>
+        <p>{% get_body site "homepage" %}</p>
+    </div>
+    <div class="grid_4">
+        <h3>Your "About" page</h3>
+        <a href="{% url dashboard_edit_content "about" %}">Edit</a><br>
+        <h4>{% get_title site "about" %}</h4>
+        <p>{% get_body site "about" %}</p>
+    </div>
+    <div class="grid_4 omega">
+        <h3>Your "Find us" page</h3>
+        <a href="{% url dashboard_edit_content "find-us" %}">Edit</a><br>
+        <h4>{% get_title site "find-us" %}</h4>
+        <p>{% get_body site "find-us" %}</p>
+    </div>
+{% endblock %}

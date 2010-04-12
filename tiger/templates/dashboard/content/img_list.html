@@ -8,6 +8,7 @@
 #images li img {border:8px #dedede solid; cursor:pointer;}
 #images li img:hover {border-color:#94cad0;}
 #images a {font-size:11px;}
+#images li.empty-set {width:100%; text-align:left;}
 </style>
 {% endblock %}
 
@@ -21,6 +22,8 @@
         <a href="{% url dashboard_edit_img img.id %}">Edit</a>
         <a class="delete" href="{% url dashboard_delete_img img.id %}">Delete</a>
     </li>
+{% empty %}
+    <li class="empty-set">You have not uploaded any images.</li>
 {% endfor %}
 </ul>
 {% endblock %}

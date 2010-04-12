@@ -5,18 +5,20 @@
 {% block body-class %}{{ block.super }}integrations{% endblock %}
 
 {% block content %}
-    <div class="grid_4 omega">
-        <h1>Integrations</h1>
-        <p class="usage">
-        <strong>Twitter:</strong>
+    <div class="grid_4 alpha">
+        <h3>Twitter</h3>
+        <p>
         {% if site.twitter %}
-            currently integrated with <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
+            Connected to <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
             <a href="{% url dashboard_add_twitter %}">(change)</a>
         {% else %}
             <a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
         {% endif %}
         </p>
-        <p class="usage" id="facebook">
+    </div>
+    <div class="grid_4">
+        <h3>Facebook</h3>
+        <p id="facebook">
         <fb:login-button onlogin="getPerms();"></fb:login-button>
         </p>
     </div>

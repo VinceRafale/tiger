@@ -23,4 +23,3 @@ urlpatterns = patterns('tiger.dashboard.marketing.views',
     url(r'^xd_receiver.htm$', 'xd_receiver', name='xd_receiver'),
     url(r'^register-id/$', 'register_id', name='register_id'),
 )
-
