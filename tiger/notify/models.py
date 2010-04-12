@@ -1,6 +1,12 @@
 from datetime import datetime
 
+from django import forms
+from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.safestring import mark_safe
+
+from greatape import MailChimp
 
 from tiger.accounts.models import Site, Subscriber
 from tiger.content.models import PdfMenu
@@ -23,12 +29,39 @@ class Fax(models.Model):
 
 
 class Social(models.Model):
+    CAMPAIGN_NO_CREATE = 0
+    CAMPAIGN_CREATE = 1
+    CAMPAIGN_SEND = 2
+    CAMPAIGN_CHOICES = (
+        (CAMPAIGN_NO_CREATE, 'Do not create campaigns for blasts'),
+        (CAMPAIGN_CREATE, 'Create campaigns for blasts that can be sent from MailChimp'),
+        (CAMPAIGN_SEND, 'Create and automatically send campaigns for blasts'),
+    )
     site = models.OneToOneField(Site)
     twitter_screen_name = models.CharField(max_length=20, blank=True)
     twitter_token = models.CharField(max_length=255, blank=True)
     twitter_secret = models.CharField(max_length=255, blank=True)
     facebook_id = models.CharField(max_length=20, blank=True, null=True)
     facebook_url = models.TextField(blank=True, null=True)
+    mailchimp_api_key = models.CharField(max_length=100, null=True, blank=True)
+    mailchimp_list_id = models.CharField(max_length=50, null=True, blank=True)
+    mailchimp_list_name = models.CharField(max_length=100, null=True, blank=True)
+    mailchimp_allow_signup = models.BooleanField('Provide a signup box on your web site', default=False)
+    mailchimp_send_blast = models.IntegerField(
+        default=CAMPAIGN_NO_CREATE, choices=CAMPAIGN_CHOICES)
+
+    @property
+    def mailchimp_lists(self):
+        CACHE_KEY = 'mailchimp_choices-%d' % self.id
+        mailchimp_choices = cache.get(CACHE_KEY)
+        if mailchimp_choices is None:
+            mailchimp = MailChimp(self.mailchimp_api_key)
+            mailchimp_choices = [
+                (lst['id'], lst['name'])
+                for lst in mailchimp.lists()
+            ]
+            cache.set(CACHE_KEY, mailchimp_choices, 3600)
+        return mailchimp_choices
 
 
 class Blast(models.Model):

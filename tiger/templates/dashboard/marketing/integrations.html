@@ -20,6 +20,31 @@
         <fb:login-button onlogin="getPerms();"></fb:login-button>
         </p>
     </div>
+    <div class="grid_4 omega">
+        <h3>Mailchimp</h3>
+        <div id="mailchimp-settings">
+        {% if not site.social.mailchimp_api_key %}
+            <form method="POST" action="{% url dashboard_add_mailchimp %}">
+                <label id="mailchimp-key">Your MailChimp API key: <input type="text" name="api_key" /> </label>
+                <input type="submit" value="Save">
+            </form>
+            <p>If you already have a MailChimp account, you can retrieve your API key <a target="_blank" href="http://admin.mailchimp.com/account/api-key-popup">here</a>.</p>
+        {% else %}
+            <p>Current API key: {{ site.social.mailchimp_api_key }}</p>
+            {% if not site.social.mailchimp_list_name %}
+            {{ site.social.get_mailchimp_lists }}
+            {% else %}
+            <p>Current mailing list: {{ site.social.mailchimp_list_name }}</p>
+            <form method="POST" action="{% url edit_mailchimp_settings %}">
+            <label>{{ mailchimp_form.mailchimp_allow_signup }} {{ mailchimp_form.mailchimp_allow_signup.label }}</label>
+            {{ mailchimp_form.mailchimp_send_blast.label_tag }}
+            {{ mailchimp_form.mailchimp_send_blast }}
+            <input type="submit" value="Save" />
+            </form>
+            {% endif %}
+        {% endif %}
+        </div>
+    </div>
 {% endblock %}
 
 {% block js %}

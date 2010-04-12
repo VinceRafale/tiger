@@ -10,11 +10,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
+from greatape import MailChimp
+
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
 from tiger.core.forms import CouponCreationForm
 from tiger.core.models import Coupon
-from tiger.notify.forms import TwitterForm, BlastForm
+from tiger.notify.forms import *
 from tiger.notify.models import Fax, Blast
 from tiger.utils.pdf import render_to_pdf
 from tiger.utils.views import add_edit_site_object, delete_site_object
@@ -34,6 +36,8 @@ def home(request):
         'total_pages': total_pages,
         'pages_for_month': pages_for_month,
         'blasts': site.blast_set.all(),
+        'FB_API_KEY': settings.FB_API_KEY,
+        'mailchimp_form': MailChimpForm(instance=site.social)
     })
 
 @login_required
@@ -102,3 +106,28 @@ def register_id(request):
     social.facebook_url = request.POST.get('url')
     social.save()
     return HttpResponse('')
+
+def add_mailchimp_key(request):
+    social = request.site.social
+    social.mailchimp_api_key = request.POST.get('api_key')
+    social.save()
+    return HttpResponseRedirect(reverse('dashboard_marketing'))
+
+def get_mailchimp_lists(request):
+    social = request.site.social
+    return HttpResponse(social.get_mailchimp_lists())
+
+def set_mailchimp_list(request):
+    social = request.site.social
+    list_id = request.POST.get('mail_list')
+    social.mailchimp_list_id = list_id
+    social.mailchimp_list_name = dict(social.mailchimp_lists)[list_id]
+    social.save()
+    return HttpResponseRedirect(reverse('dashboard_marketing'))
+
+def edit_mailchimp_settings(request):
+    social = request.site.social
+    form = MailChimpForm(request.POST, instance=social)
+    form.save()
+    messages.success(request, 'MailChimp settings saved successfully.')
+    return HttpResponseRedirect(reverse('dashboard_marketing'))

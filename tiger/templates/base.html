@@ -105,6 +105,14 @@
                    Become a fan on <a href="{{ site.facebook }}">Facebook</a>!
                 </div>
                 {% endif %}
+                {% if site.mailchimp %}
+                <div id="mailchimp">
+                    <form method="POST" action="{% url mailing_list_signup %}">
+                    Join our mailing list!
+                    <input type="text" name="email" /> <input type="submit" value="Join" />
+                    </form>
+                </div>
+                {% endif %}
             {% endblock %}
             </div>
             </div>

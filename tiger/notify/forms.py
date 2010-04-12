@@ -17,3 +17,13 @@ class BlastForm(forms.ModelForm):
     class Meta:
         model = Blast
         fields = ['name', 'pdf', 'subscribers']
+
+
+class MailChimpForm(forms.ModelForm):
+    mailchimp_send_blast = forms.ChoiceField(
+        label='Would you like Takeout Tiger to create MailChimp campaigns to accompany your marketing blasts?',
+        widget=forms.RadioSelect, choices=Social.CAMPAIGN_CHOICES)
+
+    class Meta:
+        model = Social
+        fields = ['mailchimp_allow_signup', 'mailchimp_send_blast']

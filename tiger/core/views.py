@@ -2,10 +2,13 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.core.validators import email_re
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.http import base36_to_int
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template.defaultfilters import slugify
+
+from greatape import MailChimp
 
 from tiger.core.forms import get_order_form, OrderForm, CouponForm
 from tiger.core.models import Section, Item, Coupon, Order
@@ -120,3 +123,23 @@ def send_order(request):
 
 def order_success(request):
     return render_custom(request, 'core/order_success.html')
+
+def mailing_list_signup(request):
+    email = request.POST.get('email')
+    if email_re.match(email):
+        social = request.site.social
+        mailchimp = MailChimp(social.mailchimp_api_key)
+        response = mailchimp.listSubscribe(
+            id=social.mailchimp_list_id, 
+            email_address=email,
+            merge_vars=''
+        )
+        if response is True:
+            success_msg = 'Thanks for signing up!  We\'ll send you a confirmation e-mail shortly.'
+            messages.success(request, success_msg)
+        else:
+            messages.warning(request, 'We were unable to sign you up at this time.  Please try again.')
+    else:
+        error_msg = 'Please enter a valid e-mail address.'
+        messages.error(request, error_msg)
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])

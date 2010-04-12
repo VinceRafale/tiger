@@ -122,6 +122,12 @@ class Site(models.Model):
             return social.facebook_url
         return False
 
+    def mailchimp(self):
+        social = self.social
+        if social.mailchimp_api_key and social.mailchimp_allow_signup:
+            return True
+        return False
+
     @property
     def is_open(self):
         server_tz = timezone(settings.TIME_ZONE)
