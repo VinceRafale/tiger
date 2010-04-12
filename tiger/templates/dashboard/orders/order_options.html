@@ -1,4 +1,4 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/orders/home.html' %}
 
 {% block extrahead %}
 {{ form.media }}
@@ -15,6 +15,8 @@ background-position:-26px 0;
 }
 </style>
 {% endblock %}
+
+{% block body-class %}{{ block.super }}order-settings{% endblock %}
 
 {% block content %}
 <h1>Edit your online ordering options</h1>

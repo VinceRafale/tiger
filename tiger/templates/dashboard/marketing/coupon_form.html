@@ -1,8 +1,10 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/marketing/home.html' %}
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="/media/css/widgets.css" />
 {% endblock %}
+
+{% block body-class %}{{ block.super }}coupons{% endblock %}
 
 {% block content %}
 <h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} coupon</h1>

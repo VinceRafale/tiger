@@ -1,4 +1,6 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/restaurant/home.html' %}
+
+{% block body-class %}{{ block.super }}menu{% endblock %}
 
 {% block extrahead %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.formset.js"></script>

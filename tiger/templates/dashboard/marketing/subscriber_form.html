@@ -1,5 +1,6 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/marketing/home.html' %}
 
+{% block body-class %}{{ block.super }}subscribers{% endblock %}
 
 {% block content %}
 <h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} subscriber</h1>

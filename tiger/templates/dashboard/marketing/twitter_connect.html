@@ -1,9 +1,11 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/marketing/home.html' %}
 
 {% block extrahead %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.autocomplete.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery.autocomplete.css" />
 {% endblock %}
+
+{% block body-class %}{{ block.super }}integrations{% endblock %}
 
 {% block content %}
 <h1>Connect to your Twitter account</h1>

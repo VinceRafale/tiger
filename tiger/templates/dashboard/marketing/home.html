@@ -1,85 +1,10 @@
 {% extends 'dashboard/base.html' %}
 
-{% block namespace %}xmlns:fb="http://www.facebook.com/2008/fbml"{% endblock %}
+{% block body-class %}marketing {% endblock %}
 
-{% block content %}
-    <h1>Dashboard</h1>
-    <div class="grid_4 alpha">
-        <a class="buttonTop last" href="{% url dashboard_add_blast %}">Add</a>
-        <h2>Blasts</h2>
-        <ul class="drag sections">
-        {% for blast in blasts %}
-            <li> 
-                <a class="buttonTop last" href="{% url dashboard_delete_blast blast.id  %}">Delete</a>
-                <a class="buttonTop" href="{% url dashboard_edit_blast blast.id %}">Edit</a>
-                <a class="buttonTop sendButton" rel="{{ blast.pdf.page_count }}" href="{% url dashboard_send_blast blast.id %}">Send</a>
-                <div class="clear"></div>
-                <h3>{{ blast }}</h3>
-                <p>{{ blast.footer }}</p>
-            </li> 
-        {% empty %}
-            <li>You have not created any blasts. <a href="{% url dashboard_add_blast %}">Create one now</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="grid_4">
-        <a class="buttonTop last" href="{% url dashboard_add_subscriber %}">Add</a>
-        <a class="buttonTop" href="{% url dashboard_subscriber_list %}">View</a>
-        <h2>Subscribers</h2>
-        <p class="subscribers">
-            <strong>Via e-mail:</strong> {{ email_subscribers.count }}<br />
-            <strong>Via fax:</strong> {{ fax_subscribers.count }}
-        </p>
-        <h2>Fax usage</h2>
-        <p class="usage">
-            <strong>Total pages sent:</strong> {{ total_pages }}<br />
-            <strong>Pages sent in {% now "F" %}:</strong> {{ pages_for_month }}
-        </p>
-    </div>
-    <div class="grid_4 omega">
-        <h2>Social media</h2>
-        <p class="usage">
-        <strong>Twitter:</strong>
-        {% if site.twitter %}
-            currently integrated with <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
-            <a href="{% url dashboard_add_twitter %}">(change)</a>
-        {% else %}
-            <a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
-        {% endif %}
-        </p>
-        <p class="usage" id="facebook">
-        <fb:login-button onlogin="getPerms();"></fb:login-button>
-        </p>
-    </div>
-{% endblock %}
-
-{% block js %}
-<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
-<script type="text/javascript">
-FB.init("{{ FB_API_KEY }}","{% url xd_receiver %}");
-
-function getPerms() {
-	FB.Connect.showPermissionDialog('publish_stream', function (perms) {
-		if (perms) {
-			api = FB.Facebook.apiClient;
-			api.fql_query('SELECT uid, publish_stream FROM permissions WHERE publish_stream=1 AND ' +
-			'uid IN (SELECT page_id FROM page_admin WHERE uid=' + FB.Connect.get_loggedInUser() + ')', function (rows) {
-				page_id = rows[0]['uid'];
-				api.fql_query('SELECT page_url FROM page WHERE page_id=' + page_id, function (rows) {
-					$.post("{% url register_id %}", $.param({id: page_id, url: rows[0]['page_url'])}));
-				});
-});
-		}
-	}, true);
-}
-
-$(function () {
-    $("a.sendButton").click(function () {
-        c = confirm("This blast will send " + $(this).attr("rel") + " page(s) per fax subscriber.  Please make sure that you've previewed your PDF before continuing.");
-        if (!c) {
-            return false;
-        }
-    });
-});
-</script>
+{% block submenu %}
+<li><a class="images" href="{% url dashboard_marketing %}">Integrations</a></li>
+<li><a class="coupons" href="{% url dashboard_coupon_list %}">Coupons</a></li>
+<li><a class="blasts" href="{% url dashboard_pdf_list %}">Buckshot</a></li>
+<li><a class="subscribers" href="{% url dashboard_subscriber_list %}">Fax list</a></li>
 {% endblock %}

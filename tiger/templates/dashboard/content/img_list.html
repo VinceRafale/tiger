@@ -1,4 +1,6 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/content/home.html' %}
+
+{% block body-class %}{{ block.super }}images{% endblock %}
 
 {% block extrahead %}
 <style type="text/css">
@@ -10,6 +12,7 @@
 {% endblock %}
 
 {% block content %}
+<a class="buttonTop last" href="{% url dashboard_add_img %}">Add</a>
 <h1>Your image library</h1>
 <ul id="images">
 {% for img in images %}

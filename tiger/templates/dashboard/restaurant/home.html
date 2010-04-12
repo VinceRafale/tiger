@@ -1,31 +1,9 @@
 {% extends 'dashboard/base.html' %}
 
-{% block content %}
-    <h1>Restaurant info</h1>
-    <div class="grid_4 alpha">
-        <a class="buttonTop last" href="{% url dashboard_location %}">Edit</a>
-        <h2>Location</h2>
-        <ul class="drag sections">
-            <li> 
-                <div class="clear"></div>
-                <address>
-                {{ site.street }}<br />
-                {{ site.city }}, {{ site.state }} {{ site.zip }}
-                </address>
-                <p>
-                Phone: {{ site.phone }}<br />
-                Fax: {{ site.fax_number }}<br />
-                </p>
-            </li> 
-        </ul>
-    </div>
-    <div class="grid_4">
-        <a class="buttonTop last" href="{% url edit_hours %}">Edit</a>
-        <h2>Restaurant Hours</h2>
-        <p class="subscribers">
-            {{ site.hours }}
-        </p>
-    </div>
-    <div class="grid_4 omega">
-    </div>
+{% block body-class %}restaurant {% endblock %}
+
+{% block submenu %}
+<li><a class="menu" href="{% url dashboard_menu %}">Menu</a></li>
+<li><a class="location" href="{% url dashboard_location %}">Location</a></li>
+<li><a class="hours" href="{% url edit_hours %}">Hours</a></li>
 {% endblock %}

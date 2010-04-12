@@ -1,4 +1,6 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/orders/home.html' %}
+
+{% block body-class %}{{ block.super }}history{% endblock %}
 
 {% block content %}
     <h1>Order #{{ order.id }}</h1>

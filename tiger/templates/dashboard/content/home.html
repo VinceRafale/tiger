@@ -1,37 +1,15 @@
 {% extends 'dashboard/base.html' %}
 
+{% block body-class %}content {% endblock %}
+
+{% block submenu %}
+<li><a class="content" href="{% url dashboard_content %}">Content</a></li>
+<li><a class="images" href="{% url dashboard_img_list %}">Images</a></li>
+<li><a class="pdfs" href="{% url dashboard_pdf_list %}">PDF menus</a></li>
+<li><a class="look" href="{% url dashboard_look %}">Look & Feel</a></li>
+{% endblock %}
+
 {% block content %}
-    <h1>Dashboard</h1>
-    <div class="grid_4 alpha">
-        <a class="buttonTop last" href="{% url dashboard_add_pdf %}">Add</a>
-        <h2>PDF Menus</h2>
-        <ul class="drag sections">
-        {% for pdf in pdfs %}
-            <li> 
-                <a class="buttonTop last" href="{% url dashboard_delete_pdf pdf.id  %}">Delete</a>
-                <a class="buttonTop" href="{% url dashboard_edit_pdf pdf.id %}">Edit</a>
-                <a class="buttonTop" href="{% url dashboard_preview_pdf pdf.id %}">Preview</a>
-                {% if not pdf.featured %}
-                <a class="buttonTop" href="{% url dashboard_feature_pdf pdf.id %}">Feature</a>
-                {% endif %}
-                <div class="clear"></div>
-                <h3>{{ pdf }}{% if pdf.featured %} (featured on site){% endif %}</h3>
-                <p>Pages: {{ pdf.page_count }}</p>
-                <p>{{ pdf.footer }}</p>
-            </li> 
-        {% empty %}
-            <li>You currently have no PDF menus. <a href="">Create a pdf</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="grid_4">
-        <a class="buttonTop last" href="{% url dashboard_add_img %}">Add</a>
-        <a class="buttonTop" href="{% url dashboard_img_list %}">View</a>
-        <h2>Image library</h2>
-        <p class="subscribers">
-            You have {{ site.itemimage_set.count }} images.
-        </p>
-    </div>
     <div class="grid_4 omega">
         <h2>Site copy</h2>
         <p class="usage">

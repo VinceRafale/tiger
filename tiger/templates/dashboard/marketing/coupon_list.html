@@ -1,0 +1,12 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}coupons{% endblock %}
+
+{% block content %}
+<div class="grid_5 alpha">
+{% for coupon in coupons %}
+{{ coupon }}
+{% endfor %}
+</div>
+<div class="clear"></div>
+{% endblock %}

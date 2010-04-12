@@ -1,0 +1,46 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block namespace %}xmlns:fb="http://www.facebook.com/2008/fbml"{% endblock %}
+
+{% block body-class %}{{ block.super }}integrations{% endblock %}
+
+{% block content %}
+    <div class="grid_4 omega">
+        <h1>Integrations</h1>
+        <p class="usage">
+        <strong>Twitter:</strong>
+        {% if site.twitter %}
+            currently integrated with <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
+            <a href="{% url dashboard_add_twitter %}">(change)</a>
+        {% else %}
+            <a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
+        {% endif %}
+        </p>
+        <p class="usage" id="facebook">
+        <fb:login-button onlogin="getPerms();"></fb:login-button>
+        </p>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
+<script type="text/javascript">
+FB.init("{{ FB_API_KEY }}","{% url xd_receiver %}");
+
+function getPerms() {
+	FB.Connect.showPermissionDialog('publish_stream', function (perms) {
+		if (perms) {
+			api = FB.Facebook.apiClient;
+			api.fql_query('SELECT uid, publish_stream FROM permissions WHERE publish_stream=1 AND ' +
+			'uid IN (SELECT page_id FROM page_admin WHERE uid=' + FB.Connect.get_loggedInUser() + ')', function (rows) {
+				page_id = rows[0]['uid'];
+				api.fql_query('SELECT page_id, page_url FROM page WHERE page_id=' + page_id, function (rows) {
+					$.post("{% url register_id %}", $.param({id: page_id, url: rows[0]['page_url'])}));
+				});
+});
+		}
+	}, true);
+}
+</script>
+{% endblock %}
+

@@ -14,24 +14,30 @@
     {% block extrahead %}
     {% endblock %}
 </head>
-<body>
+<body class="{% block body-class %}{% endblock %}">
     <div class="wrapper">
         <div id="menuWrap">
             <div class="container_12">
                 <div id="menu" class="grid_8">
                 <ul class="menu">
-                    <li><a class="lightlink" href="{% url dashboard %}">Home</a></li>
-                    <li><a class="lightlink" href="{% url dashboard_restaurant %}">Restaurant</a></li>
-                    <li><a class="lightlink" href="{% url dashboard_menu %}">Menu</a></li>
-                    <li><a class="lightlink" href="{% url dashboard_marketing %}">Marketing</a></li>
-                    <li><a class="lightlink" href="{% url dashboard_orders %}">Orders</a></li>
-                    <li><a class="lightlink" href="{% url dashboard_content %}">Content</a></li>
-                    <li><a class="lightlink" href="{% url dashboard_look %}">Look &amp; feel</a></li>
+                    <li><a class="restaurant" href="{% url dashboard_menu %}">Restaurant</a></li>
+                    <li><a class="site" href="{% url dashboard_content %}">Site</a></li>
+                    <li><a class="marketing" href="{% url dashboard_marketing %}">Marketing</a></li>
+                    <li><a class="orders" href="{% url dashboard_orders %}">Online Ordering</a></li>
+                    <li><a class="account" href="">Account</a></li>
                 </ul>
                 </div>
                 <div id="search" class="grid_1 push_3">
                 <ul class="menu">
                     <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
+                </ul>
+                </div>
+            </div> 
+            <div class="container_12">
+                <div id="submenu" class="grid_8">
+                <ul class="menu">
+                    {% block submenu %}
+                    {% endblock %}
                 </ul>
                 </div>
             </div> 

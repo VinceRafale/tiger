@@ -1,4 +1,6 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/restaurant/home.html' %}
+
+{% block body-class %}{{ block.super }}menu{% endblock %}
 
 {% block content %}
 <h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} menu section</h1>

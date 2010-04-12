@@ -1,4 +1,4 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/marketing/home.html' %}
 
 {% block extrahead %}
     <script type="text/javascript" src="/media/js/admin/RelatedObjectLookups.js"></script>
@@ -8,6 +8,8 @@
     <script type="text/javascript" src="/media/js/SelectFilter2.js"></script>
     <link rel="stylesheet" type="text/css" href="/media/css/widgets.css" />
 {% endblock %}
+
+{% block body-class %}{{ block.super }}blasts{% endblock %}
 
 {% block content %}
 <h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} blast</h1>

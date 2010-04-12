@@ -28,13 +28,12 @@ def home(request):
     this_month = datetime(datetime.now().year, datetime.now().month, 1)
     pages_for_month = Fax.objects.filter(
         site=site, completion_time__gte=this_month).aggregate(Sum('page_count'))['page_count__sum']
-    return direct_to_template(request, template='dashboard/marketing/home.html', extra_context={
+    return direct_to_template(request, template='dashboard/marketing/integrations.html', extra_context={
         'email_subscribers': email_subscribers,
         'fax_subscribers': fax_subscribers,
         'total_pages': total_pages,
         'pages_for_month': pages_for_month,
         'blasts': site.blast_set.all(),
-        'FB_API_KEY': settings.FB_API_KEY
     })
 
 @login_required
@@ -52,6 +51,11 @@ def send_blast(request, blast_id):
     blast.send()
     messages.success(request, 'Blast "%s" has been started.' % blast.name)
     return HttpResponseRedirect(reverse('dashboard_marketing'))
+
+@login_required
+def coupon_list(request):
+    return object_list(request, Coupon.objects.filter(site=request.site), 
+        template_name='dashboard/marketing/coupon_list.html')
 
 @login_required
 def add_edit_coupon(request, coupon_id=None):

@@ -1,5 +1,7 @@
 {% extends 'dashboard/base.html' %}
 
+{% block body-class %}{{ block.super }}images{% endblock %}
+
 {% block content %}
 <h1>{% if instance %}Edit{% else %}Add{% endif %} image</h1>
 <div class="grid_5 alpha">

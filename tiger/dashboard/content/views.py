@@ -41,6 +41,11 @@ def feature_pdf(request, pdf_id):
     messages.success(request, '"%s" has been added to your home page.' % pdf.name)
     return HttpResponseRedirect(reverse('dashboard_content'))
 
+@login_required
+def pdf_list(request):
+    return direct_to_template(request, template='dashboard/content/pdf_list.html', extra_context={
+        'pdfs': request.site.pdfmenu_set.all()
+    })
 
 @login_required
 def img_list(request):

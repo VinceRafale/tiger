@@ -7,7 +7,7 @@ from tiger.core.forms import OrderSettingsForm
 from tiger.core.models import Order
 
 def home(request):
-    return direct_to_template(request, template='dashboard/orders/home.html', extra_context={
+    return direct_to_template(request, template='dashboard/orders/order_history.html', extra_context={
         'orders': Order.objects.order_by('-timestamp')[:10] 
     })
 
