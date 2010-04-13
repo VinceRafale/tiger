@@ -26,9 +26,6 @@ class Account(models.Model):
     street = models.CharField(max_length=255)
     state = USStateField()
     zip = models.CharField(max_length=10)
-    # customer's authorize.net information for online orders
-    auth_net_api_login = models.CharField(max_length=255, blank=True)
-    auth_net_api_key = models.CharField(max_length=255, blank=True)
     signup_date = models.DateField(editable=False, default=datetime.now)
 
     def __unicode__(self):

@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
-from tiger.core.forms import OrderSettingsForm
+from tiger.core.forms import OrderSettingsForm, OrderPaymentForm
 from tiger.core.models import Order
 
 def home(request):
@@ -31,5 +31,18 @@ def order_options(request):
     else:
         form = OrderSettingsForm(site=request.site, instance=request.site.ordersettings)
     return direct_to_template(request, template='dashboard/orders/order_options.html', extra_context={
+        'form': form
+    })
+
+def order_payment(request):
+    if request.method == 'POST':
+        form = OrderPaymentForm(request.POST, instance=request.site.ordersettings)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your settings have been updated.')
+            return HttpResponseRedirect(reverse('dashboard_orders'))
+    else:
+        form = OrderPaymentForm(instance=request.site.ordersettings)
+    return direct_to_template(request, template='dashboard/orders/order_payment.html', extra_context={
         'form': form
     })

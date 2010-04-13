@@ -135,7 +135,7 @@ class OrderSettingsForm(forms.ModelForm):
 
     class Meta:
         model = OrderSettings
-        exclude = ('site',)
+        fields = ('dine_in', 'takeout', 'delivery', 'delivery_minimum', 'delivery_area',)
 
     def __init__(self, data=None, site=None, *args, **kwargs):
         lon, lat = geocode(site.address)
@@ -167,3 +167,37 @@ class OrderSettingsForm(forms.ModelForm):
                 self._update_errors({'delivery_area': 'FAIL'})
                 return
         super(OrderSettingsForm, self)._post_clean()
+
+
+class OrderPaymentForm(forms.ModelForm):
+    payment_type = forms.TypedChoiceField(
+        label='Collect payment via', 
+        widget=forms.RadioSelect, 
+        coerce=int,
+        choices=OrderSettings.PAYMENT_TYPE_CHOICES)
+
+    class Meta:
+        model = OrderSettings
+        fields = (
+            'require_payment',
+            'auth_net_api_login',
+            'auth_net_api_key',
+            'paypal_email',
+            'payment_type',
+        )
+
+    def clean(self):
+        cleaned_data = super(OrderPaymentForm, self).clean()
+        if cleaned_data.get('require_payment'):
+            payment_type = cleaned_data.get('payment_type')
+            if not payment_type:
+                raise forms.ValidationError('You must choose a payment type to receive online payments.')
+            if payment_type == OrderSettings.PAYMENT_PAYPAL: 
+                if not cleaned_data.get('paypal_email'):
+                    raise forms.ValidationError('You must enter your PayPal e-mail address to receive payments via PayPal.')
+            else:
+                auth_login = cleaned_data.get('auth_net_api_login')
+                auth_key = cleaned_data.get('auth_net_api_key')
+                if not (auth_login and auth_key):
+                    raise forms.ValidationError('You must provide your Authorize.net credentials to receive payments via Authorize.net.')
+        return cleaned_data

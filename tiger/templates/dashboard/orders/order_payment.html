@@ -1,0 +1,43 @@
+{% extends 'dashboard/orders/home.html' %}
+
+{% block body-class %}{{ block.super }}payment{% endblock %}
+
+{% block content %}
+<div class="grid_12 alpha omega">
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+<form method="POST">
+<label>{{ form.require_payment }} {{ form.require_payment.label }}</label>
+{{ form.payment_type.label_tag }}
+{{ form.payment_type }}
+<div id="auth_creds">
+<label>{{ form.auth_net_api_login.label }} {{ form.auth_net_api_login }}</label>
+<label>{{ form.auth_net_api_key.label }} {{ form.auth_net_api_key }}</label>
+</div>
+<div id="paypal_creds">
+<label>{{ form.paypal_email.label }} {{ form.paypal_email }}</label>
+</div>
+<input type="submit" value="Save">
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+var radioMap = {
+    "1": "#paypal_creds",
+    "2": "#auth_creds"
+};
+$(function () {
+    $("#paypal_creds,#auth_creds").hide();
+    currentRadioVal = $(":radio:checked").val(); 
+    if (currentRadioVal) {
+        $(radioMap[currentRadioVal]).show();
+    }
+    $(":radio").change(function() {
+        $("#paypal_creds,#auth_creds").hide();
+        $(radioMap[$(this).val()]).show();
+    });
+});
+</script>
+{% endblock %}

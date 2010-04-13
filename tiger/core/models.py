@@ -185,12 +185,24 @@ class Order(models.Model):
 
 
 class OrderSettings(models.Model):
+    PAYMENT_PAYPAL = 1
+    PAYMENT_AUTHNET = 2
+    PAYMENT_TYPE_CHOICES = (
+        (PAYMENT_PAYPAL, 'PayPal'), 
+        (PAYMENT_AUTHNET, 'Authorize.net'),
+    )
     site = models.OneToOneField(Site)
     dine_in = models.BooleanField(default=True) 
     takeout = models.BooleanField(default=True) 
     delivery = models.BooleanField(default=True) 
     delivery_minimum = models.DecimalField('minimum amount for delivery orders', max_digits=5, decimal_places=2, default='0.00') 
     delivery_area = models.MultiPolygonField(null=True, blank=True) 
+    # customer's authorize.net information for online orders
+    payment_type = models.IntegerField('Collect payment via', null=True, choices=PAYMENT_TYPE_CHOICES)
+    auth_net_api_login = models.CharField(max_length=255, blank=True, null=True)
+    auth_net_api_key = models.CharField(max_length=255, blank=True, null=True)
+    paypal_email = models.EmailField(blank=True, null=True)
+    require_payment = models.BooleanField('Make online payment required for online orders', default=False)
 
     @property
     def choices(self):
