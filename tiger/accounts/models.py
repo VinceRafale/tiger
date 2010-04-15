@@ -60,10 +60,9 @@ class Site(models.Model):
 
     def __unicode__(self):
         if self.custom_domain:
-            domain = '.'.join(['www', self.domain, self.tld])
+            return 'http://' + self.domain
         else:
             return self.tiger_domain()
-        return 'http://' + domain
 
     def tiger_domain(self):
         return 'http://%s.takeouttiger.com' % self.domain
@@ -72,7 +71,7 @@ class Site(models.Model):
     def custom_media_url(self):
         """Returns a path where site-specific static files can be accessed.
         """
-        return os.path.join(settings.CUSTOM_MEDIA_URL, '.'.join([self.domain, self.tld]))        
+        return os.path.join(settings.CUSTOM_MEDIA_URL, self.tiger_domain().lstrip('http://'))        
 
     @property
     def address(self):
