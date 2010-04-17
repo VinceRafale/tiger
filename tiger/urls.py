@@ -18,6 +18,9 @@ order_patterns = patterns('tiger.core.views',
     url(r'^remove/$', 'remove_item', name='remove_item'),
     url(r'^send/$', 'send_order', name='send_order'),
     url(r'^success/$', 'order_success', name='order_success'),
+    url(r'^pay/p/$', 'payment_paypal', name='payment_paypal'),
+    url(r'^pay/p/reg/', include('paypal.standard.ipn.urls')),
+    url(r'^pay/a/$', 'payment_authnet', name='payment_authnet'),
 )
 
 urlpatterns += patterns('',

@@ -9,11 +9,11 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template.defaultfilters import slugify
 
 from greatape import MailChimp
+from paypal.standard.forms import PayPalPaymentsForm
 
 from tiger.core.forms import get_order_form, OrderForm, CouponForm
 from tiger.core.models import Section, Item, Coupon, Order
-from tiger.notify.tasks import SendFaxTask
-from tiger.utils.pdf import render_to_pdf
+from tiger.core.utils import notify_restaurant
 from tiger.utils.views import render_custom
 
 def section_list(request):
@@ -104,14 +104,10 @@ def send_order(request):
             if request.cart.has_coupon:
                 coupon = Coupon.objects.get(id=request.cart['coupon']['id'])
                 coupon.log_use(order)
-            content = render_to_pdf('notify/order.html', {
-                'data': form.cleaned_data,
-                'cart': request.cart,
-                'order_no': order.id,
-                'method': order.get_method_display()
-            })
-            SendFaxTask.delay(request.site, request.site.fax_number, content, IsFineRendering=True)
-            request.cart.clear()
+            if 'pay' in request.POST:
+                request.session['order_id'] = order.id
+                return HttpResponseRedirect(request.site.ordersettings.payment_url)
+            order.notify_restaurant(Order.STATUS_SENT)
             return HttpResponseRedirect(reverse('order_success'))
     else:
         form = OrderForm(site=request.site)
@@ -121,7 +117,27 @@ def send_order(request):
     }
     return render_custom(request, 'core/send_order.html', context)
 
+def payment_paypal(request):
+    site = request.site
+    domain = str(site)
+    paypal_dict = {
+        'business': site.ordersettings.paypal_email,
+        'amount': request.cart.total,
+        'invoice': request.session['order_id'],
+        'item_name': 'Your order at %s' % site.name,
+        'notify_url': domain + reverse('paypal-ipn'),
+        'return_url': domain + reverse('order_success'),
+        'cancel_return': domain + reverse('preview_order'),
+    }
+    form = PayPalPaymentsForm(initial=paypal_dict)
+    context = {"form": form}
+    return render_custom(request, 'core/payment_paypal.html', context)
+
+def payment_authnet(request):
+    pass
+
 def order_success(request):
+    request.cart.clear()
     return render_custom(request, 'core/order_success.html')
 
 def mailing_list_signup(request):

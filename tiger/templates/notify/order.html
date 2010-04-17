@@ -28,10 +28,15 @@
                 <td class="order-info">
                     <h1>Takeout Tiger Order #{{ order_no }}</h1>
                     <p>
-                        <strong>Customer:</strong> {{ data.name }}<br/>
-                        <strong>Phone number:</strong> {{ data.phone }}<br/>
-                        <strong>Pickup time:</strong> {{ data.pickup }}<br/>
-                        <strong>For:</strong> {{ method }}
+                        <strong>Customer:</strong> {{ order.name }}<br/>
+                        <strong>Phone number:</strong> {{ order.phone }}<br/>
+                        <strong>Pickup time:</strong> {{ order.pickup }}<br/>
+                        <strong>For:</strong> {{ order.get_method_display }}
+                        {% if order.method == 3 %} {# delivery #}
+                        <strong>Address:</strong> <br />
+                            {{ order.street }}
+                            {{ order.city }}, {{ order.state }} {{ order.zip }}
+                        {% endif %}
                     </p>
                 </td>
             </tr>

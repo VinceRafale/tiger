@@ -70,7 +70,21 @@ form li {margin-left:0;}
         </div>
     </div>
     <div class="clear"></div>
+    <div class="alpha grid_4">
+    </div>
+    <div class="grid_3 omega">
+    </div>
+    <div class="clear"></div>
+    {% with site.ordersettings as settings %}
+    {% if settings.takes_payment %}
+        {% if not settings.require_payment %}
+            <input id="submit" type="submit" value="Pay on arrival" />
+        {% endif %}
+            <input id="pay" type="submit" name="pay" value="Pay now" />
+    {% else %}
     <input id="submit" type="submit" value="Send" />
+    {% endif %}
+    {% endwith %}
 </form>
 {% endblock %}
 

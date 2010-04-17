@@ -12,10 +12,14 @@ from django.utils.http import int_to_base36
 from django.utils.safestring import mark_safe
 
 from imagekit.models import ImageModel
-from tiger.accounts.models import Site
+from paypal.standard.ipn.signals import payment_was_successful
+
 from tiger.content.handlers import pdf_caching_handler
+from tiger.core.utils import notify_restaurant
 from tiger.notify.handlers import item_social_handler, coupon_social_handler
+from tiger.notify.tasks import SendFaxTask
 from tiger.utils.fields import PickledObjectField
+from tiger.utils.pdf import render_to_pdf
 
 
 class Section(models.Model):
@@ -166,6 +170,18 @@ class Order(models.Model):
         (METHOD_DINEIN, 'Dine in'),
         (METHOD_DELIVERY, 'Delivery'),
     )
+    STATUS_INCOMPLETE = 1
+    STATUS_SENT = 2
+    STATUS_PAID = 3
+    STATUS_FULFILLED = 4
+    STATUS_CANCELLED = 5
+    STATUS_CHOICES = (
+        (STATUS_INCOMPLETE, 'Incomplete'),
+        (STATUS_SENT, 'Sent'),
+        (STATUS_PAID, 'Paid'),
+        (STATUS_FULFILLED, 'Fulfilled'),
+        (STATUS_CANCELLED, 'Cancelled'),
+    )
     site = models.ForeignKey('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
@@ -175,14 +191,28 @@ class Order(models.Model):
     zip = models.CharField(max_length=10, blank=True, null=True)
     pickup = models.CharField('Time you will pick up your order', max_length=20)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
-    cart = PickledObjectField(editable=False)
+    cart = models.TextField(editable=False)
     timestamp = models.DateTimeField(default=datetime.now, editable=False)
     method = models.IntegerField('This order is for', default=1, choices=METHOD_CHOICES)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_INCOMPLETE)
 
     @models.permalink
     def get_absolute_url(self):
         return 'order_detail', [self.id], {}
 
+    def notify_restaurant(self, status):
+        """Sends a message to the restaurant with the information about the order
+        and flags the order as either sent or paid.
+        """
+        content = render_to_pdf('notify/order.html', {
+            'order': self,
+            'cart': self.cart,
+            'order_no': self.id,
+        })
+        site = self.site
+        SendFaxTask.delay(site, site.fax_number, content, IsFineRendering=True)
+        self.status = status
+        self.save()
 
 class OrderSettings(models.Model):
     PAYMENT_PAYPAL = 1
@@ -221,6 +251,30 @@ class OrderSettings(models.Model):
             if c[0] in choice_list
         ]
 
+    @property
+    def _takes_paypal(self):
+        return self.payment_type == OrderSettings.PAYMENT_PAYPAL and self.paypal_email
+
+    @property
+    def _takes_authnet(self):
+        return all([
+            self.payment_type == OrderSettings.PAYMENT_AUTHNET,
+            self.auth_net_api_key,
+            self.auth_net_api_login
+        ])
+
+    @property
+    def takes_payment(self):
+        return self._takes_paypal or self._takes_authnet
+
+    @property
+    def payment_url(self):
+        if self._takes_paypal:
+            return reverse('payment_paypal')
+        if self._takes_authnet:
+            return reverse('payment_authnet')
+        assert False
+    
 
 class Coupon(models.Model):
     site = models.ForeignKey('accounts.Site', editable=False)
@@ -256,6 +310,12 @@ class CouponUse(models.Model):
     timestamp = models.DateTimeField(default=datetime.now)
 
 
+def register_paypal_payment(sender, **kwargs):
+    ipn_obj = sender
+    order = Order.objects.get(id=ipn_obj.invoice)
+    order.notify_restaurant(Order.STATUS_PAID)
+
+payment_was_successful.connect(register_paypal_payment)
 post_save.connect(item_social_handler, sender=Item)
 post_save.connect(pdf_caching_handler, sender=Item)
 post_save.connect(coupon_social_handler, sender=Coupon)
