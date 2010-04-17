@@ -267,12 +267,17 @@ class OrderSettings(models.Model):
     def takes_payment(self):
         return self._takes_paypal or self._takes_authnet
 
-    @property
-    def payment_url(self):
+    def payment_url(self, cart_id=None, order_id=None):
         if self._takes_paypal:
             return reverse('payment_paypal')
         if self._takes_authnet:
-            return reverse('payment_authnet')
+            # authorize.net requires an SSL connection, so we use the
+            # wildcard cert available for takeouttiger.com subdomains and pass
+            # the card id as a GET parameter so the middleware correctly carries
+            # over the contents of the user's cart
+            domain = self.site.tiger_domain(secure=(not settings.DEBUG))
+            path = reverse('payment_authnet')
+            return '%s%s?cs=%s&o=%d' % (domain, path, cart_id, order_id)
         assert False
     
 

@@ -101,6 +101,10 @@ class ShoppingCartMiddleware(object):
     """
     def process_request(self, request):
         cookie_name, session_key = self._get_cookie_pair(request)
+        # cart session id is passed as querystring when transferring to
+        # <subdomain>.takeouttiger.com for secure purchasing
+        if request.GET.get('cs'):
+            session_key = request.GET['cs']
         if session_key:
             s, created = Session.objects.get_or_create(session_key=session_key, defaults=dict(
                 session_data=Session.objects.encode({}), 

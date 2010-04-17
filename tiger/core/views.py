@@ -106,7 +106,12 @@ def send_order(request):
                 coupon.log_use(order)
             if 'pay' in request.POST:
                 request.session['order_id'] = order.id
-                return HttpResponseRedirect(request.site.ordersettings.payment_url)
+                return HttpResponseRedirect(
+                    request.site.ordersettings.payment_url(
+                        cart_id=request.cart.session.session_key,
+                        order_id=order.id
+                    )
+                )
             order.notify_restaurant(Order.STATUS_SENT)
             return HttpResponseRedirect(reverse('order_success'))
     else:
@@ -134,6 +139,10 @@ def payment_paypal(request):
     return render_custom(request, 'core/payment_paypal.html', context)
 
 def payment_authnet(request):
+    try:
+        order = Order.objects.get(id=request.GET['o'])
+    except (Order.DoesNotExist, KeyError):
+        return HttpResponseRedirect(reverse('preview_order'))
     pass
 
 def order_success(request):

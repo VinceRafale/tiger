@@ -64,8 +64,11 @@ class Site(models.Model):
         else:
             return self.tiger_domain()
 
-    def tiger_domain(self):
-        return 'http://%s.takeouttiger.com' % self.domain
+    def tiger_domain(self, secure=False):
+        return 'http%s://%s.takeouttiger.com' % (
+            's' if secure else '',
+            self.subdomain
+        )
 
     @property
     def custom_media_url(self):
