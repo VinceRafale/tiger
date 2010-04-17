@@ -8,7 +8,6 @@ from django.utils.safestring import mark_safe
 
 from greatape import MailChimp
 
-from tiger.accounts.models import Site, Subscriber
 from tiger.content.models import PdfMenu
 
 
@@ -19,7 +18,7 @@ class Fax(models.Model):
         (DIRECTION_INBOUND, 'Inbound'),
         (DIRECTION_OUTBOUND, 'Outbound'),
     )
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey('accounts.Site')
     timestamp = models.DateTimeField(null=True, blank=True)
     page_count = models.IntegerField(null=True, blank=True)
     parent_transaction = models.CharField(max_length=100, null=True)
@@ -37,7 +36,7 @@ class Social(models.Model):
         (CAMPAIGN_CREATE, 'Create campaigns for blasts that can be sent from MailChimp'),
         (CAMPAIGN_SEND, 'Create and automatically send campaigns for blasts'),
     )
-    site = models.OneToOneField(Site)
+    site = models.OneToOneField('accounts.Site')
     twitter_screen_name = models.CharField(max_length=20, blank=True)
     twitter_token = models.CharField(max_length=255, blank=True)
     twitter_secret = models.CharField(max_length=255, blank=True)
@@ -65,10 +64,10 @@ class Social(models.Model):
 
 
 class Blast(models.Model):
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey('accounts.Site')
     name = models.CharField(max_length=50)
     pdf = models.ForeignKey(PdfMenu)
-    subscribers = models.ManyToManyField(Subscriber)
+    subscribers = models.ManyToManyField('accounts.Subscriber')
     last_sent = models.DateTimeField(editable=False, null=True)
     send_count = models.PositiveIntegerField(default=0)
 

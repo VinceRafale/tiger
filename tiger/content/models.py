@@ -9,7 +9,6 @@ from django.template.defaultfilters import slugify
 from imagekit.models import ImageModel
 from pyPdf import PdfFileReader
 
-from tiger.accounts.models import Site
 from tiger.utils.pdf import render_to_pdf
 
 
@@ -22,7 +21,7 @@ class Content(models.Model):
         TYPE_FINDUS,
         TYPE_ABOUT,
     )
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey('accounts.Site')
     slug = models.SlugField(editable=False)
     title = models.CharField(max_length=200, default='')
     text = models.TextField(default='')
@@ -36,7 +35,7 @@ class ItemImage(ImageModel):
     """Associates an image and its sizes with a user so that images 
     can easily be swapped out on menu items.
     """
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey('accounts.Site')
     title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='uploaded_images')
     slug = models.SlugField(editable=False, default='')
@@ -63,7 +62,7 @@ class PdfMenu(models.Model):
         ('S', 'Specials'), 
         ('A', 'All menu items')
     )
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey('accounts.Site')
     name = models.CharField(max_length=100, help_text='This description is for your reference only.  It will not appear in your blasts.', default='')
     title = models.CharField(max_length=255, blank=True, help_text='The title as it will appear in the blast.', default='')
     columns = models.SmallIntegerField('number of columns', default=2)

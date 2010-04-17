@@ -22,7 +22,7 @@ class Section(models.Model):
     """Acts as a container for menu items. Example: "Burritos".
     """
     name = models.CharField(max_length=50)
-    site = models.ForeignKey(Site, editable=False)
+    site = models.ForeignKey('accounts.Site', editable=False)
     description = models.TextField()
     slug = models.SlugField(editable=False)
     ordering = models.PositiveIntegerField(editable=False, default=1)
@@ -63,7 +63,7 @@ class Item(models.Model):
     """
     name = models.CharField(max_length=100)
     section = models.ForeignKey(Section)
-    site = models.ForeignKey(Site, editable=False)
+    site = models.ForeignKey('accounts.Site', editable=False)
     image = models.ForeignKey('content.ItemImage', blank=True, null=True)
     description = models.TextField(blank=True)
     special = models.BooleanField('is this menu item currently a special?')
@@ -166,7 +166,7 @@ class Order(models.Model):
         (METHOD_DINEIN, 'Dine in'),
         (METHOD_DELIVERY, 'Delivery'),
     )
-    site = models.ForeignKey(Site, null=True, editable=False)
+    site = models.ForeignKey('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
     street = models.CharField(max_length=255, blank=True, null=True)
@@ -191,7 +191,7 @@ class OrderSettings(models.Model):
         (PAYMENT_PAYPAL, 'PayPal'), 
         (PAYMENT_AUTHNET, 'Authorize.net'),
     )
-    site = models.OneToOneField(Site)
+    site = models.OneToOneField('accounts.Site')
     dine_in = models.BooleanField(default=True) 
     takeout = models.BooleanField(default=True) 
     delivery = models.BooleanField(default=True) 
@@ -223,7 +223,7 @@ class OrderSettings(models.Model):
 
 
 class Coupon(models.Model):
-    site = models.ForeignKey(Site, editable=False)
+    site = models.ForeignKey('accounts.Site', editable=False)
     short_code = models.CharField(max_length=20, help_text='Uppercase letters and numbers only. Leave this blank to have a randomly generated coupon code.')
     exp_date = models.DateField('Expiration date', null=True, blank=True)
     click_count = models.IntegerField('Number of uses', editable=False, default=0)
