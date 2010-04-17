@@ -24,6 +24,7 @@ class RequestSite(BaseRequestSite):
                 return None
         # if not, check for custom domains
         try:
-            return Site.objects.get(custom_domain=custom_domain)
+            domain = Site.objects.get(domain=self.domain)
         except Site.DoesNotExist:
             return None
+        return domain
