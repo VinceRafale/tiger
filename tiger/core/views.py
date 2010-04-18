@@ -123,6 +123,10 @@ def send_order(request):
     return render_custom(request, 'core/send_order.html', context)
 
 def payment_paypal(request):
+    try:
+        order = Order.objects.get(id=request.session['order_id'])
+    except (Order.DoesNotExist, KeyError):
+        return HttpResponseRedirect(reverse('preview_order'))
     site = request.site
     domain = str(site)
     paypal_dict = {
