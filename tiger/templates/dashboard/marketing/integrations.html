@@ -62,7 +62,7 @@ function getPerms() {
 			'uid IN (SELECT page_id FROM page_admin WHERE uid=' + FB.Connect.get_loggedInUser() + ')', function (rows) {
 				page_id = rows[0]['uid'];
 				api.fql_query('SELECT page_id, page_url FROM page WHERE page_id=' + page_id, function (rows) {
-					$.post("{% url register_id %}", $.param({id: page_id, url: rows[0]['page_url'])}));
+					$.post("{% url register_id %}", $.param({id: page_id, url: rows[0]['page_url']}));
 				});
 });
 		}
