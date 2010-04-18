@@ -11,7 +11,7 @@ from django.template.defaultfilters import slugify
 from greatape import MailChimp
 from paypal.standard.forms import PayPalPaymentsForm
 
-from tiger.core.forms import get_order_form, OrderForm, CouponForm
+from tiger.core.forms import get_order_form, OrderForm, CouponForm, AuthNetForm
 from tiger.core.models import Section, Item, Coupon, Order
 from tiger.core.utils import notify_restaurant
 from tiger.utils.views import render_custom
@@ -135,15 +135,25 @@ def payment_paypal(request):
         'cancel_return': domain + reverse('preview_order'),
     }
     form = PayPalPaymentsForm(initial=paypal_dict)
-    context = {"form": form}
+    context = {'form': form}
     return render_custom(request, 'core/payment_paypal.html', context)
 
 def payment_authnet(request):
+    order_id = request.REQUEST.get('o')
     try:
-        order = Order.objects.get(id=request.GET['o'])
+        order = Order.objects.get(id=order_id)
     except (Order.DoesNotExist, KeyError):
         return HttpResponseRedirect(reverse('preview_order'))
-    pass
+    if request.method == 'POST':
+        form = AuthNetForm(request.POST, order=order)
+        if form.is_valid():
+            order.notify_restaurant(Order.STATUS_PAID)
+            return HttpResponseRedirect(str(request.site) + reverse('order_success'))
+    else:
+        form = AuthNetForm(order=order)
+    context = {'form': form, 'order_id': order_id}
+    return render_custom(request, 'core/payment_authnet.html', context)
+            
 
 def order_success(request):
     request.cart.clear()

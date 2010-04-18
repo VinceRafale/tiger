@@ -10,7 +10,7 @@ form li {margin-left:0;}
 
 {% block content %}
 <h1>Your contact information</h1>
-<p>Fill in the fields below so that we can identify you with your order. Click "Send" and your order will be faxed to {{ site.name }}.</p>
+<p>Fill in the fields below so that we can identify you with your {{ site.name }} order.</p>
 {% if form.non_field_errors %}
 {{ form.non_field_errors }}
 {% endif %}

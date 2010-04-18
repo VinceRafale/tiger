@@ -1,12 +1,14 @@
 from datetime import date
+import re
 import urllib
 import urllib2
 
 from django import forms
 from django.contrib.gis.geos import Point, fromstr, GEOSException
-from django.contrib.localflavor.us.forms import USPhoneNumberField
+from django.contrib.localflavor.us.forms import *
 from django.utils import simplejson
 
+from authorize.aim import Api
 from olwidget.widgets import EditableMap
 
 from tiger.accounts.forms import AmPmTimeField
@@ -201,4 +203,87 @@ class OrderPaymentForm(forms.ModelForm):
                 auth_key = cleaned_data.get('auth_net_api_key')
                 if not (auth_login and auth_key):
                     raise forms.ValidationError('You must provide your Authorize.net credentials to receive payments via Authorize.net.')
+        return cleaned_data
+
+
+class AuthNetForm(forms.Form):
+    first_name = forms.CharField() 
+    last_name = forms.CharField() 
+    address = forms.CharField() 
+    city = forms.CharField() 
+    state = forms.CharField(widget=USStateSelect)
+    zip = USZipCodeField()
+    card_num = forms.RegexField(
+        label='Credit card number',
+        regex=r'[\d -]+', 
+        error_messages={'invalid': 'Please enter a valid credit card number.'}
+    )
+    month = forms.CharField()
+    year = forms.CharField()
+    card_code = forms.IntegerField(label='CCV')
+
+    def __init__(self, data=None, order=None, *args, **kwargs):
+        self.order = order
+        order_settings = self.order.site.ordersettings
+        self.login = order_settings.auth_net_api_login
+        self.key = order_settings.auth_net_api_key
+        initial = {
+            'month': 'MM',
+            'year': 'YYYY',
+        }
+        try:
+            initial['first_name'], initial['last_name'] = self.order.name.split(' ')
+        except ValueError:
+            pass
+        initial['address'] = self.order.street
+        for attr in ('city', 'state', 'zip'):
+            initial[attr] = getattr(self.order, attr, '')
+        super(AuthNetForm, self).__init__(data, initial=initial, *args, **kwargs)
+
+    def clean_card_num(self):
+        card_num = self.cleaned_data['card_num']
+        card_num = re.sub(r' |-', '', card_num)
+        return card_num
+
+    def clean_month(self):
+        month = self.cleaned_data['month']
+        msg = 'Please enter a valid month (00-12).'
+        try:
+            month = int(month)
+        except ValueError:
+            raise forms.ValidationError(msg)
+        if 0 <= month <= 12:
+            return month
+        raise forms.ValidationError(msg)
+
+    def clean_year(self):
+        year = self.cleaned_data['year']
+        current_year = date.today().year
+        msg = 'Please enter a valid year (%d or later).' % current_year
+        try:
+            year = int(year)
+        except ValueError:
+            raise forms.ValidationError(msg)
+        if year < current_year:
+            raise forms.ValidationError(msg)
+        return year
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        if self._errors:
+            return cleaned_data
+        data = cleaned_data.copy()
+        api = Api(self.login, self.key, delimiter=u'|')
+        exp_date = '-'.join([data.pop('month'), data.pop('year')])
+        transaction = api.transaction(
+            type=u'AUTH_CAPTURE', 
+            amount=self.order.total, 
+            invoice_num=unicode(self.order.id),
+            description=u'Order for %s' % self.order.name,
+            exp_date=exp_date,
+            **data
+        )
+        if transaction['reason_code'] != u'1':
+            msg = 'We were unable to process your transaction. Please verify that your payment information is correct.' 
+            raise forms.ValidationError(msg)
         return cleaned_data

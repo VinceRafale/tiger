@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<style>
+    #id_month, #id_card_code {width: 30px;}
+    #id_year {width: 38px;}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Pay for your order</h1>
+<p>Please complete or edit your billing information below.</p>
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+<form class="send" method="POST" action=".">
+    <input type="hidden" name="o" value="{{ order_id }}" />
+    <div class="alpha grid_4">
+        {% if form.first_name.errors %}
+        {{ form.first_name.errors }}
+        {% endif %}
+        <label>{{ form.first_name.label }}<br />
+        {{ form.first_name }}
+        </label>
+        {% if form.last_name.errors %}
+        {{ form.last_name.errors }}
+        {% endif %}
+        <label>{{ form.last_name.label }}<br />
+        {{ form.last_name }}
+        </label>
+        {% if form.address.errors %}
+        {{ form.address.errors }}
+        {% endif %}
+        <label>{{ form.address.label }}<br />
+        {{ form.address }}
+        </label>
+        {% if form.city.errors %}
+        {{ form.city.errors }}
+        {% endif %}
+        <label>{{ form.city.label }}<br />
+        {{ form.city }}
+        </label>
+        {% if form.state.errors %}
+        {{ form.state.errors }}
+        {% endif %}
+        <label>{{ form.state.label }}<br />
+        {{ form.state }}
+        </label>
+        {% if form.zip.errors %}
+        {{ form.zip.errors }}
+        {% endif %}
+        <label>{{ form.zip.label }}<br />
+        {{ form.zip }}
+        </label>
+    </div>
+    <div class="grid_3">
+        {% if form.card_num.errors %}
+        {{ form.card_num.errors }}
+        {% endif %}
+        <label>{{ form.card_num.label }}<br />
+        {{ form.card_num }}
+        </label>
+        {% if form.month.errors %}
+        {{ form.month.errors }}
+        {% endif %}
+        {% if form.year.errors %}
+        {{ form.year.errors }}
+        {% endif %}
+        {% if form.card_code.errors %}
+        {{ form.card_code.errors }}
+        {% endif %}
+        <label>{{ form.month }} / {{ form.year }}  {{ form.card_code.label }}: {{ form.card_code }}
+        </label>
+    </div>
+    <div class="clear"></div>
+    <input id="submit" type="submit" value="Submit" />
+    </form>
+{% endblock %}
+
+{% block cart %}
+<p>Your are currently ordering {{ cart|length }} item{{ cart|length|pluralize }} for a total of ${{ cart.total }}.</p>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("#id_month,#id_year").one("focus", function () {
+        $(this).val('');
+    });
+});
+</script>
+{% endblock %}

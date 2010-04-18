@@ -73,6 +73,7 @@
             <div id="sidebarWrap" class="grid_4 omega">
             <div id="sidebar">
             {% block sidebar %}
+                {% block cart %}
                 {% if site.enable_orders %}
                 {% if cart|length %}
                 <h3>Your order</h3>
@@ -82,6 +83,7 @@
                 <p>Just browse our menu and choose what you'd like to eat, and you can fax your order in right from our site!</p>
                 {% endif %}
                 {% endif %}
+                {% endblock %}
                 {% block sections %}
                 {% endblock %}
                 <p>{{ site.hours }}</p>

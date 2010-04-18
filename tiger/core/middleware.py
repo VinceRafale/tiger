@@ -114,7 +114,11 @@ class ShoppingCartMiddleware(object):
 
     def process_response(self, request, response):
         cookie_name, session_key = self._get_cookie_pair(request)
-        if session_key is None:
+        # special workaround for passing cart between domains
+        if request.GET.get('cs'):
+            session_key = request.GET['cs']
+            response.set_cookie(str(cookie_name), session_key)
+        elif session_key is None:
             session_key = hashlib.md5(
                 cookie_name + settings.SECRET_KEY + str(time.time())
             ).hexdigest()
