@@ -1,5 +1,7 @@
 {% extends 'dashboard/restaurant/home.html' %}
 
+{% block body-class %}{{ block.super }}hours{% endblock %}
+
 {% block extrahead %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.autocomplete.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery.autocomplete.css" />

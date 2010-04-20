@@ -9,23 +9,14 @@ div.shim{height: 50px; clear: both;}
 body {background: url(../img/dashboard_bg.png); font-size:16px;}
 ul.menu{margin:0; font-size:14px;}
 ul.menu li{float:left;margin:0;position:relative;}
-ul.menu li a{text-decoration:none;display:block;padding:8px 15px 5px 15px; margin:0;}
-ul.menu li a:hover{background-color:white; color:#004c00;}
-ul.menu li:hover div{display:block;}
-ul.menu li div{display:none;position:absolute;left:0;top:28px;z-index:1000; border:2px black solid;}
-ul.menu li ul {margin:0;width:179px;padding:0;overflow:auto;}
-ul.menu li ul li{float:none;margin:0;padding:0;font-weight:normal;}
-ul.menu li ul li a{display:block; padding:5px;}
-ul.menu li ul li a:hover{background-color:#004c00; color:white;}
+ul.menu li a{text-decoration:none;display:block;padding:8px 15px 5px 15px; margin:0; color:white;}
+ul.menu li a:hover{background-color:white; color:#34484f;}
 
 #orderForm ul {list-style-type:none;}
 #orderForm li {display:inline;}
 
-.footer {border-top:1px grey solid; font-size:14px;}
-#menuWrap {border-bottom:1px black solid;}
 #main {padding:15px; background-color:white; border:1px grey solid; margin-bottom:15px;}
-#menu ul li div {background-color:#e0e3dc;}
-a {color:#004c00;}
+a {color:#34484f;}
 a.lightlink {color:white;}
 
 a.buttonTop, a.add-row, a.delete-row {
@@ -43,14 +34,11 @@ a.buttonTop, a.add-row, a.delete-row {
 }
 
 #menuWrap, .footer, #menu ul li ul li a:hover, a.buttonTop, a.add-row, a.delete-row {
-    background-color: #004c00;
-    background-image: -moz-linear-gradient(90deg, #004c00, #009800);
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#004c00), to(#009800));
+    background-color: #c76218;
 }
+
 a.buttonTop:hover, a.add-row:hover, a.delete-row:hover {
-    background-color: #004c00;
-    background-image: -moz-linear-gradient(90deg, #009800, #004c00);
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#009800), to(#004c00));
+    background-color: #c76218;
 }
 
 a.buttonTop.last {
@@ -95,8 +83,13 @@ table td {padding:1px 4px;}
 table td.qty {text-align:center;}
 table {margin-bottom:0;}
 table th a {color:white;text-decoration:none;}
+td.total {text-align:right;}
 
 div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
+
+/***********
+* MESSAGES *
+***********/
 
 .messages {list-style-type:none;}
 .messages li {
@@ -108,4 +101,40 @@ div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
 .messages li.warning {color:#704308;background-color:#f9f7c3;border-color:#704308;}
 .messages li.error {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}
 
-td.total {text-align:right;}
+/********************
+* NAV ACTIVE STATES *
+********************/
+
+/* top tier */
+body.restaurant a.restaurant,
+body.site a.site,
+body.marketing a.marketing,
+body.orders a.orders,
+body.account a.account 
+{
+    color:black;
+    background-color:white;
+}
+
+/* bottom tier */
+body.menu a.menu,
+body.location a.location,
+body.hours a.hours,
+body.content a.content,
+body.images a.images,
+body.pdfs a.pdfs,
+body.look a.look,
+body.domain a.domain,
+body.integrations a.integrations,
+body.coupons a.coupons,
+body.publish a.publish,
+body.subscribers a.subscribers,
+body.orders a.orders,
+body.checkout-messages a.checkout-messages,
+body.payment a.payment,
+body.orders-settings a.orders-settings
+{
+    color:black;
+    background-color:white;
+}
+
