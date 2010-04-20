@@ -4,6 +4,7 @@ from django import forms
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_save
 from django.utils.safestring import mark_safe
 
 from greatape import MailChimp
@@ -81,3 +82,10 @@ class Blast(models.Model):
         self.save()
         RunBlastTask.delay(self.id)
 
+
+def new_site_setup(sender, instance, created, **kwargs):
+    if instance.__class__.__name__ == 'Site' and created:
+        Social.objects.create(site=instance)
+
+
+post_save.connect(new_site_setup)

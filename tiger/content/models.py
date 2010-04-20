@@ -4,6 +4,7 @@ import os.path
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
+from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
 from imagekit.models import ImageModel
@@ -26,9 +27,6 @@ class Content(models.Model):
     title = models.CharField(max_length=200, default='')
     text = models.TextField(default='')
     image = models.ForeignKey('ItemImage', null=True)
-
-    class Meta:
-        unique_together = ('slug', 'site')
 
 
 class ItemImage(ImageModel):
@@ -125,4 +123,11 @@ class PdfMenu(models.Model):
         return settings.MEDIA_URL + self._tail
 
 
+def new_site_setup(sender, instance, created, **kwargs):
+    if instance.__class__.__name__ == 'Site' and created:
+        for content_type in Content.CONTENT_TYPES:
+            Content.objects.create(site=instance, slug=content_type)
+
+
+post_save.connect(new_site_setup)
 admin.site.register(ItemImage)

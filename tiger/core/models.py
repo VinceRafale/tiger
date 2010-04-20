@@ -70,7 +70,7 @@ class Item(models.Model):
     site = models.ForeignKey('accounts.Site', editable=False)
     image = models.ForeignKey('content.ItemImage', blank=True, null=True)
     description = models.TextField(blank=True)
-    special = models.BooleanField('is this menu item currently a special?')
+    special = models.BooleanField('is this menu item currently a special?', default=False)
     slug = models.SlugField(editable=False)
     ordering = models.PositiveIntegerField(editable=False, default=1)
     spicy = models.BooleanField(default=False)
@@ -320,7 +320,14 @@ def register_paypal_payment(sender, **kwargs):
     order = Order.objects.get(id=ipn_obj.invoice)
     order.notify_restaurant(Order.STATUS_PAID)
 
+
+def new_site_setup(sender, instance, created, **kwargs):
+    if instance.__class__.__name__ == 'Site' and created:
+        OrderSettings.objects.create(site=instance)
+
+
 payment_was_successful.connect(register_paypal_payment)
+post_save.connect(new_site_setup)
 post_save.connect(item_social_handler, sender=Item)
 post_save.connect(pdf_caching_handler, sender=Item)
 post_save.connect(coupon_social_handler, sender=Coupon)
