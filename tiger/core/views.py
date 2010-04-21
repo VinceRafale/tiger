@@ -155,7 +155,7 @@ def payment_authnet(request):
             return HttpResponseRedirect(str(request.site) + reverse('order_success'))
     else:
         form = AuthNetForm(order=order)
-    context = {'form': form, 'order_id': order_id}
+    context = {'form': form, 'order_id': order_id, 'order_settings': request.site.ordersettings}
     return render_custom(request, 'core/payment_authnet.html', context)
             
 

@@ -5,6 +5,7 @@
 <style>
     #id_month, #id_card_code {width: 30px;}
     #id_year {width: 38px;}
+    ul.credit-cards li {display:inline;}
 </style>
 {% endblock %}
 
@@ -55,6 +56,20 @@
         </label>
     </div>
     <div class="grid_3">
+        <ul class="credit-cards">
+            {% if order_settings.takes_amex %}
+            <li><img src="{{ MEDIA_URL }}img/Card - AmEx_32x32.png" /></li>
+            {% endif %}
+            {% if order_settings.takes_discover %}
+            <li><img src="{{ MEDIA_URL }}img/Card - Discover_32x32.png" /></li>
+            {% endif %}
+            {% if order_settings.takes_mc %}
+            <li><img src="{{ MEDIA_URL }}img/Card - Mastercard_32x32.png" /></li>
+            {% endif %}
+            {% if order_settings.takes_visa %}
+            <li><img src="{{ MEDIA_URL }}img/Card - Visa_32x32.png" /></li>
+            {% endif %}
+        </ul>
         {% if form.card_num.errors %}
         {{ form.card_num.errors }}
         {% endif %}

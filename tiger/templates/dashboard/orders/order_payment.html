@@ -14,6 +14,13 @@
 <div id="auth_creds">
 <label>{{ form.auth_net_api_login.label }} {{ form.auth_net_api_login }}</label>
 <label>{{ form.auth_net_api_key.label }} {{ form.auth_net_api_key }}</label>
+<p>Select the credit cards that you accept:</p>
+<ul>
+    <li>{{ form.takes_amex }} <img src="{{ MEDIA_URL }}img/Card - AmEx_32x32.png" /></li>
+    <li>{{ form.takes_discover }} <img src="{{ MEDIA_URL }}img/Card - Discover_32x32.png" /></li>
+    <li>{{ form.takes_mc }} <img src="{{ MEDIA_URL }}img/Card - Mastercard_32x32.png" /></li>
+    <li>{{ form.takes_visa }} <img src="{{ MEDIA_URL }}img/Card - Visa_32x32.png" /></li>
+</ul>
 </div>
 <div id="paypal_creds">
 <label>{{ form.paypal_email.label }} {{ form.paypal_email }}</label>

@@ -187,6 +187,10 @@ class OrderPaymentForm(forms.ModelForm):
             'auth_net_api_key',
             'paypal_email',
             'payment_type',
+            'takes_amex',
+            'takes_discover',
+            'takes_mc',
+            'takes_visa',
         )
 
     def clean(self):

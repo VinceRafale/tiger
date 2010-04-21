@@ -233,6 +233,10 @@ class OrderSettings(models.Model):
     auth_net_api_key = models.CharField(max_length=255, blank=True, null=True)
     paypal_email = models.EmailField(blank=True, null=True)
     require_payment = models.BooleanField('Make online payment required for online orders', default=False)
+    takes_amex = models.BooleanField(default=False)
+    takes_discover = models.BooleanField(default=False)
+    takes_mc = models.BooleanField(default=False)
+    takes_visa = models.BooleanField(default=False)
 
     @property
     def choices(self):
