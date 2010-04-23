@@ -77,6 +77,7 @@ class Item(models.Model):
     vegetarian = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
     out_of_stock = models.BooleanField(default=False)
+    price_list = PickledObjectField(null=True, editable=False)
     objects = ItemManager()
 
     class Meta:
@@ -89,6 +90,7 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.slug = slugify(self.name)
+            self.price_list = []
         super(Item, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -99,18 +101,18 @@ class Item(models.Model):
         return reverse('short_code', kwargs={'item_id': int_to_base36(self.id)})
 
     @property
-    def price_list(self):
-        if self.variant_set.count() == 1:
-            return ['$%.2f' % self.variant_set.all()[0].price]  
-        return [
-            '%s: $%.2f' % (v.description, v.price)
-            for v in self.variant_set.all()
-        ]
-
-    @property
     def available(self):
         return not (self.archived or self.out_of_stock)
-            
+
+    def update_price(self):
+        if self.variant_set.count() == 1:
+            self.price_list = ['$%.2f' % self.variant_set.all()[0].price]  
+        else:
+            self.price_list = [
+                '%s: $%.2f' % (v.description, v.price)
+                for v in self.variant_set.all()
+            ]
+        self.save()
 
 
 class Variant(models.Model):
@@ -131,8 +133,13 @@ class Variant(models.Model):
         return mark_safe(s)
 
     def save(self, *args, **kwargs):
+        new = False
+        if not self.id:
+            new = True
         self.price = self.price.quantize(Decimal('0.01'))
         super(Variant, self).save(*args, **kwargs)
+        if new:
+            self.item.update_price()
 
 
 class Upgrade(models.Model):

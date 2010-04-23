@@ -57,6 +57,7 @@ class Site(models.Model):
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
     skin = models.ForeignKey(Skin, default=1)
+    hours = models.CharField(null=True, max_length=255)
 
     def __unicode__(self):
         if self.custom_domain:
@@ -80,8 +81,7 @@ class Site(models.Model):
     def address(self):
         return ' '.join([self.street, self.city, self.state, self.zip])
 
-    @property
-    def hours(self):
+    def calculate_hour_string(self):
         """Returns a nicely formatted string representing availability based on the
         site's associated ``TimeSlot`` objects.
         """
@@ -107,7 +107,10 @@ class Site(models.Model):
             else:
                 s = '%s %s' % ('/'.join(time_dict[n][:abbr_length] for n in v), k)
             time_strings.append(s)
-        return ', '.join(time_strings)
+        hours_string = ', '.join(time_strings)
+        self.hours = hours_string
+        self.save()
+        return hours_string
 
     def twitter(self):
         social = self.social
@@ -171,6 +174,10 @@ class TimeSlot(models.Model):
     dow = models.IntegerField(choices=DOW_CHOICES)
     start = models.TimeField()
     stop = models.TimeField()
+
+    def save(self, *args, **kwargs):
+        super(TimeSlot, self).save(*args, **kwargs)
+        self.site.calculate_hour_string()
 
     def _pretty_time(self, time_obj):
         hour = '12' if time_obj.hour == 12 else str(time_obj.hour % 12)

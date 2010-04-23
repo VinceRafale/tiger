@@ -21,7 +21,7 @@
 {% for item in section.item_set.active %}
     <li{% cycle ' class="shaded"' '' %}>
         <div class="grid_4 alpha">
-            <h4><a href="{{ item.get_absolute_url }}">{{ item }}</a>{% if item.spicy %} <span class="pepper">❧</span>{% endif %}{% if item.vegetarian %} <span class="veg">veg</span>{% endif %}</h4>
+            <h4><a href="{% url menu_item section=section.slug, item=item.slug %}">{{ item }}</a>{% if item.spicy %} <span class="pepper">❧</span>{% endif %}{% if item.vegetarian %} <span class="veg">veg</span>{% endif %}</h4>
             {% if item.description %}
             {{ item.description|linebreaks }}
             {% endif %}
@@ -31,12 +31,8 @@
             <a class="add" href="{% url order_item section.slug item.slug %}">add to order</a>
             {% endif %}
             <ul> 
-            {% for variant in item.variant_set.all %}
-                {% if forloop.first and forloop.last %}
-                    <li>${{ variant.price|floatformat:2 }}</li>
-                {% else %}
-                    <li>{{ variant.description }} - ${{ variant.price|floatformat:2 }}</li>
-                {% endif %}
+            {% for price in item.price_list %}
+                    <li>{{ price }}</li>
             {% endfor %}
             </ul>
         </div>

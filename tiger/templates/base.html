@@ -1,3 +1,4 @@
+{% load cache %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +11,9 @@
     <!--[if IE]>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
     <![endif]--> 
+    {% cache 300 skin site.subdomain %}
     <link rel="stylesheet" type="text/css" href="{{ site.skin.url }}" />
+    {% endcache %}
     {% block extrahead %}
     {% endblock %}
 </head>
@@ -92,11 +95,14 @@
                 {{ site.city }}, {{ site.state }} {{ site.zip }}
                 </address>
                 <p>T: {{ site.phone }}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
+                {% cache 300 pdf site.subdomain %}
                 {% if site.menu %}
                 <p>
                     <a href="{{ site.menu.url }}">Download our menu</a> as a PDF!  Always guaranteed to be up-to-date.
                 </p>
                 {% endif %}
+                {% endcache %}
+                {% cache 300 social site.subdomain %}
                 {% if site.twitter %}
                 <div id="twitter">
                    You should <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a> to get menu updates and more!
@@ -115,6 +121,7 @@
                     </form>
                 </div>
                 {% endif %}
+                {% endcache %}
             {% endblock %}
             </div>
             </div>
