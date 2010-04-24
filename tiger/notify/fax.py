@@ -1,13 +1,6 @@
-import re
-import urllib
-import urllib2
-
-from lxml.etree import parse
 from suds.client import Client
 
 from django.conf import settings
-from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
 
 from tiger.notify.models import Fax
 
@@ -49,7 +42,7 @@ class FaxMachine(object):
         params.update(kwargs)
         try:
             c = Client('https://ws.interfax.net/dfs.asmx?WSDL', cache=None)
-        except Exception, e:
+        except:
             raise FaxServiceError()
         result = c.service.SendfaxEx_2(**params)
         transaction_id = result

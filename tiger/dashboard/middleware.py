@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseRedirect
 
 class DashboardSecurityMiddleware(object):

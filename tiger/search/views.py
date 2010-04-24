@@ -1,5 +1,4 @@
 from haystack.query import SearchQuerySet
-from haystack.views import basic_search
 
 from tiger.search.forms import MenuSearchForm
 from tiger.utils.views import render_custom

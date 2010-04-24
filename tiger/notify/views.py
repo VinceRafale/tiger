@@ -1,13 +1,11 @@
 import httplib
-import json
 import datetime
 
 from oauth import oauth
-from twitter import Twitter, TwitterError
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect
 
 from tiger.notify.models import Fax, Social
 from tiger.notify.utils import *

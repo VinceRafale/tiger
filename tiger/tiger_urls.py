@@ -5,8 +5,6 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 admin.autodiscover()
 
-from tiger.core import site
-
 urlpatterns = patterns('',
     url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'tiger/placeholder.html'}, name='home'),
     (r'^admin/', include(admin.site.urls)),

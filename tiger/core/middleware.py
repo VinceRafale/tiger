@@ -6,9 +6,6 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.sessions.models import Session
 
-from tiger.accounts.middleware import DomainDetectionMiddleware
-from tiger.core.forms import get_order_form
-from tiger.core.models import Item
 from tiger.utils.site import RequestSite
 
 

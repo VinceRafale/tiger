@@ -11,7 +11,6 @@ from django.utils import simplejson
 from authorize.aim import Api
 from olwidget.widgets import EditableMap
 
-from tiger.accounts.forms import AmPmTimeField
 from tiger.core.models import *
 
 GEOCODE_URL = 'http://maps.google.com/maps/api/geocode/json'

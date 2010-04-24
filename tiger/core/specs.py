@@ -1,4 +1,3 @@
-from imagekit.specs import ImageSpec 
 from imagekit import processors 
 
 # first we define our thumbnail resize processor 

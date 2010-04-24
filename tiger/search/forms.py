@@ -8,7 +8,6 @@ class MenuSearchForm(SearchForm):
 
     def search(self):
         sqs = super(MenuSearchForm, self).search()
-        q = self.cleaned_data.get('q')
         if self.cleaned_data['vegetarian']:
             sqs = sqs.filter(vegetarian=True)
         if self.cleaned_data['spicy']:

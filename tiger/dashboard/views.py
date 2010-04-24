@@ -1,5 +1,7 @@
+import re
+
 from django.conf import settings
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect

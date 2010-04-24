@@ -1,14 +1,11 @@
 import httplib
 import urllib2
-from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.core import mail
-from django.core.management.base import NoArgsCommand
 from django.db.models import get_model
 
-from celery.task import Task, PeriodicTask
-from celery.registry import tasks
+from celery.task import Task
 from facebook import Facebook, FacebookError
 
 from oauth import oauth
@@ -16,7 +13,6 @@ from oauth import oauth
 from tiger.accounts.models import Subscriber
 from tiger.notify.fax import FaxMachine, FaxServiceError
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
-from tiger.utils.pdf import render_to_pdf
 
 
 class SendFaxTask(Task):
@@ -75,5 +71,5 @@ class PublishToFacebookTask(Task):
         try:
             fb.stream.publish(**kwargs)
         except FacebookError, e:
-            self.retry([uid, msg, url], kwargs,
+            self.retry([uid, msg, link_title, href], kwargs,
                 countdown=60 * 5, exc=e)

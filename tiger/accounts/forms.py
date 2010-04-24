@@ -135,7 +135,7 @@ class SignupForm(forms.ModelForm):
         """Validate that the email is not already in use.
         """
         try:
-            user = Site.objects.get(domain__iexact=self.cleaned_data['subdomain'])
+            Site.objects.get(domain__iexact=self.cleaned_data['subdomain'])
         except Site.DoesNotExist:
             return self.cleaned_data['subdomain']
         raise forms.ValidationError("A user with that e-mail address already exists.")

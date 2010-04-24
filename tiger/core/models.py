@@ -3,7 +3,6 @@ from datetime import datetime, date
 from decimal import Decimal
 
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.localflavor.us.models import *
 from django.db.models.signals import post_save
@@ -11,11 +10,9 @@ from django.template.defaultfilters import slugify
 from django.utils.http import int_to_base36
 from django.utils.safestring import mark_safe
 
-from imagekit.models import ImageModel
 from paypal.standard.ipn.signals import payment_was_successful
 
 from tiger.content.handlers import pdf_caching_handler
-from tiger.core.utils import notify_restaurant
 from tiger.notify.handlers import item_social_handler, coupon_social_handler
 from tiger.notify.tasks import SendFaxTask
 from tiger.utils.fields import PickledObjectField

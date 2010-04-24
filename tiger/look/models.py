@@ -6,7 +6,6 @@ import cssmin
 
 from django.conf import settings
 from django.contrib import admin
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.loader import render_to_string
 

@@ -1,11 +1,9 @@
 import os.path
 from django.conf import settings
-from django.http import HttpResponse
 from django.template.loader import get_template
-from django.template import Context, RequestContext
+from django.template import Context
 import ho.pisa as pisa
 import cStringIO as StringIO
-import cgi
 
 
 def fetch_resources(uri, rel):

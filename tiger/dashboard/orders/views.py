@@ -20,7 +20,7 @@ def order_options(request):
     if request.method == 'POST':
         form = OrderSettingsForm(request.POST, site=request.site, instance=request.site.ordersettings)
         if form.is_valid():
-            options = form.save()
+            form.save()
             messages.success(request, 'Your order options have been updated.')
             return HttpResponseRedirect(reverse('dashboard_orders'))
         #TODO: olwidget doesn't handle malformed data very nicely.  This is a

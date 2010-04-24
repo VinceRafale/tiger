@@ -1,19 +1,15 @@
-from datetime import datetime
-
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.validators import email_re
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.utils.http import base36_to_int
-from django.shortcuts import get_object_or_404, render_to_response
-from django.template.defaultfilters import slugify
+from django.shortcuts import get_object_or_404
 
 from greatape import MailChimp
 from paypal.standard.forms import PayPalPaymentsForm
 
 from tiger.core.forms import get_order_form, OrderForm, CouponForm, AuthNetForm
 from tiger.core.models import Section, Item, Coupon, Order
-from tiger.core.utils import notify_restaurant
 from tiger.utils.views import render_custom
 
 def section_list(request):
@@ -116,7 +112,6 @@ def send_order(request):
             return HttpResponseRedirect(reverse('order_success'))
     else:
         form = OrderForm(site=request.site)
-        show_address_section = False
     context = {
         'form': form
     }
@@ -124,7 +119,7 @@ def send_order(request):
 
 def payment_paypal(request):
     try:
-        order = Order.objects.get(id=request.session['order_id'])
+        Order.objects.get(id=request.session['order_id'])
     except (Order.DoesNotExist, KeyError):
         return HttpResponseRedirect(reverse('preview_order'))
     site = request.site

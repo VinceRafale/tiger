@@ -1,13 +1,11 @@
-from dateutil import parser, tz
-
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.views.generic.create_update import update_object
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import LocationForm, TimeSlotForm
-from tiger.accounts.models import TimeSlot, Site
+from tiger.accounts.models import TimeSlot
 from tiger.content.forms import ContentForm
 from tiger.content.models import Content
 

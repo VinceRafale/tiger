@@ -1,5 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,15 +9,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
-from greatape import MailChimp
-
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
 from tiger.core.forms import CouponCreationForm
 from tiger.core.models import Coupon
 from tiger.notify.forms import *
 from tiger.notify.models import Fax, Blast
-from tiger.utils.pdf import render_to_pdf
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 @login_required

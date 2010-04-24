@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 
 class AuthenticationForm(forms.Form):
     username = forms.CharField(max_length=30)

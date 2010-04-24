@@ -1,7 +1,3 @@
-import os
-
-from django.conf import settings
-from django.template import Template, TemplateDoesNotExist, RequestContext
 from django.template.loader import find_template_source, get_template_from_string, get_template
 
 
@@ -11,7 +7,7 @@ def load_custom(request, template_name):
     template loader because there is no way to feed it the domain at runtime.
     """
     try:
-        source, origin = find_template_source(template_name, [request.site.domain])
+        source, origin = find_template_source(template_name, [request.site.subdomain])
     except:
         template = get_template(template_name)
     else:

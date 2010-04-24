@@ -1,11 +1,8 @@
 from datetime import datetime
 
-from django import forms
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
-from django.utils.safestring import mark_safe
 
 from greatape import MailChimp
 
