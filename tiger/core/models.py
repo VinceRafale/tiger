@@ -297,10 +297,24 @@ class Coupon(models.Model):
     max_clicks = models.IntegerField('Max. allowed uses', null=True, blank=True)
     discount = models.IntegerField()
 
+    def __unicode__(self):
+        msg = 'Get %d%% off your online order at %s with coupon code %s!' % (
+            self.discount, self.site.name, self.short_code)
+        if self.exp_date or self.max_clicks:
+            msg += ' Valid '
+            if self.max_clicks:
+                msg += 'for the first %d customers ' % self.max_clicks
+            if self.exp_date:
+                msg += 'until %s' % self.exp_date.strftime('%m/%d/%y')
+        return msg
+
     def save(self, *args, **kwargs):
         if not self.id and not self.short_code:
             self.short_code = int_to_base36(int(time.time())).upper()
         super(Coupon, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return '%s?cc=%d' % (reverse('add_coupon'), self.id)
 
     def log_use(self, order):
         if self.max_clicks:

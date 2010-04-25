@@ -70,7 +70,7 @@ def preview_order(request):
     if request.method == 'POST':
         form = CouponForm(request.site, request.POST)
         if request.cart.has_coupon:
-            messages.error(request, 'You have already added coupon to this order.')   
+            messages.error(request, 'You have already added a coupon to this order.')   
         elif form.is_valid():
             coupon = form.coupon
             request.cart.add_coupon(coupon)
@@ -86,6 +86,18 @@ def preview_order(request):
 def remove_item(request):
     request.cart.remove(request.GET.get('id'))
     return HttpResponseRedirect(reverse('preview_order'))
+
+def add_coupon(request):
+    code = request.GET.get('cc')
+    if code is None:
+        raise Http404
+    coupon = Coupon.objects.get(id=code)
+    if request.cart.has_coupon:
+        messages.error(request, 'You already have a coupon in your cart.')   
+    else:
+        request.cart.add_coupon(coupon)
+        messages.success(request, 'Coupon added to your cart successfully.')   
+    return HttpResponseRedirect(reverse('menu_home'))
 
 def send_order(request):
     if request.method == 'POST':

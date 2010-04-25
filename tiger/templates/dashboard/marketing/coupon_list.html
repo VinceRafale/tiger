@@ -3,10 +3,32 @@
 {% block body-class %}{{ block.super }}coupons{% endblock %}
 
 {% block content %}
-<div class="grid_5 alpha">
-{% for coupon in coupons %}
-{{ coupon }}
-{% endfor %}
+<div class="grid_12 alpha">
+<a href="{% url dashboard_add_coupon %}">Add</a>
+<table id="subscribers">
+    <thead>
+        <tr>
+            <th>Coupon code</th>
+            <th>Discount</th>
+            <th>Expiration date</th>
+            <th>Total uses available</th>
+            <th>Total clicks</th>
+            <th>Link</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for coupon in coupons %}
+    <tr>
+        <td>{{ coupon.short_code }}</td>
+        <td>{{ coupon.discount }}%</td>
+        <td>{{ coupon.exp_date|date }}</td>
+        <td>{{ coupon.max_clicks }}</td>
+        <td>{{ coupon.click_count }}</td>
+        <th>{{ site }}{{ coupon.get_absolute_url }}</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 </div>
 <div class="clear"></div>
 {% endblock %}

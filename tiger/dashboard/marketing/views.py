@@ -55,7 +55,8 @@ def send_blast(request, blast_id):
 @login_required
 def coupon_list(request):
     return object_list(request, Coupon.objects.filter(site=request.site), 
-        template_name='dashboard/marketing/coupon_list.html')
+        template_name='dashboard/marketing/coupon_list.html',
+        extra_context={'coupons': request.site.coupon_set.all()})
 
 @login_required
 def add_edit_coupon(request, coupon_id=None):
