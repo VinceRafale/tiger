@@ -17,33 +17,28 @@
 <body class="{% block body-class %}{% endblock %}">
     <div class="wrapper">
         <div id="menuWrap">
-            <div class="container_12">
-                <div id="menu" class="grid_8">
-                <ul class="menu">
-                    <li><a class="restaurant" href="{% url dashboard_menu %}">Restaurant</a></li>
-                    <li><a class="site" href="{% url dashboard_content %}">Site</a></li>
-                    <li><a class="marketing" href="{% url dashboard_marketing %}">Marketing</a></li>
-                    <li><a class="orders" href="{% url dashboard_orders %}">Online Ordering</a></li>
-                    <li><a class="account" href="">Account</a></li>
-                </ul>
+            <div class="container_12 clearfix">
+            	<div id="menu" class="grid_8 push_1">
+               	 	<h1>{{site.name}} Dashboard</h1>
+					<ul class="menu">
+	                    <li><a class="restaurant" href="{% url dashboard_menu %}">Restaurant</a></li>
+	                    <li><a class="site" href="{% url dashboard_content %}">Site</a></li>
+	                    <li><a class="marketing" href="{% url dashboard_marketing %}">Marketing</a></li>
+	                    <li><a class="orders" href="{% url dashboard_orders %}">Online Ordering</a></li>
+	                    <li><a class="account" href="">Account</a></li>
+	                </ul>
                 </div>
                 <div id="search" class="grid_1 push_3">
-                <ul class="menu">
-                    <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
-                </ul>
+                	<ul class="menu">
+	                    <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
+	                </ul>
                 </div>
             </div> 
-            <div class="container_12">
-                <div id="submenu" class="grid_8">
-                <ul class="menu">
-                    {% block submenu %}
-                    {% endblock %}
-                </ul>
-                </div>
-            </div> 
+            
         </div>
-        <div id="content" class="container_12">
-            <div id="main" class="grid_12">
+        <div id="content" class="container_12 clearfix">
+			
+            <div id="main" class="grid_10 push_1">
             {% if messages %}
                 <ul class="messages">
                 {% for message in messages %}
@@ -51,9 +46,16 @@
                 {% endfor %}
                 </ul>
             {% endif %}
+                <div id="submenu" class="grid_10 alpha">
+                <ul class="menu">
+                    {% block submenu %}
+                    {% endblock %}
+                </ul>
+                </div>
             {% block content %}
+
                 <h1>Dashboard</h1>
-                <div class="grid_6 alpha">
+                <div class="grid_5 alpha">
                     <h2>Current specials</h2>
                     <ul>
                     {% for special in specials %}
@@ -63,7 +65,7 @@
                     {% endfor %}
                     </ul>
                 </div>
-                <div class="grid_6 omega">
+                <div class="grid_5 omega">
                     <h2>Marketing blasts</h2>
                     <ul>
                     {% for update in updates %}

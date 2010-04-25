@@ -5,7 +5,7 @@
 {% block body-class %}{{ block.super }}integrations{% endblock %}
 
 {% block content %}
-    <div class="grid_4 alpha">
+
         <h3>Twitter</h3>
         <p>
         {% if site.twitter %}
@@ -15,14 +15,10 @@
             <a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
         {% endif %}
         </p>
-    </div>
-    <div class="grid_4">
         <h3>Facebook</h3>
         <p id="facebook">
         <fb:login-button onlogin="getPerms();"></fb:login-button>
         </p>
-    </div>
-    <div class="grid_4 omega">
         <h3>Mailchimp</h3>
         <div id="mailchimp-settings">
         {% if not site.social.mailchimp_api_key %}
@@ -46,7 +42,6 @@
             {% endif %}
         {% endif %}
         </div>
-    </div>
 {% endblock %}
 
 {% block js %}
