@@ -2,7 +2,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.template import loader, RequestContext
+from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
 from tiger.utils.template import load_custom
@@ -66,3 +68,9 @@ def delete_site_object(request, model, object_id, reverse_on):
         raise Http404()
     instance.delete()
     return HttpResponseRedirect(reverse(reverse_on))
+
+
+def short_code_redirect(request, item_id, model):
+    item_id = base36_to_int(item_id)
+    object = get_object_or_404(model, id=item_id, site=request.site)
+    return HttpResponseRedirect(object.get_absolute_url())

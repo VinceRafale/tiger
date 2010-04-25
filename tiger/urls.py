@@ -2,6 +2,8 @@ from django.conf import settings
 from django.conf.urls.defaults import *
 from django.contrib import admin
 
+from tiger.core.models import Item, Coupon
+
 admin.autodiscover()
 
 handler404 = 'tiger.utils.views.handler404'
@@ -28,7 +30,6 @@ urlpatterns += patterns('',
     (r'^dashboard/', include('tiger.dashboard.urls')),
     (r'^menu/', include('tiger.core.urls')),
     (r'^order/', include(order_patterns)),
-    url(r'^m/(?P<item_id>\w+)/$', 'tiger.core.views.short_code', name='short_code'),
     (r'^images/', include('tiger.content.urls')),
     url(r'^search/', 'tiger.search.views.search', name='menu_search'),
     (r'^admin/', include(admin.site.urls)),
@@ -37,4 +38,9 @@ urlpatterns += patterns('',
     url(r'^sitemap.xml$', 'tiger.sitemaps.sitemap'),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
+)
+
+urlpatterns += patterns('tiger.utils.views',
+    url(r'^m/(?P<item_id>\w+)/$', 'short_code_redirect', {'model': Item}, name='short_code'),
+    url(r'^c/(?P<item_id>\w+)/$', 'short_code_redirect', {'model': Coupon}, name='coupon_short_code'),
 )

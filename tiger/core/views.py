@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.validators import email_re
 from django.http import HttpResponseRedirect
-from django.utils.http import base36_to_int
 from django.shortcuts import get_object_or_404
 
 from greatape import MailChimp
@@ -22,11 +21,6 @@ def section_detail(request, section):
     return render_custom(request, 'core/section_detail.html', 
         {'section': s})
     
-def short_code(request, item_id):
-    item_id = base36_to_int(item_id)
-    item = get_object_or_404(Item, id=item_id, site=request.site)
-    return HttpResponseRedirect(item.get_absolute_url())
-
 def item_detail(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
     return render_custom(request, 'core/item_detail.html', 
