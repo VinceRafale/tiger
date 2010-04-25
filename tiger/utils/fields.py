@@ -9,6 +9,8 @@ except ImportError:
 from django.db import models
 from django.utils.encoding import force_unicode
 
+from south.modelsinspector import add_introspection_rules
+
 
 class PickledObject(str):
     """
@@ -143,3 +145,12 @@ class PickledObjectField(models.Field):
         # The Field model already calls get_db_prep_value before doing the
         # actual lookup, so all we need to do is limit the lookup types.
         return super(PickledObjectField, self).get_db_prep_lookup(lookup_type, value)
+
+
+add_introspection_rules([
+    (
+        [PickledObjectField], # Class(es) these apply to
+        [],         # Positional arguments (not used)
+        {}           # Keyword argument
+    ),
+], [r'tiger\.utils\.fields\.PickledObjectField'])
