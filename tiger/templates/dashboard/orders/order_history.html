@@ -10,42 +10,43 @@
 
 {% block content %}
     <h1>Online ordering</h1>
-    <div class="grid_6 alpha">
-        <h2>Latest orders</h2>
-        <table id="subscribers">
-            <thead>
-                <tr>
-                    <th>For</th>
-                    <th>Placed at</th>
-                    <th>Ready by</th>
-                    <th>Phone</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for order in orders %}
-                <tr class="{% cycle '' 'shaded' %}">
-                    <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
-                    <td><a href="{{ order.get_absolute_url }}">{{ order.timestamp|date:"fa m/d" }}</a></td>
-                    <td><a href="{{ order.get_absolute_url }}">{{ order.pickup }}</a></td>
-                    <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
-                    <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total|floatformat:"-2" }}</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="grid_6 omega">
-        <h2>Status</h2>
-        <p class="usage">
-            {% if site.enable_orders %}
-            You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a> / <a href="{% url order_options %}">Edit settings</a>
-            {% else %}
-            You are not currently taking online orders.  <a href="{% url toggle_order_status %}">Enable now</a>
-            {% endif %}
-        </p>
-        <div id="chart"></div>
-    </div>
+
+    <h2>Status</h2>
+    <p class="usage">
+        {% if site.enable_orders %}
+        You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a> / <a href="{% url order_options %}">Edit settings</a>
+        {% else %}
+        You are not currently taking online orders.  <a href="{% url toggle_order_status %}">Enable now</a>
+        {% endif %}
+    </p>
+    <div id="chart"></div>
+
+    <h2>Latest orders</h2>
+    <table id="subscribers">
+        <thead>
+            <tr>
+                <th>For</th>
+                <th>Placed at</th>
+                <th>Ready by</th>
+                <th>Phone</th>
+                <th class="total">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+            <tr class="{% cycle '' 'shaded' %}">
+                <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
+                <td><a href="{{ order.get_absolute_url }}">{{ order.timestamp|date:"fa m/d" }}</a></td>
+                <td><a href="{{ order.get_absolute_url }}">{{ order.pickup }}</a></td>
+                <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
+                <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total|floatformat:"-2" }}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
 {% endblock %}
 
 {% block js %}

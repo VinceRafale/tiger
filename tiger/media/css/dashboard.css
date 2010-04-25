@@ -1,21 +1,25 @@
-html, body {height:100%}
+html, body {height:100%; font-family: "Trebuchet MS", Trebuchet, Tahoma, Verdana, sans-serif;}
 ul {list-style-type:none;}
+h2, h3{margin: 10px 0 5px 0;}
 #masthead {height:100px; width:100%;}
 #menuWrap {width:100%; height:36px; margin-bottom: 15px;}
 .wrapper{min-height: 100%; height: auto !important; height: 100%; margin-bottom: -50px;}
 div.shim{height: 50px; clear: both;}
 .footer{width:100%; position: relative; margin-top: -50px; height: 50px; clear: both;}
-.footer p{text-align: center;}
-body {background: url(../img/dashboard_bg.png); font-size:16px;}
+.footer p, .footer a{color: #c76218 !important; font-size: 12px; text-shadow: 0 1px 0 rgba(255,255,255,.2); text-decoration: none;}
+.footer a:hover{ background: #c76218; color: white!important;}
+body {background:#2c2a2c; font-size:16px;}
 ul.menu{margin:0; font-size:14px;}
 ul.menu li{float:left;margin:0;position:relative;}
 ul.menu li a{text-decoration:none;display:block;padding:8px 15px 5px 15px; margin:0; color:white;}
-ul.menu li a:hover{background-color:white; color:#34484f;}
-
+ul.menu li a:hover{background-color:#ccc;background-color: rgba(0,0,0,.2); color:#34484f;}
+#submenu ul.menu li a{padding: 2px 10px; margin: 0 2px; font-size: 12px; color: black; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius:3px;}
+#submenu {padding-bottom: 5px; border-bottom: 1px inset #ccc; margin-bottom: 10px;}
 #orderForm ul {list-style-type:none;}
 #orderForm li {display:inline;}
+#menu h1{color: #e3e3be; font-weight: normal;}
 
-#main {padding:15px; background-color:white; border:1px grey solid; margin-bottom:15px;}
+#main {padding:15px; background-color:#eee; border:1px grey solid; margin-bottom:15px;}
 a {color:#34484f;}
 a.lightlink {color:white;}
 
@@ -32,8 +36,8 @@ a.buttonTop, a.add-row, a.delete-row {
     float:right;
     margin-right:10px;
 }
-
-#menuWrap, .footer, #menu ul li ul li a:hover, a.buttonTop, a.add-row, a.delete-row {
+#menuWrap{background: black;background: rgba(0,0,0,.5);padding: 10px 0;}
+#menu ul li ul li a:hover, a.buttonTop, a.add-row, a.delete-row {
     background-color: #c76218;
 }
 
@@ -112,8 +116,8 @@ body.marketing a.marketing,
 body.orders a.orders,
 body.account a.account 
 {
-    color:black;
-    background-color:white;
+    color:white !important;
+    background-color:#c76218 !important;
 }
 
 /* bottom tier */
@@ -134,7 +138,23 @@ body.checkout-messages a.checkout-messages,
 body.payment a.payment,
 body.orders-settings a.orders-settings
 {
-    color:black;
-    background-color:white;
+    color:white !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .6);
+    background-color:#c76218;
+    background-color: rgba(199, 98, 24, .8) !important;
 }
 
+/********************
+* Site pages *
+********************/
+th{text-align: left;}
+th, td{padding: 0 2px;}
+h1,h2,h3,h4,h5,h6{font-family: Georgia, serif;}
+h3{font-size: 18px;}
+h3 a{display: inline-block; margin-left: 5px; font-size: 12px;}
+h4{font-size: 16px; margin: 16px 0 2px;}
+
+th.total, td.total{text-align: right;}
+
+
+.olControlEditingToolbar{width: 140px !important; background: #fff; background: rgba(255,255,255,.9); border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px;}

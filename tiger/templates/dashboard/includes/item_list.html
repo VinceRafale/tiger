@@ -14,7 +14,7 @@
                 <span{% if item.out_of_stock %} class="out"{% endif %}>Out of stock</span>
             </label>
         </div>
-        {{ item }}
+        <span>{{ item }}</span>
         <em>
         {{ item.price_list|join:" / " }}
         </em>

@@ -11,10 +11,10 @@ ul.section ul {margin-bottom:0;}
 ul.section li {margin:0;}
 li.section-header {color:white; background-color:#02405a; font-size:14px; padding:5px;}
 li.menu-items li {
-    height:22px;
     padding:1px;
     background-color:white;
 }
+li.menu-items li span, li.menu-items li em{display: block;padding: 2px 0;}
 li.menu-items li.shaded {background-color:#cde0e8;}
 div.controls {float:right; clear:right;}
 div.controls a {
@@ -61,12 +61,13 @@ li.menu-items div.controls.special span.archived {
     color:grey;
     font-weight:bold;
 }
+li.menu-items ul li{cursor: move;}
 </style>
 {% endblock %}
 
 {% block content %}
-<h1>Menu management</h1>
-<div class="grid_12 alpha omega">
+	<h1>Menu management</h1>
+{# <div class="grid_12 alpha omega"> #}
     <a href="{% url dashboard_add_section %}">New menu section</a>
     <div class="sections">
     {% for section in sections %}
@@ -89,7 +90,7 @@ li.menu-items div.controls.special span.archived {
         You have not created any menu sections. <a href="{% url dashboard_add_section %}">Create one now</a>
     {% endfor %}
     </div>
-</div>
+{# </div> #}
 {% endblock %}
 
 {% block js %}
