@@ -25,10 +25,13 @@
             <tr class="{% cycle '' 'shaded' %}">
                 <td class="item">
                 {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}
-                {% if item.upgrades or item.notes %}
+            {% if item.upgrades or item.notes or item.sides %}
                     <ul>
                     {% for upgrade in item.upgrades %}
                         <li>{{ upgrade.name }}: ${{ upgrade.price|floatformat:"-2" }} per item</li>
+                    {% endfor %}
+                    {% for side in item.sides %}
+                        <li>{{ side }}</li>
                     {% endfor %}
                     {% if item.notes %}
                         <li>{{ item.notes }}</li>

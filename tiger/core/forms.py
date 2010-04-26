@@ -27,6 +27,14 @@ def geocode(address):
     lat = location['lat']
     return lon, lat
 
+
+class BaseOrderForm(forms.Form):
+    def sidedish_fields(self):
+        return [
+            field for field in self
+            if field.name.startswith('side_')
+        ]
+
 def get_order_form(instance):
     """For a given ``instance`` of ``core.models.Item``, returns a form 
     appropriate for completing an order, with a quantity field for all forms,
@@ -35,16 +43,32 @@ def get_order_form(instance):
     """
     variants = instance.variant_set.all()
     upgrades = instance.upgrade_set.all()
+    sidegroups = instance.sidedishgroup_set.all()
     attrs = {
         'quantity': forms.IntegerField(min_value=1, initial=1),
         'notes': forms.CharField(required=False)
     }
     if variants.count() > 1:
         max = variants.order_by('-price')[0].id
-        attrs['variant'] = forms.ModelChoiceField(queryset=variants, widget=forms.RadioSelect, empty_label=None, initial=max)
+        attrs['variant'] = forms.ModelChoiceField(
+            queryset=variants, 
+            widget=forms.RadioSelect, 
+            empty_label=None, 
+            initial=max
+        )
     if upgrades.count():
-        attrs['upgrades'] = forms.ModelMultipleChoiceField(queryset=upgrades, widget=forms.CheckboxSelectMultiple, required=False) 
-    return type('OrderForm', (forms.Form,), attrs) 
+        attrs['upgrades'] = forms.ModelMultipleChoiceField(
+            queryset=upgrades, 
+            widget=forms.CheckboxSelectMultiple, 
+            required=False
+        ) 
+    for sidegroup in sidegroups:
+        attrs['side_%d' % sidegroup.id] = forms.ModelChoiceField(
+            queryset=sidegroup.sidedish_set.all(), 
+            widget=forms.RadioSelect, 
+            empty_label=None
+        ) 
+    return type('OrderForm', (BaseOrderForm,), attrs) 
 
 class SectionForm(forms.ModelForm):
     class Meta:

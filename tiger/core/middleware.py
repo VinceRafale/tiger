@@ -50,6 +50,10 @@ class Cart(object):
         cleaned_data.update(item.__dict__)
         if not cleaned_data.has_key('variant'):
             cleaned_data['variant'] = item.variant_set.all()[0]
+        cleaned_data['sides'] = []
+        for k, v in cleaned_data.items():
+            if k.startswith('side_'):
+                cleaned_data['sides'].append(cleaned_data.pop(k))
         cleaned_data['total'] = self.tally(cleaned_data)
         cleaned_data['name'] = '%s - %s' % (item.section.name, cleaned_data['name'])
         self[len(self) + 1] = cleaned_data
@@ -71,12 +75,15 @@ class Cart(object):
         return 'coupon' in self
 
     def tally(self, item):
+        print item
         qty = item['quantity']
         base_price = item['variant'].price
         upgrades = 0
         if item.has_key('upgrades'):
             upgrades = sum(upgrade.price for upgrade in item['upgrades'])
-        return (base_price + upgrades) * qty
+        if len(item['sides']):
+            sides = sum(side.price for side in item['sides'])
+        return (base_price + upgrades + sides) * qty
 
     def subtotal(self):
         return sum(item['total'] for k, item in self if type(k) == int)

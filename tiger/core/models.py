@@ -165,6 +165,21 @@ class Upgrade(models.Model):
         super(Variant, self).save(*args, **kwargs)
 
 
+class SideDishGroup(models.Model):
+    item = models.ForeignKey(Item)
+
+
+class SideDish(models.Model):
+    group = models.ForeignKey(SideDishGroup)
+    name = models.CharField(max_length=100)
+    price = models.DecimalField('Additional cost', max_digits=5, decimal_places=2, null=True)
+
+    def __unicode__(self):
+        if self.price:
+            return mark_safe('%s (add $<span>%.02f</span>)' % (self.name, self.price))
+        return self.name
+
+
 class Order(models.Model):
     METHOD_TAKEOUT = 1
     METHOD_DINEIN = 2

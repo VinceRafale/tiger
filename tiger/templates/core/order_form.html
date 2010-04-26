@@ -29,6 +29,12 @@
     {{ form.upgrades }}
     </div>
 {% endif %}
+{% for field in form.sidedish_fields %}
+    <div class="upgrades">
+    <label>Your choice of:</label>
+    {{ field }}
+    </div>
+{% endfor %}
 <label id="qty">
 Special instructions ("No MSG", "Extra lettuce")
 {{ form.notes }}
@@ -48,11 +54,15 @@ function getLabelNum(selector) {
 function calculate() {
     qty = Number($("#id_quantity").val());
     basePrice = getLabelNum("[name='variant']:checked") || Number($("span.originalPrice").text().slice(1));
+    choicePrice = 0;
+    $("[name^='side_']:checked").each(function () {
+        choicePrice += getLabelNum(this) || 0;
+    });
     upgrades = 0;
     $("[name='upgrades']:checked").each(function () {
         upgrades += getLabelNum(this);
     });
-    total = (basePrice + upgrades) * qty;
+    total = (basePrice + upgrades + choicePrice) * qty;
     nonDecimalDigits = (Math.floor(total) + "").length;
     return total.toPrecision(nonDecimalDigits + 2);
 }
