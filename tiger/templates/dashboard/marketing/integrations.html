@@ -30,7 +30,14 @@
         {% else %}
             <p>Current API key: {{ site.social.mailchimp_api_key }}</p>
             {% if not site.social.mailchimp_list_name %}
-            {{ site.social.get_mailchimp_lists }}
+            <form method="POST" action="{% url set_mailchimp_list %}">
+                <select name="mail_list">
+                {% for id, name in site.social.mailchimp_lists %}
+                    <option value="{{ id }}">{{ name }}</option>
+                {% endfor %}
+                </select>
+                <input type="submit" value="Add" />
+            </form>
             {% else %}
             <p>Current mailing list: {{ site.social.mailchimp_list_name }}</p>
             <form method="POST" action="{% url edit_mailchimp_settings %}">
