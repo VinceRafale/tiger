@@ -3,10 +3,8 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tiger.dashboard.marketing.views',
     url(r'^$', 'home', name='dashboard_marketing'),
-    url(r'^blasts/add/$', 'add_edit_blast', name='dashboard_add_blast'),
-    url(r'^blasts/delete/(\d+)/$', 'delete_blast', name='dashboard_delete_blast'),
-    url(r'^blasts/edit/(\d+)/$', 'add_edit_blast', name='dashboard_edit_blast'),
-    url(r'^blasts/send/(\d+)/$', 'send_blast', name='dashboard_send_blast'),
+    url(r'^publish/$', 'publish', name='dashboard_publish'),
+    url(r'^publish/preview/$', 'publish_preview', name='dashboard_publish_preview'),
     url(r'^coupons/$', 'coupon_list', name='dashboard_coupon_list'),
     url(r'^coupons/add/$', 'add_edit_coupon', name='dashboard_add_coupon'),
     url(r'^coupons/delete/(\d+)/$', 'delete_coupon', name='dashboard_delete_coupon'),

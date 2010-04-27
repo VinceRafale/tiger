@@ -53,6 +53,7 @@ class Site(models.Model):
     zip = models.CharField(max_length=10, default='')
     phone = PhoneNumberField(default='')
     fax_number = PhoneNumberField(default='', blank=True)
+    email = models.EmailField(blank=True, null=True)
     timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)

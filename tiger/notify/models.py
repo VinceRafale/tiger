@@ -3,8 +3,11 @@ from datetime import datetime
 from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save
+from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 
 from greatape import MailChimp
+from markdown import markdown
 
 from tiger.content.models import PdfMenu
 
@@ -61,24 +64,59 @@ class Social(models.Model):
         return mailchimp_choices
 
 
-class Blast(models.Model):
+class Release(models.Model):
     site = models.ForeignKey('accounts.Site')
-    name = models.CharField(max_length=50)
-    pdf = models.ForeignKey(PdfMenu)
-    subscribers = models.ManyToManyField('accounts.Subscriber')
-    last_sent = models.DateTimeField(editable=False, null=True)
-    send_count = models.PositiveIntegerField(default=0)
+    title = models.CharField(max_length=140)
+    slug = models.SlugField(editable=False)
+    body = models.TextField(blank=True)
+    body_html = models.TextField(blank=True, editable=False)
+    pdf = models.ForeignKey(PdfMenu, null=True, blank=True)
+    coupon = models.ForeignKey('core.Coupon', null=True, blank=True)
+    time_sent = models.DateTimeField(editable=False)
 
     def __unicode__(self):
-        return self.name
+        return self.title
 
-    def send(self):
-        from tiger.notify.tasks import RunBlastTask
-        self.last_sent = datetime.now()
-        self.send_count += 1
-        self.save()
-        RunBlastTask.delay(self.id)
+    def save(self, *args, **kwargs):
+        from tiger.notify.tasks import PublishTask
+        self.body_html = markdown(self.body)
+        self.slug = slugify(self.title)
+        if not self.id:
+            self.time_sent = datetime.now()
+        PublishTask.delay(self.id)
+        super(Release, self).save(*args, **kwargs)
 
+    @models.permalink
+    def get_absolute_url(self):
+        return 'press_detail', (), {'object_id': self.id, 'slug': self.slug}
+
+    def get_body_html(self):
+        return render_to_string('notify/release_mail.html', {'release': self})
+
+    def get_body_text(self):
+        return render_to_string('notify/release_mail.txt', {'release': self})
+
+    def send_mailchimp(self):
+        site = self.site
+        social = site.social
+        if social.mailchimp_send_blast != Social.CAMPAIGN_NO_CREATE:
+            mailchimp = MailChimp(social.mailchimp_api_key)
+            campaign_id = mailchimp.campaignCreate(
+                type='regular',
+                options={
+                    'list_id': social.mailchimp_list_id,
+                    'subject': release.title,
+                    'from_email': site.email,
+                    'from_name': site.name,
+                    'to_name': '%s subscribers' % site.name,
+                },
+                content={
+                    'html': release.get_body_html(),
+                    'text': release.get_body_text()
+            })
+            if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
+                mailchimp.campaignSendNow(cid=campaign_id)
+        
 
 def new_site_setup(sender, instance, created, **kwargs):
     if instance.__class__.__name__ == 'Site' and created:

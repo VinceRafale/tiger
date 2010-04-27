@@ -1,0 +1,15 @@
+{{ release.title|safe }}
+{% for c in release.title %}={% endfor %}
+
+View this announcement on our site {{ release.site }}{{ release.get_absolute_url }}
+
+{% if release.coupon %}
+Use this coupon now {{ release.site }}{{ release.coupon.get_absolute_url }}
+{% endif %}
+
+{{ release.body|safe|linebreaks }}
+
+{% if release.pdf %}
+Download "{{ release.pdf.title }}" {{ release.site }}{{ release.pdf.url }}
+{% endif %}
+

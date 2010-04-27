@@ -2,21 +2,14 @@ from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from tiger.accounts.models import Subscriber
-from tiger.notify.models import Social, Blast
+from tiger.notify.models import Social, Release
+from tiger.utils.widgets import MarkItUpWidget
 
 
 class TwitterForm(forms.ModelForm):
     class Meta:
         model = Social
         fields = ['twitter_screen_name']
-
-
-class BlastForm(forms.ModelForm):
-    subscribers = forms.ModelMultipleChoiceField(queryset=Subscriber.objects.all(), widget=FilteredSelectMultiple('subscribers', False))
-
-    class Meta:
-        model = Blast
-        fields = ['name', 'pdf', 'subscribers']
 
 
 class MailChimpForm(forms.ModelForm):
@@ -27,3 +20,11 @@ class MailChimpForm(forms.ModelForm):
     class Meta:
         model = Social
         fields = ['mailchimp_allow_signup', 'mailchimp_send_blast']
+
+
+class PublishForm(forms.ModelForm):
+    body = forms.CharField(widget=MarkItUpWidget)
+
+    class Meta:
+        model = Release
+        exclude = ('site',)

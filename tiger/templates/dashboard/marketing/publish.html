@@ -1,0 +1,39 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block namespace %}xmlns:fb="http://www.facebook.com/2008/fbml"{% endblock %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% block body-class %}{{ block.super }} publish{% endblock %}
+
+{% block content %}
+<form method="POST">
+{% if form.title.errors %}
+{{ form.title.errors }}
+{% endif %}
+{{ form.title.label_tag }} {{ form.title }}
+<div id="editor">
+    {{ form.body }} 
+    <div class="block" id="editorPreview"></div>
+</div>
+<div class="clear"></div>
+{{ form.coupon.label_tag }} {{ form.coupon }}
+{{ form.pdf.label_tag }} {{ form.pdf }}
+<input type="submit" value="Publish" />
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("#id_body").keyup(function () {
+        trgt = this;
+        $.post("{% url dashboard_publish_preview %}", $.param({preview: $(trgt).val()}), function (data) {
+            $("#editorPreview").html(data);
+        }, "html");
+    });
+});
+</script>
+{% endblock %}

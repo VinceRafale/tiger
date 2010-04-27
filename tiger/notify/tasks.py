@@ -29,25 +29,6 @@ class SendEmailTask(Task):
     def run(self, msgs, **kwargs):
         connection = mail.get_connection()
         connection.send_messages(msgs)
-
-
-class RunBlastTask(Task):
-    def run(self, blast_id, **kwargs):
-        Blast = get_model('notify', 'Blast')
-        blast = Blast.objects.get(id=blast_id)
-        site = blast.site
-        content = open(blast.pdf.path).read()
-        via_fax = blast.subscribers.filter(update_via=Subscriber.VIA_FAX)
-        numbers = [s.fax for s in via_fax]
-        names = [contact.user.get_full_name() for contact in via_fax]
-        SendFaxTask.delay(site=site, recipients=numbers, content=content, names=names, PageOrientation=blast.pdf.get_orientation_display())
-        # need HTML content or attachment....
-        # via_email = Subscriber.via_email.filter(site=site)
-        # emails = [s.user.email for s in via_email]
-        # msg = mail.EmailMessage('Latest specials from %s' % site.name, 
-        #     content, bcc=emails)
-        # msgs.append(msg)
-        # SendEmailTask.delay(msgs=msgs)
     
 
 class TweetNewItemTask(Task):
@@ -73,3 +54,30 @@ class PublishToFacebookTask(Task):
         except FacebookError, e:
             self.retry([uid, msg, link_title, href], kwargs,
                 countdown=60 * 5, exc=e)
+
+
+class PublishTask(Task):
+    def run(self, release_id, **kwargs):
+        Release = get_model('notify', 'release')
+        release = Release.objects.get(id=release_id)
+        site = blast.site
+        social = site.social
+        #content = open(blast.pdf.path).read()
+        #via_fax = blast.subscribers.filter(update_via=Subscriber.VIA_FAX)
+        #numbers = [s.fax for s in via_fax]
+        #names = [contact.user.get_full_name() for contact in via_fax]
+        #SendFaxTask.delay(site=site, recipients=numbers, content=content, names=names, PageOrientation=blast.pdf.get_orientation_display())
+        if release.coupon:
+            msg = unicode(release.coupon)
+            short_url = reverse('coupon_short_code', kwargs={'item_id': release.coupon.id})
+            link_title = 'Use it now'
+        else:
+            msg = release.title
+            short_url = reverse('press_short_code', kwargs={'item_id': release.id})
+            link_title = 'Read on our site'
+        if site.twitter():
+            msg = ' '.join([msg, short_url]) 
+            TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret)
+        if site.facebook():
+            PublishToFacebookTask.delay(social.facebook_id, msg, link_title=link_title, href=short_url)
+        release.send_mailchimp()

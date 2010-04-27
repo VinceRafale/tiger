@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 
 from tiger.core.models import Item, Coupon
+from tiger.notify.models import Release
 
 admin.autodiscover()
 
@@ -40,7 +41,12 @@ urlpatterns += patterns('',
             {'document_root': settings.MEDIA_ROOT}),
 )
 
+urlpatterns += patterns('tiger.notify.views',
+    url(r'^press/(?P<object_id>\d+)/(?P<slug>[\w-]+)/$', 'press_detail', name='press_detail'),
+)
+
 urlpatterns += patterns('tiger.utils.views',
     url(r'^m/(?P<item_id>\w+)/$', 'short_code_redirect', {'model': Item}, name='short_code'),
+    url(r'^p/(?P<item_id>\w+)/$', 'short_code_redirect', {'model': Release}, name='press_short_code'),
     url(r'^c/(?P<item_id>\w+)/$', 'short_code_redirect', {'model': Coupon}, name='coupon_short_code'),
 )

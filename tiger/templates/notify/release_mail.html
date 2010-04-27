@@ -1,0 +1,13 @@
+<h1>{{ release.title|safe }}</h1>
+
+<a href="{{ release.site }}{{ release.get_absolute_url }}">View this announcement on our site</a>
+{% if release.coupon %}
+<a href="{{ release.site }}{{ release.coupon.get_absolute_url }}">Use this coupon now</a>
+{% endif %}
+<br />
+
+{{ release.body_html|safe }}
+
+{% if release.pdf %}
+<a href="{{ release.site }}{{ release.pdf.url }}">Download "{{ release.pdf.title }}"</a>
+{% endif %}

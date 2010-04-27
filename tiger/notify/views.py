@@ -6,10 +6,11 @@ from oauth import oauth
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
-from tiger.notify.models import Fax, Social
+from tiger.notify.models import Fax, Social, Release
 from tiger.notify.utils import *
-
+from tiger.utils.views import render_custom
 
 TWITTER_CONSUMER = oauth.OAuthConsumer(settings.TWITTER_CONSUMER_KEY, 
     settings.TWITTER_CONSUMER_SECRET)
@@ -84,3 +85,8 @@ def twitter_return(request):
     social.twitter_secret = auth_dict['oauth_token_secret']
     social.save()
     return HttpResponseRedirect(str(social.site) + reverse('dashboard')) 
+
+def press_detail(request, object_id, slug):
+    press = get_object_or_404(Release, id=object_id, site=request.site)
+    return render_custom(request, 'notify/press_detail.html', 
+        {'release': press})

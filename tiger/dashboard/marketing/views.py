@@ -8,13 +8,16 @@ from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
+from django.utils.safestring import mark_safe
+
+from markdown import markdown
 
 from tiger.accounts.forms import *
 from tiger.accounts.models import *
 from tiger.core.forms import CouponCreationForm
 from tiger.core.models import Coupon
 from tiger.notify.forms import *
-from tiger.notify.models import Fax, Blast
+from tiger.notify.models import Fax, Release
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 @login_required
@@ -27,30 +30,18 @@ def home(request):
     pages_for_month = Fax.objects.filter(
         site=site, completion_time__gte=this_month).aggregate(Sum('page_count'))['page_count__sum']
     return direct_to_template(request, template='dashboard/marketing/integrations.html', extra_context={
-        'email_subscribers': email_subscribers,
-        'fax_subscribers': fax_subscribers,
-        'total_pages': total_pages,
-        'pages_for_month': pages_for_month,
-        'blasts': site.blast_set.all(),
         'FB_API_KEY': settings.FB_API_KEY,
         'mailchimp_form': MailChimpForm(instance=site.social)
     })
 
 @login_required
-def add_edit_blast(request, blast_id=None):
-    return add_edit_site_object(request, Blast, BlastForm, 
-        'dashboard/marketing/blast_form.html', 'dashboard_marketing', object_id=blast_id)
+def publish(request, release_id=None):
+    return add_edit_site_object(request, Release, PublishForm, 
+        'dashboard/marketing/publish.html', 'dashboard_marketing', object_id=release_id)
 
 @login_required
-def delete_blast(request, blast_id):
-    return delete_site_object(request, Blast, blast_id, 'dashboard_marketing')
-
-@login_required
-def send_blast(request, blast_id):
-    blast = Blast.objects.get(id=blast_id, site=request.site)
-    blast.send()
-    messages.success(request, 'Blast "%s" has been started.' % blast.name)
-    return HttpResponseRedirect(reverse('dashboard_marketing'))
+def publish_preview(request):
+    return HttpResponse(mark_safe(markdown(request.POST.get('preview', ''))))
 
 @login_required
 def coupon_list(request):

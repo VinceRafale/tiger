@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+| {{ release.title }}
+{% endblock %}
+
+{% block content %}
+<h1>{{ release.title }}</h1>
+
+{{ release.body_html|safe }}
+
+{% if release.pdf %}
+<a href="{{ release.site }}{{ release.pdf.url }}">Download "{{ release.pdf.title }}"</a>
+{% endif %}
+{% endblock %}
