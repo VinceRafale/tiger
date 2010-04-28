@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Page Title</title>
+		<link rel="stylesheet" href="{{ MEDIA_URL}}css/style.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+		<script src="{{ MEDIA_URL }}js/loopedslider.min.js"></script>
+		<!--[if lte IE 8]>
+			<script>
+				// For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/ (credit to @jdalton for minif)
+				/*@cc_on'abbr article aside audio canvas details figcaption figure footer header hgroup mark menu meter nav output progress section summary time video'.replace(/\w+/g,function(n){document.createElement(n)})@*/
+			</script>
+		<![endif]-->
+	</head>
+	<body id="home">
+		<header class="container_12 clearfix">>
+			<span class="grid_2"><a href="{% url tiger_signup %}" class="signup">Sign Up</a></span>
+			<div class="grid_7 push_3">
+				<h1>Takeout Tiger</h1>
+				<h2>Big-chain features for local restaurant budgets</h2>
+				<p>Takeout Tiger delivers an all-in-one solution for small restaurants to manage their online presence.</p>
+			</div>
+		</header>
+		<section id="content" class="container_12 clearfix">
+			<img src="{{ MEDIA_URL }}img/img_tiger.png" alt="Takeout Tiger" class="tiger">
+			<div id="loopedSlider" class="grid_7 push_5 callout">
+				<div class="container">
+					<div class="slides">
+						<div>
+							<h2>Create beautiful online menus</h2>
+							<p>Publish your menu online with just a few clicks. Need to change something? Your edits take effect immediately. You can customize the look and feel of your menu and even add photos. Our Google-friendly menu structure will help drive new visitors to your site.</p>
+						</div>
+						<div>
+							<h2>Take orders online</h2>
+							<p>Cut down on five-minute phone orders. With your new Takeout Tiger menu, your customers can easily order online for takeout, dine-in, or delivery.  You can optionally accept payment online using Authorize.net.</p>
+						</div>
+						<div>
+							<h2>Network with your customers</h2>
+							<p>Whether you are new to social media or a seasoned veteran, we will help you engage with your client base.  Use Twitter and Facebook to automatically broadcast menu changes and updates.</p>
+						</div>
+						<div>
+							<h2>Market more effectively</h2>
+							<p>Keep your regulars in the loop and spend less time doing it.  Send your specials, your complete menu, or an online coupon to your customers by fax, e-mail, or both.</p>
+						</div>
+					</div>	
+				</div>
+				<ul class="pagination">
+					<li><a href="#"></a></li>
+					<li><a href="#"></a></li>
+					<li><a href="#"></a></li>
+					<li><a href="#"></a></li>
+				</ul>
+				<a href="{% url tiger_signup %}" class="signup">Sign Up</a>
+			</div>	
+		</section>
+		<div class="orange-bar content"></div>
+		<footer class="container_12 clearfix">
+			<div class="grid_12">
+			
+			</div>
+		</footer>
+
+	<script type="text/javascript" charset="utf-8">
+		$(function(){
+			$('#loopedSlider').loopedSlider({
+				autoStart: 6500,
+				slidespeed: 900,
+				restart: 5000,
+				containerClick: false
+			});
+		});
+	</script>
+	</body>
+</html>

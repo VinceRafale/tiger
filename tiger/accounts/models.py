@@ -21,12 +21,14 @@ class Account(models.Model):
     user = models.ForeignKey(User)
     company_name = models.CharField(max_length=200)
     email = models.EmailField('billing e-mail address')
-    phone = PhoneNumberField()
-    fax = PhoneNumberField()
-    street = models.CharField(max_length=255)
-    state = USStateField()
+    phone = PhoneNumberField(null=True, blank=True)
+    fax = PhoneNumberField(null=True, blank=True)
+    street = models.CharField(max_length=255, null=True, blank=True)
+    state = USStateField(null=True, blank=True)
     zip = models.CharField(max_length=10)
     signup_date = models.DateField(editable=False, default=datetime.now)
+    customer_id = models.CharField(max_length=200, default='')
+    subscription_id = models.CharField(max_length=200, default='')
 
     def __unicode__(self):
         return self.company_name
@@ -57,7 +59,7 @@ class Site(models.Model):
     timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
-    skin = models.ForeignKey(Skin, default=1)
+    skin = models.ForeignKey(Skin, default=11)
     hours = models.CharField(null=True, max_length=255)
 
     def __unicode__(self):

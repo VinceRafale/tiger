@@ -1,88 +1,96 @@
-{% extends 'tiger/base.html' %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Page Title</title>
+		<link rel="stylesheet" href="{{ MEDIA_URL }}css/style.css">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+		<script src="{{ MEDIA_URL }}js/loopedslider.min.js"></script>
+		<!--[if lte IE 8]>
+			<script>
+				// For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/ (credit to @jdalton for minif)
+				/*@cc_on'abbr article aside audio canvas details figcaption figure footer header hgroup mark menu meter nav output progress section summary time video'.replace(/\w+/g,function(n){document.createElement(n)})@*/
+			</script>
+		<![endif]-->
+	</head>
+	<body id="signup">
+		<header class="container_12 clearfix">
+            <form method="POST">
+			<div class="grid_7">
+				<h1>Sign Up</h1>
+				<fieldset>
+					<legend id="one">Create your Takeout Tiger account</legend>
+                    {% if form.first_name.errors %}
+                    {{ form.first_name.errors }}
+                    {% endif %}
+					<label>{{ form.first_name.label }}:<br /><span>{{ form.first_name }}</span></label>
+                    {% if form.last_name.errors %}
+                    {{ form.last_name.errors }}
+                    {% endif %}
+					<label>{{ form.last_name.label }}:<br /><span>{{ form.last_name }}</span></label>
+                    {% if form.email.errors %}
+                    {{ form.email.errors }}
+                    {% endif %}
+					<label>{{ form.email.label }}:<br /><span>{{ form.email }}</span></label>
 
-{% block content %}
+					<h3>Now choose a password</h3>	
+                    {% if form.password1.errors %}
+                    {{ form.password1.errors }}
+                    {% endif %}
+					<label>Password:<br /><span>{{ form.password1 }}</span></label>
+                    {% if form.password2.errors %}
+                    {{ form.password2.errors }}
+                    {% endif %}
+					<label>Password again (for verification):<br /><span>{{ form.password2 }}</span></label>
+				</fieldset>
+			</div>
+			<div class="grid_8">	
+				<fieldset class="domain">
+					<legend id="two">Choose your Takeout Tiger domain</legend>
+                    {% if form.subdomain.errors %}
+                    {{ form.subdomain.errors }}
+                    {% endif %}
+					<label><strong>http://</strong><span>{{ form.subdomain }}</span><strong>.takeouttiger.com</strong></label>
+				</fieldset>
+				<fieldset class="billing">
+					<legend id="three">Enter your billing information</legend>
+                    {% if form.non_field_errors %}
+                    {{ form.non_field_errors }}
+                    {% endif %}
+                    {% if form.cc_number.errors %}
+                    {{ form.cc_number.errors }}
+                    {% endif %}
+					<label>{{ form.cc_number.label }}:<br /><span>{{ form.cc_number }}</span></label>
+                    {% if form.month.errors %}
+                    {{ form.month.errors }}
+                    {% endif %}
+                    {% if form.year.errors %}
+                    {{ form.year.errors }}
+                    {% endif %}
+					<label>Expiration date:<br /><span>{{ form.month }} / {{ form.year }}</span></label>
+                    {% if form.zip.errors %}
+                    {{ form.zip.errors }}
+                    {% endif %}
+					<label>{{ form.zip.label }}:<br /><span>{{ form.zip }}</span></label>
+					<input type="submit" value="">
+				</fieldset>
+			</div>
+            </form>
+		</header>
+		<footer class="container_12 clearfix">
+			<div class="grid_12">
+			
+			</div>
+		</footer>
 
-<h3>Your web address</h3>
-<p>What would you like your Takeout Tiger address to be?</p>
-{% if form.subdomain.errors %}
-{{ form.subdomain.errors }}
-{% endif %}
-<label>{{ form.subdomain }}.takeouttiger.com</label>
-<p>You can add a custom domain (like www.yourcafe.com) later.</p>
-
-<h3>Your user account</h3>
-{% if form.first_name.errors %}
-{{ form.first_name.errors }}
-{% endif %}
-<label>{{ form.first_name.label }} <br />{{ form.first_name }}</label>
-
-{% if form.last_name.errors %}
-{{ form.last_name.errors }}
-{% endif %}
-<label>{{ form.last_name.label }} <br />{{ form.last_name }}</label>
-
-{% if form.user_email.errors %}
-{{ form.user_email.errors }}
-{% endif %}
-<label>{{ form.user_email.label }} <br />{{ form.user_email }}</label>
-
-{% if form.password1.errors %}
-{{ form.password1.errors }}
-{% endif %}
-<label>{{ form.password1.label }} <br />{{ form.password1 }}</label>
-
-{% if form.password2.errors %}
-{{ form.password2.errors }}
-{% endif %}
-<label>{{ form.password2.label }} <br />{{ form.password2 }}</label>
-
-<h3>Your business</h3>
-
-{% if form.company_name.errors %}
-{{ form.company_name.errors }}
-{% endif %}
-<label>{{ form.company_name.label }} <br />{{ form.company_name }}</label>
-
-{% if form.street.errors %}
-{{ form.street.errors }}
-{% endif %}
-<label>{{ form.street.label }} <br />{{ form.street }}</label>
-
-{% if form.state.errors %}
-{{ form.state.errors }}
-{% endif %}
-<label>{{ form.state.label }} <br />{{ form.state }}</label>
-
-{% if form.zip.errors %}
-{{ form.zip.errors }}
-{% endif %}
-<label>{{ form.zip.label }} <br />{{ form.zip }}</label>
-
-{% if form.email.errors %}
-{{ form.email.errors }}
-{% endif %}
-<label>{{ form.email.label }} <br />{{ form.email }}</label>
-
-{% if form.phone.errors %}
-{{ form.phone.errors }}
-{% endif %}
-<label>{{ form.phone.label }} <br />{{ form.phone }}</label>
-
-{% if form.fax.errors %}
-{{ form.fax.errors }}
-{% endif %}
-<label>{{ form.fax.label }} <br />{{ form.fax }}</label>
-
-<h3>Payment info</h3>
-
-{% if form.cc_number.errors %}
-{{ form.cc_number.errors }}
-{% endif %}
-<label>{{ form.cc_number.label }} <br />{{ form.cc_number }}</label>
-
-{% if form.cc_expiration.errors %}
-{{ form.cc_expiration.errors }}
-{% endif %}
-<label>{{ form.cc_expiration.label }} <br />{{ form.cc_expiration }}</label>
-
-{% endblock %}
+	<script type="text/javascript" charset="utf-8">
+		$(function(){
+			$('#loopedSlider').loopedSlider({
+				autoStart: 6500,
+				slidespeed: 900,
+				restart: 5000,
+				containerClick: false
+			});
+		});
+	</script>
+	</body>
+</html>
