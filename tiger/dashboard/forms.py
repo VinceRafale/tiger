@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate
 
 class AuthenticationForm(forms.Form):
-    username = forms.CharField(max_length=30)
+    email = forms.EmailField(max_length=30)
     password = forms.CharField(widget=forms.PasswordInput)
 
     def __init__(self, data=None, request=None, site=None, *args, **kwargs):
@@ -11,11 +11,11 @@ class AuthenticationForm(forms.Form):
         super(AuthenticationForm, self).__init__(data, *args, **kwargs)
 
     def clean(self):
-        username = self.cleaned_data.get('username')
+        email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
 
-        if username and password:
-            self.user_cache = authenticate(username=username, password=password, site=self.site)
+        if email and password:
+            self.user_cache = authenticate(email=email, password=password, site=self.site)
             if self.user_cache is None:
                 raise forms.ValidationError("Please enter a correct username and password. Note that both fields are case-sensitive.")
             elif not self.user_cache.is_active:

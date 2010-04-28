@@ -1,9 +1,9 @@
 from django.contrib.auth.models import User
 
 class DashboardAccessBackend(object):
-    def authenticate(self, username=None, password=None, site=None):
+    def authenticate(self, email=None, password=None, site=None):
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
             if user.check_password(password) and (user.is_superuser or user == site.account.user):
                 return user
         except User.DoesNotExist:
