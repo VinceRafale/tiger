@@ -108,10 +108,10 @@
                 $.post("{% url domain_check %}", $.param({subdomain: domain}), function (data) {
                     if (!data['available']) {
                         $("span.looking,span.yes").hide();
-                        $("span.no").show();
+                        $("span.no").css("display", "block");
                     } else {
                         $("span.looking,span.no").hide();
-                        $("span.yes").show();
+                        $("span.yes").css("display", "block");
                     }
                 }, "json");
             }
