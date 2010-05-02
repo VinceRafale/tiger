@@ -15,7 +15,7 @@
 	<body id="signup">
 		<header class="container_12 clearfix">
             <form method="POST">
-			<div class="grid_7">
+			<div class="grid_6">
 				<h1>Sign Up</h1>
 				<fieldset>
 					<legend id="one">Create your Takeout Tiger account</legend>
@@ -43,6 +43,10 @@
 					<label>Password again (for verification):<br /><span>{{ form.password2 }}</span></label>
 				</fieldset>
 			</div>
+			<div class="thanks grid_4 push_1">
+			    <img src="{{ MEDIA_URL }}img/img_thank-you.png" alt="Img Thank You">
+			    <p>Thanks for choosing Takeout Tiger. Please fill out the form on the left to set up your online store.</p>
+			</div>    
 			<div class="grid_8">	
 				<fieldset class="domain">
 					<legend id="two">Choose your Takeout Tiger domain</legend>
@@ -51,6 +55,13 @@
                     {% endif %}
 					<label><strong>http://</strong><span>{{ form.subdomain }}</span><strong>.takeouttiger.com</strong></label>
 				</fieldset>
+            </div>
+			<p class="availability grid_4">
+			    <span class="looking" style="display:none;">Looking...</span>
+			    <span class="yes" style="display:none;">Domain available.</span>
+			    <span class="no" style="display:none;">Not available.</span>
+			</p>
+            <div class="grid_6">
 				<fieldset class="billing">
 					<legend id="three">Enter your billing information</legend>
                     {% if form.non_field_errors %}
@@ -66,14 +77,21 @@
                     {% if form.year.errors %}
                     {{ form.year.errors }}
                     {% endif %}
-					<label>Expiration date:<br /><span>{{ form.month }} / {{ form.year }}</span></label>
+			        <label class="expiration">Expiration date:<br />
+			            <span>{{ form.month }}</span><strong>/</strong><span>{{ form.year }}</span>
+			        </label>
                     {% if form.zip.errors %}
                     {{ form.zip.errors }}
                     {% endif %}
 					<label>{{ form.zip.label }}:<br /><span>{{ form.zip }}</span></label>
-					<input type="submit" value="">
 				</fieldset>
 			</div>
+			<div class="thanks grid_4 push_1">
+			    <p>Your card will be billed monthly</p>
+			</div>    
+			<div class="grid_10">
+			    <input type="submit" value="">
+			</div>   
             </form>
 		</header>
 		<footer class="container_12 clearfix">
@@ -83,13 +101,29 @@
 		</footer>
 
 	<script type="text/javascript" charset="utf-8">
+        var keystrokes = 0, domain = '';
+        function checkAvailable () {
+            keystrokes--;
+            if (keystrokes == 0) {
+                $.post("{% url domain_check %}", $.param({subdomain: domain}), function (data) {
+                    if (!data['available']) {
+                        $("span.looking,span.yes").hide();
+                        $("span.no").show();
+                    } else {
+                        $("span.looking,span.no").hide();
+                        $("span.yes").show();
+                    }
+                }, "json");
+            }
+        }
 		$(function(){
-			$('#loopedSlider').loopedSlider({
-				autoStart: 6500,
-				slidespeed: 900,
-				restart: 5000,
-				containerClick: false
-			});
+            $("#id_subdomain").keyup(function () {
+                keystrokes++;
+                domain = $(this).val();
+                setTimeout('checkAvailable()', 1000);
+                $("span.looking").show();
+                $("span.yes,span.no").hide();
+            });
 		});
 	</script>
 	</body>
