@@ -33,3 +33,7 @@ def domain_check(request):
     else:
         data['available'] = False
     return HttpResponse(json.dumps(data))
+
+
+def cancelled(request):
+    return direct_to_template(request, template='tiger/cancelled.html')

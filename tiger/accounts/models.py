@@ -24,11 +24,14 @@ class Account(models.Model):
     phone = PhoneNumberField(null=True, blank=True)
     fax = PhoneNumberField(null=True, blank=True)
     street = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=255, null=True, blank=True)
     state = USStateField(null=True, blank=True)
     zip = models.CharField(max_length=10)
     signup_date = models.DateField(editable=False, default=datetime.now)
     customer_id = models.CharField(max_length=200, default='')
     subscription_id = models.CharField(max_length=200, default='')
+    card_number = models.CharField('credit card number', max_length=30, null=True)
+    card_type = models.CharField(max_length=50, null=True)
 
     def __unicode__(self):
         return self.company_name

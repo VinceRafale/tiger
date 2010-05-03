@@ -1,0 +1,25 @@
+{% extends 'dashboard/account/home.html' %}
+
+{% block body-class %}{{ block.super }}update-contact{% endblock %}
+
+{% block content %}
+<div class="grid_5 alpha">
+<form method="POST" action=".">
+{{ form.as_p }}
+</form>
+</div>
+<div class="clear"></div>
+<a class="buttonTop last" href="{% url account_home %}">Cancel</a>
+<a class="buttonTop submit" href="#">Save</a>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+});
+</script>
+{% endblock %}
+

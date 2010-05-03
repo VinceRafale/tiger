@@ -16,4 +16,5 @@ urlpatterns += patterns('',
     (r'^orders/', include('tiger.dashboard.orders.urls')),
     (r'^content/', include('tiger.dashboard.content.urls')),
     (r'^look/', include('tiger.dashboard.look.urls')),
+    (r'^account/', include('tiger.dashboard.account.urls')),
 )

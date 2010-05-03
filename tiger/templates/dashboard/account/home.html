@@ -1,0 +1,9 @@
+{% extends 'dashboard/base.html' %}
+
+{% block body-class %}account {% endblock %}
+
+{% block submenu %}
+<li><a class="update-contact" href="{% url account_home %}">Update billing address</a></li>
+<li><a class="update-cc" href="{% url update_cc %}">Update credit card</a></li>
+<li><a class="cancel" href="{% url cancel %}">Cancel your account</a></li>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'dashboard/account/home.html' %}
+
+{% block body-class %}{{ block.super }}cancel{% endblock %}
+
+{% block content %}
+<p>We're sorry that you aren't satisfied with your experience.  If you like, leave us a not explaining what we can do better in the future.</p>
+<form method="POST">
+{{ form.comments }}
+<p>Please note that cancelling will result in all of your information (including your Takeout Tiger subdomain) being deleted.</p>
+<input type="submit" value="Yes, I want to cancel"> <a href="{% url account_home %}">"No, I would never break up with you"</a>
+</form>
+{% endblock %}
+
+{% block js %}
+    $("a.delete").live("click", function () {
+        h3Text = $(this).parent().hasClass("section-controls") ? "section" : "item";
+        c = confirm("Are you sure you want to delete this " + h3Text + "? This action cannot be undone.");
+        if (!c)
+            return false;
+    });
+{% endblock %}

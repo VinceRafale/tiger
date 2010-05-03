@@ -136,7 +136,10 @@ body.subscribers a.subscribers,
 body.orders a.orders,
 body.checkout-messages a.checkout-messages,
 body.payment a.payment,
-body.orders-settings a.orders-settings
+body.orders-settings a.orders-settings,
+body.update-contact a.update-contact,
+body.update-cc a.update-cc,
+body.cancel a.cancel
 {
     color:white !important;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, .6);

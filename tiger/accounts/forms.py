@@ -1,13 +1,12 @@
 import hashlib
 from datetime import time, date
 
-from pychargify.api import *
-
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 
 from tiger.accounts.models import Account, Subscriber, Site, TimeSlot
+from tiger.utils.chargify import Chargify, ChargifyError
 
 
 class SubscriberForm(forms.ModelForm):
@@ -194,31 +193,33 @@ class SignupForm(forms.ModelForm):
     def process_cc(self):
         cleaned_data = self.cleaned_data
         chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
-        customer = chargify.Customer('customer_attributes')
-        customer.first_name = cleaned_data.get('first_name')
-        customer.last_name = cleaned_data.get('last_name')
-        customer.email = cleaned_data.get('email')
-
-        creditcard = chargify.CreditCard('credit_card_attributes')
-        creditcard.full_number = cleaned_data.get('cc_number')
-        creditcard.expiration_month = cleaned_data.get('month')
-        creditcard.expiration_year = cleaned_data.get('year')
-        creditcard.billing_zip = cleaned_data.get('cc_zip')
-
-        subscription = chargify.Subscription()
-        subscription.product_handle = settings.DEFAULT_PRODUCT_HANDLE
-        subscription.customer = customer
-        subscription.credit_card = creditcard
-
-        success, obj = subscription.save()
-        if not success:
+        try:
+            result = chargify.subscriptions.create(data={
+                'subscription':{
+                    'product_handle': settings.DEFAULT_PRODUCT_HANDLE,
+                    'customer_attributes':{
+                        'first_name': cleaned_data.get('first_name'),
+                        'last_name': cleaned_data.get('last_name'),
+                        'email': cleaned_data.get('email')
+                    },
+                    'credit_card_attributes':{
+                        'full_number': cleaned_data.get('cc_number'),
+                        'expiration_month': cleaned_data.get('month'),
+                        'expiration_year': cleaned_data.get('year'),
+                        'billing_zip': cleaned_data.get('cc_zip')
+                    }
+                }
+            })
+        except ChargifyError:
             raise forms.ValidationError('There was an error processing your card information.')
-        self.subscription = obj
+        self.subscription = result['subscription']
 
     def save(self):
         instance = super(SignupForm, self).save(commit=False)
-        instance.subscription_id = self.subscription.id
-        instance.customer_id = self.subscription.customer.id
+        instance.subscription_id = self.subscription['id']
+        instance.customer_id = self.subscription['customer']['id']
+        instance.card_type = self.subscription['credit_card']['card_type']
+        instance.card_number = self.subscription['credit_card']['masked_card_number']
         cleaned_data = self.cleaned_data
         first_name = cleaned_data['first_name']
         last_name = cleaned_data['last_name']
@@ -238,9 +239,117 @@ class SignupForm(forms.ModelForm):
         site.subdomain = cleaned_data['subdomain']
         site.account = instance
         site.save()
+        return instance
 
 
 class DomainForm(forms.ModelForm):
     class Meta:
         model = Site
         fields = ('domain',)
+
+
+class ContactInfoForm(forms.ModelForm):
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    email = forms.EmailField()
+
+    class Meta:
+        model = Account
+        fields = (
+            'company_name',
+            'phone',
+            'fax',
+            'street',
+            'city',
+            'state',
+            'zip',
+        )
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs['instance']
+        user = instance.user
+        initial = {
+            'first_name': instance.user.first_name,
+            'last_name': instance.user.last_name,
+            'email': instance.user.email
+        }
+        super(ContactInfoForm, self).__init__(initial=initial,  *args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(ContactInfoForm, self).clean()
+        chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
+        subscription_id = self.instance.subscription_id
+        try:
+            result = chargify.subscriptions.update(subscription_id=subscription_id, data={
+                'subscription': {
+                    'customer_attributes':{
+                        'first_name': cleaned_data.get('first_name'),
+                        'last_name': cleaned_data.get('last_name'),
+                        'email': cleaned_data.get('email'),
+                        'organization': cleaned_data.get('company_name')
+                    },
+                    #'credit_card_attributes':{
+                    #    'billing_address': cleaned_data.get('street'),
+                    #    'billing_city': cleaned_data.get('city'),
+                    #    'billing_state': cleaned_data.get('state'),
+                    #    'billing_zip': cleaned_data.get('cc_zip')
+                    #}
+                }
+            })
+        except ChargifyError, e:
+            raise forms.ValidationError('Unable to update your information with our payment processor.')
+        return cleaned_data
+
+
+class CreditCardForm(forms.ModelForm):
+    month = forms.CharField()
+    year = forms.CharField()
+
+    class Meta:
+        model = Account
+        fields = (
+            'card_number',
+        )
+
+    def clean_month(self):
+        month = self.cleaned_data['month']
+        msg = 'Please enter a valid month (00-12).'
+        try:
+            month = int(month)
+        except ValueError:
+            raise forms.ValidationError(msg)
+        if 0 <= month <= 12:
+            return month
+        raise forms.ValidationError(msg)
+
+    def clean_year(self):
+        year = self.cleaned_data['year']
+        current_year = date.today().year
+        msg = 'Please enter a valid year (%d or later).' % current_year
+        try:
+            year = int(year)
+        except ValueError:
+            raise forms.ValidationError(msg)
+        if year < current_year:
+            raise forms.ValidationError(msg)
+        return year
+
+    def clean(self):
+        cleaned_data = super(CreditCardForm, self).clean()
+        if not len(self._errors):
+            chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
+            subscription_id = self.instance.subscription_id
+            try:
+                result = chargify.subscriptions.update(subscription_id=subscription_id, data={
+                    'subscription': {
+                        'credit_card_attributes':{
+                            'full_number': cleaned_data.get('card_number'),
+                            'expiration_month': cleaned_data.get('month'),
+                            'expiration_year': cleaned_data.get('year')
+                        }
+                    }
+                })
+            except ChargifyError:
+                raise forms.ValidationError('Unable to update your information with our payment processor.')
+            self.subscription = result['subscription']
+        return cleaned_data
