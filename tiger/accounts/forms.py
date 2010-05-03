@@ -239,6 +239,7 @@ class SignupForm(forms.ModelForm):
         site.subdomain = cleaned_data['subdomain']
         site.account = instance
         site.save()
+        self.site = site
         return instance
 
 

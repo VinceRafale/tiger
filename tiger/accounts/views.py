@@ -13,7 +13,7 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             instance = form.save()
-            return HttpResponseRedirect(unicode(instance.site) + reverse('dashboard'))
+            return HttpResponseRedirect(unicode(form.site) + reverse('dashboard'))
     else:
         form = SignupForm()
     return direct_to_template(request, template='tiger/signup.html', extra_context={
