@@ -120,9 +120,11 @@
             $("#id_subdomain").keyup(function () {
                 keystrokes++;
                 domain = $(this).val();
-                setTimeout('checkAvailable()', 1000);
-                $("span.looking").show();
-                $("span.yes,span.no").hide();
+                if (domain) {
+                    setTimeout('checkAvailable()', 1000);
+                    $("span.looking").show();
+                    $("span.yes,span.no").hide();
+                }
             });
 		});
 	</script>
