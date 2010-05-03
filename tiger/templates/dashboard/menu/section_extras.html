@@ -1,0 +1,44 @@
+{% extends 'dashboard/menu/section_form_base.html' %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.formset.js"></script>
+{% endblock %}
+
+{% block extras %}
+<p>Have any standard additions for this section?  Maybe extra cheese for another buck?  Add them here.</p>
+<form method="POST">
+    <div id="extraForms">
+    {% for form in formset.forms %}
+        {% if form.name.errors %}
+        {{ form.name.errors }}
+        {% endif %}
+        {% if form.price.errors %}
+        {{ form.price.errors }}
+        {% endif %}
+        <div>
+            <label class="price">{{ form.price.label }}:<br /> ${{ form.price }}</label>
+            <label>{{ form.name.label }}:<br />
+            {{ form.name }}</label>
+        </div>
+        {{ form.id }}
+        {{ form.DELETE.as_hidden }}
+    {% endfor %}
+    </div>
+{{ formset.management_form }}
+    <div class="clear"></div>
+    <a class="buttonTop submit last" href="#">Save</a>
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+    $('#extraForms div').formset({
+        formCssClass: 'variant-formset',
+    });
+});
+</script>
+{% endblock %}

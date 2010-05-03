@@ -19,6 +19,20 @@ from tiger.utils.fields import PickledObjectField
 from tiger.utils.pdf import render_to_pdf
 
 
+def get_price_list(obj):
+    """Produces a string representing the price variants available for a given
+    section or item.  
+    """
+    if obj.variant_set.count() == 1:
+        price_list = ['$%.2f' % obj.variant_set.all()[0].price]  
+    else:
+        price_list = [
+            '%s: $%.2f' % (v.description, v.price)
+            for v in obj.variant_set.all()
+        ]
+    return price_list
+
+
 class Section(models.Model):
     """Acts as a container for menu items. Example: "Burritos".
     """
@@ -46,6 +60,9 @@ class Section(models.Model):
 
     def has_specials(self):
         return any(item.special for item in self.item_set.all())
+
+    def prices(self):
+        return get_price_list(self)
 
 
 class ItemManager(models.Manager):
@@ -102,13 +119,7 @@ class Item(models.Model):
         return not (self.archived or self.out_of_stock)
 
     def update_price(self):
-        if self.variant_set.count() == 1:
-            self.price_list = ['$%.2f' % self.variant_set.all()[0].price]  
-        else:
-            self.price_list = [
-                '%s: $%.2f' % (v.description, v.price)
-                for v in self.variant_set.all()
-            ]
+        self.price_list = get_price_list(self)
         self.save()
 
 
@@ -118,7 +129,8 @@ class Variant(models.Model):
     customer will actually be selecting when ordering a menu item.  All menu
     items must have at least one.  
     """
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, null=True, blank=True)
+    section = models.ForeignKey(Section, null=True, blank=True)
     description = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=5, decimal_places=2)
 
@@ -135,7 +147,7 @@ class Variant(models.Model):
             new = True
         self.price = self.price.quantize(Decimal('0.01'))
         super(Variant, self).save(*args, **kwargs)
-        if new:
+        if new and self.item:
             self.item.update_price()
 
 
@@ -144,11 +156,10 @@ class Upgrade(models.Model):
     example, "Subsitute seasoned frieds for $.50" or "Add extra cheese for
     $1.00." 
     """
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, null=True, blank=True)
+    section = models.ForeignKey(Section, null=True, blank=True)
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=5, decimal_places=2)
-    substitute = models.BooleanField('Check here for the display text \
-        for this item to say "Substitute" instead of "Add"')
 
     class Meta:
         verbose_name = 'upgrade/substitution'
@@ -166,7 +177,18 @@ class Upgrade(models.Model):
 
 
 class SideDishGroup(models.Model):
-    item = models.ForeignKey(Item)
+    item = models.ForeignKey(Item, null=True, blank=True)
+    section = models.ForeignKey(Section, null=True, blank=True)
+
+    def __unicode__(self):
+        sides = [unicode(side) for side in self.sidedish_set.all()]
+        if len(sides) <= 2:
+            sides = ' or '.join(sides)
+        else:
+            last = sides[-1]
+            sides = ' '.join('%s,' % side for side in sides)
+            sides = '%s or %s' % (sides, last)
+        return 'Choice of ' + sides
 
 
 class SideDish(models.Model):

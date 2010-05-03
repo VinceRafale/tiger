@@ -1,0 +1,69 @@
+{% extends 'dashboard/restaurant/home.html' %}
+
+{% block body-class %}{{ block.super }}menu{% endblock %}
+
+{% block content %}
+
+<div>
+    {% block section_info %}
+        <a href="{% url dashboard_edit_section section.id %}">Edit</a>
+        <h2>{{ section.name }}</h2>
+        <p>{{ section.description|linebreaks }}</p>
+    {% endblock %}
+</div>
+
+<div>
+    {% block pricepoints %}
+        <a href="{% url edit_section_pricepoints section.id %}">Edit</a>
+        <h3>Price points</h3>
+        <ul>
+            {% for price in section.prices %}
+            <li>{{ price }}</li>
+            {% empty %}
+            <li>You have not defined any default price points for this section.</li>
+            {% endfor %}
+        </ul>
+    {% endblock %}
+</div>
+
+<div>
+    {% block sides %}
+        <a href="{% url edit_section_sides section.id %}">Edit</a>
+        <h3>Side dish choices</h3>
+        <ul>
+            {% for group in section.sidedishgroup_set.all %}
+            <li>{{ group }}</li>
+            {% empty %}
+            <li>You have not defined any default side dish choices for this section.</li>
+            {% endfor %}
+        </ul>
+    {% endblock %}
+</div>
+
+<div>
+    {% block extras %}
+        <a href="{% url edit_section_extras section.id %}">Edit</a>
+        <h3>Extras</h3>
+        <ul>
+            {% for update in section.upgrade_set.all %}
+            <li>{{ update }}</li>
+            {% empty %}
+            <li>You have not defined any default extras for this section.</li>
+            {% endfor %}
+        </ul>
+    {% endblock %}
+</div>
+
+<div class="clear"></div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+});
+</script>
+{% endblock %}
+
