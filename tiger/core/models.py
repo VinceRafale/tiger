@@ -362,8 +362,10 @@ def register_paypal_payment(sender, **kwargs):
 
 
 def new_site_setup(sender, instance, created, **kwargs):
-    if instance.__class__.__name__ == 'Site' and created:
-        OrderSettings.objects.create(site=instance)
+    if created:
+        Site = models.get_model('accounts', 'site')
+        if isinstance(instance, Site):
+            OrderSettings.objects.create(site=instance)
 
 
 payment_was_successful.connect(register_paypal_payment)

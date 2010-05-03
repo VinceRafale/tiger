@@ -124,9 +124,11 @@ class PdfMenu(models.Model):
 
 
 def new_site_setup(sender, instance, created, **kwargs):
-    if instance.__class__.__name__ == 'Site' and created:
-        for content_type in Content.CONTENT_TYPES:
-            Content.objects.create(site=instance, slug=content_type)
+    if created:
+        Site = models.get_model('accounts', 'site')
+        if isinstance(instance, Site):
+            for content_type in Content.CONTENT_TYPES:
+                Content.objects.create(site=instance, slug=content_type)
 
 
 post_save.connect(new_site_setup)

@@ -119,8 +119,10 @@ class Release(models.Model):
         
 
 def new_site_setup(sender, instance, created, **kwargs):
-    if instance.__class__.__name__ == 'Site' and created:
-        Social.objects.create(site=instance)
+    if created:
+        Site = models.get_model('accounts', 'site')
+        if isinstance(instance, Site):
+            Social.objects.create(site=instance)
 
 
 post_save.connect(new_site_setup)
