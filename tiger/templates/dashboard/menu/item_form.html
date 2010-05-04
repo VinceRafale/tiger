@@ -51,59 +51,27 @@
 {{ form.image }}
 </label>
 </div>
-<div class="grid_6 omega">
-<h4 class="variants">Price points</h4>
-{% if variant_formset.non_form_errors %}
-<ul class="errorlist">
-{% for e in variant_formset.non_form_errors %}
-    <li>{{ e }}</li>
-{% endfor %}
-</ul>
-{% endif %}
-<div id="variantForms">
-{% for form in variant_formset.forms %}
-    {% if form.description.errors %}
-    {{ form.description.errors }}
-    {% endif %}
-    {% if form.price.errors %}
-    {{ form.price.errors }}
-    {% endif %}
-    <div>
-        <label class="price">{{ form.price.label }}:<br /> ${{ form.price }}</label>
-        <label>{{ form.description.label }}:<br />
-        {{ form.description }}</label>
-    {{ form.id }}
-    {{ form.DELETE.as_hidden }}
-    </div>
-{% endfor %}
-</div>
-{{ variant_formset.management_form }}
-<div class="clear"></div>
-<h4 class="upgrades">Upgrades & substitutions</h4>
-<div id="upgradeForms">
-{% for form in upgrade_formset.forms %}
-    {% if form.name.errors %}
-    {{ form.name.errors }}
-    {% endif %}
-    {% if form.price.errors %}
-    {{ form.price.errors }}
-    {% endif %}
-    <div>
-        <label class="price">{{ form.price.label }}:<br /> ${{ form.price }}</label>
-        <label>{{ form.name.label }}:<br />
-        {{ form.name }}</label>
-        <label>{{ form.substitute }} {{ form.substitute.label }}</label>
-    </div>
-    {{ form.id }}
-    {{ form.DELETE.as_hidden }}
-{% endfor %}
-</div>
-{{ upgrade_formset.management_form }}
-</div>
-</form>
 <div class="clear"></div>
 <a class="buttonTop last" href="{% url dashboard_menu %}">Cancel</a>
 <a class="buttonTop submit" href="#">Save</a>
+{% endblock %}
+
+{% block pricepoints %}
+{% if object %}
+{{ block.super }}
+{% endif %}
+{% endblock %}
+
+{% block sides %}
+{% if object %}
+{{ block.super }}
+{% endif %}
+{% endblock %}
+
+{% block extras %}
+{% if object %}
+{{ block.super }}
+{% endif %}
 {% endblock %}
 
 {% block js %}

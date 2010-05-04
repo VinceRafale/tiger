@@ -1,28 +1,29 @@
 {% extends 'dashboard/menu/section_form_base.html' %}
 
-{% block section_info %}
+{% block object_info %}
 <p>Give this menu section a name and a description.</p>
 <form method="POST">
     {{ form }} 
     <div class="clear"></div>
-    <a class="buttonTop submit last" href="#">Save</a>
+    <a class="buttonTop last" href="{% url dashboard_menu %}">Cancel</a>
+    <a class="buttonTop submit" href="#">Save</a>
 </form>
 {% endblock %}
 
 {% block pricepoints %}
-{% if section %}
+{% if object %}
 {{ block.super }}
 {% endif %}
 {% endblock %}
 
 {% block sides %}
-{% if section %}
+{% if object %}
 {{ block.super }}
 {% endif %}
 {% endblock %}
 
 {% block extras %}
-{% if section %}
+{% if object %}
 {{ block.super }}
 {% endif %}
 {% endblock %}

@@ -2,7 +2,7 @@
     <li class="{% cycle '' 'shaded' %}" id="{{ item.id }}">
         <div class="controls">
             <a class="delete" href="{% url dashboard_delete_item item.id %}"><img src="{{ MEDIA_URL }}img/delete.png" /></a>
-            <a href="{% url dashboard_edit_item item.id %}"><img src="{{ MEDIA_URL }}img/page_white_edit.png" /></a>
+            <a href="{% url dashboard_edit_menu 'item', item.id %}"><img src="{{ MEDIA_URL }}img/page_white_edit.png" /></a>
         </div>
         <div class="controls special">
             <label class="archived">

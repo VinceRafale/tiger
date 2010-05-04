@@ -38,14 +38,14 @@ def view_menu(request, object_type, object_id):
         extra_context={'object': instance, 'type': object_type})
 
 @login_required
-def add_edit_menu(request, object_type, object_id):
+def add_edit_menu(request, object_type, object_id=None):
     model = get_model('core', object_type)
     form_dict = {
         'section': SectionForm,
         'item': get_item_form(request.site)
     }
     instance = None
-    form_class = form_dict['object_type']
+    form_class = form_dict[object_type]
     if object_id is not None:
         instance = get_object_or_404(model, id=object_id)
     if instance and instance.site != request.site:

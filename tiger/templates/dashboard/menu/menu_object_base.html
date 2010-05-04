@@ -12,7 +12,9 @@ input.error {background-color:pink;}
 
 <div>
     {% block object_section %}
+        {% if object %}
         <a href="{% url dashboard_edit_menu type,object.id %}">Edit</a>
+        {% endif %}
         {% block object_info %}
         <h2>{{ object.name }}</h2>
         <p>{{ object.description|linebreaks }}</p>
