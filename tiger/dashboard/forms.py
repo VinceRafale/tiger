@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate
 
 class AuthenticationForm(forms.Form):
-    email = forms.EmailField(max_length=30)
+    email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
 
     def __init__(self, data=None, request=None, site=None, *args, **kwargs):

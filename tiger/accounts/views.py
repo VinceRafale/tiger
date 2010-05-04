@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth import login, authenticate
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.views.generic.simple import direct_to_template
 
@@ -13,7 +14,7 @@ def signup(request):
         form = SignupForm(request.POST)
         if form.is_valid():
             instance = form.save()
-            return HttpResponseRedirect(unicode(form.site) + reverse('dashboard'))
+            return HttpResponseRedirect(unicode(form.site) + reverse('dashboard', urlconf='tiger.urls'))
     else:
         form = SignupForm()
     return direct_to_template(request, template='tiger/signup.html', extra_context={

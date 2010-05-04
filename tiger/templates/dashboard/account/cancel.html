@@ -12,10 +12,12 @@
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
     $("a.delete").live("click", function () {
         h3Text = $(this).parent().hasClass("section-controls") ? "section" : "item";
         c = confirm("Are you sure you want to delete this " + h3Text + "? This action cannot be undone.");
         if (!c)
             return false;
     });
+</script>
 {% endblock %}

@@ -104,7 +104,6 @@
         var keystrokes = 0, domain = '';
         function checkAvailable () {
             keystrokes--;
-            console.log(keystrokes);
             if (keystrokes == 0) {
 		if (domain) {
 		    $.post("{% url domain_check %}", $.param({subdomain: domain}), function (data) {
