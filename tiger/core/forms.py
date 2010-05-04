@@ -314,3 +314,15 @@ class AuthNetForm(forms.Form):
             msg = 'We were unable to process your transaction. Please verify that your payment information is correct.' 
             raise forms.ValidationError(msg)
         return cleaned_data
+
+
+class VariantForm(forms.ModelForm):
+    class Meta:
+        model = Variant
+        exclude = ('section', 'item',)
+
+
+class UpgradeForm(forms.ModelForm):
+    class Meta:
+        model = Upgrade
+        exclude = ('section', 'item',)

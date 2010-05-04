@@ -1,8 +1,12 @@
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db.models import get_model
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
+from django.template.loader import render_to_string
 from django.views.generic.simple import direct_to_template
 
 from tiger.core.forms import *
@@ -24,132 +28,140 @@ def section_list(request):
     })
 
 @login_required
-def add_edit_section(request, section_id=None):
+def view_menu(request, object_type, object_id):
+    model = get_model('core', object_type)
+    site = request.site
+    instance = get_object_or_404(model, id=object_id)
+    if instance.site != site:
+        raise Http404()
+    return direct_to_template(request, template='dashboard/menu/%s_form_base.html' % object_type, 
+        extra_context={'object': instance, 'type': object_type})
+
+@login_required
+def add_edit_menu(request, object_type, object_id):
+    model = get_model('core', object_type)
+    form_dict = {
+        'section': SectionForm,
+        'item': get_item_form(request.site)
+    }
     instance = None
-    if section_id is not None:
-        instance = get_object_or_404(Section, id=section_id)
+    form_class = form_dict['object_type']
+    if object_id is not None:
+        instance = get_object_or_404(model, id=object_id)
     if instance and instance.site != request.site:
         raise Http404()
     if request.method == 'POST':
-        form = SectionForm(request.POST, instance=instance)
+        form = form_class(request.POST, instance=instance)
         if form.is_valid():
-            section = form.save(commit=False)
-            section.site = request.site
-            section.save()
-            return HttpResponseRedirect(reverse('dashboard_view_section', args=[section.id]))
+            obj = form.save(commit=False)
+            obj.site = request.site
+            obj.save()
+            return HttpResponseRedirect(reverse('dashboard_view_menu', args=[object_type, obj.id]))
     else:
-        form = SectionForm(instance=instance)
-    return direct_to_template(request, template='dashboard/menu/section_form.html', extra_context={
+        form_kwds = {}
+        if all([instance is None, request.GET.get('pk'), model == Item]):
+            form_kwds['initial'] = {'section': request.GET['pk']}
+        form = form_class(instance=instance, **form_kwds)
+    return direct_to_template(request, template='dashboard/menu/%s_form.html' % object_type, extra_context={
         'form': form,
-        'section': instance
+        object_type: instance,
+        'type': object_type
     })
 
-def edit_section_pricepoints(request, section_id):
-    instance = get_object_or_404(Section, id=section_id)
-    if instance.site != request.site:
-        raise Http404()
-    VariantFormSet = inlineformset_factory(Section, Variant, formset=RequireOneFormSet, extra=1)
-    if request.method == 'POST':
-        variant_formset = VariantFormSet(request.POST, instance=instance)
-        if variant_formset.is_valid():
-            variant_formset.save()
-            return HttpResponseRedirect(reverse('dashboard_view_section', args=[instance.id]))
+def add_related(request, object_type, object_id, form_class):
+    if not request.is_ajax() or request.method != 'POST':
+        raise Http404
+    model = get_model('core', object_type)
+    instance = get_object_or_404(model, id=object_id)
+    form = form_class(request.POST)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        setattr(obj, object_type, instance)
+        obj.save()
+        row = render_to_string('dashboard/menu/includes/%s_row.html' % obj.__class__.__name__.lower(), {
+            'price': obj    
+        })
+        result = {
+            'new_row': row
+        }
     else:
-        variant_formset = VariantFormSet(instance=instance)
-    return direct_to_template(request, template='dashboard/menu/section_pricepoints.html', extra_context={
-        'formset': variant_formset,
-        'section': instance
-    })
+        result = {'errors': form._errors}
+    return HttpResponse(json.dumps(result))
 
-def edit_section_sides(request, section_id):
+def add_pricepoint(request, object_type, object_id):
+    return add_related(request, object_type, object_id, VariantForm)
+
+def add_extra(request, object_type, object_id):
+    return add_related(request, object_type, object_id, UpgradeForm)
+
+def add_sidegroup(request, object_type, object_id):
     pass
 
-def edit_section_extras(request, section_id):
-    instance = get_object_or_404(Section, id=section_id)
-    if instance.site != request.site:
-        raise Http404()
-    UpgradeFormSet = inlineformset_factory(Section, Upgrade, extra=1)
-    if request.method == 'POST':
-        upgrade_formset = UpgradeFormSet(request.POST, instance=instance)
-        if upgrade_formset.is_valid():
-            upgrade_formset.save()
-            return HttpResponseRedirect(reverse('dashboard_view_section', args=[instance.id]))
+def add_side(request, object_type, object_id):
+    pass
+
+def edit_pricepoint(request, item_id):
+    variant = Variant.objects.get(id=item_id)
+    if request.method == 'GET':
+        return HttpResponse(json.dumps({
+            'description': variant.description,
+            'price': str(variant.price)
+        }))
+    form = VariantForm(request.POST, instance=variant)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        setattr(obj, object_type, instance)
+        obj.save()
+        row = render_to_string('dashboard/menu/includes/variant_row.html', {
+            'price': obj    
+        })
+        result = {
+            'new_row': row
+        }
     else:
-        upgrade_formset = UpgradeFormSet(instance=instance)
-    return direct_to_template(request, template='dashboard/menu/section_extras.html', extra_context={
-        'formset': upgrade_formset,
-        'section': instance
-    })
+        result = {'errors': form._errors}
+    return HttpResponse(json.dumps(result))
+
+def edit_sidegroup(request, item_id):
+    pass
+
+def edit_side(request, item_id):
+    pass
+
+def edit_extra(request, section_id):
+    return edit_related_extras(request, section_id, Section, 'section')
+
+def delete_object(model, object_id):
+    try:
+        variant = Variant.objects.get(id=object_id)
+        variant.delete()
+    except:
+        deleted = False
+    else:
+        deleted = True
+    return HttpResponse(json.dumps({'deleted': deleted}))
+
+def delete_pricepoint(request, object_id):
+    return delete_object(Variant, object_id)
+
+def delete_extra(request, object_id):
+    return delete_object(Upgrade, object_id)
+
+def delete_sidegroup(request, object_id):
+    return delete_object(SideDishGroup, object_id)
+
+def delete_side(request, object_id):
+    return delete_object(SideDish, object_id)
 
 @login_required
 def delete_section(request, section_id):
     return delete_site_object(request, Section, section_id, 'dashboard_menu')
 
 @login_required
-def view_section(request, section_id):
-    site = request.site
-    instance = get_object_or_404(Section, id=section_id)
-    if instance.site != site:
-        raise Http404()
-    return direct_to_template(request, template='dashboard/menu/section_form_base.html', 
-        extra_context={'section': instance})
-
-@login_required
 def reorder_sections(request):
     section_ids = request.POST.getlist('section_ids')
     _reorder_objects(Section, section_ids)
     return HttpResponse('')
-
-@login_required
-def add_edit_item(request, item_id=None):
-    instance = None
-    site = request.site
-    if site.account.user != request.user:
-        raise Http404()
-    if item_id is not None:
-        instance = Item.objects.get(id=item_id)
-        if instance.site != site:
-            raise Http404()
-    ItemForm = get_item_form(site)
-    VariantFormSet = inlineformset_factory(Item, Variant, formset=RequireOneFormSet, extra=1)
-    UpgradeFormSet = inlineformset_factory(Item, Upgrade, extra=1)
-    if request.method == 'POST':
-        form = ItemForm(request.POST, instance=instance)
-        variant_formset = VariantFormSet(request.POST, instance=instance, prefix='variants')
-        upgrade_formset = UpgradeFormSet(request.POST, instance=instance, prefix='upgrades')
-        if all([form.is_valid(), variant_formset.is_valid(), upgrade_formset.is_valid()]):
-            item = form.save(commit=False)
-            item.site = site
-            item.save()
-            if instance is not None:
-                variant_formset.save()
-                upgrade_formset.save()
-            else:
-                for form in variant_formset.forms:
-                    if form.has_changed():
-                        variant = form.save(commit=False)
-                        variant.item = item
-                        variant.save()
-                for form in upgrade_formset.forms:
-                    if form.has_changed():
-                        upgrade = form.save(commit=False)
-                        upgrade.item = item
-                        upgrade.save()
-            return HttpResponseRedirect(reverse('dashboard_menu'))
-    else:
-        form_kwds = {}
-        variant_formset = VariantFormSet(instance=instance, prefix='variants')
-        upgrade_formset = UpgradeFormSet(instance=instance, prefix='upgrades')
-        if instance is None:
-            if request.GET.get('pk'):
-                form_kwds['initial'] = {'section': request.GET['pk']}
-            variant_formset.forms[0].fields['description'].initial = 'default'
-        else:
-            form_kwds['instance'] = instance 
-        form = ItemForm(**form_kwds)
-    return direct_to_template(request, template='dashboard/menu/item_form.html', extra_context={
-        'form': form, 'variant_formset': variant_formset, 'upgrade_formset': upgrade_formset
-    })
 
 @login_required
 def delete_item(request, item_id):

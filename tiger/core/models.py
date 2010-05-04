@@ -61,7 +61,7 @@ class Section(models.Model):
     def has_specials(self):
         return any(item.special for item in self.item_set.all())
 
-    def prices(self):
+    def price_list(self):
         return get_price_list(self)
 
 
