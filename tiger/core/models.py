@@ -166,14 +166,12 @@ class Upgrade(models.Model):
         verbose_name_plural = 'upgrades/substitutions'
 
     def __unicode__(self):
-        s = '%s %s for $<span>%.02f</span> more' % (
-            'Substitute' if self.substitute else 'Add', 
-            self.name, self.price)
+        s = 'Add %s for $<span>%.02f</span> more' % (self.name, float(self.price))
         return mark_safe(s)
 
     def save(self, *args, **kwargs):
-        self.price = '%.2f' % self.price
-        super(Variant, self).save(*args, **kwargs)
+        self.price = '%.02f' % self.price
+        super(Upgrade, self).save(*args, **kwargs)
 
 
 class SideDishGroup(models.Model):
@@ -197,7 +195,7 @@ class SideDish(models.Model):
     price = models.DecimalField('Additional cost', max_digits=5, decimal_places=2, null=True)
 
     def __unicode__(self):
-        if self.price:
+        if self.price > 0:
             return mark_safe('%s (add $<span>%.02f</span>)' % (self.name, self.price))
         return self.name
 
@@ -389,9 +387,33 @@ def new_site_setup(sender, instance, created, **kwargs):
         if isinstance(instance, Site):
             OrderSettings.objects.create(site=instance)
 
+def create_defaults(sender, instance, created, **kwargs):
+    if created:
+        section = instance.section
+        for variant in section.variant_set.all():
+            Variant.objects.create(
+                item=instance, 
+                price=variant.price, 
+                description=variant.description
+            )
+        for upgrade in section.upgrade_set.all():
+            Upgrade.objects.create(
+                item=instance, 
+                price=upgrade.price, 
+                name=upgrade.name
+            )
+        for sidedishgroup in section.sidedishgroup_set.all():
+            new_group = SideDishGroup.objects.create(item=instance)
+            for dish in sidedishgroup.sidedish_set.all():
+                SideDish.objects.create(
+                    group=new_group,
+                    name=dish.name,
+                    price=dish.price
+                )
+
 
 payment_was_successful.connect(register_paypal_payment)
 post_save.connect(new_site_setup)
 post_save.connect(item_social_handler, sender=Item)
 post_save.connect(pdf_caching_handler, sender=Item)
-post_save.connect(coupon_social_handler, sender=Coupon)
+post_save.connect(create_defaults, sender=Item)

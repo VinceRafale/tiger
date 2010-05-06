@@ -22,7 +22,7 @@ input.error {background-color:pink;}
     {% endblock %}
 </div>
 
-<div id="price-points">
+<div>
     {% block pricepoints %}
         <h3>Price points</h3>
         <ul>
@@ -32,33 +32,34 @@ input.error {background-color:pink;}
             <li class="empty">You have not defined any price points for this {{ type }}.</li>
             {% endfor %}
         </ul>
-        <a class="add" href="#" rel="{% url add_pricepoint type,object.id %}">Add</a>
+        <a id="price-points" class="add" href="#" rel="{% url add_pricepoint type,object.id %}">Add</a>
     {% endblock %}
 </div>
 
 <div>
     {% block sides %}
         <h3>Side dish choices</h3>
-        <ul>
+        <ul class="group-wrap">
             {% for group in object.sidedishgroup_set.all %}
-            <li>{{ group }} (<a href="{% url add_side group.id %}">Add choice</a> / <a href="{% url delete_sidegroup group.id %}">Delete</a>)
+            <li>
                 <ul>
-                    {% for side in group.sidedish_set.all %}
-                    <li>{{ side }} (<a href="{% url edit_side side.id %}">Edit</a> / <a href="{% url side side.id %}">Delete</a>)</li>
+                    {% for obj in group.sidedish_set.all %}
+                    {% include 'dashboard/menu/includes/side_row.html' %}
                     {% empty %}
                     <li class="empty">No choices defined.</li>
                     {% endfor %}
                 </ul>
+                {% include 'dashboard/menu/includes/group_row.html' %}
             </li>
             {% empty %}
             <li class="empty">You have not defined any side dish choices for this {{ type }}.</li>
             {% endfor %}
         </ul>
-        <a href="{% url add_sidegroup type,object.id %}">Add</a>
+        <a id="side-groups" href="#" rel="{% url add_sidegroup type,object.id %}">Add</a>
     {% endblock %}
 </div>
 
-<div id="extras">
+<div>
     {% block extras %}
         <h3>Extras</h3>
         <ul>
@@ -68,7 +69,7 @@ input.error {background-color:pink;}
             <li class="empty">You have not defined any extras for this {{ type }}.</li>
             {% endfor %}
         </ul>
-        <a class="add" href="#" rel="{% url add_extra type,object.id %}">Add</a>
+        <a id="extras" class="add" href="#" rel="{% url add_extra type,object.id %}">Add</a>
     {% endblock %}
 </div>
 
@@ -81,22 +82,26 @@ input.error {background-color:pink;}
 // provides lists of names for form inputs
 var formSnippets = {
     'price-points': ["description", "price"],
-    'extras': ["name", "price"]
+    'extras': ["name", "price"],
+    'side-groups': ["name", "price"],
+    'sides': ["name", "price"],
 };
 
 function getForm(addAnchor) {
-    if (arguments.length == 2) {
+    initial = {};
+    action = $(addAnchor).attr("rel");
+    if (arguments.length > 1) {
         initial = arguments[1];
-    } else {
-        initial = {};
+        action = arguments[2];
     }
-    inputs = formSnippets[$(addAnchor).closest("div").attr("id")];
+    fieldKey = $(addAnchor).attr("id") || 'sides';
+    inputs = formSnippets[fieldKey];
     fakeForm = '<li class="form">';
     $.each(inputs, function () {
         titleCase = this[0].toUpperCase() + this.slice(1);
         fakeForm += '<label for="' + this + '">' + titleCase + ' <input type="text" id="id_' + this + '" name="' + this + '" value="' + (initial[this] || '') + '" /></label>';
     });
-    fakeForm += '<a class="inline-save" href="#" rel="' + $(addAnchor).attr("rel") + '">Save</a> <a class="inline-cancel" href="#">Cancel</a></li>';
+    fakeForm += '<a class="inline-save" href="#" rel="' + action + '">Save</a> <a class="inline-cancel" href="#">Cancel</a></li>';
     return fakeForm;
 }
 
@@ -105,24 +110,38 @@ $(function () {
         $("form").submit();
     });
 
-    $("#price-points a.add").click(function () {
-        if (!$("#price-points li.form").length) {
-            $("#price-points ul").append($(getForm(this)));
+    $("#price-points").click(function () {
+        listTag = $(this).prev();
+        if (!$(listTag).find("li.form").length) {
+            $(listTag).append($(getForm(this)));
         } else {
-            $("#price-points input:first").focus();
+            $(listTag).find("input:first").focus();
         }
         return false;
     });
 
-    $("#extras a.add").click(function () {
-        if (!$("#extras li.form").length) {
-            $("#extras ul").append($(getForm(this)));
+    $("#extras").click(function () {
+        listTag = $(this).prev();
+        if (!$(listTag).find("li.form").length) {
+            $(listTag).append($(getForm(this)));
         } else {
-            $("#extras input:first").focus();
+            $(listTag).find("input:first").focus();
         }
         return false;
     });
 
+    $("#side-groups").click(function () {
+        trgt = this;
+        $.post($(this).attr("rel"), {}, function (data) {
+            if (data['success']) {
+                markup = $('<li><ul>' + getForm(trgt) + '</ul>' + data['row'] + '</li>');
+                console.log(markup);
+                $("ul.group-wrap").append(markup); 
+                $("ul.group-wrap > li.empty").remove();
+            }
+        }, "json");
+        return false;
+    });
 
     $("a.inline-cancel").live("click", function () {
         $(this).parent().slideUp("fast", function () { $(this).remove(); });
@@ -130,7 +149,6 @@ $(function () {
     });
 
     $("a.inline-save").live("click", function () {
-        divId = $(this).closest("div").attr("id");
         trgt = this;
         action = $(trgt).attr("rel");
         params = $(this).parent().find(":input").serialize();
@@ -150,7 +168,7 @@ $(function () {
                 });
             } else {
                 $(trgt).parent().replaceWith(data['new_row']);
-                $("#" + divId + " li.empty").remove();
+                $(trgt).closest("ul").find("li.empty").remove();
             }
         }, "json");
         return false;
@@ -160,7 +178,7 @@ $(function () {
         trgt = this;
         addAnchor = $(this).closest("div").find("a.add");
         $.get($(this).attr("rel"), {}, function (data) {
-            $(trgt).parent().replaceWith(getForm(addAnchor, data));
+            $(trgt).parent().replaceWith(getForm(addAnchor, data, $(trgt).attr("rel")));
         }, "json");
         return false;
     });
@@ -172,12 +190,22 @@ $(function () {
             action = $(this).attr("rel");
             $.post(action, $.param({delete: true}), function (data) {
                 if (data['deleted']) {
-                    $(trgt).slideUp("fast", function () { $(this).parent().remove(); });    
+                    $(trgt).parent().remove();
                 } else {
                     $(trgt).insertAfter('<span class="fail">An error occurred.</span>');
                     $("span.fail").delay(1500).fadeOut("fast", function () { $(this).remove(); });
                 }
             }, "json");
+        }
+        return false;
+    });
+
+    $("ul.group-wrap a.add").live("click", function () {
+        nestedList = $(this).prev();
+        if (!$(nestedList).find("li.form").length) {
+            $(nestedList).append($(getForm(this)));
+        } else {
+            $(nestedList).find("input:first").focus();
         }
         return false;
     });

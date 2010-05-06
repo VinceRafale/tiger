@@ -64,7 +64,7 @@ def add_edit_menu(request, object_type, object_id=None):
         form = form_class(instance=instance, **form_kwds)
     return direct_to_template(request, template='dashboard/menu/%s_form.html' % object_type, extra_context={
         'form': form,
-        object_type: instance,
+        'object': instance,
         'type': object_type
     })
 
@@ -79,7 +79,7 @@ def add_related(request, object_type, object_id, form_class):
         setattr(obj, object_type, instance)
         obj.save()
         row = render_to_string('dashboard/menu/includes/%s_row.html' % obj.__class__.__name__.lower(), {
-            'price': obj    
+            'obj': obj    
         })
         result = {
             'new_row': row
@@ -95,25 +95,34 @@ def add_extra(request, object_type, object_id):
     return add_related(request, object_type, object_id, UpgradeForm)
 
 def add_sidegroup(request, object_type, object_id):
-    pass
+    if not request.is_ajax() or request.method != 'POST':
+        raise Http404
+    result = {}
+    try:
+        model = get_model('core', object_type)
+        instance = get_object_or_404(model, id=object_id)
+        group = SideDishGroup()
+        setattr(group, object_type, instance)
+        group.save()
+        result['success'] = True
+        result['row'] = render_to_string('dashboard/menu/includes/group_row.html', {
+            'group': group
+        })
+    except:
+        result['success'] = False
+    return HttpResponse(json.dumps(result))
 
-def add_side(request, object_type, object_id):
-    pass
-
-def edit_pricepoint(request, item_id):
-    variant = Variant.objects.get(id=item_id)
-    if request.method == 'GET':
-        return HttpResponse(json.dumps({
-            'description': variant.description,
-            'price': str(variant.price)
-        }))
-    form = VariantForm(request.POST, instance=variant)
+def add_side(request, object_id, instance=None):
+    if not request.is_ajax() or request.method != 'POST':
+        raise Http404
+    instance = get_object_or_404(SideDishGroup, id=object_id)
+    form = SideDishForm(request.POST, instance=instance)
     if form.is_valid():
         obj = form.save(commit=False)
-        setattr(obj, object_type, instance)
+        obj.group = instance
         obj.save()
-        row = render_to_string('dashboard/menu/includes/variant_row.html', {
-            'price': obj    
+        row = render_to_string('dashboard/menu/includes/side_row.html', {
+            'side': obj    
         })
         result = {
             'new_row': row
@@ -122,19 +131,39 @@ def edit_pricepoint(request, item_id):
         result = {'errors': form._errors}
     return HttpResponse(json.dumps(result))
 
-def edit_sidegroup(request, item_id):
-    pass
+def edit_related(request, item_id, model, form_class, attr_list, object_type):
+    instance = model.objects.get(id=item_id)
+    if request.method == 'GET':
+        return HttpResponse(json.dumps(dict(
+            (attr, str(getattr(instance, attr, '')))
+            for attr in attr_list
+        )))
+    form = form_class(request.POST, instance=instance)
+    if form.is_valid():
+        obj = form.save()
+        row = render_to_string('dashboard/menu/includes/%s_row.html' % object_type, {
+            'obj': obj    
+        })
+        result = {
+            'new_row': row
+        }
+    else:
+        result = {'errors': form._errors}
+    return HttpResponse(json.dumps(result))
+
+def edit_pricepoint(request, item_id):
+    return edit_related(request, item_id, Variant, VariantForm, ('description', 'price',), 'variant')
 
 def edit_side(request, item_id):
-    pass
+    return edit_related(request, item_id, SideDish, SideDishForm, ('name', 'price',), 'side')
 
-def edit_extra(request, section_id):
-    return edit_related_extras(request, section_id, Section, 'section')
+def edit_extra(request, item_id):
+    return edit_related(request, item_id, Upgrade, UpgradeForm, ('name', 'price',), 'upgrade')
 
 def delete_object(model, object_id):
     try:
-        variant = Variant.objects.get(id=object_id)
-        variant.delete()
+        obj = model.objects.get(id=object_id)
+        obj.delete()
     except:
         deleted = False
     else:

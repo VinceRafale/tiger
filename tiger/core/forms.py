@@ -326,3 +326,9 @@ class UpgradeForm(forms.ModelForm):
     class Meta:
         model = Upgrade
         exclude = ('section', 'item',)
+
+
+class SideDishForm(forms.ModelForm):
+    class Meta:
+        model = SideDish
+        exclude = ('group',)
