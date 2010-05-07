@@ -116,13 +116,13 @@ def add_side(request, object_id, instance=None):
     if not request.is_ajax() or request.method != 'POST':
         raise Http404
     instance = get_object_or_404(SideDishGroup, id=object_id)
-    form = SideDishForm(request.POST, instance=instance)
+    form = SideDishForm(request.POST)
     if form.is_valid():
         obj = form.save(commit=False)
         obj.group = instance
         obj.save()
         row = render_to_string('dashboard/menu/includes/side_row.html', {
-            'side': obj    
+            'obj': obj    
         })
         result = {
             'new_row': row
@@ -134,10 +134,11 @@ def add_side(request, object_id, instance=None):
 def edit_related(request, item_id, model, form_class, attr_list, object_type):
     instance = model.objects.get(id=item_id)
     if request.method == 'GET':
-        return HttpResponse(json.dumps(dict(
-            (attr, str(getattr(instance, attr, '')))
-            for attr in attr_list
-        )))
+        initial = {}
+        for attr in attr_list:
+            val = getattr(instance, attr, '')
+            initial[attr] = str(val) if val else ''
+        return HttpResponse(json.dumps(initial))
     form = form_class(request.POST, instance=instance)
     if form.is_valid():
         obj = form.save()

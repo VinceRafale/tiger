@@ -192,7 +192,7 @@ class SideDishGroup(models.Model):
 class SideDish(models.Model):
     group = models.ForeignKey(SideDishGroup)
     name = models.CharField(max_length=100)
-    price = models.DecimalField('Additional cost', max_digits=5, decimal_places=2, null=True)
+    price = models.DecimalField('Additional cost', max_digits=5, decimal_places=2, null=True, blank=True)
 
     def __unicode__(self):
         if self.price > 0:

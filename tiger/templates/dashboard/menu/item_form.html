@@ -1,19 +1,10 @@
-{% extends 'dashboard/restaurant/home.html' %}
+{% extends 'dashboard/menu/item_form_base.html' %}
 
-{% block body-class %}{{ block.super }}menu{% endblock %}
-
-{% block extrahead %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.formset.js"></script>
-{% endblock %}
-
-{% block content %}
-<h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} menu item</h1>
+{% block object_info %}
 {% if form.non_field_errors %}
 {{ form.non_field_errors }}
 {% endif %}
 <form method="POST" action=".">
-<div class="grid_6 alpha">
-<p class="help">Enter the menu text for this item below and flag it as a special if appropriate. On the right, you can define the price points and sizes for this menu item and any available upgrades or substitutions.  If there is only one price point for this item, just leave the description as "default".</p>
 {% if form.name.errors %}
 {{ form.name.errors }}
 {% endif %}
@@ -50,7 +41,6 @@
 <label>Choose an image for this item (optional):<br />
 {{ form.image }}
 </label>
-</div>
 <div class="clear"></div>
 <a class="buttonTop last" href="{% url dashboard_menu %}">Cancel</a>
 <a class="buttonTop submit" href="#">Save</a>
@@ -72,36 +62,4 @@
 {% if object %}
 {{ block.super }}
 {% endif %}
-{% endblock %}
-
-{% block js %}
-<script type="text/javascript">
-$(function () {
-    $("a.submit").click(function () {
-        $("form").submit();
-    });
-    $('#variantForms div').formset({
-        prefix: '{{ variant_formset.prefix }}',
-        formCssClass: 'variant-formset',
-        placeAddButton: function (snippet) {
-            $("h4.variants").before(snippet);
-            return $("h4.variants").prev();
-        },
-        placeDeleteButton: function (formrow, buttonHtml) {
-            $(formrow).prepend(buttonHtml);
-        }
-    });
-    $('#upgradeForms div').formset({
-        prefix: '{{ upgrade_formset.prefix }}',
-        formCssClass: 'upgrade-formset',
-        placeAddButton: function (snippet) {
-            $("h4.upgrades").before(snippet);
-            return $("h4.upgrades").prev();
-        },
-        placeDeleteButton: function (formrow, buttonHtml) {
-            $(formrow).prepend(buttonHtml);
-        }
-    });
-});
-</script>
 {% endblock %}

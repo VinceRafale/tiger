@@ -96,7 +96,7 @@ function getForm(addAnchor) {
     }
     fieldKey = $(addAnchor).attr("id") || 'sides';
     inputs = formSnippets[fieldKey];
-    fakeForm = '<li class="form">';
+    fakeForm = '<li class="form' + ((arguments[1]) ? ' populated' : '') + '">';
     $.each(inputs, function () {
         titleCase = this[0].toUpperCase() + this.slice(1);
         fakeForm += '<label for="' + this + '">' + titleCase + ' <input type="text" id="id_' + this + '" name="' + this + '" value="' + (initial[this] || '') + '" /></label>';
@@ -135,7 +135,6 @@ $(function () {
         $.post($(this).attr("rel"), {}, function (data) {
             if (data['success']) {
                 markup = $('<li><ul>' + getForm(trgt) + '</ul>' + data['row'] + '</li>');
-                console.log(markup);
                 $("ul.group-wrap").append(markup); 
                 $("ul.group-wrap > li.empty").remove();
             }
@@ -144,7 +143,11 @@ $(function () {
     });
 
     $("a.inline-cancel").live("click", function () {
+        if ($(this).parent().hasClass("populated")) {
+            $(this).parent().prev().show();
+        }
         $(this).parent().slideUp("fast", function () { $(this).remove(); });
+            
         return false;
     });
 
@@ -152,6 +155,7 @@ $(function () {
         trgt = this;
         action = $(trgt).attr("rel");
         params = $(this).parent().find(":input").serialize();
+        selector = '[rel="' + action + '"]';
         $.post(action, params, function (data) {
             errors = data['errors'];
             if (errors) {
@@ -168,7 +172,7 @@ $(function () {
                 });
             } else {
                 $(trgt).parent().replaceWith(data['new_row']);
-                $(trgt).closest("ul").find("li.empty").remove();
+                $(selector).prev().find("li.empty").remove();
             }
         }, "json");
         return false;
@@ -178,7 +182,8 @@ $(function () {
         trgt = this;
         addAnchor = $(this).closest("div").find("a.add");
         $.get($(this).attr("rel"), {}, function (data) {
-            $(trgt).parent().replaceWith(getForm(addAnchor, data, $(trgt).attr("rel")));
+            $(trgt).parent().after(getForm(addAnchor, data, $(trgt).attr("rel")));
+            $(trgt).parent().hide();
         }, "json");
         return false;
     });
@@ -190,9 +195,13 @@ $(function () {
             action = $(this).attr("rel");
             $.post(action, $.param({delete: true}), function (data) {
                 if (data['deleted']) {
-                    $(trgt).parent().remove();
+                    selector = '[rel="' + action + '"]';
+                    if (!$(selector).parent().parent().find('li.empty').length) {
+                        $(selector).parent().after('<li class="empty">No ' + $(trgt).closest("div").find("h3").text().toLowerCase() + ' defined.</li>');
+                    }
+                    $(selector).parent().remove();
                 } else {
-                    $(trgt).insertAfter('<span class="fail">An error occurred.</span>');
+                    $(selector).insertAfter('<span class="fail">An error occurred.</span>');
                     $("span.fail").delay(1500).fadeOut("fast", function () { $(this).remove(); });
                 }
             }, "json");
