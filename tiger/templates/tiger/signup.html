@@ -43,13 +43,21 @@
 					<label>Password again (for verification):<br /><span>{{ form.password2 }}</span></label>
 				</fieldset>
 			</div>
-			<div class="thanks grid_4 push_1">
-			    <img src="{{ MEDIA_URL }}img/img_thank-you.png" alt="Img Thank You">
-			    <p>Thanks for choosing Takeout Tiger. Please fill out the form on the left to set up your online store.</p>
-			</div>    
+			<div id="price" class="grid_4 push_1">
+			    <p>$75/month 30-day free trial</p>
+			    <ul><li>A customizable website for your restaurant</li>
+                <li>Our online ordering system</li>
+                <li>Social media integration (Facebook and Twitter)</li>
+                <li>Automatic PDF menus </li></ul>
+			</div>
+            <p class="passwords grid_4">
+			    <span class="matches" style="display:none;">It matches!</span>
+			    <span class="no-match" style="display:none;">Does not match!</span>                
+            </p>    
 			<div class="grid_8">	
 				<fieldset class="domain">
 					<legend id="two">Choose your Takeout Tiger domain</legend>
+					<p>You can set up a custom domain of your choosing later (e.g. "www.mikesdiner.com"), but this is the URL where you will access your dashboard.</p>
                     {% if form.subdomain.errors %}
                     {{ form.subdomain.errors }}
                     {% endif %}
@@ -130,8 +138,19 @@
                     $("span.looking").show();
                     $("span.yes,span.no").hide();
                 } else {
-		    keystrokes--;
-		}		
+                    keystrokes--;
+                }		
+            });
+            $("#id_password2").blur(function () {
+                pw1 = $("#id_password1").val();
+                pw2 = $("#id_password2").val();
+                if (pw1 == pw2) {
+                    $("span.matches").show(); 
+                    $("span.no-match").hide(); 
+                } else {
+                    $("span.no-match").css("display", "block"); 
+                    $("span.matches").hide(); 
+                }
             });
 		});
 	</script>
