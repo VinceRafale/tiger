@@ -147,6 +147,41 @@ body.cancel a.cancel
     background-color: rgba(199, 98, 24, .8) !important;
 }
 
+/* help text */
+p.help {font-size:12px;}
+
+/*******************
+*  Publish screen  *
+*******************/
+
+#id_title {width:620px; height:62px;}
+span.counter {
+    font-family: serif; 
+    font-style: italic; 
+    font-weight: bold;
+    font-size:40px;
+    padding-left: 20px;
+}
+#copy-coupon, #copy-coupon input {
+    font-size:13px;
+}
+textarea.markItUpEditor {
+    width: 355px;
+}
+div.markItUpContainer {
+    width: 365px;
+    float: left;
+}
+#editorPreview h1 {
+    font-size:1.1em;
+}
+#editorPreview h2, #editorPreview h3 {
+    font-size:0.9em;
+}
+#editorPreview p, #editorPreview pli {
+    font-size:0.7em;
+}
+
 /********************
 * Site pages *
 ********************/

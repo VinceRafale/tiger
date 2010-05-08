@@ -70,7 +70,7 @@ class Release(models.Model):
     slug = models.SlugField(editable=False)
     body = models.TextField(blank=True)
     body_html = models.TextField(blank=True, editable=False)
-    pdf = models.ForeignKey(PdfMenu, null=True, blank=True)
+    pdf = models.ForeignKey(PdfMenu, verbose_name='Select one of your PDF menus', null=True, blank=True)
     coupon = models.ForeignKey('core.Coupon', null=True, blank=True)
     time_sent = models.DateTimeField(editable=False)
 

@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from django.conf import settings
@@ -119,3 +120,11 @@ def edit_mailchimp_settings(request):
     form.save()
     messages.success(request, 'MailChimp settings saved successfully.')
     return HttpResponseRedirect(reverse('dashboard_marketing'))
+
+def fetch_coupon(request):
+    coupon_id = request.GET.get('coupon')
+    coupon = Coupon.objects.get(id=coupon_id)
+    return HttpResponse(json.dumps({
+        'boilerplate': coupon.boilerplate(),
+        'short_url': unicode(request.site) + reverse('coupon_short_code', kwargs={'item_id': coupon_id})
+    }))

@@ -9,18 +9,28 @@
 {% block body-class %}{{ block.super }} publish{% endblock %}
 
 {% block content %}
+<p class="help">
+Use this form to publish marketing materials on your site and Twitter, Facebook, e-mail (via MailChimp), and fax simultaneously.
+</p>
 <form method="POST">
+<label>{{ form.add_coupon }} {{ form.add_coupon.label }}</label> {{ form.coupon }}
+<label>{{ form.add_pdf }} {{ form.add_pdf.label }}</label> {{ form.pdf }}
+<div class="clear"></div>
+<label>
+<h3>Title text</h3>
+<p class="help">{{ form.title.help_text }}</p>
 {% if form.title.errors %}
 {{ form.title.errors }}
 {% endif %}
-{{ form.title.label_tag }} {{ form.title }}
+{{ form.title }}<span class="counter"></span>
+</label>
 <div id="editor">
+<h3>Body text</h3>
+<p class="help">{{ form.body.help_text }}</p>
     {{ form.body }} 
     <div class="block" id="editorPreview"></div>
 </div>
 <div class="clear"></div>
-{{ form.coupon.label_tag }} {{ form.coupon }}
-{{ form.pdf.label_tag }} {{ form.pdf }}
 <input type="submit" value="Publish" />
 </form>
 {% endblock %}
@@ -28,11 +38,38 @@
 {% block js %}
 <script type="text/javascript">
 $(function () {
+    $("#id_pdf,#id_coupon").hide();
+    $("#id_add_pdf,#id_add_coupon").click(function () {
+        if ($(this).attr("checked")) {
+            $(this).parent().next(":input").show();
+        } else {
+            $(this).parent().next(":input").hide();
+        }
+    });
+    $("#id_coupon").change(function () {
+        couponId = $(this).val();
+        if (couponId) {
+            $.get("fetch-coupon/", $.param({coupon: couponId}), function (data) {
+               $("#id_title").val(data['boilerplate']); 
+               $("#id_coupon").after('<label id="copy-coupon">Link to add coupon to an order: <input readonly value="' + data['short_url'] + '" /> This will automatically be added to Twitter and Facebook updates.</label>');
+            }, "json");
+        }
+    });
     $("#id_body").keyup(function () {
         trgt = this;
         $.post("{% url dashboard_publish_preview %}", $.param({preview: $(trgt).val()}), function (data) {
-            $("#editorPreview").html(data);
+            $("#editorPreview").html("<h1>" + $("#id_title").val() + "</h1>" + data);
         }, "html");
+    });
+    $("#id_title").keyup(function () {
+        $("span.counter").text($(this).val().length);
+    });
+    $("#id_title").blur(function () {
+        if ($("#editorPreview").find("h1").length) {
+            $("#editorPreview h1").text($(this).val());
+        } else {
+            $("#editorPreview").prepend("<h1>" + $(this).val() + "</h1>");
+        }
     });
 });
 </script>
