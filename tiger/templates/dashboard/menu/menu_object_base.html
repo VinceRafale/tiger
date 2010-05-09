@@ -2,14 +2,7 @@
 
 {% block body-class %}{{ block.super }}menu{% endblock %}
 
-{% block extrahead %}
-<style>
-input.error {background-color:pink;}
-</style>
-{% endblock %}
-
 {% block content %}
-
 <div>
     {% block object_section %}
         {% if object %}
@@ -22,10 +15,17 @@ input.error {background-color:pink;}
     {% endblock %}
 </div>
 
+{% block defaults %}
+{% endblock %}
 <div>
     {% block pricepoints %}
         <h3>Price points</h3>
-        <ul>
+        {% block pricepoints-help %}
+            <p class="help">
+            All menu items must have at least one pricepoint.
+            </p>
+        {% endblock %}
+        <ul class="item-container">
             {% for obj in object.variant_set.all %}
             {% include 'dashboard/menu/includes/variant_row.html' %}
             {% empty %}
@@ -39,10 +39,15 @@ input.error {background-color:pink;}
 <div>
     {% block sides %}
         <h3>Side dish choices</h3>
+        {% block sides-help %}
+        <p class="help">
+        This is where you define choices that come in sets -- choice between baked potato or side salad, white or fried rice, etc.  You can add as many sets as you like.  If there is no additional cost associated with a choice, just leave the price field blank.
+        </p>
+        {% endblock %}
         <ul class="group-wrap">
             {% for group in object.sidedishgroup_set.all %}
             <li>
-                <ul>
+                <ul class="item-container">
                     {% for obj in group.sidedish_set.all %}
                     {% include 'dashboard/menu/includes/side_row.html' %}
                     {% empty %}
@@ -62,7 +67,12 @@ input.error {background-color:pink;}
 <div>
     {% block extras %}
         <h3>Extras</h3>
-        <ul>
+        {% block extras-help %}
+        <p class="help">
+            Extras are anything a customer can add to their order for an additional cost, like guacamole or extra cheese.
+        </p>
+        {% endblock %}
+        <ul class="item-container">
             {% for obj in object.upgrade_set.all %}
             {% include 'dashboard/menu/includes/upgrade_row.html' %}
             {% empty %}

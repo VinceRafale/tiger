@@ -1,2 +1,2 @@
-<li>{{ obj }} (<a class="edit" href="#" rel="{% url edit_extra obj.id %}">Edit</a> / <a class="delete" href="#" rel="{% url delete_extra obj.id %}">Delete</a>)</li>
+<li>{{ obj }} <span class="controls"><a class="edit" href="#" rel="{% url edit_extra obj.id %}"><img src="{{ MEDIA_URL }}img/page_white_edit.png" /></a> <a class="delete" href="#" rel="{% url delete_extra obj.id %}"><img src="{{ MEDIA_URL }}img/delete.png" /></a></span></li>
 

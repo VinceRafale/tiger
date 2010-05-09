@@ -5,3 +5,10 @@
     <h2>{{ object.name }}</h2>
     <p>{{ object.description|linebreaks }}</p>
 {% endblock %}
+
+{% block defaults %}
+<h2>Default values</h2>
+<p class="help">
+If you have a common set of prices, extras or groups of available sidedishes for this menu section, you can define defaults here that will be created automatically for ever new item in the section.  If they don't apply to 100% of the items that might be in this section, don't worry -- you can just delete unneeded prices, etc. or edit them to your liking.
+</p>
+{% endblock %}

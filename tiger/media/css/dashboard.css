@@ -150,6 +150,54 @@ body.cancel a.cancel
 /* help text */
 p.help {font-size:12px;}
 
+/*************************
+*  Item/section editing  *
+*************************/
+
+input.error {
+    background-color:pink; 
+    border-color:#930823;
+}
+ul.item-container {
+    margin-bottom:0;
+}
+ul.item-container li {
+    margin: 5px 0 0 0;
+    background-color:white;
+    border: 1px navy solid;
+    font-size:14px;
+    padding: 2px 5px;
+    -moz-border-radius:2px;
+    -webit-border-radius:2px;
+    border-radius:2px;
+}
+ul.group-wrap > li {
+    margin: 0 0 8px 0;
+    background-color:rgba(199, 98, 24, 0.8) !important;
+    padding:5px;
+    -moz-border-radius:2px;
+    -webit-border-radius:2px;
+    border-radius:2px;
+}
+ul.group-wrap ul {
+}
+ul.item-container li span.controls {
+    float:right;
+}
+li.form {
+    padding: 7px !important;
+}
+li.form label {
+    float: left;
+    margin-right:15px;
+    margin-bottom:3px;
+}
+li.form label span.msg {
+    display:block;
+    color:#930823;
+    font-weight:bold;
+}
+
 /*******************
 *  Publish screen  *
 *******************/

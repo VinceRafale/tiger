@@ -20,7 +20,7 @@ function getForm(addAnchor) {
         titleCase = this[0].toUpperCase() + this.slice(1);
         fakeForm += '<label for="' + this + '">' + titleCase + ' <input type="text" id="id_' + this + '" name="' + this + '" value="' + (initial[this] || '') + '" /></label>';
     });
-    fakeForm += '<a class="inline-save" href="#" rel="' + action + '">Save</a> <a class="inline-cancel" href="#">Cancel</a></li>';
+    fakeForm += '<a class="inline-save" href="#" rel="' + action + '">Save</a> <a class="inline-cancel" href="#">Cancel</a><div class="clear"></div></li>';
     return fakeForm;
 }
 
@@ -101,8 +101,8 @@ $(function () {
         trgt = this;
         addAnchor = $(this).closest("div").find("a.add");
         $.get($(this).attr("rel"), {}, function (data) {
-            $(trgt).parent().after(getForm(addAnchor, data, $(trgt).attr("rel")));
-            $(trgt).parent().hide();
+            $(trgt).parent().parent().after(getForm(addAnchor, data, $(trgt).attr("rel")));
+            $(trgt).parent().parent().hide();
         }, "json");
         return false;
     });
@@ -115,8 +115,8 @@ $(function () {
             $.post(action, $.param({delete: true}), function (data) {
                 if (data['deleted']) {
                     selector = '[rel="' + action + '"]';
-                    containingList = $(selector).parent().parent();
-                    $(selector).parent().remove();
+                    containingList = $(selector).parent().parent().parent();
+                    $(selector).parent().parent().remove();
                     if (!$(containingList).children().length) {
                         $(containingList).append('<li class="empty">No ' + $(containingList).closest("div").find("h3").text().toLowerCase() + ' defined.</li>');
                     }
