@@ -92,10 +92,17 @@
                     {{ form.zip.errors }}
                     {% endif %}
 					<label>{{ form.zip.label }}:<br /><span>{{ form.zip }}</span></label>
+			        <p><a href="#" class="promo">Do you have a promo code?</a></p>
+                    {% if form.promo.errors %}
+                    {{ form.promo.errors }}
+                    {% endif %}
+			        <label class="promo">Promo code:<br /><span>{{ form.promo }}</span></label>
 				</fieldset>
 			</div>
 			<div class="thanks grid_4 push_1">
-			    <p>Your card will be billed monthly</p>
+			    <span id="promo"></span>
+			    <span class="free-trial"></span>
+			    <p>You won't be billed unless you keep you keep your account open past your <span class="trial-period">30</span>-day free trial.<br /><span class="note">We need your billing information to reduce fraud and verify that you have a valid credit card should you keep your account open. This prevents any interruption in service.</span></p>
 			</div>    
 			<div class="grid_10">
 			    <input type="submit" value="">
@@ -104,32 +111,55 @@
 		</header>
 		<footer class="container_12 clearfix">
 			<div class="grid_12">
-			
+			    <ul>
+    			     <li><a href="#">Privacy Policy</a></li>
+    			     <li><a href="#">Terms of Service</a></li>
+			    </ul>
 			</div>
 		</footer>
 
 	<script type="text/javascript" charset="utf-8">
-        var keystrokes = 0, domain = '';
+        var keystrokes = 0, domain = '', couponCode = '';
         function checkAvailable () {
             keystrokes--;
             if (keystrokes == 0) {
-		if (domain) {
-		    $.post("{% url domain_check %}", $.param({subdomain: domain}), function (data) {
-		        if (!data['available']) {
-		    	    $("span.looking,span.yes").hide();
-		    	    $("span.no").css("display", "block");
-		        } else {
-		    	    $("span.looking,span.no").hide();
-		    	    $("span.yes").css("display", "block");
-		        }
-		    }, "json");
+                if (domain) {
+                    $.post("{% url domain_check %}", $.param({subdomain: domain}), function (data) {
+                        if (!data['available']) {
+                            $("span.looking,span.yes").hide();
+                            $("span.no").css("display", "block");
+                        } else {
+                            $("span.looking,span.no").hide();
+                            $("span.yes").css("display", "block");
+                        }
+                    }, "json");
                 } else {
-		    $("span.looking,span.yes").hide();
-		    $("span.no").css("display", "block");
-		}
+                    $("span.looking,span.yes").hide();
+                    $("span.no").css("display", "block");
+                }
+            }
+        }
+        function validateCoupon () {
+            keystrokes--;
+            if (keystrokes == 0) {
+                if (couponCode) {
+                    $.post("{% url validate_coupon %}", $.param({coupon: couponCode}), function (data) {
+                        if (!data['valid']) {
+                            $("#promo").fadeIn();
+                        } else {
+                            $("#promo").fadeOut();
+                        }
+                    }, "json");
+                } else {
+                    $("#promo").fadeOut();
+                }
             }
         }
 		$(function(){
+            $("span#promo").hide();
+            if (!$("label.promo").prev().hasClass("errorlist")) {
+                $("label.promo").hide();
+            }
             $("#id_subdomain").keyup(function () {
                 keystrokes++;
                 domain = $(this).val();
@@ -137,6 +167,15 @@
                     setTimeout('checkAvailable()', 1000);
                     $("span.looking").show();
                     $("span.yes,span.no").hide();
+                } else {
+                    keystrokes--;
+                }		
+            });
+            $("#id_promo").keyup(function () {
+                keystrokes++;
+                couponCode = $(this).val();
+                if (couponCode) {
+                    setTimeout('validateCoupon()', 1000);
                 } else {
                     keystrokes--;
                 }		
@@ -151,6 +190,11 @@
                     $("span.no-match").css("display", "block"); 
                     $("span.matches").hide(); 
                 }
+            });
+            $("a.promo").toggle(function() {
+                $("label.promo").slideDown();
+            }, function() {
+                $("label.promo").slideUp();
             });
 		});
 	</script>

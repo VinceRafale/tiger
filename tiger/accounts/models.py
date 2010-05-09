@@ -15,6 +15,12 @@ from tiger.look.models import Skin
 TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replace('_', ' ') for tz in pytz.country_timezones('us')])
 
 
+class SalesRep(models.Model):
+    user = models.ForeignKey(User)
+    code = models.CharField(max_length=8)
+    plan = models.CharField(max_length=12)
+
+
 class Account(models.Model):
     """Stores data for customer billing and contact.
     """
@@ -32,6 +38,7 @@ class Account(models.Model):
     subscription_id = models.CharField(max_length=200, default='')
     card_number = models.CharField('credit card number', max_length=30, null=True)
     card_type = models.CharField(max_length=50, null=True)
+    referrer = models.ForeignKey(SalesRep, null=True, editable=False)
 
     def __unicode__(self):
         return self.company_name

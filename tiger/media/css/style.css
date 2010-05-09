@@ -42,7 +42,7 @@ h3{background:#34484f;margin:30px 0 10px;padding:6px;color:#d9d4d9;font:normal 0
 
 fieldset.billing{margin-top:30px;}
 
-fieldset.domain{margin:50px 0 20px;}
+fieldset.domain{margin:90px 0 60px;}
 fieldset.domain label{overflow:auto;}
 fieldset.domain label span{margin:0 10px;width:301px;background:url(../img/sprite_forms.png)left -215px no-repeat;}
 fieldset.domain input[type=text]{width:290px;font-size:1em;padding:0 3px;}
@@ -50,13 +50,13 @@ fieldset.domain label span,fieldset.domain strong{float:left;}
 
 fieldset p{font-size:0.81em;margin-left:51px;margin-right:51px;}
 
-p.availability{margin-top:143px;}
+p.availability{margin-top:182px;}
 span.looking{width:137px;height:20px;display:block;margin-top:10px;background:url(../img/bg_domain-looking.gif)left top no-repeat;}
 span.yes,span.no{height:42px;display:block;background-image:url(../img/sprite_forms.png);background-repeat:no-repeat;}
 span.yes{width:250px;background-position:left -324px;}
 span.no{width:213px;background-position:left -378px;}
 
-p.passwords{margin-top:246px;}
+p.passwords{margin-top:166px;}
 span.matches,span.no-match{height:42px;display:block;background-image:url(../img/sprite_forms.png);background-repeat:no-repeat;}
 span.matches{width:206px;background-position:left -540px;}
 span.no-match{width:265px;background-position:left -594px;}
@@ -72,16 +72,20 @@ label.expiration input[type=text]{width:44px;}
 label.expiration span{width:56px;background:url(../img/sprite_forms.png)left -269px no-repeat;float:left;}
 label.expiration strong{float:left;margin:0 10px;}
 
-.thanks{background:#192326;padding:20px;margin-top:50px;}
-.thanks p{color:#33494f;margin:0;font-size:1em;line-height:1.3;/*text-shadow:0px 1px 0px rgba(255,255,255,0.20);*/}
+.thanks{background:#192326;padding:20px 0 0 0;margin-top:50px;position:relative;}
+.thanks p{color:#33494f;margin:0 20px;padding:15px 0;font-size:1em;line-height:1.3;color:#E0E0E0;border-top:3px solid #6C8FA0;/*text-shadow:0px 1px 0px rgba(255,255,255,0.20);*/}
 .thanks img{margin-left:-8px;margin-bottom:10px;}
+.thanks .note{font-size:0.75em;line-height:1.3;display:block;margin-top:10px;}
 
-#price{padding:20px 0 0;background:#192326;}
+#price{padding:20px 0 0;background:#192326;/*margin-top:-23px;*/}
 #price p{height:54px;margin-top:0;background:#192326 url(../img/sprite_forms.png) 20px -432px no-repeat;}
 #price ul{color:#e0e0e0;margin:0 20px 0;padding:20px 0 0 20px;list-style-image:url(../img/bullet_form-list.png);border-top:3px solid #6C8FA0;}
 #price li{margin-bottom:20px;padding-left:10px;}
 
 img.tiger{position:absolute;top:-210px;left:30px;z-index:100;}
+
+.free-trial{width:262px;height:37px;background:url(../img/sprite_forms.png) 0 -648px no-repeat;display:block;margin:0 20px 10px ;}
+#promo{width:262px;height:67px;background:url(../img/sprite_forms.png) 0 -702px no-repeat;position:absolute;top:-16px;left:14px;}
 
 .callout{height:240px;background:url(../img/bg_callout.png);margin-top:45px;padding:20px 0 0 40px;width:500px !important;}
 	.callout a.signup{display:block;width:145px;height:58px;background:url(../img/sprite_buttons.png) left top;cursor:pointer;position:absolute;top:230px;right:40px;}
@@ -92,7 +96,15 @@ img.tiger{position:absolute;top:-210px;left:30px;z-index:100;}
 
 .form-header{/*background:#6C8FA0;*/padding:20px;border:1px solid #1c2a2c;font-size:1.2em;}
 
+.billing p{margin-top:30px;}
+.billing a{font-size:1.2em;color:#6C8FA0;}
+
 footer{height:75px;}
+footer div{margin:13px 0;padding-top:15px;}
+footer ul{float:right;}
+footer ul li{float:left;margin-left:20px;}
+#signup footer div{margin:35px 0;padding-top:15px;border-top:3px solid #34484F;}
+footer a{color:#34484F;font-size:0.81em;}
 
 /* Hide text */
 h1,a.signup,legend#one,legend#two,legend#three,span.no,span.yes,span.looking,#price p,span.matches,span.no-match{text-indent:-9999px;}

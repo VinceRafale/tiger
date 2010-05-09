@@ -36,5 +36,19 @@ def domain_check(request):
     return HttpResponse(json.dumps(data))
 
 
+def validate_coupon(request):
+    if not request.is_ajax() or request.method != 'POST':
+        return Http404
+    code = request.POST.get('coupon', '')
+    data = {}
+    try:
+        rep = SalesRep.objects.get(code=code)
+    except SalesRep.DoesNotExist:
+        data['valid'] = True
+    else:
+        data['valid'] = False
+    return HttpResponse(json.dumps(data))
+
+
 def cancelled(request):
     return direct_to_template(request, template='tiger/cancelled.html')

@@ -5,7 +5,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from tiger.accounts.models import Account, Subscriber, Site, TimeSlot
+from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep
 from tiger.utils.chargify import Chargify, ChargifyError
 
 
@@ -126,6 +126,7 @@ class SignupForm(forms.ModelForm):
     cc_number = forms.CharField(label='Card number')
     month = forms.CharField()
     year = forms.CharField()
+    promo = forms.CharField(required=False)
 
     class Meta:
         model = Account
@@ -185,6 +186,15 @@ class SignupForm(forms.ModelForm):
             if self.cleaned_data['password1'] != self.cleaned_data['password2']:
                 raise forms.ValidationError("The two password fields didn't match.")
 
+    def clean_promo(self):
+        promo = self.cleaned_data.get('promo', '')
+        if promo:
+            try:
+                rep = SalesRep.objects.get(code=promo)
+            except SalesRep.DoesNotExist:
+                raise forms.ValidationError('Invalid promo code.')
+        return promo
+
     def clean(self):
         if not self._errors:
             self.process_cc()
@@ -192,11 +202,16 @@ class SignupForm(forms.ModelForm):
 
     def process_cc(self):
         cleaned_data = self.cleaned_data
+        if cleaned_data.get('promo'):
+            referrer = SalesRep.objects.get(code=cleaned_data['promo'])
+            product_handle = referrer.plan
+        else:
+            product_handle = settings.DEFAULT_PRODUCT_HANDLE
         chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
         try:
             result = chargify.subscriptions.create(data={
                 'subscription':{
-                    'product_handle': settings.DEFAULT_PRODUCT_HANDLE,
+                    'product_handle': product_handle,
                     'customer_attributes':{
                         'first_name': cleaned_data.get('first_name'),
                         'last_name': cleaned_data.get('last_name'),
@@ -216,6 +231,10 @@ class SignupForm(forms.ModelForm):
 
     def save(self):
         instance = super(SignupForm, self).save(commit=False)
+        if cleaned_data.get('promo'):
+            referrer = SalesRep.objects.get(code=cleaned_data['promo'])
+        else:
+            referrer = None
         instance.subscription_id = self.subscription['id']
         instance.customer_id = self.subscription['customer']['id']
         instance.card_type = self.subscription['credit_card']['card_type']
@@ -234,6 +253,7 @@ class SignupForm(forms.ModelForm):
         user.set_password(password)
         user.save()
         instance.user = user
+        instance.referrer = referrer
         instance.save()
         site = Site()
         site.subdomain = cleaned_data['subdomain']
