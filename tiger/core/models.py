@@ -326,7 +326,7 @@ class OrderSettings(models.Model):
 
 class Coupon(models.Model):
     site = models.ForeignKey('accounts.Site', editable=False)
-    short_code = models.CharField(max_length=20, help_text='Uppercase letters and numbers only. Leave this blank to have a randomly generated coupon code.')
+    short_code = models.CharField(max_length=20, help_text='Uppercase letters and numbers only. Leave this blank to have a randomly generated coupon code.', blank=True)
     exp_date = models.DateField('Expiration date', null=True, blank=True)
     click_count = models.IntegerField('Number of uses', editable=False, default=0)
     max_clicks = models.IntegerField('Max. allowed uses', null=True, blank=True)
