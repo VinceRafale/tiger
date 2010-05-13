@@ -7,13 +7,36 @@ from django.db import models
 class Migration(SchemaMigration):
     
     def forwards(self, orm):
-        # Adding field 'TimeSlot.section'
-        db.add_column('accounts_timeslot', 'section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Section'], null=True), keep_default=False)
+        # Adding model 'FaxList'
+        db.create_table('accounts_faxlist', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
+        ))
+        db.send_create_signal('accounts', ['FaxList'])
+
+        # Deleting field 'Subscriber.update_via'
+        db.delete_column('accounts_subscriber', 'update_via')
+
+        # Deleting field 'Subscriber.user'
+        db.delete_column('accounts_subscriber', 'user_id')
+
+        # Changing field 'Subscriber.fax'
+        db.alter_column('accounts_subscriber', 'fax', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(max_length=20))
     
     
     def backwards(self, orm):
-        # Deleting field 'TimeSlot.section'
-        db.delete_column('accounts_timeslot', 'section_id')
+        
+        # Deleting model 'FaxList'
+        db.delete_table('accounts_faxlist')
+
+        # Adding field 'Subscriber.update_via'
+        db.add_column('accounts_subscriber', 'update_via', self.gf('django.db.models.fields.IntegerField')(default=1), keep_default=False)
+
+        # Adding field 'Subscriber.user'
+        db.add_column('accounts_subscriber', 'user', self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['auth.User']), keep_default=False)
+
+        # Changing field 'Subscriber.fax'
+        db.alter_column('accounts_subscriber', 'fax', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(max_length=20, blank=True))
     
     
     models = {
@@ -35,6 +58,11 @@ class Migration(SchemaMigration):
             'subscription_id': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '200'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'zip': ('django.db.models.fields.CharField', [], {'max_length': '10'})
+        },
+        'accounts.faxlist': {
+            'Meta': {'object_name': 'FaxList'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'accounts.invoice': {
             'Meta': {'object_name': 'Invoice'},

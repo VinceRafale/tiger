@@ -182,34 +182,16 @@ class LineItem(models.Model):
         super(LineItem, self).save(*args, **kwargs)
 
 
-class FaxSubscriberManager(models.Manager):
-    def get_query_set(self):
-        return super(FaxSubscriberManager, self).get_query_set().filter(
-            send_updates=True, update_via=Subscriber.VIA_FAX)
-        
-
-class EmailSubscriberManager(models.Manager):
-    def get_query_set(self):
-        return super(EmailSubscriberManager, self).get_query_set().filter(
-            send_updates=True, update_via=Subscriber.VIA_EMAIL)
+class FaxList(models.Model):
+    name = models.CharField(max_length=100)
 
 
 class Subscriber(models.Model):
-    VIA_EMAIL = 1
-    VIA_FAX = 2
-    VIA_CHOICES = (
-        (VIA_EMAIL, 'E-mail'),
-        (VIA_FAX, 'Fax'),
-    )
-    user = models.ForeignKey(User)
     site = models.ForeignKey(Site)
-    organization = models.CharField(max_length=255, blank=True)
+    fax_list = models.ForeignKey(FaxList)
+    organization = models.CharField('Name', max_length=255, blank=True)
     send_updates = models.BooleanField(default=True)
-    update_via = models.IntegerField(default=VIA_EMAIL, choices=VIA_CHOICES)
-    fax = PhoneNumberField(blank=True)
-    objects = models.Manager()
-    via_fax = FaxSubscriberManager()
-    via_email = EmailSubscriberManager()
+    fax = PhoneNumberField()
 
     def __unicode__(self):
-        return self.organization or self.user.get_full_name()
+        return self.organization

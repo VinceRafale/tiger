@@ -1,20 +1,17 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-class Migration(SchemaMigration):
+class Migration(DataMigration):
     
     def forwards(self, orm):
-        # Adding field 'TimeSlot.section'
-        db.add_column('accounts_timeslot', 'section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Section'], null=True), keep_default=False)
-    
+        orm.FaxList.objects.create(name='default') 
     
     def backwards(self, orm):
-        # Deleting field 'TimeSlot.section'
-        db.delete_column('accounts_timeslot', 'section_id')
-    
+        "Write your backwards methods here."
+        pass
     
     models = {
         'accounts.account': {
@@ -35,6 +32,11 @@ class Migration(SchemaMigration):
             'subscription_id': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '200'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'zip': ('django.db.models.fields.CharField', [], {'max_length': '10'})
+        },
+        'accounts.faxlist': {
+            'Meta': {'object_name': 'FaxList'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'accounts.invoice': {
             'Meta': {'object_name': 'Invoice'},
@@ -82,13 +84,11 @@ class Migration(SchemaMigration):
         },
         'accounts.subscriber': {
             'Meta': {'object_name': 'Subscriber'},
-            'fax': ('django.contrib.localflavor.us.models.PhoneNumberField', [], {'max_length': '20', 'blank': 'True'}),
+            'fax': ('django.contrib.localflavor.us.models.PhoneNumberField', [], {'max_length': '20'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'organization': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'send_updates': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"}),
-            'update_via': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"})
         },
         'accounts.timeslot': {
             'Meta': {'object_name': 'TimeSlot'},
