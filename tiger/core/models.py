@@ -16,6 +16,7 @@ from tiger.content.handlers import pdf_caching_handler
 from tiger.notify.handlers import item_social_handler, coupon_social_handler
 from tiger.notify.tasks import SendFaxTask
 from tiger.utils.fields import PickledObjectField
+from tiger.utils.hours import is_available
 from tiger.utils.pdf import render_to_pdf
 
 
@@ -41,6 +42,7 @@ class Section(models.Model):
     description = models.TextField()
     slug = models.SlugField(editable=False)
     ordering = models.PositiveIntegerField(editable=False, default=1)
+    hours = models.CharField(null=True, max_length=255)
 
     class Meta:
         verbose_name = 'menu section'
@@ -63,6 +65,25 @@ class Section(models.Model):
 
     def price_list(self):
         return get_price_list(self)
+
+    @property
+    def is_available(self):
+        if self.timeslot_set.count() == 0:
+            return True
+        return is_available(
+            timeslots=self.timeslot_set.all(), 
+            timezone=self.site.timezone
+        )
+
+    def calculate_hour_string(self, commit=True):
+        """Returns a nicely formatted string representing availability based on the
+        site's associated ``TimeSlot`` objects.
+        """
+        hours = calculate_hour_string(self.timeslot_set.all())
+        if commit:
+            self.hours = hours
+            self.save()
+        return self.hours
 
 
 class ItemManager(models.Manager):

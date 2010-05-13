@@ -8,9 +8,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 import pytz
-from pytz import timezone
 
 from tiger.look.models import Skin
+from tiger.utils.hours import *
 
 TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replace('_', ' ') for tz in pytz.country_timezones('us')])
 
@@ -94,36 +94,15 @@ class Site(models.Model):
     def address(self):
         return ' '.join([self.street, self.city, self.state, self.zip])
 
-    def calculate_hour_string(self):
+    def calculate_hour_string(self, commit=True):
         """Returns a nicely formatted string representing availability based on the
         site's associated ``TimeSlot`` objects.
         """
-        # this implementation is a little naive, but let's just assume our customers
-        # don't keep ridiculous hours
-        timeslots = self.timeslot_set.order_by('dow')
-        times = {}
-        for timeslot in timeslots:
-            time_range = '%s-%s' % (timeslot.pretty_start, timeslot.pretty_stop)
-            if times.has_key(time_range):
-                times[time_range].append(timeslot.dow)
-            else:
-                times[time_range] = [timeslot.dow]
-        time_dict = dict(TimeSlot.DOW_CHOICES)
-        time_strings = []
-        abbr_length = 3
-        time_list = times.items()
-        time_list.sort(key=lambda obj: obj[1][0])
-        for k, v in time_list:
-            # test if the dow ints are consecutive
-            if v == range(v[0], v[-1] + 1) and len(v) > 1:
-                s = '%s-%s %s' % (time_dict[v[0]][:abbr_length], time_dict[v[-1]][:abbr_length], k)
-            else:
-                s = '%s %s' % ('/'.join(time_dict[n][:abbr_length] for n in v), k)
-            time_strings.append(s)
-        hours_string = ', '.join(time_strings)
-        self.hours = hours_string
-        self.save()
-        return hours_string
+        hours = calculate_hour_string(self.timeslot_set.all())
+        if commit:
+            self.hours = hours
+            self.save()
+        return self.hours
 
     def twitter(self):
         social = self.social
@@ -145,18 +124,10 @@ class Site(models.Model):
 
     @property
     def is_open(self):
-        server_tz = timezone(settings.TIME_ZONE)
-        site_tz = timezone(self.timezone)
-        now = server_tz.localize(datetime.now())
-        timeslots = self.timeslot_set.filter(dow=now.weekday())
-        if not timeslots.count():
-            return False
-        for timeslot in timeslots:
-            start_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.start))
-            stop_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.stop))
-            if start_dt < now < stop_dt:
-                return True
-        return False
+        return is_available(
+            timeslots=self.timeslot_set.all(), 
+            timezone=self.timezone
+        )
 
     @property
     def menu(self):
@@ -167,30 +138,16 @@ class Site(models.Model):
 
 
 class TimeSlot(models.Model):
-    DOW_MONDAY = 0
-    DOW_TUESDAY = 1
-    DOW_WEDNESDAY = 2
-    DOW_THURSDAY = 3
-    DOW_FRIDAY = 4
-    DOW_SATURDAY = 5
-    DOW_SUNDAY = 6
-    DOW_CHOICES = (
-        (DOW_MONDAY, 'Monday'),
-        (DOW_TUESDAY, 'Tuesday'),
-        (DOW_WEDNESDAY, 'Wednesday'),
-        (DOW_THURSDAY, 'Thursday'),
-        (DOW_FRIDAY, 'Friday'),
-        (DOW_SATURDAY, 'Saturday'),
-        (DOW_SUNDAY, 'Sunday'),
-    )
     site = models.ForeignKey(Site)
+    section = models.ForeignKey('core.Section', null=True, editable=False)
     dow = models.IntegerField(choices=DOW_CHOICES)
     start = models.TimeField()
     stop = models.TimeField()
 
     def save(self, *args, **kwargs):
         super(TimeSlot, self).save(*args, **kwargs)
-        self.site.calculate_hour_string()
+        if section is None:
+            self.site.calculate_hour_string()
 
     def _pretty_time(self, time_obj):
         hour = '12' if time_obj.hour == 12 else str(time_obj.hour % 12)

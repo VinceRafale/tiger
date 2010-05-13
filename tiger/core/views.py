@@ -43,6 +43,12 @@ def order_item(request, section, item):
             restaurant hours, %s.""" % (request.site.name, request.site.hours)
             messages.warning(request, msg) 
             return HttpResponseRedirect(i.section.get_absolute_url())
+        section = i.section
+        if not section.is_available:
+            msg = 'Items from %s are only available %s.' % (
+                section.name, section.hours)
+            messages.warning(request, msg) 
+            return HttpResponseRedirect(i.section.get_absolute_url())
         if not i.available:
             msg = """%s is currently not available. Please try one of our other
             menu items.""" % i.name
