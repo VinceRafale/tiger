@@ -52,3 +52,9 @@ def validate_coupon(request):
 
 def cancelled(request):
     return direct_to_template(request, template='tiger/cancelled.html')
+
+def privacy(request):
+    return direct_to_template(request, template='tiger/privacy.html')
+
+def terms(request):
+    return direct_to_template(request, template='tiger/terms.html')

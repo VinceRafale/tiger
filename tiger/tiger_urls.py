@@ -17,6 +17,8 @@ urlpatterns += patterns('tiger.accounts.views',
     url(r'^domain-check/$', 'domain_check', name='domain_check'),
     url(r'^validate-coupon/$', 'validate_coupon', name='validate_coupon'),
     url(r'^cancelled/$', 'cancelled', name='cancelled'),
+    url(r'^privacy/$', 'privacy', name='privacy'),
+    url(r'^terms/$', 'terms', name='terms'),
 )
 
 # Social API connectivity URLS
