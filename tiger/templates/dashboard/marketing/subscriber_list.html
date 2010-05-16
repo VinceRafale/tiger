@@ -5,46 +5,29 @@
 {% block body-class %}{{ block.super }}subscribers{% endblock %}
 
 {% block content %}
-<a class="buttonTop last" href="{% url dashboard_add_subscriber %}">Add</a>
-<h1>Subscribers</h1>
-
-{% autosort object_list %}
-{% autopaginate object_list 50 %}
-
-<div class="pagination">
-    {% paginate %}
-</div>
+<a class="buttonTop last" href="{% url dashboard_add_subscriber current_list.id %}">Add</a>
+<label for="faxlist">Choose a list:<select name="faxlist" id="faxlist">
+{% for list in site.faxlist_set.all %}
+<option {% if list == current_list %}selected {% endif %}value="{{ list.id }}">{{ list.name }}</option>
+{% endfor %}
+</select></label> 
+<h1>{{ current_list.name }}</h1>
 
 <table id="subscribers">
-    <thead>
-        <tr>
-            <th>{% anchor user__last_name Name %}</th>
-            <th>{% anchor send_updates Active %}</th>
-            <th>{% anchor organization %}</th>
-            <th>{% anchor user__email "E-mail address" %}</th>
-            <th>{% anchor fax "Fax number" %}</th>
-            <th>{% anchor update_via "Deliver via" %}</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
     <tbody>
     {% for subscriber in object_list %}
         <tr class="{% cycle '' 'shaded' %}">
-            <td>{{ subscriber.user.get_full_name|default:"-" }}</td>
-            <td>{{ subscriber.send_updates }}</td>
             <td>{{ subscriber.organization|default:"-" }}</td>
-            <td>{{ subscriber.user.email|default:"-" }}</td>
             <td>{{ subscriber.fax|default:"-" }}</td>
-            <td>{{ subscriber.get_update_via_display }}</td>
-            <td><a href="{% url dashboard_edit_subscriber subscriber.id %}">Edit</a> / <a class="delete" href="{% url dashboard_delete_subscriber subscriber.id %}">Delete</a></td>
+            <td><a href="{% url dashboard_edit_subscriber current_list.id, subscriber.id %}">Edit</a> / <a class="delete" href="{% url dashboard_delete_subscriber current_list.id, subscriber.id %}">Delete</a></td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td>No subscribers in this list.</td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
-
-<div class="pagination">
-    {% paginate %}
-</div>
 
 {% endblock %}
 
@@ -56,6 +39,9 @@ $(function () {
         c = confirm("Are you sure you want to delete " + h3Text + "? This action cannot be undone.");
         if (!c)
             return false;
+    });
+    $("#faxlist").change(function () {
+        window.location.href = "/dashboard/marketing/fax-lists/" + $(this).val();
     });
 });
 </script>

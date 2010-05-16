@@ -1,0 +1,59 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}subscribers{% endblock %}
+
+{% block content %}
+<h1>Fax lists</h1>
+
+<div id="add-list">
+<h3>Add new list:</h3>
+<input type="text" name="name" />
+<a class="button" href="#" rel="{% url add_fax_list %}">Add</a>
+</div>
+
+<ul id="faxlists">
+{% for faxlist in object_list %}
+    {% include 'dashboard/marketing/includes/fax_list_row.html' %}
+{% empty %}
+    <li class="empty">You haven't created any fax lists.</li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.delete").live("click", function () {
+        h3Text = $($(this).parent().find("h3")[0]).text();
+        c = confirm("Are you sure you want to delete " + h3Text + "? This action cannot be undone.");
+        if (!c)
+            return false;
+    });
+    $("#add-list a").click(function () {
+        action = $(this).attr("rel");
+        params = $.param({name: $("#add-list input").val()});
+        $.post(action, params, function (data) {
+            errors = data['errors'];
+            if (errors) {
+                $("#add-list").find(":input").each(function () {
+                    if (errors[$(this).attr("name")]) {
+                        $(this).addClass("error");
+                        if (!$(this).next().hasClass("msg")) {
+                            $(this).after('<span class="msg">' + errors[$(this).attr("name")][0] + '</span>');
+                        }
+                    } else {
+                        $(this).removeClass("error");
+                        $("#add-list a").find('span.msg').remove();
+                    }
+                });
+            } else {
+                $("#faxlists").append(data['html']);
+                $("#faxlists li.empty").remove();
+            }
+        }, "json");
+        return false;
+
+    });
+});
+</script>
+{% endblock %}

@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.template.loader import render_to_string
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 from django.utils.safestring import mark_safe
@@ -24,8 +25,6 @@ from tiger.utils.views import add_edit_site_object, delete_site_object
 @login_required
 def home(request):
     site = request.site
-    email_subscribers = Subscriber.via_email.filter(site=site)
-    fax_subscribers = Subscriber.via_fax.filter(site=site)
     total_pages = Fax.objects.filter(site=site).aggregate(Sum('page_count'))['page_count__sum']
     this_month = datetime(datetime.now().year, datetime.now().month, 1)
     pages_for_month = Fax.objects.filter(
@@ -60,18 +59,72 @@ def delete_coupon(request, coupon_id):
     return delete_site_object(request, Coupon, coupon_id, 'dashboard_marketing')
 
 @login_required
-def subscriber_list(request):
-    return object_list(request, Subscriber.objects.filter(site=request.site), 
-        template_name='dashboard/marketing/subscriber_list.html')
+def fax_list(request):
+    return object_list(request, FaxList.objects.filter(site=request.site), 
+        template_name='dashboard/marketing/fax_list.html')
+
+def add_fax_list(request):
+    if not request.is_ajax() or request.method != 'POST':
+        raise Http404
+    form = FaxListForm(request.POST)
+    if form.is_valid():
+        fax_list = form.save(commit=False)
+        fax_list.site = request.site
+        fax_list.save()
+        html = render_to_string('dashboard/marketing/includes/fax_list_row.html',
+            {'faxlist': fax_list})
+        result = {
+            'html': html
+        }   
+    else:
+        result = {'errors': form._errors}
+    return HttpResponse(json.dumps(result))
+
+def delete_fax_list(request, fax_list_id):
+    FaxList.objects.get(id=fax_list_id).delete()
+    return HttpResponseRedirect(reverse('fax_list'))
 
 @login_required
-def add_edit_subscriber(request, subscriber_id=None):
-    return add_edit_site_object(request, Subscriber, SubscriberForm, 
-        'dashboard/marketing/subscriber_form.html', 'dashboard_subscriber_list', object_id=subscriber_id)
+def fax_list_detail(request, fax_list_id):
+    fax_list = FaxList.objects.filter(site=request.site).get(id=fax_list_id)
+    return object_list(request, fax_list.subscriber_set.all(), 
+        template_name='dashboard/marketing/subscriber_list.html', extra_context={
+        'current_list': fax_list,
+        'fax_lists': FaxList.objects.filter(site=request.site)
+    })
 
 @login_required
-def delete_subscriber(request, subscriber_id):
-    return delete_site_object(request, Subscriber, subscriber_id, 'dashboard_subscriber_list')
+def add_edit_subscriber(request, fax_list_id, subscriber_id=None):
+    instance = None
+    if subscriber_id is not None:
+        instance = Subscriber.objects.get(id=subscriber_id)
+    if request.method == 'POST':
+        form = SubscriberForm(request.POST, instance=instance)
+        if form.is_valid():
+            subscriber = form.save(commit=False)
+            fax_list = FaxList.objects.get(id=fax_list_id)
+            subscriber.fax_list = fax_list
+            subscriber.save()
+            msg= 'Subscriber %s successfully.' % ('edited' if instance else 'created')
+            messages.success(request, msg)
+            return HttpResponseRedirect(reverse('fax_list_detail', args=[fax_list.id]))
+    else:
+        form = SubscriberForm(instance=instance)
+    return direct_to_template(request, 
+        template='dashboard/marketing/subscriber_form.html', 
+        extra_context={
+            'form': form
+    })
+
+@login_required
+def delete_subscriber(request, fax_list_id, subscriber_id):
+    fax_list = FaxList.objects.get(id=fax_list_id)
+    if fax_list.site != request.site:
+        raise Http404
+    subscriber = Subscriber.objects.get(fax_list=fax_list, id=subscriber_id)
+    subscriber.delete()
+    messages.success(request, 'Subscriber deleted successfully.')
+    return HttpResponseRedirect(reverse('fax_list_detail', args=[fax_list.id]))
 
 @login_required
 def add_twitter(request):

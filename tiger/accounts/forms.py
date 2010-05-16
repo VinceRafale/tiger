@@ -5,61 +5,14 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep
+from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep, FaxList
 from tiger.utils.chargify import Chargify, ChargifyError
 
 
 class SubscriberForm(forms.ModelForm):
-    first_name = forms.CharField(required=False)
-    last_name = forms.CharField(required=False)
-    email = forms.EmailField(required=False)
-
     class Meta:
         model = Subscriber
-        exclude = ['user', 'site', 'send_updates']
-
-    def __init__(self, data=None, files=None, *args, **kwargs):
-        super(SubscriberForm, self).__init__(data, files, *args, **kwargs)
-        if kwargs.get('instance'):
-            user = kwargs['instance'].user
-            self.initial.update({
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email
-            })
-
-    def clean(self):
-        super(SubscriberForm, self).clean()
-        cleaned_data = self.cleaned_data
-        update_via = cleaned_data['update_via']
-        if update_via == Subscriber.VIA_EMAIL and not cleaned_data.get('email'):
-            msg = "You must enter an e-mail address to use e-mail updates."
-            raise forms.ValidationError(msg)
-        if update_via == Subscriber.VIA_FAX and not cleaned_data.get('fax'):
-            msg = "You must enter a fax number to use fax updates."
-            raise forms.ValidationError(msg)
-        first_name = cleaned_data.get('first_name')
-        last_name = cleaned_data.get('last_name')
-        organization = cleaned_data.get('organization')
-        if not ((first_name and last_name) or organization):
-            raise forms.ValidationError('You must enter either an organization or a first and last name.')
-        return cleaned_data
-
-    def save(self, commit=True):
-        subscriber = super(SubscriberForm, self).save(commit=False)
-        try:
-            user = subscriber.user
-        except User.DoesNotExist:
-            user = User()
-        for attr in ('first_name', 'last_name', 'email'):
-            setattr(user, attr, self.cleaned_data[attr])
-        if not user.username:
-            user.username = hashlib.md5(''.join(str(v) for v in self.cleaned_data.values())).hexdigest()[:30] 
-        user.save()
-        subscriber.user = user
-        if commit:
-            subscriber.save()
-        return subscriber
+        exclude = ['fax_list']
 
 
 class AmPmTimeWidget(forms.widgets.Input):
@@ -374,3 +327,9 @@ class CreditCardForm(forms.ModelForm):
                 raise forms.ValidationError('Unable to update your information with our payment processor.')
             self.subscription = result['subscription']
         return cleaned_data
+
+
+class FaxListForm(forms.ModelForm):
+    class Meta:
+        model = FaxList
+        exclude = ('site',)

@@ -183,14 +183,13 @@ class LineItem(models.Model):
 
 
 class FaxList(models.Model):
+    site = models.ForeignKey(Site, editable=False)
     name = models.CharField(max_length=100)
 
 
 class Subscriber(models.Model):
-    site = models.ForeignKey(Site)
     fax_list = models.ForeignKey(FaxList)
     organization = models.CharField('Name', max_length=255, blank=True)
-    send_updates = models.BooleanField(default=True)
     fax = PhoneNumberField()
 
     def __unicode__(self):
