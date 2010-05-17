@@ -184,6 +184,7 @@ class SignupForm(forms.ModelForm):
 
     def save(self):
         instance = super(SignupForm, self).save(commit=False)
+        cleaned_data = self.cleaned_data
         if cleaned_data.get('promo'):
             referrer = SalesRep.objects.get(code=cleaned_data['promo'])
         else:
@@ -192,7 +193,6 @@ class SignupForm(forms.ModelForm):
         instance.customer_id = self.subscription['customer']['id']
         instance.card_type = self.subscription['credit_card']['card_type']
         instance.card_number = self.subscription['credit_card']['masked_card_number']
-        cleaned_data = self.cleaned_data
         first_name = cleaned_data['first_name']
         last_name = cleaned_data['last_name']
         email = cleaned_data['email']
