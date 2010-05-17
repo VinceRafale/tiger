@@ -4,6 +4,10 @@
 
 {% block body-class %}{{ block.super }}subscribers{% endblock %}
 
+{% block help %}
+FIXME
+{% endblock %}
+
 {% block content %}
 <a class="buttonTop last" href="{% url dashboard_add_subscriber current_list.id %}">Add</a>
 <label for="faxlist">Choose a list:<select name="faxlist" id="faxlist">

@@ -7,6 +7,10 @@
 </style>
 {% endblock %}
 
+{% block help %}
+FIXME
+{% endblock %}
+
 {% block content %}
 <h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} PDF menu</h1>
 <form method="POST" action=".">

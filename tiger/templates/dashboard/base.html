@@ -39,43 +39,28 @@
         <div id="content" class="container_12 clearfix">
 			
             <div id="main" class="grid_10 push_1">
-            {% if messages %}
-                <ul class="messages">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-                <div id="submenu" class="grid_10 alpha">
-                <ul class="menu">
-                    {% block submenu %}
-                    {% endblock %}
-                </ul>
-                </div>
-            {% block content %}
-
-                <h1>Dashboard</h1>
-                <div class="grid_5 alpha">
-                    <h2>Current specials</h2>
-                    <ul>
-                    {% for special in specials %}
-                        <li><a href="{% url dashboard_edit_item special.id %}">{{ special }}</a></li> 
-                    {% empty %}
-                        <li>You currently have no specials. <a href="{% url dashboard_menu %}">Manage your menu</a></li>
+                {% if messages %}
+                    <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
                     {% endfor %}
                     </ul>
-                </div>
-                <div class="grid_5 omega">
-                    <h2>Marketing blasts</h2>
-                    <ul>
-                    {% for update in updates %}
-                        <li><a href="">{{ update }}</a></li> 
-                    {% empty %}
-                        <li>You currently have no blasts scheduled. <a href="{%  url dashboard_marketing %}">Edit marketing settings</a></li>
-                    {% endfor %}
+                {% endif %}
+                    <div id="submenu" class="grid_10 alpha">
+                    <ul class="menu">
+                        {% block submenu %}
+                        {% endblock %}
                     </ul>
+                    </div>
+                <a id="help-button">Need help?</a>
+                <h2>{% block h2 %}{% endblock %}</h2>
+                <div class="clear"></div>
+                <div id="help-content" style="display:none;">
+                {% block help %}
+                {% endblock %}
                 </div>
-            {% endblock %}
+                {% block content %}
+                {% endblock %}
             </div>
         </div>
     <div class="shim"></div>
@@ -89,6 +74,16 @@
     <script type="text/javascript">
     $(function () {
         $("ul.messages").delay(5000).slideUp();
+        $("#help-button").toggle(
+            function () {
+                $(this).text("Hide help");
+                $("#help-content").slideDown("fast");
+            },
+            function () {
+                $(this).text("Need help?");
+                $("#help-content").slideUp("fast");
+            }
+        );
     });
     </script>
     {% block js %}

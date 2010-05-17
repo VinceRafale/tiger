@@ -2,6 +2,10 @@
 
 {% block body-class %}{{ block.super }}subscribers{% endblock %}
 
+{% block help %}
+FIXME
+{% endblock %}
+
 {% block content %}
 <h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} subscriber</h1>
 <div class="grid_5 alpha">

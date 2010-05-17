@@ -2,6 +2,14 @@
 
 {% block body-class %}{{ block.super }}menu{% endblock %}
 
+{% block h2 %}Menu management{% endblock %}
+
+{% block help %}
+<p>This is where you create and manage your menu sections.</p>
+<p>You can reorder menu items within a section by dragging them to the desired position in the list.</p>
+<p>You can also change the order of menu sections by dragging the top of the menu section to the desired position.</p>
+{% endblock %}
+
 {% block extrahead %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
 <style>
@@ -66,7 +74,6 @@ li.menu-items ul li{cursor: move;}
 {% endblock %}
 
 {% block content %}
-	<h1>Menu management</h1>
 {# <div class="grid_12 alpha omega"> #}
     <a href="{% url dashboard_add_menu 'section' %}">New menu section</a>
     <div class="sections">

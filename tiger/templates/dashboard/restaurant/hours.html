@@ -2,6 +2,12 @@
 
 {% block body-class %}{{ block.super }}hours{% endblock %}
 
+{% block h2 %}Your restaurant hours{% endblock %}
+
+{% block help %}
+<p>Please edit the hours that your restaurant is open.  These hours will appear on your site and in your blast messages and will control when orders can be placed online.</p>
+{% endblock %}
+
 {% block extrahead %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.autocomplete.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/jquery.autocomplete.css" />
@@ -14,8 +20,6 @@ label {display:inline;}
 {% block title %}{% endblock %}
 
 {% block content %}
-<h1>Your restaurant hours</h1>
-<div class="grid_6 alpha">
 <form method="POST" action=".">
 {% for dow, form in form_list %}
 <h4>{{ dow }}</h4>
@@ -26,10 +30,6 @@ label {display:inline;}
 <label>{{ form.stop.label }}: {{ form.stop }}</label>
 {% endfor %}
 </form>
-</div>
-<div class="grid_4 omega">
-<p>Please edit the hours that your restaurant is open.  These hours will appear on your site and in your blast messages and will control when orders can be placed online.</p>
-</div>
 <div class="clear"></div>
 <a class="buttonTop last" href="{% url dashboard_restaurant %}">Cancel</a>
 <a class="buttonTop submit" href="#">Save</a>

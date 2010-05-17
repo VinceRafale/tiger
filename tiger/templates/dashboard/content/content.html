@@ -2,6 +2,10 @@
 
 {% block body-class %}{{ block.super }}content{% endblock %}
 
+{% block help %}
+FIXME
+{% endblock %}
+
 {% load content_tags %}
 {% block content %}
         <h3>Your homepage <a href="{% url dashboard_edit_content "homepage" %}">Edit</a></h3>

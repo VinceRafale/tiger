@@ -2,6 +2,10 @@
 
 {% block body-class %}{{ block.super }}pdfs{% endblock %}
 
+{% block help %}
+FIXME
+{% endblock %}
+
 {% block content %}
     {# <div class="grid_9 push_1 alpha omega"> #}
         <a class="buttonTop last" href="{% url dashboard_add_pdf %}">Add</a>

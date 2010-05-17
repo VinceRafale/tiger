@@ -2,6 +2,10 @@
 
 {% block body-class %}{{ block.super }}domain{% endblock %}
 
+{% block help %}
+FIXME
+{% endblock %}
+
 {% block content %}
 <p>You can use any domain you like with your Takeout Tiger site.  Just create an "A" record for your domain of choice and point it at {{ NGINX_IP_ADDRESS }} and enter that domain here.</p>
 <div class="grid_5 alpha">
