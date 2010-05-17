@@ -84,7 +84,7 @@ def twitter_return(request):
     social.twitter_token = auth_dict['oauth_token']
     social.twitter_secret = auth_dict['oauth_token_secret']
     social.save()
-    return HttpResponseRedirect(str(social.site) + reverse('dashboard_marketing_home')) 
+    return HttpResponseRedirect(str(social.site) + reverse('dashboard_marketing')) 
 
 def press_detail(request, object_id, slug):
     press = get_object_or_404(Release, id=object_id, site=request.site)
