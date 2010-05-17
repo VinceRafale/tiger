@@ -21,7 +21,7 @@ FIXME
         </p>
         <h3>Facebook</h3>
         <p id="facebook">
-        <fb:login-button onlogin="getPerms();"></fb:login-button>
+		<a id="facebook-button" href="#">Connect</a>
         </p>
         <h3>Mailchimp</h3>
         <div id="mailchimp-settings">
@@ -56,24 +56,28 @@ FIXME
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript" src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
-<script type="text/javascript">
-FB.init("{{ FB_API_KEY }}","{% url xd_receiver %}");
-
-function getPerms() {
-	FB.Connect.showPermissionDialog('publish_stream', function (perms) {
-		if (perms) {
-			api = FB.Facebook.apiClient;
-			api.fql_query('SELECT uid, publish_stream FROM permissions WHERE publish_stream=1 AND ' +
-			'uid IN (SELECT page_id FROM page_admin WHERE uid=' + FB.Connect.get_loggedInUser() + ')', function (rows) {
+<div id="fb-root"></div>
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+<script>
+	FB.init({appId: '314120522290', status: true, cookie: true, xfbml: true});
+	$("#facebook-button").click(function () {
+		FB.login(function (response) {
+			uid = response.session.uid;
+			 var query = FB.Data.query('SELECT uid, publish_stream FROM permissions WHERE publish_stream=1 AND uid IN (SELECT page_id FROM page_admin where uid={0})', uid);
+			 query.wait(function(rows) {
 				page_id = rows[0]['uid'];
-				api.fql_query('SELECT page_id, page_url FROM page WHERE page_id=' + page_id, function (rows) {
-					$.post("{% url register_id %}", $.param({id: page_id, url: rows[0]['page_url']}));
+				q2 = FB.Data.query('SELECT page_id, page_url FROM page WHERE page_id={0}', page_id);
+				q2.wait(function (rows) {
+					 $.post("{% url register_id %}", $.param({id: page_id, url: rows[0]['page_url']}));
 				});
-});
-		}
-	}, true);
-}
+			 });
+
+		},
+		{
+			perms: 'publish_stream',
+			enable_profile_selector: true
+		});
+	});
 </script>
 {% endblock %}
 
