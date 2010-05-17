@@ -94,7 +94,7 @@ li.menu-items ul li{cursor: move;}
         </li>
     </ul>
     {% empty %}
-        You have not created any menu sections. <a href="{% url dashboard_add_section %}">Create one now</a>
+        You have not created any menu sections. <a href="{% url dashboard_add_menu 'section' %}">Create one now</a>
     {% endfor %}
     </div>
 {# </div> #}
