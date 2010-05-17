@@ -11,24 +11,26 @@ from facebook import Facebook, FacebookError
 from oauth import oauth
 
 from tiger.accounts.models import Subscriber
-from tiger.notify.fax import FaxMachine, FaxServiceError
+from tiger.notify.fax import FaxServiceError
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
 
 
 class SendFaxTask(Task):
-    def run(self, site, recipients, content, **kwargs):
-        fax_machine = FaxMachine(site)
+    def run(self, release_id, **kwargs):
+        Release = get_model('notify', 'release')
+        release = Release.objects.get(id=release_id)
         try:
-            return fax_machine.send(recipients, content, **kwargs)
+            return release.send_fax()
         except FaxServiceError, e:
-            self.retry([site, recipients, content], kwargs,
+            self.retry([release_id], kwargs,
                 countdown=60 * 1, exc=e)
 
 
-class SendEmailTask(Task):
+class SendMailChimpTask(Task):
     def run(self, msgs, **kwargs):
-        connection = mail.get_connection()
-        connection.send_messages(msgs)
+        Release = get_model('notify', 'release')
+        release = Release.objects.get(id=release_id)
+        release.send_mailchimp()
     
 
 class TweetNewItemTask(Task):
@@ -60,13 +62,8 @@ class PublishTask(Task):
     def run(self, release_id, **kwargs):
         Release = get_model('notify', 'release')
         release = Release.objects.get(id=release_id)
-        site = blast.site
+        site = release.site
         social = site.social
-        #content = open(blast.pdf.path).read()
-        #via_fax = blast.subscribers.filter(update_via=Subscriber.VIA_FAX)
-        #numbers = [s.fax for s in via_fax]
-        #names = [contact.user.get_full_name() for contact in via_fax]
-        #SendFaxTask.delay(site=site, recipients=numbers, content=content, names=names, PageOrientation=blast.pdf.get_orientation_display())
         if release.coupon:
             msg = unicode(release.coupon)
             short_url = reverse('coupon_short_code', kwargs={'item_id': release.coupon.id})
@@ -80,4 +77,6 @@ class PublishTask(Task):
             TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret)
         if site.facebook():
             PublishToFacebookTask.delay(social.facebook_id, msg, link_title=link_title, href=short_url)
-        release.send_mailchimp()
+        if release.fax_list:
+            SendFaxTask.delay(release_id=release.id)
+        SendMailChimpTask.delay(release_id=release.id)

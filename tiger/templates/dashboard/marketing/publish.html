@@ -4,6 +4,12 @@
 
 {% block extrahead %}
 {{ form.media }}
+<style>
+#submit {float:right;}
+div.checkbox-select {clear:left;}
+div.checkbox-select label {float:left;}
+div.checkbox-select select {margin-left:20px;}
+</style>
 {% endblock %}
 
 {% block body-class %}{{ block.super }} publish{% endblock %}
@@ -13,8 +19,12 @@
 Use this form to publish marketing materials on your site and Twitter, Facebook, e-mail (via MailChimp), and fax simultaneously.
 </p>
 <form method="POST">
+<div class='checkbox-select'>
 <label>{{ form.add_coupon }} {{ form.add_coupon.label }}</label> {{ form.coupon }}
+</div>
+<div class='checkbox-select'>
 <label>{{ form.add_pdf }} {{ form.add_pdf.label }}</label> {{ form.pdf }}
+</div>
 <div class="clear"></div>
 <label>
 <h3>Title text</h3>
@@ -31,15 +41,21 @@ Use this form to publish marketing materials on your site and Twitter, Facebook,
     <div class="block" id="editorPreview"></div>
 </div>
 <div class="clear"></div>
-<input type="submit" value="Publish" />
+<h3>Where do you want to send this?</h3>
+<p class="help">This will automatically be posted in the "News" section of your website, Twitter, Facebook, and MailChimp if you have those accounts configured.</p>
+<div class='checkbox-select'>
+<label>{{ form.fax }} {{ form.fax.label }}</label> {{ form.fax_list }}
+</div>
+<div class="clear"></div>
+<input id="submit" type="submit" value="Publish" />
 </form>
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
 $(function () {
-    $("#id_pdf,#id_coupon").hide();
-    $("#id_add_pdf,#id_add_coupon").click(function () {
+    $("#id_pdf,#id_coupon,#id_fax_list").hide();
+    $("#id_add_pdf,#id_add_coupon,#id_fax").click(function () {
         if ($(this).attr("checked")) {
             $(this).parent().next(":input").show();
         } else {

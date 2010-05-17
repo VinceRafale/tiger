@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.utils.safestring import mark_safe
 
-from tiger.accounts.models import Subscriber
+from tiger.accounts.models import Subscriber, FaxList
 from tiger.notify.models import Social, Release
 from tiger.utils.widgets import MarkItUpWidget
 
@@ -31,6 +31,8 @@ class PublishForm(forms.ModelForm):
     """)
     add_coupon = forms.BooleanField(label='Include a coupon?')
     add_pdf = forms.BooleanField(label='Include a menu as an attachment?')
+    fax = forms.BooleanField(label='One of your fax lists')
+    fax_list = forms.ModelChoiceField(queryset=FaxList.objects.all(), required=False)
     body = forms.CharField(widget=MarkItUpWidget, help_text=mark_safe("""
 
         This text will appear as the body for this publication on your website,
@@ -46,3 +48,7 @@ class PublishForm(forms.ModelForm):
     class Meta:
         model = Release
         exclude = ('site',)
+
+    def __init__(self, data=None, files=None, site=None, *args, **kwargs):
+        super(PublishForm, self).__init__(data=data, files=files, *args, **kwargs)
+        self.fields['fax_list'].queryset = site.faxlist_set.all()

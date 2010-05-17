@@ -10,6 +10,8 @@ from greatape import MailChimp
 from markdown import markdown
 
 from tiger.content.models import PdfMenu
+from tiger.notify.fax import FaxMachine
+from tiger.utils.pdf import render_to_pdf
 
 
 class Fax(models.Model):
@@ -73,6 +75,7 @@ class Release(models.Model):
     pdf = models.ForeignKey(PdfMenu, verbose_name='Select one of your PDF menus', null=True, blank=True)
     coupon = models.ForeignKey('core.Coupon', null=True, blank=True)
     time_sent = models.DateTimeField(editable=False)
+    fax_transaction = models.CharField(null=True, blank=True, max_length=100, editable=False)
 
     def __unicode__(self):
         return self.title
@@ -116,7 +119,24 @@ class Release(models.Model):
             })
             if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
                 mailchimp.campaignSendNow(cid=campaign_id)
-        
+                
+    def send_fax(self):
+        site = self.site
+        social = site.social
+        fax_machine = FaxMachine(site)
+        content = open(self.pdf.path).read()
+        kwargs ={}
+        if self.body:
+            cover_page = render_to_pdf('notify/cover_page.html', {'release': self})
+            kwargs['FileSizes'] = '%d;%d' % (len(cover_page), len(content))
+            kwargs['FileTypes'] = 'PDF;PDF'
+            content = cover_page + content
+        fax_numbers = [s.fax for s in self.fax_list.subscriber_set.all()]
+        transaction = fax_machine.send(fax_numbers, content, **kwargs)
+        self.fax_transaction = transaction
+        self.save()
+        Fax.objects.create(parent_transaction=transaction, 
+            transaction=transaction, site=site)
 
 def new_site_setup(sender, instance, created, **kwargs):
     if created:

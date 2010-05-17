@@ -2,8 +2,6 @@ from suds.client import Client
 
 from django.conf import settings
 
-from tiger.notify.models import Fax
-
 SEND_FAX_ENDPOINT = 'http://ws.interfax.net/dfs.asmx/SendfaxEx_2'
 QUERY_FAX_ENDPOINT = 'http://ws.interfax.net/dfs.asmx'
 
@@ -32,7 +30,7 @@ class FaxMachine(object):
             'Contacts': ';'.join(names), 
             'FilesData': b64_content,
             'FileTypes': content_type,
-            'FileSizes': len(content),
+            'FileSizes': kwargs.get('FileSizes') or len(content),
             'Postpone': '2000-01-01',
             'RetriesToPerform': 2,
             'PageHeader': 'N',
@@ -49,5 +47,4 @@ class FaxMachine(object):
         if transaction_id < 0:
             #TODO: log negative values
             raise FaxServiceError()
-        return Fax.objects.create(parent_transaction=transaction_id, 
-            transaction=transaction_id, site=self.site)
+        return transaction_id

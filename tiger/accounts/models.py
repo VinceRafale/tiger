@@ -186,6 +186,9 @@ class FaxList(models.Model):
     site = models.ForeignKey(Site, editable=False)
     name = models.CharField(max_length=100)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Subscriber(models.Model):
     fax_list = models.ForeignKey(FaxList)

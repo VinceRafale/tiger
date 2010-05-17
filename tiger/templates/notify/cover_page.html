@@ -1,0 +1,17 @@
+<html>
+<head>
+<style>
+@page {size:letter; top:1.5cm; left:1.5cm;bottom:1.5cm; right:1.5cm;}
+* {font-family: Arial, sans-serif;}
+h1 {font-size:24px; margin-bottom:0;}
+h2 {font-size:18px; margin-bottom:0;}
+p {font-size:14px; margin-top:0; padding-top:0;}
+</style>
+</head>
+<body>
+<h1>{{ release.title|safe }}</h1>
+
+{{ release.body_html|safe }}
+
+</body>
+</html>

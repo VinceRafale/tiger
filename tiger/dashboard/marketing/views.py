@@ -36,8 +36,24 @@ def home(request):
 
 @login_required
 def publish(request, release_id=None):
-    return add_edit_site_object(request, Release, PublishForm, 
-        'dashboard/marketing/publish.html', 'dashboard_marketing', object_id=release_id)
+    instance = None
+    if release_id is not None:
+        instance = Release.objects.get(id=release_id)
+        if instance.site != request.site:
+            raise Http404
+    if request.method == 'POST':
+        form = PublishForm(request.POST, site=request.site, instance=instance)
+        if form.is_valid():
+            release = form.save(commit=False)
+            release.site = request.site
+            release.save()
+            messages.success(request, 'News item published successfully.')
+            return HttpResponseRedirect(reverse('dashboard_marketing_home'))
+    else:
+        form = PublishForm(site=request.site, instance=instance)
+    return direct_to_template(request, template='dashboard/marketing/publish.html', extra_context={
+        'form': form
+    })
 
 @login_required
 def publish_preview(request):
