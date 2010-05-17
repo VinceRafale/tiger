@@ -8,6 +8,7 @@ from tiger.accounts.forms import LocationForm, TimeSlotForm
 from tiger.accounts.models import TimeSlot
 from tiger.content.forms import ContentForm
 from tiger.content.models import Content
+from tiger.utils.hours import DOW_CHOICES
 
 
 def home(request):
@@ -29,7 +30,7 @@ def edit_content(request, slug):
 def edit_hours(request):
     def get_forms(data=None):
         forms = []
-        for dow, label in TimeSlot.DOW_CHOICES:
+        for dow, label in DOW_CHOICES:
             try:
                 instance = TimeSlot.objects.get(site=request.site, dow=dow)
             except TimeSlot.DoesNotExist:
@@ -40,7 +41,7 @@ def edit_hours(request):
     if request.method == 'POST':
         forms = get_forms(request.POST)
         if all(form.is_valid() for form in forms):
-            for dow, form in zip([dow for dow, label in TimeSlot.DOW_CHOICES], forms):
+            for dow, form in zip([dow for dow, label in DOW_CHOICES], forms):
                 instance = form.save()
                 # overridden save() will return None if no times are given for a day
                 if instance is not None:
@@ -49,7 +50,7 @@ def edit_hours(request):
                     instance.save()
     else:
         forms = get_forms()
-    form_list = zip([label for dow, label in TimeSlot.DOW_CHOICES], forms)
+    form_list = zip([label for dow, label in DOW_CHOICES], forms)
     return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context={'form_list': form_list})
 
 
