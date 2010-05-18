@@ -29,9 +29,9 @@ class PublishForm(forms.ModelForm):
         updates. For Twitter, it will be truncated if it (plus the link to your
         site that we insert) exceeds 140 characters.
     """)
-    add_coupon = forms.BooleanField(label='Include a coupon?')
-    add_pdf = forms.BooleanField(label='Include a menu as an attachment?')
-    fax = forms.BooleanField(label='One of your fax lists')
+    add_coupon = forms.BooleanField(label='Include a coupon?', required=False)
+    add_pdf = forms.BooleanField(label='Include a menu as an attachment?', required=False)
+    fax = forms.BooleanField(label='One of your fax lists', required=False)
     fax_list = forms.ModelChoiceField(queryset=FaxList.objects.all(), required=False)
     body = forms.CharField(widget=MarkItUpWidget, help_text=mark_safe("""
 
@@ -43,7 +43,7 @@ class PublishForm(forms.ModelForm):
         on the right).  The plain text version will be used in e-mail campaigns
         for users who can't view HTML mail.
 
-    """))
+    """), required=False)
 
     class Meta:
         model = Release

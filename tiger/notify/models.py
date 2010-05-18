@@ -86,8 +86,8 @@ class Release(models.Model):
         self.slug = slugify(self.title)
         if not self.id:
             self.time_sent = datetime.now()
-        PublishTask.delay(self.id)
         super(Release, self).save(*args, **kwargs)
+        PublishTask.delay(self.id)
 
     @models.permalink
     def get_absolute_url(self):
@@ -108,14 +108,14 @@ class Release(models.Model):
                 type='regular',
                 options={
                     'list_id': social.mailchimp_list_id,
-                    'subject': release.title,
+                    'subject': self.title,
                     'from_email': site.email,
                     'from_name': site.name,
                     'to_name': '%s subscribers' % site.name,
                 },
                 content={
-                    'html': release.get_body_html(),
-                    'text': release.get_body_text()
+                    'html': self.get_body_html(),
+                    'text': self.get_body_text()
             })
             if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
                 mailchimp.campaignSendNow(cid=campaign_id)

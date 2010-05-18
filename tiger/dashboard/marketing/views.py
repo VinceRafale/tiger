@@ -48,7 +48,7 @@ def publish(request, release_id=None):
             release.site = request.site
             release.save()
             messages.success(request, 'News item published successfully.')
-            return HttpResponseRedirect(reverse('dashboard_marketing_home'))
+            return HttpResponseRedirect(reverse('dashboard_marketing'))
     else:
         form = PublishForm(site=request.site, instance=instance)
     return direct_to_template(request, template='dashboard/marketing/publish.html', extra_context={

@@ -3,6 +3,7 @@ import urllib2
 
 from django.conf import settings
 from django.core import mail
+from django.core.urlresolvers import reverse
 from django.db.models import get_model
 
 from celery.task import Task
@@ -27,7 +28,7 @@ class SendFaxTask(Task):
 
 
 class SendMailChimpTask(Task):
-    def run(self, msgs, **kwargs):
+    def run(self, release_id, **kwargs):
         Release = get_model('notify', 'release')
         release = Release.objects.get(id=release_id)
         release.send_mailchimp()
@@ -48,11 +49,11 @@ class TweetNewItemTask(Task):
 class PublishToFacebookTask(Task):
     def run(self, uid, msg, link_title=None, href=None, **kwargs):
         fb = Facebook(settings.FB_API_KEY, settings.FB_API_SECRET)
-        kwargs = dict(uid=uid, msg=msg)
+        kwds = dict(uid=uid, message=msg)
         if href is not None:
-            kwargs.update({'action_links': [{'title': 'View on our site', 'href': href}]})
+            kwds.update({'action_links': [{'title': 'View on our site', 'href': href}]})
         try:
-            fb.stream.publish(**kwargs)
+            fb.stream.publish(**kwds)
         except FacebookError, e:
             self.retry([uid, msg, link_title, href], kwargs,
                 countdown=60 * 5, exc=e)
@@ -72,11 +73,12 @@ class PublishTask(Task):
             msg = release.title
             short_url = reverse('press_short_code', kwargs={'item_id': release.id})
             link_title = 'Read on our site'
+        short_url = unicode(site) + short_url
         if site.twitter():
             msg = ' '.join([msg, short_url]) 
             TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret)
         if site.facebook():
             PublishToFacebookTask.delay(social.facebook_id, msg, link_title=link_title, href=short_url)
+        SendMailChimpTask.delay(release_id=release.id)
         if release.fax_list:
             SendFaxTask.delay(release_id=release.id)
-        SendMailChimpTask.delay(release_id=release.id)
