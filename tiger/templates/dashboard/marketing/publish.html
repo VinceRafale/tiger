@@ -48,6 +48,24 @@ Use this form to publish marketing materials on your site and Twitter, Facebook,
 <h3>Where do you want to send this?</h3>
 <p class="help">This will automatically be posted in the "News" section of your website, Twitter, Facebook, and MailChimp if you have those accounts configured.</p>
 <div class='checkbox-select'>
+{% if form.twitter.errors %}
+{{ form.twitter.errors }}
+{% endif %}
+<label>{{ form.twitter }} {{ form.twitter.label }}</label>
+</div>
+<div class='checkbox-select'>
+{% if form.facebook.errors %}
+{{ form.facebook.errors }}
+{% endif %}
+<label>{{ form.facebook }} {{ form.facebook.label }}</label>
+</div>
+<div class='checkbox-select'>
+{% if form.mailchimp.errors %}
+{{ form.mailchimp.errors }}
+{% endif %}
+<label>{{ form.mailchimp }} {{ form.mailchimp.label }}</label>
+</div>
+<div class='checkbox-select'>
 <label>{{ form.fax }} {{ form.fax.label }}</label> {{ form.fax_list }}
 </div>
 <div class="clear"></div>

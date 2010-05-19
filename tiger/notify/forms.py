@@ -44,6 +44,9 @@ class PublishForm(forms.ModelForm):
         for users who can't view HTML mail.
 
     """), required=False)
+    twitter = forms.BooleanField(required=False)
+    facebook = forms.BooleanField(required=False)
+    mailchimp = forms.BooleanField(required=False)
 
     class Meta:
         model = Release
@@ -52,3 +55,22 @@ class PublishForm(forms.ModelForm):
     def __init__(self, data=None, files=None, site=None, *args, **kwargs):
         super(PublishForm, self).__init__(data=data, files=files, *args, **kwargs)
         self.fields['fax_list'].queryset = site.faxlist_set.all()
+        self.site = site
+
+    def clean_twitter(self):
+        twitter = self.cleaned_data.get('twitter')
+        if twitter and not self.site.twitter():
+            raise forms.ValidationError('You must connect a Twitter account to post to Twitter.')
+        return twitter
+
+    def clean_facebook(self):
+        facebook = self.cleaned_data.get('facebook')
+        if facebook and not self.site.facebook():
+            raise forms.ValidationError('You must connect a Facebook account to post to Facebook.')
+        return facebook
+
+    def clean_mailchimp(self):
+        mailchimp = self.cleaned_data.get('mailchimp')
+        if mailchimp and not self.site.mailchimp():
+            raise forms.ValidationError('You must connect a MailChimp account to post to MailChimp.')
+        return mailchimp

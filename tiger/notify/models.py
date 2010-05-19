@@ -120,7 +120,7 @@ class Release(models.Model):
             if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
                 mailchimp.campaignSendNow(cid=campaign_id)
                 
-    def send_fax(self):
+    def send_fax(self, fax_list):
         site = self.site
         social = site.social
         fax_machine = FaxMachine(site)
@@ -131,7 +131,7 @@ class Release(models.Model):
             kwargs['FileSizes'] = '%d;%d' % (len(cover_page), len(content))
             kwargs['FileTypes'] = 'PDF;PDF'
             content = cover_page + content
-        fax_numbers = [s.fax for s in self.fax_list.subscriber_set.all()]
+        fax_numbers = [s.fax for s in fax_list.subscriber_set.all()]
         transaction = fax_machine.send(fax_numbers, content, **kwargs)
         self.fax_transaction = transaction
         self.save()

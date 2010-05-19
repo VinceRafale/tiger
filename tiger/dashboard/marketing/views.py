@@ -20,6 +20,7 @@ from tiger.core.forms import CouponCreationForm
 from tiger.core.models import Coupon
 from tiger.notify.forms import *
 from tiger.notify.models import Fax, Release
+from tiger.notify.tasks import PublishTask
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 @login_required
@@ -47,6 +48,12 @@ def publish(request, release_id=None):
             release = form.save(commit=False)
             release.site = request.site
             release.save()
+            PublishTask.delay(release.id, 
+                twitter=cleaned_data.get('twitter'),
+                facebook=cleaned_data.get('facebook'),
+                mailchimp=cleaned_data.get('mailchimp'),
+                fax_list = cleaned_data.get('fax_list')
+            )
             messages.success(request, 'News item published successfully.')
             return HttpResponseRedirect(reverse('dashboard_marketing'))
     else:

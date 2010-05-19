@@ -11,17 +11,18 @@ from facebook import Facebook, FacebookError
 
 from oauth import oauth
 
-from tiger.accounts.models import Subscriber
+from tiger.accounts.models import Subscriber, FaxList
 from tiger.notify.fax import FaxServiceError
+from tiger.notify.models import Release
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
 
 
 class SendFaxTask(Task):
-    def run(self, release_id, **kwargs):
-        Release = get_model('notify', 'release')
+    def run(self, release_id, fax_list_id, **kwargs):
         release = Release.objects.get(id=release_id)
+        fax_list = FaxList.objects.get(id=fax_list_id)
         try:
-            return release.send_fax()
+            return release.send_fax(fax_list)
         except FaxServiceError, e:
             self.retry([release_id], kwargs,
                 countdown=60 * 1, exc=e)
@@ -60,25 +61,25 @@ class PublishToFacebookTask(Task):
 
 
 class PublishTask(Task):
-    def run(self, release_id, **kwargs):
-        Release = get_model('notify', 'release')
+    def run(self, release_id, twitter=False, facebook=False, mailchimp=False,
+            fax_list=None, **kwargs):
         release = Release.objects.get(id=release_id)
         site = release.site
         social = site.social
+        msg = release.title
         if release.coupon:
-            msg = unicode(release.coupon)
             short_url = reverse('coupon_short_code', kwargs={'item_id': release.coupon.id})
             link_title = 'Use it now'
         else:
-            msg = release.title
             short_url = reverse('press_short_code', kwargs={'item_id': release.id})
             link_title = 'Read on our site'
         short_url = unicode(site) + short_url
-        if site.twitter():
+        if site.twitter() and twitter:
             msg = ' '.join([msg, short_url]) 
             TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret)
-        if site.facebook():
+        if site.facebook() and facebook:
             PublishToFacebookTask.delay(social.facebook_id, msg, link_title=link_title, href=short_url)
-        SendMailChimpTask.delay(release_id=release.id)
-        if release.fax_list:
-            SendFaxTask.delay(release_id=release.id)
+        if mailchimp:
+            SendMailChimpTask.delay(release_id=release.id)
+        if fax_list:
+            SendFaxTask.delay(release_id=release.id, fax_list_id=fax_list.id)
