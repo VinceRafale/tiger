@@ -34,13 +34,13 @@ FIXME
         {{ form.title.label }}<br />{{ form.title }}
         </label>
     
-        {% if form.content.errors %}
-        {{ form.content.errors }}
+        {% if form.sections.errors %}
+        {{ form.sections.errors }}
         <label class="errorcontent">
         {% else %}
         <label>
         {% endif %}
-        {{ form.content.label }}<br />{{ form.content }}
+        {{ form.sections.label }}<br />{{ form.sections }}
         </label>
     
         {% if form.show_descriptions.errors %}

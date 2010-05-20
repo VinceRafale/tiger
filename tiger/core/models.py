@@ -60,9 +60,6 @@ class Section(models.Model):
     def get_absolute_url(self):
         return reverse('menu_section', kwargs={'section': self.slug})
 
-    def has_specials(self):
-        return any(item.special for item in self.item_set.all())
-
     def price_list(self):
         return get_price_list(self)
 

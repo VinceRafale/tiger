@@ -61,22 +61,18 @@ td {vertical-align:top; padding:0.5em;}
 </div>
 
 {% for section in sections %}
-{% if show_all or section.has_specials %}
 <h2>{{ section.name }}</h2>
     {% for item in section.item_set.active %}
-        {% if show_all or item.special %}
-            <h4>{{ item.name }}
-            <em>&nbsp;&nbsp;&nbsp;&nbsp;
-            {{ item.price_list|join:"&nbsp;&nbsp;&bull;&nbsp;&nbsp;" }}
-            </em></h4>
-            {% if show_descriptions %}
-                <p>{{ item.description }}</p>
-            {% else %}
-                <br />
-            {% endif %}
+        <h4>{{ item.name }}
+        <em>&nbsp;&nbsp;&nbsp;&nbsp;
+        {{ item.price_list|join:"&nbsp;&nbsp;&bull;&nbsp;&nbsp;" }}
+        </em></h4>
+        {% if show_descriptions %}
+            <p>{{ item.description }}</p>
+        {% else %}
+            <br />
         {% endif %}
     {% endfor %}
-{% endif %}
 {% endfor %}
 <div id="footer">{{ footer }}</div>
 </body>

@@ -19,8 +19,26 @@ def home(request):
 
 @login_required
 def add_edit_pdf(request, pdf_id=None):
-    return add_edit_site_object(request, PdfMenu, PdfMenuForm, 
-        'dashboard/content/pdf_form.html', 'dashboard_content', object_id=pdf_id)
+    instance = None
+    if pdf_id is not None:
+        instance = PdfMenu.objects.get(id=pdf_id)
+        if instance.site != request.site:
+            raise Http404
+    if request.method == 'POST':
+        form = PdfMenuForm(request.POST, site=request.site, instance=instance)
+        if form.is_valid():
+            pdf = form.save(commit=False)
+            pdf.site = request.site
+            pdf.save()
+            form.save_m2m()
+            verb = 'edited' if instance else 'created'
+            messages.success(request, 'PDF menu %s successfully.' % verb)
+            return HttpResponseRedirect(reverse('dashboard_content'))
+    else:
+        form = PdfMenuForm(site=request.site, instance=instance)
+    return direct_to_template(request, template='dashboard/content/pdf_form.html', extra_context={
+        'form': form
+    })
 
 @login_required
 def delete_pdf(request, pdf_id):

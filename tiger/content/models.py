@@ -56,10 +56,6 @@ class ItemImage(ImageModel):
 
 
 class PdfMenu(models.Model):
-    CONTENT_CHOICES = (
-        ('S', 'Specials'), 
-        ('A', 'All menu items')
-    )
     site = models.ForeignKey('accounts.Site')
     name = models.CharField(max_length=100, help_text='This description is for your reference only.  It will not appear in your blasts.', default='')
     title = models.CharField(max_length=255, blank=True, help_text='The title as it will appear in the blast.', default='')
@@ -67,9 +63,9 @@ class PdfMenu(models.Model):
     column_height = models.DecimalField('column height (in inches)', default='7.0', decimal_places=1, max_digits=3) 
     orientation = models.CharField(max_length=1, choices=(('P', 'Portrait'), ('L', 'Landscape')))
     footer = models.TextField(blank=True, help_text='This text will appear at the bottom of e-mails and faxes sent at this time.')
-    content = models.CharField(max_length=1, choices=CONTENT_CHOICES)
     show_descriptions = models.BooleanField('check to include the descriptions of your menu items', default=True)
     featured = models.BooleanField(default=False)
+    sections = models.ManyToManyField('core.Section')
     page_count = models.PositiveIntegerField(default=1)
 
     def __unicode__(self):
@@ -88,13 +84,12 @@ class PdfMenu(models.Model):
     def render(self):
         columns = self._get_columns() 
         return render_to_pdf('notify/update.html', {
-            'sections': self.site.section_set.all(),
+            'sections': self.sections.all(),
             'title': self.title,
             'footer': self.footer,
             'site': self.site,
             'show_descriptions': self.show_descriptions,
             'columns': columns,
-            'show_all': self.content == 'A',
             'landscape': True if self.orientation == 'L' else False
         })
 
