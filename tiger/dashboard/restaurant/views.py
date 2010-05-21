@@ -18,7 +18,7 @@ def home(request):
 
 def location(request):
     return update_object(request, form_class=LocationForm, object_id=request.site.id, 
-        template_name='dashboard/restaurant/location_form.html', post_save_redirect='/dashboard/restaurant/')
+        template_name='dashboard/restaurant/location_form.html', post_save_redirect='/dashboard/location/')
         
 
 def edit_content(request, slug):

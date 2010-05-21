@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
-from tiger.core.forms import OrderSettingsForm, OrderPaymentForm
+from tiger.core.forms import OrderSettingsForm, OrderPaymentForm, GeocodeError
 from tiger.core.models import Order
 
 def home(request):
@@ -29,7 +29,11 @@ def order_options(request):
             form = OrderSettingsForm(site=request.site, instance=request.site.ordersettings)
             messages.error(request, 'Some of your shape data was corrupted. Please redraw your area.')
     else:
-        form = OrderSettingsForm(site=request.site, instance=request.site.ordersettings)
+        try:
+            form = OrderSettingsForm(site=request.site, instance=request.site.ordersettings)
+        except GeocodeError:
+            messages.error(request, "Please be sure you have a valid street address, city, state and zip.  We can't calculate your position on the map without it.")
+            return HttpResponseRedirect(reverse('dashboard_location'))
     return direct_to_template(request, template='dashboard/orders/order_options.html', extra_context={
         'form': form
     })
