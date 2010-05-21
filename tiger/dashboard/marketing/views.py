@@ -48,6 +48,7 @@ def publish(request, release_id=None):
             release = form.save(commit=False)
             release.site = request.site
             release.save()
+            cleaned_data = form.cleaned_data
             PublishTask.delay(release.id, 
                 twitter=cleaned_data.get('twitter'),
                 facebook=cleaned_data.get('facebook'),
@@ -122,17 +123,18 @@ def add_edit_subscriber(request, fax_list_id, subscriber_id=None):
     if subscriber_id is not None:
         instance = Subscriber.objects.get(id=subscriber_id)
     if request.method == 'POST':
-        form = SubscriberForm(request.POST, instance=instance)
+        form = SubscriberForm(request.POST, instance=instance, site=request.site)
         if form.is_valid():
             subscriber = form.save(commit=False)
-            fax_list = FaxList.objects.get(id=fax_list_id)
-            subscriber.fax_list = fax_list
+            if instance is None:
+                fax_list = FaxList.objects.get(id=fax_list_id)
+                subscriber.fax_list = fax_list
             subscriber.save()
             msg= 'Subscriber %s successfully.' % ('edited' if instance else 'created')
             messages.success(request, msg)
-            return HttpResponseRedirect(reverse('fax_list_detail', args=[fax_list.id]))
+            return HttpResponseRedirect(reverse('fax_list_detail', args=[subscriber.fax_list.id]))
     else:
-        form = SubscriberForm(instance=instance)
+        form = SubscriberForm(instance=instance, site=request.site)
     return direct_to_template(request, 
         template='dashboard/marketing/subscriber_form.html', 
         extra_context={

@@ -10,9 +10,17 @@ from tiger.utils.chargify import Chargify, ChargifyError
 
 
 class SubscriberForm(forms.ModelForm):
+    fax_list = forms.ModelChoiceField(queryset=FaxList.objects.all(), empty_label=None)
+
     class Meta:
         model = Subscriber
-        exclude = ['fax_list']
+
+    def __init__(self, data=None, instance=None, site=None, *args, **kwargs):
+	super(SubscriberForm, self).__init__(data=data, instance=instance, *args, **kwargs)
+        if instance is None:
+            del self.fields['fax_list']
+        else:
+            self.fields['fax_list'].queryset = site.faxlist_set.all()
 
 
 class AmPmTimeWidget(forms.widgets.Input):
@@ -42,7 +50,7 @@ class AmPmTimeField(forms.Field):
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Site
-        fields = ['street', 'city', 'state', 'zip', 'phone', 'fax_number', 'email', 'timezone']
+        fields = ['name', 'street', 'city', 'state', 'zip', 'phone', 'fax_number', 'email', 'timezone']
 
 
 class TimeSlotForm(forms.ModelForm):

@@ -124,13 +124,19 @@ class Release(models.Model):
         site = self.site
         social = site.social
         fax_machine = FaxMachine(site)
-        content = open(self.pdf.path).read()
-        kwargs ={}
+        cover_page = None
+        attachment = None
         if self.body:
             cover_page = render_to_pdf('notify/cover_page.html', {'release': self})
-            kwargs['FileSizes'] = '%d;%d' % (len(cover_page), len(content))
+            content = cover_page
+        if self.pdf:
+            attachment = open(self.pdf.path).read()
+            content = attachment
+        kwargs ={}
+        if cover_page and attachment:
+            kwargs['FileSizes'] = '%d;%d' % (len(cover_page), len(attachment))
             kwargs['FileTypes'] = 'PDF;PDF'
-            content = cover_page + content
+            content = cover_page + attachment
         fax_numbers = [s.fax for s in fax_list.subscriber_set.all()]
         transaction = fax_machine.send(fax_numbers, content, **kwargs)
         self.fax_transaction = transaction

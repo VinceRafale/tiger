@@ -71,6 +71,6 @@ class PublishForm(forms.ModelForm):
 
     def clean_mailchimp(self):
         mailchimp = self.cleaned_data.get('mailchimp')
-        if mailchimp and not self.site.mailchimp():
+        if mailchimp and not self.site.social.mailchimp_api_key:
             raise forms.ValidationError('You must connect a MailChimp account to post to MailChimp.')
         return mailchimp

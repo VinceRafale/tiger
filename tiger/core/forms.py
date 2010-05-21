@@ -79,7 +79,7 @@ def get_order_form(instance):
 class SectionForm(forms.ModelForm):
     class Meta:
         model = Section
-        exclude = ['site']
+        exclude = ['site', 'hours']
 
 
 def get_item_form(site):

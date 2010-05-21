@@ -20,7 +20,15 @@
 {% endfor %}
 </select></label> 
 
+{% autosort object_list %}
 <table id="subscribers">
+    <thead>
+      <tr>
+            <th>{% anchor organization Name %}</th>
+            <th>{% anchor fax "Fax number" %}</th>
+            <th></th>
+      </tr>
+    </thead>
     <tbody>
     {% for subscriber in object_list %}
         <tr class="{% cycle '' 'shaded' %}">
