@@ -112,7 +112,7 @@ $(function () {
         if (c) {
             trgt = this;
             action = $(this).attr("rel");
-            $.post(action, $.param({delete: true}), function (data) {
+            $.post(action, $.param({'delete': true}), function (data) {
                 if (data['deleted']) {
                     selector = '[rel="' + action + '"]';
                     containingList = $(selector).parent().parent().parent();

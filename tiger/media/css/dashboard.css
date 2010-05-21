@@ -12,8 +12,9 @@ body {background:#2c2a2c; font-size:16px;}
 ul.menu{margin:0; font-size:14px;}
 ul.menu li{float:left;margin:0;position:relative;}
 ul.menu li a{text-decoration:none;display:block;padding:8px 15px 5px 15px; margin:0; color:white;}
-ul.menu li a:hover{background-color:#ccc;background-color: rgba(0,0,0,.2); color:#34484f;}
+ul.menu li a:hover{background-color:#7e3700;color:#fff;}
 #submenu ul.menu li a{padding: 2px 10px; margin: 0 2px; font-size: 12px; color: black; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius:3px;}
+#submenu ul.menu li a:hover{background-color:#ccc;background-color: rgba(0,0,0,.2); color:#34484f;}
 #submenu {padding-bottom: 5px; border-bottom: 1px inset #ccc; margin-bottom: 10px;}
 #orderForm ul {list-style-type:none;}
 #orderForm li {display:inline;}
@@ -23,7 +24,7 @@ ul.menu li a:hover{background-color:#ccc;background-color: rgba(0,0,0,.2); color
     display: block; 
     cursor:pointer;
     padding: 2px 10px; 
-    margin: 10px 2px; 
+    margin: 0px 2px 10px;
     font-size: 12px; 
     color: white; 
     background-color:green;
@@ -75,8 +76,9 @@ a.buttonTop.last {
     margin-right:0;
 }
 
-input, select, textarea {border:1px solid grey; font-family:Arial; font-size:16px; background-color:white;}
-input:focus, select:focus, textarea:focus {background-color:#cde0e8; border-color:black;}
+input, select, textarea {border:1px solid grey; font-family:Arial; font-size:16px; background-color:white;padding: 2px 4px;border: solid 3px #6c8fa0;}
+input:focus, select:focus, textarea:focus {background-color:#cde0e8; border-color:#c76218; -webkit-box-shadow: 0 0 5px #c76218; -moz-box-shadow: 0 0 5px #c76218;}
+input[type="submit"]{}
 
 ul.errorlist {background-color:pink; color:red; border: 1px solid red; margin-bottom:1px;}
 
@@ -92,9 +94,8 @@ ul.items ul {margin:0; padding:5px 0 0;}
 ul.items li li {border:none; font-style:italic; font-size:13px; margin:0; padding:0;}
 span.pricing {font-size:13px;}
 
-label {display:block; margin-bottom:13px;}
+label {display:block; margin-top:13px;}
 textarea {width:377px; padding:4px;}
-
 label.price {float:right;}
 label.price input {width:40px;}
 
@@ -228,7 +229,7 @@ li.form label span.msg {
 *  Publish screen  *
 *******************/
 
-#id_title {width:620px; height:62px;}
+#id_title {width:620px;}
 span.counter {
     font-family: serif; 
     font-style: italic; 
@@ -264,7 +265,7 @@ th, td{padding: 0 2px;}
 h1,h2,h3,h4,h5,h6{font-family: Georgia, serif;}
 h3{font-size: 18px;}
 h3 a{display: inline-block; margin-left: 5px; font-size: 12px;}
-h4{font-size: 16px; margin: 16px 0 2px;}
+h4{font-size: 16px; margin:10px 0 5px 2px;}
 
 th.total, td.total{text-align: right;}
 
