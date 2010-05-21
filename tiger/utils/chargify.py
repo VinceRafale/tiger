@@ -1,4 +1,4 @@
-import simplejson
+import json as simplejson
 import urllib
 import urllib2
 import base64
