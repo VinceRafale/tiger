@@ -74,8 +74,8 @@ li.menu-items ul li{cursor: move;}
 {% endblock %}
 
 {% block content %}
-{# <div class="grid_12 alpha omega"> #}
     <a href="{% url dashboard_add_menu 'section' %}">New menu section</a>
+    <a id="reorder" href="#">Reorder sections</a>
     <div class="sections">
     {% for section in sections %}
     <ul class="section" id="{{ section.id }}">
@@ -97,7 +97,6 @@ li.menu-items ul li{cursor: move;}
         You have not created any menu sections. <a href="{% url dashboard_add_menu 'section' %}">Create one now</a>
     {% endfor %}
     </div>
-{# </div> #}
 {% endblock %}
 
 {% block js %}
@@ -113,20 +112,31 @@ $(function () {
         },
         cancel: "a,label"
     });
-    $("div.sections").sortable({
-        stop: function(event, ui) { 
-            $.post("sections/reorder/", $.param({
-                section_ids: $(this).sortable('toArray')
-            }, true));
-        },
-        cancel: "li.menu-items,a"
-    });
     $("a.delete").live("click", function () {
         h3Text = $(this).parent().hasClass("section-controls") ? "section" : "item";
         c = confirm("Are you sure you want to delete this " + h3Text + "? This action cannot be undone.");
         if (!c)
             return false;
     });
+    $("#reorder").toggle(
+        function () {
+            $(this).text("Done reordering");
+            $("li.menu-items").hide();
+            $("div.sections").sortable({
+                stop: function(event, ui) { 
+                    $.post("sections/reorder/", $.param({
+                        section_ids: $(this).sortable('toArray')
+                    }, true));
+                },
+                cancel: "a"
+            });
+        },
+        function () {
+            $(this).text("Reorder sections");
+            $("li.menu-items").show();
+            $("div.sections").sortable("destroy");
+        }
+    );
     $("li.menu-items li").hover(
         function () { $(this).find("label").addClass("hover"); },
         function () { $(this).find("label").removeClass("hover"); }

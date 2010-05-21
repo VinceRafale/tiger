@@ -4,7 +4,7 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('tiger.dashboard.menu.views',
     url(r'^$', 'section_list', name='dashboard_menu'),
     url(r'^section/delete/(\d+)/$', 'delete_section', name='dashboard_delete_section'),
-    url(r'^section/reorder/$', 'reorder_sections', name='dashboard_reorder_sections'),
+    url(r'^sections/reorder/$', 'reorder_sections', name='dashboard_reorder_sections'),
     url(r'^item/delete/(\d+)/$', 'delete_item', name='dashboard_delete_item'),
     url(r'^item/reorder/$', 'reorder_items', name='dashboard_reorder_items'),
     url(r'^item/flag/$', 'flag_item', name='dashboard_flag_item'),
