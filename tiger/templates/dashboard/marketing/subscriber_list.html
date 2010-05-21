@@ -4,8 +4,12 @@
 
 {% block body-class %}{{ block.super }}subscribers{% endblock %}
 
+{% block h2 %}
+{{ current_list.name }}
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>You can sort the current list by clicking on the "Name" and "Fax number" headings.</p>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +19,6 @@ FIXME
 <option {% if list == current_list %}selected {% endif %}value="{{ list.id }}">{{ list.name }}</option>
 {% endfor %}
 </select></label> 
-<h1>{{ current_list.name }}</h1>
 
 <table id="subscribers">
     <tbody>

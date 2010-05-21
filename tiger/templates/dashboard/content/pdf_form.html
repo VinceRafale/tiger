@@ -1,4 +1,4 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/content/home.html' %}
 
 {% block extrahead %}
 <style>
@@ -7,12 +7,17 @@
 </style>
 {% endblock %}
 
+{% block body-class %}{{ block.super }} pdfs{% endblock %}
+
+{% block h2 %}
+{% if form.initial|length %}Edit{% else %}Create a new{% endif %} PDF menu
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>On this screen, you can create and edit high-quality PDF menus that visitors can download from your site and you can fax to customers who still roll that way.</p>
 {% endblock %}
 
 {% block content %}
-<h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} PDF menu</h1>
 <form method="POST" action=".">
     <div class="grid_6 alpha">
         <h2>Content</h2>

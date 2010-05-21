@@ -8,24 +8,27 @@
 
 {% block body-class %}{{ block.super }}history{% endblock %}
 
+{% block h2 %}
+Online orders status
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>Use this screen to toggle availability of online ordering.</p>
+<p>You will also find a list of orders that have been placed.  Click on an order to see more information.</p>
 {% endblock %}
 
 {% block content %}
-    <h1>Online ordering</h1>
-
-    <h2>Status</h2>
     <p class="usage">
         {% if site.enable_orders %}
-        You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a> / <a href="{% url order_options %}">Edit settings</a>
+        You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a>
         {% else %}
         You are not currently taking online orders.  <a href="{% url toggle_order_status %}">Enable now</a>
         {% endif %}
     </p>
+
     <div id="chart"></div>
 
-    <h2>Latest orders</h2>
+    <h3>Latest orders</h3>
     <table id="subscribers">
         <thead>
             <tr>

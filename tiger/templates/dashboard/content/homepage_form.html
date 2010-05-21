@@ -1,19 +1,17 @@
 {% extends 'dashboard/base.html' %}
 
+{% block h2 %}
+Edit your home page
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>This is the content the visitors to your site see first. Try to use lots of keywords that pertain to your menu.</p>
 {% endblock %}
 
 {% block content %}
-<h1>Edit your home page</h1>
-<div class="grid_5 alpha">
 <form method="POST" action=".">
 {{ form.as_p }}
 </form>
-</div>
-<div class="grid_7 omega">
-<p>This is the content the visitors to your site see first. Try to use lots of keywords that pertain to your menu.</p>
-</div>
 <div class="clear"></div>
 <a class="buttonTop last" href="{% url dashboard_content %}">Cancel</a>
 <a class="buttonTop submit" href="#">Save</a>

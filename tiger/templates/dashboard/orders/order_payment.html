@@ -2,8 +2,14 @@
 
 {% block body-class %}{{ block.super }}payment{% endblock %}
 
+{% block h2 %}
+Online order payments
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>You have a few options with respect to payment for online orders.  You don't have to collect online payments at all, but if you do, you can choose between Authorize.net or PayPal.  PayPal and Authorize.net both have advantages and disadvantages.</p>
+<p>PayPal comes with a higher percentage of the transaction (around 3%), whereas Authorize.net is simply a gateway to your merchant services provider that you pay an monthly fee for.  If you want to set up Authorize.net, call your merchant services provider  -- it's possible they can get you a discount on on the activation fee.</p>
+<p>Authorize.net generally provides a better customer experience, because they will make their payment at {{ site.tiger_domain }}, whereas PayPal transactions will take the user to http://www.paypal.com and then send them back to your site after they've paid.</p>
 {% endblock %}
 
 {% block content %}

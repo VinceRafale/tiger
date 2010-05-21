@@ -18,13 +18,16 @@ background-position:-26px 0;
 
 {% block body-class %}{{ block.super }}order-settings{% endblock %}
 
+{% block h2 %}
+Edit your online ordering options
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>Check off the ordering options that you want to offer.  Make sure to fill in your minimum order for deliveries and your delivery area if you offer delivery orders.</p>
+<p>To mark your delivery area on the map, click on the <span class="olControlDrawFeaturePolygonItemInactive"></span> tool and click on the map to draw.  When you have completed an area, double-click to finish.  You may draw as many different areas as you like.</p>
 {% endblock %}
 
 {% block content %}
-<h1>Edit your online ordering options</h1>
-<p>Check off the ordering options that you want to offer.  Make sure to fill in your minimum order for deliveries and your delivery area if you offer delivery orders.
 
 <form method="POST" action=".">
 {% if form.non_field_errors %}
@@ -38,7 +41,6 @@ FIXME
 {% endif %}
 <label>{{ form.delivery_minimum.label }} {{ form.delivery_minimum }}</label>
 <h2>Delivery area</h2>
-<p>To mark your delivery area on the map, click on the <span class="olControlDrawFeaturePolygonItemInactive"></span> tool and click on the map to draw.  When you have completed an area, double-click to finish.  You may draw as many different areas as you like.</p>
 {{ form.delivery_area }}
 </form>
 

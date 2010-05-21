@@ -1,14 +1,15 @@
 {% extends 'dashboard/content/home.html' %}
 
 {% block body-class %}{{ block.super }}domain{% endblock %}
-
+{% block h2 %}
+Your custom domain
+{% endblock %}
 {% block help %}
-FIXME
+<p>You can use any domain you like with your Takeout Tiger site.  Just create an "A" record for your domain of choice and point it at {{ NGINX_IP_ADDRESS }} and enter that domain here.</p>
+<p>Your Takeout Tiger address ({{ site }}) will still work, and will be used for secure transactions if you use Authorize.net to collect payment for online orders.</p>
 {% endblock %}
 
 {% block content %}
-<p>You can use any domain you like with your Takeout Tiger site.  Just create an "A" record for your domain of choice and point it at {{ NGINX_IP_ADDRESS }} and enter that domain here.</p>
-<div class="grid_5 alpha">
 <form method="POST">
 {{ form.as_p }}
 <input type="submit" value="Save">

@@ -2,20 +2,19 @@
 
 {% block body-class %}{{ block.super }}images{% endblock %}
 
+{% block h2 %}
+{% if instance %}Edit{% else %}Add{% endif %} image
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>All images that you upload will be resized to fit in all the appropriate places on your site.</p>
 {% endblock %}
 
 {% block content %}
-<h1>{% if instance %}Edit{% else %}Add{% endif %} image</h1>
-<div class="grid_5 alpha">
 <form method="POST" enctype="multipart/form-data">
 {{ form.as_p }}
 <input type="submit" value="Save">
 </form>
-</div>
-<div class="grid_7 omega">
 {% if instance %}<img src="{{ instance.large.url }}" />{% endif %}
-</div>
 {% endblock %}
 

@@ -2,19 +2,18 @@
 
 {% block body-class %}{{ block.super }}subscribers{% endblock %}
 
+{% block h2 %}
+{% if form.initial|length %}Edit{% else %}Create a new{% endif %} subscriber
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>New subscribers will be added to the list you selected.  When you edit them, you will be able to change the list that they belong to.</p>
 {% endblock %}
 
 {% block content %}
-<h1>{% if form.initial|length %}Edit{% else %}Create a new{% endif %} subscriber</h1>
-<div class="grid_5 alpha">
 <form method="POST" action=".">
 {{ form.as_p }}
 </form>
-</div>
-<div class="grid_7 omega">
-</div>
 <div class="clear"></div>
 <a class="buttonTop last" href="{% url dashboard_marketing %}">Cancel</a>
 <a class="buttonTop submit" href="#">Save</a>

@@ -2,8 +2,10 @@
 
 {% block body-class %}{{ block.super }}images{% endblock %}
 
+{% block h2 %}Your image library{% endblock %}
+
 {% block help %}
-FIXME
+<p>Images that you add here can be linked to any menu item and to your "Home", "About", and "Find Us" pages.</p>
 {% endblock %}
 
 {% block extrahead %}
@@ -18,7 +20,6 @@ FIXME
 
 {% block content %}
 <a class="buttonTop last" href="{% url dashboard_add_img %}">Add</a>
-<h1>Your image library</h1>
 <ul id="images">
 {% for img in images %}
     <li>

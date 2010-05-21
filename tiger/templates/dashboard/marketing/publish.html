@@ -14,14 +14,16 @@ div.checkbox-select select {margin-left:20px;}
 
 {% block body-class %}{{ block.super }} publish{% endblock %}
 
+{% block h2 %}
+Publish to the web
+{% endblock %}
+
 {% block help %}
-FIXME
+<p>Use this form to publish marketing materials on your site and Twitter, Facebook, e-mail (via MailChimp), and fax simultaneously.</p>
+<p>You must have the respective accounts configured on the <a href="{% url dashboard_marketing %}">Integrations</a> screen to send through Twitter, Facebook, or MailChimp.</p>
 {% endblock %}
 
 {% block content %}
-<p class="help">
-Use this form to publish marketing materials on your site and Twitter, Facebook, e-mail (via MailChimp), and fax simultaneously.
-</p>
 <form method="POST">
 <div class='checkbox-select'>
 <label>{{ form.add_coupon }} {{ form.add_coupon.label }}</label> {{ form.coupon }}
