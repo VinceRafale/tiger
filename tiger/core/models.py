@@ -13,8 +13,8 @@ from django.utils.safestring import mark_safe
 from paypal.standard.ipn.signals import payment_was_successful
 
 from tiger.content.handlers import pdf_caching_handler
+from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler, coupon_social_handler
-from tiger.notify.tasks import SendFaxTask
 from tiger.utils.fields import PickledObjectField
 from tiger.utils.hours import is_available
 from tiger.utils.pdf import render_to_pdf
@@ -266,8 +266,8 @@ class Order(models.Model):
             'cart': self.cart,
             'order_no': self.id,
         })
-        site = self.site
-        SendFaxTask.delay(site, site.fax_number, content, IsFineRendering=True)
+        fax_machine = FaxMachine(self.site)
+        fax_machine.send(self.site.fax_number, content)
         self.status = status
         self.save()
 
@@ -396,7 +396,7 @@ class CouponUse(models.Model):
 def register_paypal_payment(sender, **kwargs):
     ipn_obj = sender
     order = Order.objects.get(id=ipn_obj.invoice)
-    order.notify_restaurant(Order.STATUS_PAID)
+    DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
 
 
 def new_site_setup(sender, instance, created, **kwargs):

@@ -9,6 +9,7 @@ from paypal.standard.forms import PayPalPaymentsForm
 
 from tiger.core.forms import get_order_form, OrderForm, CouponForm, AuthNetForm
 from tiger.core.models import Section, Item, Coupon, Order
+from tiger.notify.tasks import DeliverOrderTask
 from tiger.utils.views import render_custom
 
 def section_list(request):
@@ -120,7 +121,7 @@ def send_order(request):
                         order_id=order.id
                     )
                 )
-            order.notify_restaurant(Order.STATUS_SENT)
+            DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
             return HttpResponseRedirect(reverse('order_success'))
     else:
         form = OrderForm(site=request.site)
