@@ -207,6 +207,12 @@ class OrderSettingsForm(forms.ModelForm):
                 return
         super(OrderSettingsForm, self)._post_clean()
 
+    def clean_delivery_area(self):
+        area = self.cleaned_data.get('delivery_area')
+        if area == '':
+            return None
+        return area
+
 
 class OrderPaymentForm(forms.ModelForm):
     payment_type = forms.TypedChoiceField(
