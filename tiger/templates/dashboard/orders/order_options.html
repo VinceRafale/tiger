@@ -39,7 +39,7 @@ Edit your online ordering options
 {% if form.delivery_minimum.errors %}
 {{ form.delivery_minimum.errors }}
 {% endif %}
-<label>{{ form.delivery_minimum.label }} {{ form.delivery_minimum }}</label>
+<label id="delivery-minimum">{{ form.delivery_minimum.label }} {{ form.delivery_minimum }}</label>
 <h2>Delivery area</h2>
 {{ form.delivery_area }}
 </form>
@@ -51,8 +51,20 @@ Edit your online ordering options
 {% block js %}
 <script type="text/javascript">
 $(function () {
+    if ($("#id_delivery").attr("checked")) {
+        $("#delivery-minimum").show();
+    } else {
+        $("#delivery-minimum").hide();
+    }
     $("a.submit").click(function () {
         $("form").submit();
+    });
+    $("#id_delivery").click(function () {
+        if ($(this).attr("checked")) {
+            $("#delivery-minimum").show();
+        } else {
+            $("#delivery-minimum").hide();
+        }
     });
 });
 </script>
