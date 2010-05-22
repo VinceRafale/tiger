@@ -146,7 +146,7 @@ class TimeSlot(models.Model):
 
     def save(self, *args, **kwargs):
         super(TimeSlot, self).save(*args, **kwargs)
-        if section is None:
+        if self.section is None:
             self.site.calculate_hour_string()
 
     def _pretty_time(self, time_obj):
