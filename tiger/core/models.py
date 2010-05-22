@@ -16,7 +16,7 @@ from tiger.content.handlers import pdf_caching_handler
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler, coupon_social_handler
 from tiger.utils.fields import PickledObjectField
-from tiger.utils.hours import is_available
+from tiger.utils.hours import *
 from tiger.utils.pdf import render_to_pdf
 
 

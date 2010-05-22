@@ -148,6 +148,8 @@ class TimeSlot(models.Model):
         super(TimeSlot, self).save(*args, **kwargs)
         if self.section is None:
             self.site.calculate_hour_string()
+        else:
+            self.section.calculate_hour_string()
 
     def _pretty_time(self, time_obj):
         hour = '12' if time_obj.hour == 12 else str(time_obj.hour % 12)

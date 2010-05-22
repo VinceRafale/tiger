@@ -11,8 +11,18 @@ FIXME
 {% endblock %}
 
 {% block defaults %}
-<h2>Default values</h2>
-<p class="help">
-If you have a common set of prices, extras or groups of available sidedishes for this menu section, you can define defaults here that will be created automatically for ever new item in the section.  If they don't apply to 100% of the items that might be in this section, don't worry -- you can just delete unneeded prices, etc. or edit them to your liking.
-</p>
+    {% if object %}
+        <h2>Hours of availability</h2>
+        {% if object.hours %}
+        <p>{{ object.hours }}</p>
+        {% else %}
+        <p>You can control when items from this specific category are ordered, like lunch specials or breakfast items.</p>
+        {% endif %}
+        <a href="{% url dashboard_edit_section_hours object.id %}">Edit availability</a>
+
+        <h2>Default values</h2>
+        <p class="help">
+        If you have a common set of prices, extras or groups of available sidedishes for this menu section, you can define defaults here that will be created automatically for ever new item in the section.  If they don't apply to 100% of the items that might be in this section, don't worry -- you can just delete unneeded prices, etc. or edit them to your liking.
+        </p>
+    {% endif %}
 {% endblock %}

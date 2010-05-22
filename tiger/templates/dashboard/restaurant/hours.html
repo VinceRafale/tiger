@@ -1,11 +1,22 @@
 {% extends 'dashboard/restaurant/home.html' %}
 
-{% block body-class %}{{ block.super }}hours{% endblock %}
+{% block body-class %}{{ block.super }}menu{% endblock %}
 
-{% block h2 %}Your restaurant hours{% endblock %}
+{% block h2 %}
+    {% if section %}
+    {{ section }} hours
+    {% else %}
+    Your restaurant hours
+    {% endif %}
+{% endblock %}
 
 {% block help %}
+{% if section %}
+<p>Specify the hours that {{ section }} items are available below.</p>
+<p>Please note that if these hours extend beyond your restaurant hours, your restaurant hours will take precedence hwen someone is placing an online order.</p>
+{% else %}
 <p>Please edit the hours that your restaurant is open.  These hours will appear on your site and in your blast messages and will control when orders can be placed online.</p>
+{% endif %}
 {% endblock %}
 
 {% block extrahead %}

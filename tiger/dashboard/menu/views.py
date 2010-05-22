@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import get_model
 from django.forms.models import inlineformset_factory
@@ -11,8 +12,11 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.core.forms import *
 from tiger.core.models import *
+from tiger.accounts.forms import TimeSlotForm
+from tiger.accounts.models import TimeSlot
 from tiger.utils.forms import RequireOneFormSet
 from tiger.utils.views import add_edit_site_object, delete_site_object
+from tiger.utils.hours import *
 
 def _reorder_objects(model, id_list):
     for i, obj_id in enumerate(id_list):
@@ -211,3 +215,35 @@ def flag_item(request):
     setattr(item, attr, True if val == 'true' else False)
     item.save()
     return HttpResponse('')
+
+@login_required
+def section_hours(request, section_id):
+    #TODO: make this DRY with the restaurant hours view
+    section = Section.objects.get(id=section_id)
+    def get_forms(data=None):
+        forms = []
+        for dow, label in DOW_CHOICES:
+            try:
+                instance = TimeSlot.objects.get(site=request.site, dow=dow)
+            except TimeSlot.DoesNotExist:
+                instance = None
+            form = TimeSlotForm(data=data, instance=instance, prefix=dow)
+            forms.append(form)
+        return forms
+    if request.method == 'POST':
+        forms = get_forms(request.POST)
+        if all(form.is_valid() for form in forms):
+            for dow, form in zip([dow for dow, label in DOW_CHOICES], forms):
+                instance = form.save()
+                # overridden save() will return None if no times are given for a day
+                if instance is not None:
+                    instance.dow = dow
+                    instance.site = request.site
+                    instance.section = section
+                    instance.save()
+            messages.success(request, 'Hours updated successfully.')
+            return HttpResponseRedirect(reverse('dashboard_view_menu', args=['section', section.id]))
+    else:
+        forms = get_forms()
+    form_list = zip([label for dow, label in DOW_CHOICES], forms)
+    return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context={'form_list': form_list, 'section': section})
