@@ -15,8 +15,8 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{% url dashboard_add_menu 'section' %}">New menu section</a>
     <a id="reorder" href="#">Reorder sections</a>
+    <a href="{% url dashboard_add_menu 'section' %}">+Add menu section</a>
     <div class="sections">
     {% for section in sections %}
     <ul class="section" id="{{ section.id }}">
