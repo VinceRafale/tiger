@@ -12,7 +12,6 @@ from facebook import Facebook, FacebookError
 from oauth import oauth
 
 from tiger.accounts.models import Subscriber, FaxList
-from tiger.core.models import Order
 from tiger.notify.fax import FaxServiceError
 from tiger.notify.models import Release
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
@@ -20,6 +19,7 @@ from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_sta
 
 class DeliverOrderTask(Task):
     def run(self, order_id, status):
+        from tiger.core.models import Order
         order = Order.objects.get(id=order_id)
         order.notify_restaurant(status)
 
