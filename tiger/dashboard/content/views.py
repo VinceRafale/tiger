@@ -76,16 +76,16 @@ def img_list(request):
 @login_required
 def add_img(request):
     return add_edit_site_object(request, ItemImage, AddImageForm, 
-        'dashboard/content/img_form.html', 'dashboard_content')
+        'dashboard/content/img_form.html', 'dashboard_img_list')
 
 @login_required
 def edit_img(request, img_id):
     return add_edit_site_object(request, ItemImage, EditImageForm, 
-        'dashboard/content/img_form.html', 'dashboard_content', object_id=img_id)
+        'dashboard/content/img_form.html', 'dashboard_img_list', object_id=img_id)
 
 @login_required
 def delete_img(request, img_id):
-    return delete_site_object(request, ItemImage, img_id, 'dashboard_content')
+    return delete_site_object(request, ItemImage, img_id, 'dashboard_img_list')
 
 @login_required
 def custom_domain(request):
@@ -100,3 +100,10 @@ def custom_domain(request):
         'form': form,
         'NGINX_IP_ADDRESS': settings.NGINX_IP_ADDRESS
     })
+
+def get_images(request):
+    list_items = ''.join([
+        '<li><a href="#" id="%d"><img src="%s" /></a></li>' % (img.id, img.thumb.url)
+        for img in request.site.itemimage_set.all()
+    ])
+    return HttpResponse('<ul id="images">%s</ul>' % list_items)

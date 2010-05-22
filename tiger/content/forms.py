@@ -1,12 +1,17 @@
 from django import forms
 
 from tiger.content.models import Content, PdfMenu, ItemImage
+from tiger.dashboard.widgets import ImageChooserWidget
 
 
 class ContentForm(forms.ModelForm):
     class Meta:
         model = Content
         exclude = ['site']
+
+    def __init__(self, data=None, site=None, *args, **kwargs):
+        super(ContentForm, self).__init__(data, *args, **kwargs)
+        self.fields['image'].widget = ImageChooserWidget(site=site)
 
 
 class PdfMenuForm(forms.ModelForm):

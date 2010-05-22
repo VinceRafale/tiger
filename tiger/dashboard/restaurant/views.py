@@ -22,9 +22,20 @@ def location(request):
         
 
 def edit_content(request, slug):
-    c = Content.objects.get(site=request.site, slug=slug)
-    return update_object(request, form_class=ContentForm, object_id=c.id, 
-        template_name='dashboard/content/%s_form.html' % slug, post_save_redirect='/dashboard/content/')
+    instance = Content.objects.get(site=request.site, slug=slug)
+    if request.method == 'POST':
+        form = ContentForm(request.POST, site=request.site, instance=instance)
+        if form.is_valid():
+            content = form.save(commit=False)
+            content.site = request.site
+            content.save()
+            messages.success(request, 'Content updated successfully.')
+            return HttpResponseRedirect(reverse('dashboard_content'))
+    else:
+        form = ContentForm(site=request.site, instance=instance)
+    return direct_to_template(request, template='dashboard/content/%s_form.html' % slug, extra_context={
+        'form': form
+    })
         
 
 def edit_hours(request):

@@ -8,16 +8,6 @@
 <p>Images that you add here can be linked to any menu item and to your "Home", "About", and "Find Us" pages.</p>
 {% endblock %}
 
-{% block extrahead %}
-<style type="text/css">
-#images li {float:left; width:91px; text-align:center;}
-#images li img {border:8px #dedede solid; cursor:pointer;}
-#images li img:hover {border-color:#94cad0;}
-#images a {font-size:11px;}
-#images li.empty-set {width:100%; text-align:left;}
-</style>
-{% endblock %}
-
 {% block content %}
 <a class="buttonTop last" href="{% url dashboard_add_img %}">Add</a>
 <ul id="images">

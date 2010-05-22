@@ -1,5 +1,9 @@
 {% extends 'dashboard/content/home.html' %}
 
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
 {% block body-class %}{{ block.super }} content{% endblock %}
 
 {% block h2 %}
