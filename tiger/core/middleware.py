@@ -75,7 +75,6 @@ class Cart(object):
         return 'coupon' in self
 
     def tally(self, item):
-        print item
         qty = item['quantity']
         base_price = item['variant'].price
         upgrades = 0
