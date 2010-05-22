@@ -1,4 +1,6 @@
-{% extends 'dashboard/base.html' %}
+{% extends 'dashboard/content/home.html' %}
+
+{% block body-class %}{{ block.super }} content{% endblock %}
 
 {% block h2 %}
 Edit your "Find Us" blurb
