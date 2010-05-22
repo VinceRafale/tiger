@@ -69,7 +69,7 @@ class Section(models.Model):
             return True
         return is_available(
             timeslots=self.timeslot_set.all(), 
-            timezone=self.site.timezone
+            tz=self.site.timezone
         )
 
     def calculate_hour_string(self, commit=True):
