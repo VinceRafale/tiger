@@ -10,6 +10,9 @@
 
 {% block content %}
 <h1>{{ section }}</h1>
+{% if section.hours %}
+<p><em>Available {{ section.hours }}</em></p>
+{% endif %}
 {{ section.description|linebreaks }}
 <dl>
     <dt><span class="pepper">❧</span></dt>
