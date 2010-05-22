@@ -12,6 +12,7 @@ from authorize.aim import Api
 from olwidget.widgets import EditableMap
 
 from tiger.core.models import *
+from tiger.dashboard.widgets import ImageChooserWidget
 
 GEOCODE_URL = 'http://maps.google.com/maps/api/geocode/json'
 
@@ -81,6 +82,9 @@ class SectionForm(forms.ModelForm):
         model = Section
         exclude = ['site', 'hours']
 
+    def __init__(self, data=None, site=None, *args, **kwargs):
+        super(SectionForm, self).__init__(data=data, *args, **kwargs)
+
 
 def get_item_form(site):
     class ItemForm(forms.ModelForm):
@@ -88,6 +92,9 @@ def get_item_form(site):
         class Meta:
             model = Item
             exclude = ['site']
+        def __init__(self, data=None, *args, **kwargs):
+            super(ItemForm, self).__init__(data=data, *args, **kwargs)
+            self.fields['image'].widget = ImageChooserWidget(site=site)
     return ItemForm
 
 

@@ -126,7 +126,7 @@ class Site(models.Model):
     def is_open(self):
         return is_available(
             timeslots=self.timeslot_set.all(), 
-            timezone=self.timezone
+            tz=self.timezone
         )
 
     @property
@@ -146,7 +146,7 @@ class TimeSlot(models.Model):
 
     def save(self, *args, **kwargs):
         super(TimeSlot, self).save(*args, **kwargs)
-        if section is None:
+        if self.section is None:
             self.site.calculate_hour_string()
 
     def _pretty_time(self, time_obj):

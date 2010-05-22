@@ -5,10 +5,11 @@ prod = 'threadsafe@takeouttiger.com:1123'
 staging = 'threadsafe@demo.takeouttiger.com:1123'
 
 def deploy():
+    local('git push origin master')
     with cd('/home/threadsafe/tiger/'):
         sudo('chown -R threadsafe:threadsafe tiger/media')
         run('git pull origin master')
-        run('bin/buildout -c production.cfg')
+        run('bin/buildout -N -c production.cfg')
         run('bin/django syncdb')
         run('bin/django migrate')
         sudo('chown -R www-data:www-data tiger/media')

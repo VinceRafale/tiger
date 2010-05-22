@@ -1,5 +1,6 @@
 from django import forms
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 from tiger.content.models import ItemImage
 
@@ -35,4 +36,4 @@ class ImageChooserWidget(forms.HiddenInput):
         if value:
             anchor += '<a href="#" class="chooser-remove">Remove</a>'
         html += anchor
-        return html
+        return mark_safe(html)

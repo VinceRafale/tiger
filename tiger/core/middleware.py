@@ -75,10 +75,9 @@ class Cart(object):
         return 'coupon' in self
 
     def tally(self, item):
-        print item
         qty = item['quantity']
         base_price = item['variant'].price
-        upgrades = 0
+        upgrades, sides = 0, 0
         if item.has_key('upgrades'):
             upgrades = sum(upgrade.price for upgrade in item['upgrades'])
         if len(item['sides']):
