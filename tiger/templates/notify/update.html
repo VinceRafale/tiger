@@ -27,16 +27,16 @@
     }
 }
 @font-face {
-    font-family: Opticon;
-    src: url({{ MEDIA_URL }}fonts/Optio___.ttf);
+    font-family: Custom;
+    src: url({{ site.skin.header_font.ttf.url }});
 }
-* {font-family: Arial, sans-serif;}
-h1, h2, h4 {font-family: Opticon;}
+* {font-family: {{ site.skin.get_body_font_display }};}
+h1, h2, h4 {font-family: Custom;}
 h1 {font-size:24px;}
 h2 {font-size:18px; text-decoration:underline; margin-bottom:0;}
 h4 {font-size:14px; margin:auto auto 0 auto; display:inline; padding-bottom:0;}
 p {font-size:12px; margin-top:0; padding-top:0;}
-em {font-family: Arial, sans-serif; font-weight:normal; font-size:13px; margin:0 auto 0 auto;}
+em {font-family: {{ site.skin.get_body_font_display }}; font-weight:normal; font-size:13px; margin:0 auto 0 auto;}
 td {vertical-align:top; padding:0.5em;}
 
 #header address {font-size:13px;}
