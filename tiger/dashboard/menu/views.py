@@ -83,7 +83,8 @@ def add_related(request, object_type, object_id, form_class):
         setattr(obj, object_type, instance)
         obj.save()
         row = render_to_string('dashboard/menu/includes/%s_row.html' % obj.__class__.__name__.lower(), {
-            'obj': obj    
+            'obj': obj,    
+            'MEDIA_URL': settings.MEDIA_URL
         })
         result = {
             'new_row': row
@@ -109,8 +110,9 @@ def add_sidegroup(request, object_type, object_id):
         setattr(group, object_type, instance)
         group.save()
         result['success'] = True
-        result['row'] = render_to_string('dashboard/menu/includes/group_row.html', {
-            'group': group
+        result['new_row'] = render_to_string('dashboard/menu/includes/group_row.html', {
+            'group': group,
+            'MEDIA_URL': settings.MEDIA_URL
         })
     except:
         result['success'] = False
@@ -126,7 +128,8 @@ def add_side(request, object_id, instance=None):
         obj.group = instance
         obj.save()
         row = render_to_string('dashboard/menu/includes/side_row.html', {
-            'obj': obj    
+            'obj': obj,
+            'MEDIA_URL': settings.MEDIA_URL
         })
         result = {
             'new_row': row

@@ -61,6 +61,38 @@ $(function () {
         return false;
     });
 
+    $("ul.group-wrap a.add").click(function () {
+        listTag = $(this).prev();
+        if (!$(listTag).find("li.form").length) {
+            $(listTag).append($(getForm(this)));
+        } else {
+            $(listTag).find("input:first").focus();
+        }
+        return false;
+    });
+
+    $("a.delete-group").live("click", function () {
+        c = confirm('Are you sure you want to delete this group?  This action cannot be undone.');
+        if (c) {
+            trgt = this;
+            action = $(this).attr("rel");
+            $.post(action, $.param({'delete': true}), function (data) {
+                if (data['deleted']) {
+                    selector = '[rel="' + action + '"]';
+                    containingList = $(selector).parent().parent();
+                    $(selector).parent().remove();
+                    if (!$(containingList).children().length) {
+                        $(containingList).append('<li class="empty">No ' + $(containingList).closest("div").find("h3").text().toLowerCase() + ' defined.</li>');
+                    }
+                } else {
+                    $(selector).insertAfter('<span class="fail">An error occurred.</span>');
+                    $("span.fail").delay(1500).fadeOut("fast", function () { $(this).remove(); });
+                }
+            }, "json");
+        }
+        return false;
+    });
+
     $("a.inline-cancel").live("click", function () {
         if ($(this).parent().hasClass("populated")) {
             $(this).parent().prev().show();
