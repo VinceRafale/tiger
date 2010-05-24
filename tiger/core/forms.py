@@ -170,11 +170,22 @@ class CouponCreationForm(forms.ModelForm):
 
 
 class OrderSettingsForm(forms.ModelForm):
+    receive_via = forms.TypedChoiceField(
+        widget=forms.RadioSelect, choices=OrderSettings.RECEIPT_CHOICES, coerce=int)
     delivery_area = forms.CharField(required=False)
+    email = forms.EmailField(label='E-mail address for receiving orders', required=False)
+    fax = USPhoneNumberField(label='Fax number for receiving orders', required=False)
 
     class Meta:
         model = OrderSettings
-        fields = ('dine_in', 'takeout', 'delivery', 'delivery_minimum', 'delivery_area',)
+        fields = (
+            'dine_in', 
+            'takeout', 
+            'delivery', 
+            'delivery_minimum', 
+            'delivery_area', 
+            'receive_via',
+        )
 
     def __init__(self, data=None, site=None, *args, **kwargs):
         lon, lat = geocode(site.address)
@@ -190,6 +201,9 @@ class OrderSettingsForm(forms.ModelForm):
                 'controls': ['Navigation', 'PanZoom']
             }
         })
+        self.fields['email'].initial = site.email
+        self.fields['fax'].initial = site.fax_number
+        self.site = site
 
     def clean(self):
         cleaned_data = super(OrderSettingsForm, self).clean()
@@ -212,6 +226,20 @@ class OrderSettingsForm(forms.ModelForm):
         if area == '':
             return None
         return area
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        via_email = self.cleaned_data['receive_via'] == OrderSettings.RECEIPT_EMAIL
+        if via_email and not email:
+            raise forms.ValidationError('You must specify an e-mail address to receive orders via e-mail.')
+        return email
+
+    def clean_fax(self):
+        fax = self.cleaned_data.get('fax')
+        via_fax = self.cleaned_data['receive_via'] == OrderSettings.RECEIPT_FAX
+        if via_fax and not fax:
+            raise forms.ValidationError('You must specify a fax number to receive orders via fax.')
+        return fax
 
 
 class OrderPaymentForm(forms.ModelForm):

@@ -278,7 +278,14 @@ class OrderSettings(models.Model):
         (PAYMENT_PAYPAL, 'PayPal'), 
         (PAYMENT_AUTHNET, 'Authorize.net'),
     )
+    RECEIPT_EMAIL = 1
+    RECEIPT_FAX = 2
+    RECEIPT_CHOICES = (
+        (RECEIPT_EMAIL, 'E-mail'),
+        (RECEIPT_FAX, 'Fax'),
+    )
     site = models.OneToOneField('accounts.Site')
+    receive_via = models.IntegerField(default=1, choices=RECEIPT_CHOICES)
     dine_in = models.BooleanField(default=True) 
     takeout = models.BooleanField(default=True) 
     delivery = models.BooleanField(default=True) 

@@ -33,6 +33,7 @@ Edit your online ordering options
 {% if form.non_field_errors %}
 {{ form.non_field_errors }}
 {% endif %}
+<h3>What sort of orders will you take online?</h3>
 {{ form.dine_in }} {{ form.dine_in.label }}
 {{ form.takeout }} {{ form.takeout.label }}
 {{ form.delivery }} {{ form.delivery.label }}
@@ -40,7 +41,20 @@ Edit your online ordering options
 {{ form.delivery_minimum.errors }}
 {% endif %}
 <label id="delivery-minimum">{{ form.delivery_minimum.label }} {{ form.delivery_minimum }}</label>
-<h2>Delivery area</h2>
+<h3>How do you want to receive orders?</h3>
+{% if form.receive_via.errors %}
+{{ form.receive_via.errors }}
+{% endif %}
+{{ form.receive_via }}
+{% if form.email.errors %}
+{{ form.email.errors }}
+{% endif %}
+<label id="delivery-email">{{ form.email.label }} {{ form.email }}</label>
+{% if form.fax.errors %}
+{{ form.fax.errors }}
+{% endif %}
+<label id="delivery-fax">{{ form.fax.label }} {{ form.fax }}</label>
+<h3>Delivery area</h3>
 {{ form.delivery_area }}
 </form>
 
@@ -56,6 +70,11 @@ $(function () {
     } else {
         $("#delivery-minimum").hide();
     }
+    if ($("input[name='receive_via']:checked").val() == 1) {
+        $("#delivery-fax").hide();
+    } else {
+        $("#delivery-email").hide();
+    }
     $("a.submit").click(function () {
         $("form").submit();
     });
@@ -64,6 +83,15 @@ $(function () {
             $("#delivery-minimum").show();
         } else {
             $("#delivery-minimum").hide();
+        }
+    });
+    $("input[name='receive_via']").click(function () {
+        if ($(this).val() == 1) {
+            $("#delivery-email").show();
+            $("#delivery-fax").hide();
+        } else {
+            $("#delivery-fax").show();
+            $("#delivery-email").hide();
         }
     });
 });

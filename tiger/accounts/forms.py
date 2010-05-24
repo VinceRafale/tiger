@@ -50,7 +50,7 @@ class AmPmTimeField(forms.Field):
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Site
-        fields = ['name', 'street', 'city', 'state', 'zip', 'phone', 'fax_number', 'email', 'timezone']
+        fields = ['name', 'street', 'city', 'state', 'zip', 'phone', 'timezone']
 
 
 class TimeSlotForm(forms.ModelForm):
