@@ -2,6 +2,7 @@ import time
 from datetime import datetime, date
 from decimal import Decimal
 
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
 from django.contrib.localflavor.us.models import *
@@ -261,13 +262,21 @@ class Order(models.Model):
         """Sends a message to the restaurant with the information about the order
         and flags the order as either sent or paid.
         """
-        content = render_to_pdf('notify/order.html', {
-            'order': self,
-            'cart': self.cart,
-            'order_no': self.id,
-        })
-        fax_machine = FaxMachine(self.site)
-        fax_machine.send(self.site.fax_number, content)
+        if self.site.ordersettings.receive_via == OrderSettings.RECEIPT_EMAIL:
+            content = render_to_string('notify/order.html', {
+                'order': self,
+                'cart': self.cart,
+                'order_no': self.id,
+            })
+            send_mail('Takeout Tiger Order #%d' % self.id, content, 'do-not-reply@takeouttiger.com', [self.site.email]) 
+        else:
+            content = render_to_pdf('notify/order.html', {
+                'order': self,
+                'cart': self.cart,
+                'order_no': self.id,
+            })
+            fax_machine = FaxMachine(self.site)
+            fax_machine.send(self.site.fax_number, content)
         self.status = status
         self.save()
 
