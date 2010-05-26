@@ -30,7 +30,7 @@ PDF Menus
                 <td>{{ pdf.name }}</td>
                 <td>{{ pdf.page_count }}</td>
                 <td>{{ pdf.featured|yesno:"Yes,No" }}</td>
-                <td><a href="{% url dashboard_preview_pdf pdf.id %}">Preview</a></td>
+                <td><a href="{{ pdf.url }}">Preview</a></td>
                 <td><a href="{% url dashboard_edit_pdf pdf.id %}">Edit</a></td>
                 <td>{% if not pdf.featured %}<a href="{% url dashboard_feature_pdf pdf.id %}">Feature</a>{% endif %}</td>
                 <td><a href="{% url dashboard_delete_pdf pdf.id %}">Delete</a></td>
