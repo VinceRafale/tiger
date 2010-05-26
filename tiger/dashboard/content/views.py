@@ -31,6 +31,7 @@ def add_edit_pdf(request, pdf_id=None):
             pdf.site = request.site
             pdf.save()
             form.save_m2m()
+            pdf.update()
             verb = 'edited' if instance else 'created'
             messages.success(request, 'PDF menu %s successfully.' % verb)
             return HttpResponseRedirect(reverse('dashboard_content'))

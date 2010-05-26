@@ -71,15 +71,19 @@ class PdfMenu(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            super(PdfMenu, self).save(*args, **kwargs)
+    def save(self, update=False, *args, **kwargs):
+        super(PdfMenu, self).save(*args, **kwargs)
+        if update:
+            self.update()
+
+    def update(self):
         f = open(self.path, 'w')
         f.write(self.render())
         f.close()
         reader = PdfFileReader(open(self.path))
         self.page_count = reader.getNumPages()
-        super(PdfMenu, self).save(*args, **kwargs)
+        self.save()
+        
 
     def render(self):
         columns = self._get_columns() 
