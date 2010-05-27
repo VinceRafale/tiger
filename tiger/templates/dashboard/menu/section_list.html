@@ -15,8 +15,10 @@
 {% endblock %}
 
 {% block content %}
+    <span class="buttons">
     <a id="reorder" href="#">Reorder sections</a>
     <a href="{% url dashboard_add_menu 'section' %}">+Add menu section</a>
+    </span>
     <div class="sections">
     {% for section in sections %}
     <ul class="section" id="{{ section.id }}">

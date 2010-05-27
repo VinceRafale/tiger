@@ -11,8 +11,9 @@ Your coupons
 {% endblock %}
 
 {% block content %}
-<div class="grid_12 alpha">
-<a href="{% url dashboard_add_coupon %}">Add</a>
+<span class="buttons">
+<a href="{% url dashboard_add_coupon %}">+ new coupon</a>
+</span>
 <table id="subscribers">
     <thead>
         <tr>
@@ -37,6 +38,5 @@ Your coupons
     {% endfor %}
     </tbody>
 </table>
-</div>
 <div class="clear"></div>
 {% endblock %}

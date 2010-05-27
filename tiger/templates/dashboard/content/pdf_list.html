@@ -11,7 +11,9 @@ PDF Menus
 {% endblock %}
 
 {% block content %}
-        <a class="buttonTop last" href="{% url dashboard_add_pdf %}">Add</a>
+    <span class="buttons">
+        <a href="{% url dashboard_add_pdf %}">+ new menu</a>
+    </span>
     <table>
         <thead>
             <tr>

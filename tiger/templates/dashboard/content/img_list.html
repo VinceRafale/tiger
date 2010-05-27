@@ -9,7 +9,9 @@
 {% endblock %}
 
 {% block content %}
-<a class="buttonTop last" href="{% url dashboard_add_img %}">Add</a>
+<span class="buttons">
+<a href="{% url dashboard_add_img %}">+ New image</a>
+</span>
 <ul id="images">
 {% for img in images %}
     <li>
