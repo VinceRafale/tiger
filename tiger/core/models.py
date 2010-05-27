@@ -356,6 +356,10 @@ class OrderSettings(models.Model):
             path = reverse('payment_authnet')
             return '%s%s?cs=%s&o=%d' % (domain, path, cart_id, order_id)
         assert False
+
+    def can_receive_orders(self):
+        return (self.receive_via == OrderSettings.RECEIPT_EMAIL and self.site.email) \
+            or (self.receive_via == OrderSettings.RECEIPT_FAX and self.site.fax_number)
     
 
 class Coupon(models.Model):

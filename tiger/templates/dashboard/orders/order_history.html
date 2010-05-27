@@ -18,13 +18,15 @@ Online orders status
 {% endblock %}
 
 {% block content %}
-    <p class="usage">
         {% if site.enable_orders %}
-        You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a>
+        <p class="usage greenlight">
+            You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a>
+        </p>
         {% else %}
-        You are not currently taking online orders.  <a href="{% url toggle_order_status %}">Enable now</a>
+        <p class="usage redlight">
+            You are not currently taking online orders.  <a href="{% url toggle_order_status %}">Enable now</a>
+        </p>
         {% endif %}
-    </p>
 
     <div id="chart"></div>
 

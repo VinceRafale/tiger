@@ -360,3 +360,7 @@ span.buttons a {
 span.buttons a:hover {
     background-color:#78c5e5;
 }
+p.greenlight {color:#126612;background-color:#d3ead3;border-color:#126612;}
+p.greenlight a {color:#126612;}
+p.redlight {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}
+p.redlight a {color:#ae0001;}
