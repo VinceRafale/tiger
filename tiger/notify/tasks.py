@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.db.models import get_model
+from django.template.loader import render_to_string
 
 from celery.task import Task
 from facebook import Facebook, FacebookError

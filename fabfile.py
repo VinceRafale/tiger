@@ -12,6 +12,8 @@ def deploy():
         run('bin/django syncdb')
         run('bin/django migrate')
         run('touch bin/django.wsgi')
+        sudo('/etc/init.d/celeryd stop')
+        sudo('/etc/init.d/celeryd start')
 
 @hosts(staging)
 def deploy_staging():
