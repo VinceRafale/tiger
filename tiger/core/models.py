@@ -250,7 +250,7 @@ class Order(models.Model):
     zip = models.CharField(max_length=10, blank=True, null=True)
     pickup = models.CharField('Time you will pick up your order', max_length=20)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
-    cart = models.PickledObjectField(editable=False)
+    cart = PickledObjectField(editable=False)
     timestamp = models.DateTimeField(default=datetime.now, editable=False)
     method = models.IntegerField('This order is for', default=1, choices=METHOD_CHOICES)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_INCOMPLETE)
