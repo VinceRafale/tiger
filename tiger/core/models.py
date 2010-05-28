@@ -8,6 +8,7 @@ from django.contrib.gis.db import models
 from django.contrib.localflavor.us.models import *
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 from django.utils.http import int_to_base36
 from django.utils.safestring import mark_safe
 
