@@ -50,7 +50,7 @@ class PublishForm(forms.ModelForm):
 
     class Meta:
         model = Release
-        exclude = ('site',)
+        exclude = ('site', 'twitter', 'facebook', 'mailchimp',)
 
     def __init__(self, data=None, files=None, site=None, *args, **kwargs):
         super(PublishForm, self).__init__(data=data, files=files, *args, **kwargs)

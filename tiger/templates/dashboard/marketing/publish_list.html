@@ -1,19 +1,26 @@
 {% extends 'dashboard/marketing/home.html' %}
 
-{% block namespace %}xmlns:fb="http://www.facebook.com/2008/fbml"{% endblock %}
-
-{% block extrahead %} {{ form.media }} <style>
-#submit {float:right;}
-div.checkbox-select {clear:left;}
-div.checkbox-select label {float:left;}
-div.checkbox-select select {margin-left:20px;}
+{% block extrahead %}
+{{ form.media }}
+<style>
+#published li {
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+    background-color:white;
+    margin-left:0;
+    padding:4px;
+}
+#published li li {
+    float: left; 
+}
 </style>
 {% endblock %}
 
 {% block body-class %}{{ block.super }} publish{% endblock %}
 
 {% block h2 %}
-Publish to the web
+Your published news items
 {% endblock %}
 
 {% block help %}
@@ -22,61 +29,54 @@ Publish to the web
 {% endblock %}
 
 {% block content %}
-<form method="POST">
-<div class='checkbox-select'>
-<label>{{ form.add_coupon }} {{ form.add_coupon.label }}</label> {{ form.coupon }}
-</div>
-<div class='checkbox-select'>
-<label>{{ form.add_pdf }} {{ form.add_pdf.label }}</label> {{ form.pdf }}
-</div>
-<div class="clear"></div>
-<label>
-<h3>Title text</h3>
-<p class="help">{{ form.title.help_text }}</p>
-{% if form.title.errors %}
-{{ form.title.errors }}
-{% endif %}
-{{ form.title }}<span class="counter"></span>
-</label>
-<div id="editor">
-<h3>Body text</h3>
-<p class="help">{{ form.body.help_text }}</p>
-    {{ form.body }} 
-    <div class="block" id="editorPreview"></div>
-</div>
-<div class="clear"></div>
-<h3>Where do you want to send this?</h3>
-<p class="help">This will automatically be posted in the "News" section of your website, Twitter, Facebook, and MailChimp if you have those accounts configured.</p>
-<div class='checkbox-select'>
-{% if form.visible.errors %}
-{{ form.visible.errors }}
-{% endif %}
-<label>{{ form.visible }} {{ form.visible.label }}</label>
-</div>
-<div class='checkbox-select'>
-{% if form.twitter.errors %}
-{{ form.twitter.errors }}
-{% endif %}
-<label>{{ form.twitter }} {{ form.twitter.label }}</label>
-</div>
-<div class='checkbox-select'>
-{% if form.facebook.errors %}
-{{ form.facebook.errors }}
-{% endif %}
-<label>{{ form.facebook }} {{ form.facebook.label }}</label>
-</div>
-<div class='checkbox-select'>
-{% if form.mailchimp.errors %}
-{{ form.mailchimp.errors }}
-{% endif %}
-<label>{{ form.mailchimp }} {{ form.mailchimp.label }}</label>
-</div>
-<div class='checkbox-select'>
-<label>{{ form.fax }} {{ form.fax.label }}</label> {{ form.fax_list }}
-</div>
-<div class="clear"></div>
-<input id="submit" type="submit" value="Publish" />
-</form>
+<a href="{% url dashboard_publish_new %}">New</a>
+<ul id="published">
+    {% for item in items %}
+    <li>
+        <span class="buttons">
+            <a href="">delete</a>
+            <a href="">edit</a>
+        </span>
+        <h3>{{ item.title }}</h3>
+        <ul>
+            <li>
+                {% if item.visible %}
+                <a href="{{ item.get_absolute_url }}">View on your site</a>
+                {% else %}
+                not published on your site
+                {% endif %}
+            </li> 
+            <li>
+                {% if item.twitter %}
+                <a href="{{ item.twitter }}">On Twitter</a>
+                {% else %}
+                not published to Twitter
+                {% endif %}
+            </li> 
+            <li>
+                {% if item.facebook %}
+                <a href="{{ item.facebook }}">On Facebook</a>
+                {% else %}
+                not published to Facebook
+                {% endif %}
+            </li> 
+            <li>
+                {% if item.mailchimp %}
+                <a href="{{ item.mailchimp }}">Your MailChimp Campaign</a>
+                {% else %}
+                no MailChimp campaign created
+                {% endif %}
+            </li> 
+            <li>
+                {% with item.fax_count as fc %}
+                Faxed to {{ fc }} recipient{{ fc|pluralize }}
+                {% endwith %}
+            </li> 
+        </ul>
+        <div class="clear"></div>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}
 
 {% block js %}

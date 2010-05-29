@@ -76,18 +76,20 @@ class Release(models.Model):
     coupon = models.ForeignKey('core.Coupon', null=True, blank=True)
     time_sent = models.DateTimeField(editable=False)
     fax_transaction = models.CharField(null=True, blank=True, max_length=100, editable=False)
+    twitter = models.CharField(max_length=200, null=True, editable=False)
+    facebook = models.CharField(max_length=200, null=True, editable=False)
+    mailchimp = models.CharField(max_length=200, null=True, editable=False)
+    visible = models.BooleanField('Under "News" on your site', default=False)
 
     def __unicode__(self):
         return self.title
 
     def save(self, *args, **kwargs):
-        from tiger.notify.tasks import PublishTask
         self.body_html = markdown(self.body)
         self.slug = slugify(self.title)
         if not self.id:
             self.time_sent = datetime.now()
         super(Release, self).save(*args, **kwargs)
-        PublishTask.delay(self.id)
 
     @models.permalink
     def get_absolute_url(self):
@@ -143,6 +145,9 @@ class Release(models.Model):
         self.save()
         Fax.objects.create(parent_transaction=transaction, 
             transaction=transaction, site=site)
+
+    def fax_count(self):
+        return Fax.objects.filter(parent_transaction=self.fax_transaction).count()
 
 def new_site_setup(sender, instance, created, **kwargs):
     if created:

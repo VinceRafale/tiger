@@ -35,15 +35,21 @@ def home(request):
         'mailchimp_form': MailChimpForm(instance=site.social)
     })
 
+
+@login_required
+def publish_list(request):
+    return direct_to_template(request, template='dashboard/marketing/publish_list.html', extra_context={
+        'items': request.site.release_set.order_by('-time_sent')
+    })
+    
+@login_required
+def publish_detail(request, release_id):
+    pass
+
 @login_required
 def publish(request, release_id=None):
-    instance = None
-    if release_id is not None:
-        instance = Release.objects.get(id=release_id)
-        if instance.site != request.site:
-            raise Http404
     if request.method == 'POST':
-        form = PublishForm(request.POST, site=request.site, instance=instance)
+        form = PublishForm(request.POST, site=request.site)
         if form.is_valid():
             release = form.save(commit=False)
             release.site = request.site
@@ -56,9 +62,9 @@ def publish(request, release_id=None):
                 fax_list = cleaned_data.get('fax_list')
             )
             messages.success(request, 'News item published successfully.')
-            return HttpResponseRedirect(reverse('dashboard_marketing'))
+            return HttpResponseRedirect(reverse('dashboard_publish'))
     else:
-        form = PublishForm(site=request.site, instance=instance)
+        form = PublishForm(site=request.site)
     return direct_to_template(request, template='dashboard/marketing/publish.html', extra_context={
         'form': form
     })

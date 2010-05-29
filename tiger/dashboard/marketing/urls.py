@@ -3,7 +3,9 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tiger.dashboard.marketing.views',
     url(r'^$', 'home', name='dashboard_marketing'),
-    url(r'^publish/$', 'publish', name='dashboard_publish'),
+    url(r'^publish/$', 'publish_list', name='dashboard_publish'),
+    url(r'^publish/(\d+)/$', 'publish_detail', name='dashboard_publish_detail'),
+    url(r'^publish/new/$', 'publish', name='dashboard_publish_new'),
     url(r'^publish/fetch-coupon/$', 'fetch_coupon', name='fetch_coupon'),
     url(r'^publish/preview/$', 'publish_preview', name='dashboard_publish_preview'),
     url(r'^coupons/$', 'coupon_list', name='dashboard_coupon_list'),
