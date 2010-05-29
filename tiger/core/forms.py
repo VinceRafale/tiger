@@ -70,11 +70,12 @@ def get_order_form(instance):
             required=False
         ) 
     for sidegroup in sidegroups:
-        attrs['side_%d' % sidegroup.id] = forms.ModelChoiceField(
-            queryset=sidegroup.sidedish_set.all(), 
-            widget=forms.RadioSelect, 
-            empty_label=None
-        ) 
+        if sidegroup.sidedish_set.count():
+            attrs['side_%d' % sidegroup.id] = forms.ModelChoiceField(
+                queryset=sidegroup.sidedish_set.all(), 
+                widget=forms.RadioSelect, 
+                empty_label=None
+            ) 
     return type('OrderForm', (BaseOrderForm,), attrs) 
 
 class SectionForm(forms.ModelForm):
