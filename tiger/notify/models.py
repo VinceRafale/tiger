@@ -28,6 +28,7 @@ class Fax(models.Model):
     transaction = models.CharField(max_length=100)
     completion_time = models.DateTimeField(null=True, blank=True)
     destination = models.CharField(max_length=20, null=True, blank=True)
+    logged = models.BooleanField(default=False, editable=False)
 
 
 class Social(models.Model):
