@@ -54,7 +54,7 @@ class TweetNewItemTask(Task):
                 results = json.loads(results)
                 release = Release.objects.get(id=release_id)
                 msg_id = results['id']
-                release.facebook = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
+                release.twitter = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
                 release.save()
         except urllib2.HTTPError, e:
             self.retry([msg, token, secret], kwargs,

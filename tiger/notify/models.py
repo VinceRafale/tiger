@@ -124,6 +124,7 @@ class Release(models.Model):
                 mailchimp.campaignSendNow(cid=campaign_id)
             data_center = social.mailchimp_api_key.split('-')[1]
             self.mailchimp = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
+            self.save()
                 
     def send_fax(self, fax_list):
         site = self.site
