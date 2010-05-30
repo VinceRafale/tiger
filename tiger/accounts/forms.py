@@ -4,6 +4,7 @@ from datetime import time, date
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.localflavor.us.us_states import STATE_CHOICES
 
 from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep, FaxList
 from tiger.utils.chargify import Chargify, ChargifyError
@@ -48,6 +49,8 @@ class AmPmTimeField(forms.Field):
 
 
 class LocationForm(forms.ModelForm):
+    state = forms.ChoiceField(choices=[(abbr, abbr) for abbr, full in STATE_CHOICES])
+
     class Meta:
         model = Site
         fields = ['name', 'street', 'city', 'state', 'zip', 'phone', 'timezone']
