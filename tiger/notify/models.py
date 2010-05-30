@@ -122,6 +122,8 @@ class Release(models.Model):
             })
             if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
                 mailchimp.campaignSendNow(cid=campaign_id)
+            data_center = social.mailchimp_api_key.split('-')[1]
+            self.mailchimp = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
                 
     def send_fax(self, fax_list):
         site = self.site

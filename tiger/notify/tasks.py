@@ -43,25 +43,35 @@ class SendMailChimpTask(Task):
     
 
 class TweetNewItemTask(Task):
-    def run(self, msg, token, secret, **kwargs):
+    def run(self, msg, token, secret, release_id=None, **kwargs):
         CONSUMER = oauth.OAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET)
         CONNECTION = httplib.HTTPSConnection(SERVER)
         access_token = oauth.OAuthToken(token, secret) 
         try:
-            return update_status(CONSUMER, CONNECTION, access_token, msg)
+            results = update_status(CONSUMER, CONNECTION, access_token, msg)
+            if release_id is not None:
+                release = Release.objects.get(id=release_id)
+                msg_id = results['id']
+                release.facebook = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
+                release.save()
         except urllib2.HTTPError, e:
             self.retry([msg, token, secret], kwargs,
                 countdown=60 * 5, exc=e)
 
 
 class PublishToFacebookTask(Task):
-    def run(self, uid, msg, link_title=None, href=None, **kwargs):
+    def run(self, uid, msg, link_title=None, href=None, release_id=None, **kwargs):
         fb = Facebook(settings.FB_API_KEY, settings.FB_API_SECRET)
         kwds = dict(uid=uid, message=msg)
         if href is not None:
-            kwds.update({'action_links': [{'title': 'View on our site', 'href': href}]})
+            kwds.update({'action_links': [{'text': 'View on our site', 'href': href}]})
         try:
-            fb.stream.publish(**kwds)
+            result = fb.stream.publish(**kwds)
+            if release_id is not None:
+                msg_id = result.split('_')[1]
+                release = Release.objects.get(id=release_id)
+                release.facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
+                release.save()
         except FacebookError, e:
             self.retry([uid, msg, link_title, href], kwargs,
                 countdown=60 * 5, exc=e)
@@ -83,9 +93,9 @@ class PublishTask(Task):
         short_url = unicode(site) + short_url
         if site.twitter() and twitter:
             msg = ' '.join([msg, short_url]) 
-            TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret)
+            TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret, release_id=release_id)
         if site.facebook() and facebook:
-            PublishToFacebookTask.delay(social.facebook_id, msg, link_title=link_title, href=short_url)
+            PublishToFacebookTask.delay(social.facebook_id, msg, link_title=link_title, href=short_url, release_id=release_id)
         if mailchimp:
             SendMailChimpTask.delay(release_id=release.id)
         if fax_list:
