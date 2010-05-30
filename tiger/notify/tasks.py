@@ -1,4 +1,5 @@
 import httplib
+import json
 import urllib2
 
 from django.conf import settings
@@ -50,6 +51,7 @@ class TweetNewItemTask(Task):
         try:
             results = update_status(CONSUMER, CONNECTION, access_token, msg)
             if release_id is not None:
+                results = json.loads(results)
                 release = Release.objects.get(id=release_id)
                 msg_id = results['id']
                 release.facebook = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
