@@ -94,6 +94,8 @@ img.tiger{position:absolute;top:-210px;left:30px;z-index:100;}
 
 .orange-bar{height:67px;background:url(../img/bg_orange-bar.png) repeat-x;/*position:relative;top:-280px;*/}
 
+hr{border:0 #34484F solid;border-top-width:1px;clear:both;height:0;margin-top:50px;}
+
 .form-header{/*background:#6C8FA0;*/padding:20px;border:1px solid #1c2a2c;font-size:1.2em;}
 
 .billing p{margin-top:30px;}

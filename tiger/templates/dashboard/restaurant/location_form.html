@@ -12,21 +12,39 @@
 {% block content %}
 
 	<form method="POST" action=".">
-	{{ form }}
-	</form>
+        {% if form.non_field_errors %}
+         {{ form.non_field_errors }}
+        {% endif %}
+    {% for field in form %}
+        {% if field.name in "city, state, zip" %}
+        {% if forloop.counter == 3 %}
+        <div class="csz clearfix">
+        {% endif %}
+        <div class="location">
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {{ field }}
+        </div>
+        {% if forloop.counter == 5 %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {{ field }} 
+        {% endif %}
+    {% endfor %}
 
 <div class="clear"></div>
-<a class="buttonTop last" href="{% url dashboard_restaurant %}">Cancel</a>
-<a class="buttonTop submit" href="#">Save</a>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_restaurant %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript">
-$(function () {
-    $("a.submit").click(function () {
-        $("form").submit();
-    });
-});
-</script>
+
 {% endblock %}
 

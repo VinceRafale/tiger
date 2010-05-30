@@ -12,7 +12,10 @@ Your custom domain
 {% block content %}
 <form method="POST">
 {{ form.as_p }}
-<input type="submit" value="Save">
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_content %}">Cancel</a>
+<input type="submit" value="Save" class="submit" />
+</div>
 </form>
 {% endblock %}
 

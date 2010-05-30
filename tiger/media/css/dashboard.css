@@ -8,7 +8,7 @@ div.shim{height: 50px; clear: both;}
 .footer{width:100%; position: relative; margin-top: -50px; height: 50px; clear: both;}
 .footer p, .footer a{color: #c76218 !important; font-size: 12px; text-shadow: 0 1px 0 rgba(255,255,255,.2); text-decoration: none;}
 .footer a:hover{ background: #c76218; color: white!important;}
-body {background:#2c2a2c; font-size:16px;}
+body {background:#2c2a2c; font-size:14px;}
 ul.menu{margin:0; font-size:14px;}
 ul.menu li{float:left;margin:0;position:relative;}
 ul.menu li a{text-decoration:none;display:block;padding:8px 15px 5px 15px; margin:0; color:white;}
@@ -62,6 +62,29 @@ a.buttonTop, a.add-row, a.delete-row {
     -webkit-border-radius:4px;
     float:right;
     margin-right:10px;
+}
+
+input.submit{color: #fff; border: none; 
+    background-color:#c76218;
+    cursor:pointer;
+    float:right;
+    font-size:18px;
+    font-weight:bold;
+    padding:6px 9px 6px 9px;
+    text-decoration:none;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;}
+
+a.cancel{
+    color: #c76218;
+    float:left;
+    display:block;
+    
+}
+div.save-row{
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    margin:20px 0 0 0;
 }
 #menuWrap{background: black;background: rgba(0,0,0,.5);padding: 10px 0;}
 #menu ul li ul li a:hover, a.buttonTop, a.add-row, a.delete-row {
@@ -263,8 +286,8 @@ div.markItUpContainer {
 th{text-align: left;}
 th, td{padding: 0 2px;}
 h1,h2,h3,h4,h5,h6{font-family: Georgia, serif;}
-h3{font-size: 18px;}
-h3 a{display: inline-block; margin-left: 5px; font-size: 12px;}
+h3{font-size: 18px; background: #34484f; color: white; font-weight: normal; padding: 5px;}
+h3 a{display: inline-block; margin-left: 5px; color: white;font-size: 12px;}
 h4{font-size: 16px; margin:10px 0 5px 2px;}
 
 th.total, td.total{text-align: right;}
@@ -290,7 +313,7 @@ div.sections {clear:right;}
 ul.section {font-size:13px; border:1px solid gray;}
 ul.section ul {margin-bottom:0;}
 ul.section li {margin:0;}
-li.section-header {color:white; background-color:#02405a; font-size:14px; padding:5px;}
+li.section-header {color:white; background-color:#34484f; font-size:14px; padding:5px;}
 li.menu-items li {
     padding:1px;
     background-color:white;
@@ -305,7 +328,6 @@ div.controls {float:right; clear:right;} div.controls a { float:right;
     margin:1px 2px;
     font-size:12px;
 } div.section-controls a {
-    border: 1px grey solid; 
     background-color:#dedede;
     -moz-border-radius:3px;
     -webkit-border-radius:3px;
@@ -313,6 +335,10 @@ div.controls {float:right; clear:right;} div.controls a { float:right;
 li.menu-items div.controls a {
     height:16px;
     width:16px;
+}
+div.section-controls a:hover{
+    color: #fff;
+    background-color:#6c8fa0;
 }
 li.menu-items div.controls.special {
     float:right;
@@ -347,7 +373,7 @@ span.buttons a {
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
     border-radius:3px;
-    background-color:#24a0d4;
+    background-color:#192326;
     color:white;
     cursor:pointer;
     display:block;
@@ -358,9 +384,24 @@ span.buttons a {
     text-decoration:none;
 }
 span.buttons a:hover {
-    background-color:#78c5e5;
+    background-color:#6c8fa0;
 }
 p.greenlight {color:#126612;background-color:#d3ead3;border-color:#126612;}
 p.greenlight a {color:#126612;}
 p.redlight {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}
 p.redlight a {color:#ae0001;}
+
+
+/* HOURS PAGE */
+
+div.day, div.day label{float:left; margin-top: 0;}
+div.day{margin-right:10px;}
+.day h4{margin-bottom:10px;}
+div.day label{clear:left;}
+
+/* LOCATION PAGE */
+div.location{float: left; margin-right: 10px;}
+
+/* PDF menu page */
+table.menu{clear:both;}
+table.menu th{background: #34484f;}

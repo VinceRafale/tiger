@@ -1,6 +1,6 @@
 {% extends 'dashboard/restaurant/home.html' %}
 
-{% block body-class %}{{ block.super }}menu{% endblock %}
+{% block body-class %}{{ block.super }}hours{% endblock %}
 
 {% block h2 %}
     {% if section %}
@@ -31,19 +31,24 @@ label {display:inline;}
 {% block title %}{% endblock %}
 
 {% block content %}
-<form method="POST" action=".">
+<form method="POST" action="." class="clearfix">
 {% for dow, form in form_list %}
+<div class="day">
 <h4>{{ dow }}</h4>
 {% if form.non_field_errors %}
 {{ form.non_field_errors }}
 {% endif %}
-<label>{{ form.start.label }}: {{ form.start }}</label>
-<label>{{ form.stop.label }}: {{ form.stop }}</label>
+<label class="open">{{ form.start.label }}: {{ form.start }}</label>
+<label class="close">{{ form.stop.label }}: {{ form.stop }}</label>
+</div>
 {% endfor %}
-</form>
 <div class="clear"></div>
-<a class="buttonTop last" href="{% url dashboard_restaurant %}">Cancel</a>
-<a class="buttonTop submit" href="#">Save</a>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_restaurant %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+
 {% endblock %}
 
 {% block js %}
@@ -74,7 +79,7 @@ $(function () {
     $("a.submit").click(function () {
         $("form").submit();
     });
-    $("input").autocomplete(times, {
+    $("input").not(":submit").autocomplete(times, {
         mustMatch: true,
         matchContains: true
     });
