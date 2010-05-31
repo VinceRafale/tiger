@@ -74,3 +74,10 @@ class PublishForm(forms.ModelForm):
         if mailchimp and not self.site.social.mailchimp_api_key:
             raise forms.ValidationError('You must connect a MailChimp account to post to MailChimp.')
         return mailchimp
+
+
+class UpdatePublishForm(forms.ModelForm):
+    title = forms.CharField(help_text='Warning: changing the title of an item you\'ve already published on your site can negatively impact the SEO benefits of the item.')
+    class Meta:
+        model = Release
+        fields = ('title', 'body',)

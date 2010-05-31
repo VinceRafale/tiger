@@ -1,0 +1,23 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}publish{% endblock %}
+
+{% block help %}
+FIXME
+{% endblock %}
+
+{% block content %}
+<form method="POST" action=".">
+{{ form.as_p }}
+<div class="clear"></div>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_publish %}">Cancel</a>
+<input type="submit" value="Save" class="submit" />
+</div>
+</form>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
+

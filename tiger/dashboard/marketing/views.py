@@ -44,7 +44,12 @@ def publish_list(request):
     
 @login_required
 def publish_detail(request, release_id):
-    pass
+    return add_edit_site_object(request, Release, UpdatePublishForm, 
+        'dashboard/marketing/update_release_form.html', 'dashboard_publish', object_id=release_id)
+
+@login_required
+def publish_delete(request, release_id):
+    return delete_site_object(request, Release, release_id, 'dashboard_publish')
 
 @login_required
 def publish(request, release_id=None):
