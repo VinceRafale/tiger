@@ -52,7 +52,9 @@ Social media integrations
             <label>{{ mailchimp_form.mailchimp_allow_signup }} {{ mailchimp_form.mailchimp_allow_signup.label }}</label>
             {{ mailchimp_form.mailchimp_send_blast.label_tag }}
             {{ mailchimp_form.mailchimp_send_blast }}
-            <input type="submit" value="Save" />
+            <div class="save-row">
+            <input type="submit" class="submit" value="Save" />
+            </div>
             </form>
             {% endif %}
         {% endif %}

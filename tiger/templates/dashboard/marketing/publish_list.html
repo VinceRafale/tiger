@@ -2,19 +2,6 @@
 
 {% block extrahead %}
 {{ form.media }}
-<style>
-#published li {
-    -webkit-border-radius:3px;
-    -moz-border-radius:3px;
-    border-radius:3px;
-    background-color:white;
-    margin-left:0;
-    padding:4px;
-}
-#published li li {
-    float: left; 
-}
-</style>
 {% endblock %}
 
 {% block body-class %}{{ block.super }} publish{% endblock %}
@@ -30,16 +17,20 @@ Your published news items
 
 {% block content %}
 <span class="buttons">
-    <a href="{% url dashboard_publish_new %}">New</a>
+    <a href="{% url dashboard_publish_new %}">+ Add an Item</a>
 </span>
+<div class="clear"></div>
 <ul id="published">
     {% for item in items %}
     <li>
-        <span class="buttons">
+        
+        <h3>    
+            {{ item.title }}
+            <span class="buttons">
             <a class="delete" href="{% url dashboard_publish_delete item.id %}">delete</a>
             <a href="{% url dashboard_publish_detail item.id %}">edit</a>
         </span>
-        <h3>{{ item.title }}</h3>
+        </h3>
         <ul>
             <li>
                 {% if item.visible %}

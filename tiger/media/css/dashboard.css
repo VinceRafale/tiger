@@ -129,8 +129,8 @@ a.delete-row {margin:20px auto auto 20px;}
 p.subscribers {background-color:#cde0e8; color:#02405a; border:black solid 1px;}
 p.subscribers, p.usage {padding:10px;}
 
-table {width:100%; font-size:13px;}
-table thead {color:white; background-color:#02405a;}
+table {width:100%; font-size:13px; clear: both;}
+table thead {color:white; background-color:#34484f;}
 table tr.shaded {background-color:#cde0e8;}
 table tr.total {border-top:1px solid #02405a;}
 table td {padding:1px 4px;}
@@ -402,6 +402,15 @@ div.day label{clear:left;}
 /* LOCATION PAGE */
 div.location{float: left; margin-right: 10px;}
 
-/* PDF menu page */
-table.menu{clear:both;}
-table.menu th{background: #34484f;}
+/* PUBLISH PAGE */
+#published li {
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    border-radius:3px;
+    background-color:white;
+    margin-left:0;
+    padding:4px;
+}
+#published li li {
+    float: left; 
+}
