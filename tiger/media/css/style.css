@@ -74,8 +74,7 @@ label.expiration input[type=text]{width:44px;}
 label.expiration span{width:56px;background:url(../img/sprite_forms.png)left -269px no-repeat;float:left;}
 label.expiration strong{float:left;margin:0 10px;}
 
-ul.errorlist{margin-left:51px;color:#ffffff;margin-top:8px;width:385px;}
-ul.errorlist li{background:#EB1C23;float:right;padding:2px;}
+span.errorlist{margin-left:51px;color:#ffffff;margin-top:8px;width:377px; display:block; background:#EB1C23;padding:2px 4px;}
 
 .thanks{background:#192326;padding:20px 0 0 0;margin-top:50px;position:relative;}
 .thanks p{color:#33494f;margin:0 20px;padding:15px 0;font-size:1em;line-height:1.3;color:#E0E0E0;border-top:3px solid #6C8FA0;/*text-shadow:0px 1px 0px rgba(255,255,255,0.20);*/}

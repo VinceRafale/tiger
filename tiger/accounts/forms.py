@@ -5,6 +5,10 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
+from django.forms.util import ErrorList
+from django.utils.encoding import force_unicode
+from django.utils.html import conditional_escape
+from django.utils.safestring import mark_safe
 
 from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep, FaxList
 from tiger.utils.chargify import Chargify, ChargifyError
@@ -344,3 +348,15 @@ class FaxListForm(forms.ModelForm):
     class Meta:
         model = FaxList
         exclude = ('site',)
+
+
+class SpanErrorList(ErrorList):
+    def __unicode__(self):
+        return self.as_spans()
+
+    def as_spans(self):
+        if not self:
+            return u''
+        return mark_safe(''.join(
+            u'<span class="errorlist">%s</span>' % conditional_escape(force_unicode(e)) for e in self
+        ))
