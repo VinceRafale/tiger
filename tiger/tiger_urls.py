@@ -13,13 +13,21 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('tiger.accounts.views',
-    url(r'^signup/$', 'signup', name='tiger_signup'),
     url(r'^domain-check/$', 'domain_check', name='domain_check'),
     url(r'^validate-coupon/$', 'validate_coupon', name='validate_coupon'),
     url(r'^cancelled/$', 'cancelled', name='cancelled'),
     url(r'^privacy/$', 'privacy', name='privacy'),
     url(r'^terms/$', 'terms', name='terms'),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('tiger.accounts.views',
+        url(r'^signup/$', 'signup', name='tiger_signup'),
+    )
+else:
+    urlpatterns += patterns('tiger.accounts.views',
+        url(r'^signup/$', 'signup', {'SSL': True}, name='tiger_signup'),
+    )
 
 # Social API connectivity URLS
 urlpatterns += patterns('tiger.notify.views',

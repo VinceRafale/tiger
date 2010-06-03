@@ -23,9 +23,17 @@ order_patterns = patterns('tiger.core.views',
     url(r'^success/$', 'order_success', name='order_success'),
     url(r'^pay/p/$', 'payment_paypal', name='payment_paypal'),
     url(r'^pay/p/reg/', include('paypal.standard.ipn.urls')),
-    url(r'^pay/a/$', 'payment_authnet', name='payment_authnet'),
     url(r'^add-coupon/$', 'add_coupon', name='add_coupon'),
 )
+
+if settings.DEBUG:
+    order_patterns += patterns('tiger.core.views',
+        url(r'^pay/a/$', 'payment_authnet', name='payment_authnet'),
+    )
+else:
+    order_patterns += patterns('tiger.core.views',
+        url(r'^pay/a/$', 'payment_authnet', {'SSL': True}, name='payment_authnet'),
+    )
 
 urlpatterns += patterns('',
     (r'^dashboard/', include('tiger.dashboard.urls')),
