@@ -21,7 +21,7 @@ class SubscriberForm(forms.ModelForm):
         model = Subscriber
 
     def __init__(self, data=None, instance=None, site=None, *args, **kwargs):
-	super(SubscriberForm, self).__init__(data=data, instance=instance, *args, **kwargs)
+        super(SubscriberForm, self).__init__(data=data, instance=instance, *args, **kwargs)
         if instance is None:
             del self.fields['fax_list']
         else:
