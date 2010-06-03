@@ -9,10 +9,10 @@ urlpatterns = patterns('tiger.dashboard.account.views',
 )
 
 if settings.DEBUG:
-    urlpatterns = patterns('tiger.dashboard.account.views',
+    urlpatterns += patterns('tiger.dashboard.account.views',
         url(r'^update-cc/$', 'update_cc', name='update_cc'),
     )
 else:
-    urlpatterns = patterns('tiger.dashboard.account.views',
+    urlpatterns += patterns('tiger.dashboard.account.views',
         url(r'^update-cc/$', 'update_cc', {'SSL': True}, name='update_cc'),
     )
