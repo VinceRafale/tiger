@@ -12,7 +12,7 @@ class Command(NoArgsCommand):
             unlogged_faxes = s.fax_set.filter(logged=False)
             page_count = sum(fax.page_count for fax in unlogged_faxes)
             response = chargify.subscriptions.components.usages.create(data=
-                dict(subscription_id=s.subscription_id,
+                dict(subscription_id=s.account.subscription_id,
                 component_id=224,
                 quantity=page_count,
                 memo='Fax charges for %s' % date.today().strftime('%x')
