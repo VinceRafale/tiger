@@ -122,6 +122,7 @@ def send_order(request):
                     )
                 )
             DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
+            request.cart.clear()
             return HttpResponseRedirect(reverse('order_success'))
     else:
         form = OrderForm(site=request.site)
@@ -135,6 +136,7 @@ def payment_paypal(request):
         Order.objects.get(id=request.session['order_id'])
     except (Order.DoesNotExist, KeyError):
         return HttpResponseRedirect(reverse('preview_order'))
+    request.cart.clear()
     site = request.site
     domain = str(site)
     paypal_dict = {
@@ -160,6 +162,7 @@ def payment_authnet(request):
         form = AuthNetForm(request.POST, order=order)
         if form.is_valid():
             order.notify_restaurant(Order.STATUS_PAID)
+            request.cart.clear()
             return HttpResponseRedirect(str(request.site) + reverse('order_success'))
     else:
         form = AuthNetForm(order=order)
@@ -168,7 +171,6 @@ def payment_authnet(request):
             
 
 def order_success(request):
-    request.cart.clear()
     return render_custom(request, 'core/order_success.html')
 
 def mailing_list_signup(request):
