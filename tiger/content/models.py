@@ -26,7 +26,7 @@ class Content(models.Model):
     slug = models.SlugField(editable=False)
     title = models.CharField(max_length=200, default='')
     text = models.TextField(default='')
-    image = models.ForeignKey('ItemImage', null=True)
+    image = models.ForeignKey('ItemImage', null=True, blank=True)
 
 
 class ItemImage(ImageModel):
