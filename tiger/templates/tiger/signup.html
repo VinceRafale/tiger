@@ -19,31 +19,25 @@
 				<h1>Sign Up</h1>
 				<fieldset>
 					<legend id="one">Create your Takeout Tiger account</legend>
-					<label>{{ form.first_name.label }}:<br /><span>{{ form.first_name }}</span></label>
-					{% if form.first_name.errors %}
-                    {{ form.first_name.errors }}
-                    {% endif %}
+					<label>
+					    {{ form.first_name.label }}:
+					    {% if form.first_name.errors %}
+                            {{ form.first_name.errors }}
+                        {% endif %}
+                        <br /><span>{{ form.first_name }}</span></label>
 					
-					<label>{{ form.last_name.label }}:<br /><span>{{ form.last_name }}</span></label>
-					{% if form.last_name.errors %}
-                    {{ form.last_name.errors }}
-                    {% endif %}
+					<label>
+					    {{ form.last_name.label }}:
+					    {% if form.last_name.errors %}
+                            {{ form.last_name.errors }}
+                        {% endif %}
+                        <br /><span>{{ form.last_name }}</span></label>
 					
-					<label>{{ form.email.label }}:<br /><span>{{ form.email }}</span></label>
-                    {% if form.email.errors %}
-                    {{ form.email.errors }}
-                    {% endif %}
-
-					<h3>Now choose a password</h3>	
-					<label>Password:<br /><span>{{ form.password1 }}</span></label>
-					{% if form.password1.errors %}
-                    {{ form.password1.errors }}
-                    {% endif %}
-					
-					<label>Password again (for verification):<br /><span>{{ form.password2 }}</span></label>
-					{% if form.password2.errors %}
-                    {{ form.password2.errors }}
-                    {% endif %}
+					<label>{{ form.email.label }}:
+					    {% if form.email.errors %}
+                            {{ form.email.errors }}
+                        {% endif %}
+					    <br /><span>{{ form.email }}</span></label>
 				</fieldset>
 			</div>
 			<div id="price" class="grid_4 push_1">
@@ -53,10 +47,25 @@
                 <li>Social media integration (Facebook and Twitter)</li>
                 <li>Automatic PDF menus </li></ul>
 			</div>
-            <p class="passwords grid_4 push_1">
-			    <span class="matches" style="display:none;">It matches!</span>
-			    <span class="no-match" style="display:none;">Does not match!</span>                
-            </p>    
+			<div class="clear"></div>
+			<div id="passwords" class="grid_12">
+				<h3>Now choose a password</h3>	
+				<label>Password:
+				    {% if form.password1.errors %}
+                        {{ form.password1.errors }}
+                    {% endif %}
+				    <br /><span>{{ form.password1 }}</span></label>
+				
+				<label>Password again (for verification):
+				    {% if form.password2.errors %}
+                        {{ form.password2.errors }}
+                    {% endif %}
+				    <br /><span>{{ form.password2 }}</span></label>
+                <p class="passwords">
+    			    <span class="matches" style="display:none;">It matches!</span>
+    			    <span class="no-match" style="display:none;">Does not match!</span>                
+                </p>    
+            </div>
             
             <hr class="grid_12" />
             
@@ -66,7 +75,7 @@
 					<p>You can set up a custom domain of your choosing later (e.g. "www.mikesdiner.com"), but this is the URL where you will access your dashboard.</p>
 					<label><strong>http://</strong><span>{{ form.subdomain }}</span><strong>.takeouttiger.com</strong></label>
 					{% if form.subdomain.errors %}
-                    {{ form.subdomain.errors }}
+                        {{ form.subdomain.errors }}<br />
                     {% endif %}
 				</fieldset>
             </div>
@@ -85,31 +94,35 @@
                     {{ form.non_field_errors }}
                     {% endif %}
 
-					<label>{{ form.cc_number.label }}:<br /><span>{{ form.cc_number }}</span></label>
-					{% if form.cc_number.errors %}
-                    {{ form.cc_number.errors }}
-                    {% endif %}
+					<label>{{ form.cc_number.label }}:
+					    {% if form.cc_number.errors %}
+                            {{ form.cc_number.errors }}
+                        {% endif %}
+					    <br /><span>{{ form.cc_number }}</span></label>
 					
-			        <label class="expiration">Expiration date:<br />
-			            <span>{{ form.month }}</span><strong>/</strong><span>{{ form.year }}</span>
+			        <label class="expiration">Expiration date:
+			            <br /><span>{{ form.month }}</span><strong>/</strong><span>{{ form.year }}</span>
 			        </label>
+			        
 			        {% if form.month.errors %}
-                    {{ form.month.errors }}
+                        {{ form.month.errors }}
                     {% endif %}
                     {% if form.year.errors %}
-                    {{ form.year.errors }}
+                        {{ form.year.errors }}
                     {% endif %}
 			        
-					<label>{{ form.zip.label }}:<br /><span>{{ form.zip }}</span></label>
-					{% if form.zip.errors %}
-                    {{ form.zip.errors }}
-                    {% endif %}
-					
+					<label>{{ form.zip.label }}:
+					    {% if form.zip.errors %}
+                            {{ form.zip.errors }}
+                        {% endif %}
+					    <br /><span>{{ form.zip }}</span></label>
+
 			        <p><a href="#" class="promo">Do you have a promo code?</a></p>
-			        <label class="promo">Promo code:<br /><span>{{ form.promo }}</span></label>
-			        {% if form.promo.errors %}
-                    {{ form.promo.errors }}
-                    {% endif %}
+			        <label class="promo">Promo code:
+			            {% if form.promo.errors %}
+                            {{ form.promo.errors }}
+                        {% endif %}
+			            <br /><span>{{ form.promo }}</span></label>
 				</fieldset>
 			</div>
 			<div class="thanks grid_4 push_1">
