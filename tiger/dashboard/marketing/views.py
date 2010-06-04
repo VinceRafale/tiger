@@ -36,6 +36,14 @@ def home(request):
     })
 
 
+def integration_settings(request):
+    data = json.loads(request.POST.get('data'))
+    social = request.site.social
+    for k, v in data.items():
+        setattr(social, k, v)
+    return HttpResponse(json.dumps({}))
+
+
 @login_required
 def publish_list(request):
     return direct_to_template(request, template='dashboard/marketing/publish_list.html', extra_context={

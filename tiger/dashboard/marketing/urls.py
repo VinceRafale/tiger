@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tiger.dashboard.marketing.views',
     url(r'^$', 'home', name='dashboard_marketing'),
+    url(r'^configure/$', 'integration_settings', name='integration_settings'),
     url(r'^publish/$', 'publish_list', name='dashboard_publish'),
     url(r'^publish/(\d+)/$', 'publish_detail', name='dashboard_publish_detail'),
     url(r'^publish/(\d+)/delete/$', 'publish_delete', name='dashboard_publish_delete'),

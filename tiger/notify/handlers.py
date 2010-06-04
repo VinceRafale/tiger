@@ -5,10 +5,10 @@ def item_social_handler(sender, instance, created, **kwargs):
         social = instance.site.social
         url = unicode(instance.site).replace('www.', '') + instance.get_short_url()
         msg = 'We\'ve got a new menu item - %s! ' % instance.name
-        if social.twitter_token and social.twitter_secret:
+        if all([social.twitter_token, social.twitter_secret, social.twitter_auto_items]):
             msg += url
             TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret)
-        if social.facebook_id:
+        if social.facebook_id and social.facebook_auto_items:
             PublishToFacebookTask.delay(
                 social.facebook_id, 
                 msg, 

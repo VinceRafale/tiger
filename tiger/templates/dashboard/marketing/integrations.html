@@ -2,6 +2,10 @@
 
 {% block namespace %}xmlns:fb="http://www.facebook.com/2008/fbml"{% endblock %}
 
+{% block extrahead %}
+<script src="{{ MEDIA_URL }}js/json2.js"></script>
+{% endblock %}
+
 {% block body-class %}{{ block.super }}integrations{% endblock %}
 
 {% block h2 %}
@@ -19,13 +23,19 @@ Social media integrations
         {% if site.twitter %}
             Connected to <a href="http://twitter.com/{{ site.twitter }}">@{{ site.twitter }}</a>
             <a href="{% url dashboard_add_twitter %}">(change)</a>
+            <label class="ajax-checkbox"><input name="twitter_auto_items" type="checkbox"{% if site.social.twitter_auto_items %} checked{% endif %} /> Automatically tweet new menu items</label>
         {% else %}
             <a href="{% url dashboard_add_twitter %}">Connect your Twitter account</a>
         {% endif %}
         </p>
         <h3>Facebook</h3>
         <p id="facebook">
+        {% if not site.facebook %}
 		<a id="facebook-button" href="#">Connect</a>
+        {% else %}
+            Your Facebook page: <a href="{{ site.facebook }}">{{ site.facebook }}</a>
+            <label class="ajax-checkbox"><input name="facebook_auto_items" type="checkbox"{% if site.social.facebook_auto_items %} checked{% endif %} /> Automatically post new menu items to your Facebook page</label>
+        {% endif %}
         </p>
         <h3>Mailchimp</h3>
         <div id="mailchimp-settings">
@@ -84,6 +94,16 @@ Social media integrations
 			enable_profile_selector: true
 		});
 	});
+    $(function () {
+        $("label.ajax-checkbox input").click(function () {
+            params = {};
+            params[$(this).attr("name")] = $(this).attr("checked");
+            postData = $.param({'data': JSON.stringify(params)});
+            $.post("{% url integration_settings %}", postData, function (data) {
+
+            }, "json");
+        });
+    });
 </script>
 {% endblock %}
 
