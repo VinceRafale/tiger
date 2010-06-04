@@ -34,35 +34,35 @@ Your published news items
         <ul>
             <li>
                 {% if item.visible %}
-                <a href="{{ item.get_absolute_url }}">View on your site</a>
+                <a href="{{ item.get_absolute_url }}"><img src="{{ MEDIA_URL }}img/google.png" title="View on your site" /></a>
                 {% else %}
-                not published on your site
+                <img src="{{ MEDIA_URL }}img/google_bw.png" title="not published on your site" />
                 {% endif %}
             </li> 
             <li>
                 {% if item.twitter %}
-                <a href="{{ item.twitter }}">On Twitter</a>
+                <a href="{{ item.twitter }}"><img src="{{ MEDIA_URL }}img/twitter.png" title="On Twitter" /></a>
                 {% else %}
-                not published to Twitter
+                <img src="{{ MEDIA_URL }}img/twitter_bw.png" title="not published to Twitter" />
                 {% endif %}
             </li> 
             <li>
                 {% if item.facebook %}
-                <a href="{{ item.facebook }}">On Facebook</a>
+                <a href="{{ item.facebook }}"><img src="{{ MEDIA_URL }}img/facebook.png" title="On Facebook" /></a>
                 {% else %}
-                not published to Facebook
+                <img src="{{ MEDIA_URL }}img/facebook_bw.png" title="not published to Facebook" />
                 {% endif %}
             </li> 
             <li>
                 {% if item.mailchimp %}
-                <a href="{{ item.mailchimp }}">Your MailChimp Campaign</a>
+                <a href="{{ item.mailchimp }}"><img src="{{ MEDIA_URL }}img/email.png" title="Your MailChimp Campaign" /></a>
                 {% else %}
-                no MailChimp campaign created
+                <img src="{{ MEDIA_URL }}img/email_bw.png" title="no MailChimp campaign created" />
                 {% endif %}
             </li> 
             <li>
                 {% with item.fax_count as fc %}
-                Faxed to {{ fc }} recipient{{ fc|pluralize }}
+                <img src="{{ MEDIA_URL }}img/fax.png" title="Total fax recipients" /> {{ fc }}
                 {% endwith %}
             </li> 
         </ul>
