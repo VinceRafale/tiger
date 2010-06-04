@@ -62,7 +62,9 @@ a.add {
 color:#67202d;background-color:#ffbfbf;border-color:#67202d;
 }
 .messages li.success {color:green;background-color:#d3ead3;border-color:green;}
+.messages li.success a {color:green;}
 .messages li.warning {color:#704308;background-color:#f9f7c3;border-color:#704308;}
+.messages li.warning a {color:#704308;}
 
 a.button {float:right; display:block;}
 
