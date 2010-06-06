@@ -56,6 +56,7 @@ class BackgroundImageForm(forms.ModelForm):
 
 class ColorForm(forms.Form):
     masthead_color = forms.CharField(widget=ColorPickerWidget, required=False)
+    masthead_font_color = forms.CharField(widget=ColorPickerWidget, required=False)
     menu_color = forms.CharField(widget=ColorPickerWidget, required=False)
     center_color = forms.CharField(widget=ColorPickerWidget, required=False)
     

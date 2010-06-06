@@ -96,6 +96,8 @@ div.picker-widget div {
 </style>
 {% endblock %}
 
+{% block body-class %}customizing{% endblock %}
+
 {% block toolbar-override %}
     <style id="header-font" type="text/css"></style>
     <style id="header-color" type="text/css"></style>
@@ -262,6 +264,14 @@ $(function () {
             $('#masthead-color').text("#masthead {background-color:#" + hex + " !important;}");
             $("#id_masthead_color").val(hex);
             $('#picker-masthead_color div').css('backgroundColor', '#' + hex);
+
+        },
+    });
+    $("#picker-masthead_font_color").ColorPicker({
+        onChange: function (hsb, hex, rgb) {
+            $('#masthead-color').text("#masthead h2, #masthead h4, #masthead label {color:#" + hex + " !important;}");
+            $("#id_masthead_font_color").val(hex);
+            $('#picker-masthead_font_color div').css('backgroundColor', '#' + hex);
 
         },
     });
