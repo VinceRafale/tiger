@@ -37,8 +37,8 @@ class FontFace(models.Model):
     def __unicode__(self):
         return self.name
 
-    def as_css(self):
-       return render_to_string('look/font.css', {'hf': self}) 
+    def as_css(self): 
+        return render_to_string('look/font.css', {'hf': self}) 
 
 
 class Background(models.Model):
@@ -98,7 +98,9 @@ class Skin(models.Model):
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20)
     header_font = models.ForeignKey(FontFace, null=True, blank=True)
+    header_color = models.CharField(max_length=6, default='000000')
     body_font = models.CharField(max_length=255, choices=FONT_CHOICES)
+    header_color = models.CharField(max_length=6, default='000000')
     background = models.ForeignKey(Background)
     css = models.TextField(blank=True)
     timestamp = models.DateTimeField(editable=False)

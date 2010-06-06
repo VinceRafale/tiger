@@ -1,6 +1,7 @@
 from django import forms
 
 from tiger.look.models import *
+from tiger.look.widgets import *
 
 def get_skin_choices():
     return [(skin.url, skin.name) for skin in Skin.objects.all()]
@@ -11,6 +12,7 @@ class SkinSelectForm(forms.Form):
 
 class HeaderFontForm(forms.Form):
     header_font = forms.ModelChoiceField(queryset=FontFace.objects.all())
+    header_color = forms.CharField(widget=ColorPickerWidget, required=False)
     
     def __init__(self, *args, **kwargs):
         """Ensures that the list of available FontFace objects is not cached,
@@ -22,6 +24,7 @@ class HeaderFontForm(forms.Form):
 
 class BodyFontForm(forms.Form):
     body_font = forms.ChoiceField(choices=FONT_CHOICES)
+    body_color = forms.CharField(widget=ColorPickerWidget, required=False)
 
 
 class BackgroundForm(forms.Form):
@@ -36,7 +39,7 @@ class BackgroundForm(forms.Form):
 
 
 class BackgroundColorForm(forms.Form):
-    background_color = forms.CharField()
+    background_color = forms.CharField(widget=ColorPickerWidget)
 
 
 class CustomBackgroundForm(forms.ModelForm):
@@ -49,3 +52,10 @@ class BackgroundImageForm(forms.ModelForm):
     class Meta:
         model = Background
         fields = ('image',)
+
+
+class ColorForm(forms.Form):
+    masthead_color = forms.CharField(widget=ColorPickerWidget, required=False)
+    menu_color = forms.CharField(widget=ColorPickerWidget, required=False)
+    center_color = forms.CharField(widget=ColorPickerWidget, required=False)
+    

@@ -78,14 +78,34 @@ ul.tabs li.active {
     width: 400px;
     height: 300px;
 }
+div.picker-widget {
+    background:url("{{ MEDIA_URL }}img/select.png") repeat scroll 0 0 transparent;
+    height:36px;
+    position:relative;
+    width:36px;
+}
+
+div.picker-widget div {
+    background:url("{{ MEDIA_URL }}img/select.png") repeat scroll center center transparent;
+    height:30px;
+    left:3px;
+    position:absolute;
+    top:3px;
+    width:30px;
+}
 </style>
 {% endblock %}
 
 {% block toolbar-override %}
     <style id="header-font" type="text/css"></style>
+    <style id="header-color" type="text/css"></style>
     <style id="body-font" type="text/css"></style>
+    <style id="body-color" type="text/css"></style>
     <style id="background" type="text/css"></style>
     <style id="background-color" type="text/css"></style>
+    <style id="masthead-color" type="text/css"></style>
+    <style id="menu-color" type="text/css"></style>
+    <style id="center-color" type="text/css"></style>
     <style id="override-css" type="text/css"></style>
 {% endblock %}
 
@@ -93,9 +113,9 @@ ul.tabs li.active {
 <div id="toolbar">
     <div class="toolbar-inner">
     <ul class="tabs"> 
-        <li><a href="#tab1">Colors</a></li> 
-        <li><a href="#tab2">Background</a></li> 
-        <li><a href="#tab3">Fonts</a></li> 
+        <li><a href="#tab1">Fonts</a></li> 
+        <li><a href="#tab2">Colors</a></li> 
+        <li><a href="#tab3">Background</a></li> 
         <li><a href="#tab4">CSS</a></li> 
         <li><button id="save">Save</button></li>
         <li><a class="back" href="#" onclick="window.history.go(-2)">Back to dashboard</a></li>
@@ -104,8 +124,13 @@ ul.tabs li.active {
 
     <div class="tab_container"> 
         <div id="tab1" class="tab_content">
+            {{ header_font_form }}<br />
+            {{ body_font_form }}
         </div> 
         <div id="tab2" class="tab_content">
+            {{ color_form }}
+        </div> 
+        <div id="tab3" class="tab_content">
             <a id="bg-toggle" href="#">More options</a>
             <div id="bg-standard">
                 {{ bg_form }}
@@ -121,10 +146,6 @@ ul.tabs li.active {
                 {% endif %}
                 {% endwith %}
             </div>
-        </div> 
-        <div id="tab3" class="tab_content">
-            {{ header_font_form }}<br />
-            {{ body_font_form }}
         </div> 
         <div id="tab4" class="tab_content">
             <textarea></textarea><br/>
@@ -142,7 +163,6 @@ var skinIdRegex = new RegExp("^{{ MEDIA_URL }}skins/(\\d+)-\\d+\.css$");
 $(function () {
     // Ajax image upload handling
     $("input[type=file]").change(function () {
-        $(this).after(loadingImg);
         $(this).closest("form")[0].submit();
     });
     $("iframe").load(function () {
@@ -213,10 +233,52 @@ $(function () {
         }
         return false;
     });
-    $("#id_background_color").ColorPicker({
+    $("#picker-background_color").ColorPicker({
         onChange: function (hsb, hex, rgb) {
             $('#background-color').text("body {background-color:#" + hex + ";}");
             $("#id_background_color").val(hex);
+            $('#picker-background_color div').css('backgroundColor', '#' + hex);
+
+        },
+    });
+    $("#picker-header_color").ColorPicker({
+        onChange: function (hsb, hex, rgb) {
+            $('#header-color').text("h1, h2, h4 {color:#" + hex + ";}");
+            $("#id_header_color").val(hex);
+            $('#picker-header_color div').css('backgroundColor', '#' + hex);
+
+        },
+    });
+    $("#picker-body_color").ColorPicker({
+        onChange: function (hsb, hex, rgb) {
+            $('#body-color').text("body {color:#" + hex + ";}");
+            $("#id_body_color").val(hex);
+            $('#picker-body_color div').css('backgroundColor', '#' + hex);
+
+        },
+    });
+    $("#picker-masthead_color").ColorPicker({
+        onChange: function (hsb, hex, rgb) {
+            $('#masthead-color').text("#masthead {background-color:#" + hex + " !important;}");
+            $("#id_masthead_color").val(hex);
+            $('#picker-masthead_color div').css('backgroundColor', '#' + hex);
+
+        },
+    });
+    $("#picker-menu_color").ColorPicker({
+        onChange: function (hsb, hex, rgb) {
+            $('#menu-color').text("#menuWrap, #footer {background-color:#" + hex + " !important;}");
+            $("#id_menu_color").val(hex);
+            $('#picker-menu_color div').css('backgroundColor', '#' + hex);
+
+        },
+    });
+    $("#picker-center_color").ColorPicker({
+        onChange: function (hsb, hex, rgb) {
+            $('#center-color').text("#mainWrap, #sidebarWrap {background-color:#" + hex + ";}");
+            $("#id_center_color").val(hex);
+            $('#picker-center_color div').css('backgroundColor', '#' + hex);
+
         },
     });
     $("#tab4 button").click(function () {

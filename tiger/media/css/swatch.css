@@ -1,0 +1,15 @@
+div.picker-widget {
+    background:url("../img/select.png") repeat scroll 0 0 transparent;
+    height:36px;
+    position:relative;
+    width:36px;
+}
+
+div.picker-widget div {
+background:url("../img/select.png") repeat scroll center center transparent;
+height:30px;
+left:3px;
+position:absolute;
+top:3px;
+width:30px;
+}

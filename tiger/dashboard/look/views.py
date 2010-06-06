@@ -15,6 +15,7 @@ def picker(request):
     bg_color_form = BackgroundColorForm()
     bg_img_form = BackgroundImageForm()
     custom_bg_form = CustomBackgroundForm()
+    color_form = ColorForm()
     return direct_to_template(request, template='dashboard/look/preview.html',
         extra_context={
             'header_font_form': font_form,
@@ -23,6 +24,7 @@ def picker(request):
             'custom_bg_form': custom_bg_form,
             'bg_color_form': bg_color_form,
             'bg_img_form': bg_img_form,
+            'color_form': color_form,
     })
 
 
