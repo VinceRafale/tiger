@@ -13,9 +13,11 @@
     top:0;
     left:0;
     font-family:Arial !important;
+    background:#151415;
+    padding:10px 0;
 }
 #toolbar div.toolbar-inner {
-    padding:6px 10px;
+    padding:0 10px;
 }
 
 #toolbar ul {
@@ -24,7 +26,7 @@
 }
 
 #toolbar li {
-    display:inline;
+    display:inline-block;
 }
 
 #toolbar form {
@@ -34,49 +36,109 @@
 #toolbar select {
     border: 1px solid grey;
     background-color:white;
-    margin-left:10px;
+    margin-bottom:10px;
 }
+
+#toolbar select:last-child{margin:0;}
+
 div.tab_container {
     z-index:1000;
     position:absolute;
-    top:40px;
+    top:57px;
     left:7px;
     padding:10px;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;
     width:auto;
-    background-color:grey;
+    border:1px solid rgba(75,75,75,0.15);
+    background-color:rgba(247,247,247,0.95);
+    -moz-box-shadow:0px 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+div.tab_container div span{
+    padding:10px;
+    background:rgba(234,234,234,0.6);
+    border:1px solid rgba(75,75,75,0.15);
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    display:block;
+    margin-top:10px;
+}
+
+div.picker-widget{margin-bottom:10px;}
+    div.picker-widget:last-child{margin:0;}
+
+div.tab_container div span:first-child{margin:0;}
+
 .colorpicker {
     z-index:1001;
 }
 ul.tabs li {
-    background-color: grey;
-    padding: 6px 9px;
+    margin-left:0;
+    margin-right:10px;
+}
+
+ul.tabs li:hover{
+
+}
+
+ul.tabs li a {
+    color:#4B4B4B;
+    text-decoration:none;
+    background-color: #DEDEDE;
+    padding: 4px 9px;
+    display:block;
+}
+
+ul.tabs li a, ul.tabs li button {
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
-    border-radius:5px;
-    margin-left:0;
-    margin-right:20px;
+    border-radius:5px;   
 }
+
+ul.tabs li.button{
+    /*background-color:#6c8fa0; */   
+}
+
 ul.tabs li button {
-    background-color:inherit;
+    background-color:#6c8fa0;
     border:none;
+    color:#ffffff;
+    font-size:14px;
+    font-family:Arial,sans-serif;
+    cursor:pointer;
+    padding: 5px 9px;
+}
+
+ul.tabs li.active a{
+    background-color: #C76218;
+}
+ 
+ul.tabs li.active a{
     color:white;
 }
-ul.tabs li a {
-    color:white;
-    text-decoration:none;
+
+ul.tabs li.back,ul.tabs li.button{
+    float:right;
 }
-ul.tabs li.active {
-    background-color: black;
-    color:white;
+
+ul.tabs li.back a{
+    background:none;    
 }
+
+ul.tabs li.back a:hover{
+    color:#DEDEDE;
+}
+
+div.tab_container label{display:block;color:#444444;font-size:12px;}
+
 #toolbar textarea {
     border:0;
     width: 400px;
     height: 300px;
+    border:1px solid rgba(75,75,75,0.15);
 }
 div.picker-widget {
     background:url("{{ MEDIA_URL }}img/select.png") repeat scroll 0 0 transparent;
@@ -93,6 +155,8 @@ div.picker-widget div {
     top:3px;
     width:30px;
 }
+.customizing .wrapper{margin-top:70px;}
+
 </style>
 {% endblock %}
 
@@ -119,21 +183,21 @@ div.picker-widget div {
         <li><a href="#tab2">Colors</a></li> 
         <li><a href="#tab3">Background</a></li> 
         <li><a href="#tab4">CSS</a></li> 
-        <li><button id="save">Save</button></li>
-        <li><a class="back" href="#" onclick="window.history.go(-2)">Back to dashboard</a></li>
+        <li class="back"><a class="back" href="#" onclick="window.history.go(-2)">Back to dashboard</a></li>
+        <li class="button"><button id="save">Save</button></li>
     </ul> 
 
 
     <div class="tab_container"> 
         <div id="tab1" class="tab_content">
-            {{ header_font_form }}<br />
-            {{ body_font_form }}
+            <span>{{ header_font_form }}</span>
+            <span>{{ body_font_form }}</span>
         </div> 
         <div id="tab2" class="tab_content">
-            {{ color_form }}
+            <span>{{ color_form }}</span>
         </div> 
         <div id="tab3" class="tab_content">
-            <a id="bg-toggle" href="#">More options</a>
+            <span><a id="bg-toggle" href="#">More options</a>
             <div id="bg-standard">
                 {{ bg_form }}
             </div>
@@ -147,7 +211,7 @@ div.picker-widget div {
                 {{ custom_bg_form }}
                 {% endif %}
                 {% endwith %}
-            </div>
+            </div></span>
         </div> 
         <div id="tab4" class="tab_content">
             <textarea></textarea><br/>
