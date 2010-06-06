@@ -80,12 +80,12 @@ class Background(models.Model):
     )
 
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, blank=True)
     image = models.ImageField(null=True, blank=True, upload_to='img/backgrounds')
-    color = models.CharField(max_length=6, default='ffffff')
-    repeat = models.CharField('tiling', max_length=9, default=REPEAT_BOTH, choices=REPEAT_CHOICES)
-    position = models.CharField(max_length=20, default='top left', choices=POSITION_CHOICES)
-    attachment = models.CharField('stickiness', max_length=7, choices=ATTACHMENT_CHOICES, default=ATTACHMENT_SCROLL)
+    color = models.CharField(max_length=6, default='ffffff', blank=True)
+    repeat = models.CharField('tiling', max_length=9, default=REPEAT_BOTH, choices=REPEAT_CHOICES, blank=True)
+    position = models.CharField(max_length=20, default='top left', choices=POSITION_CHOICES, blank=True)
+    attachment = models.CharField('stickiness', max_length=7, choices=ATTACHMENT_CHOICES, default=ATTACHMENT_SCROLL, blank=True)
 
     def __unicode__(self):
         return self.name
