@@ -207,9 +207,9 @@ div.picker-widget div {
                 <form method="POST" enctype="multipart/form-data" action="{% url set_img %}" target="imgjson">
                 {{ bg_img_form }}
                 </form>
-                {% if image %}
+                <div id="bg-options" {% if not image %}style="display:none;"{% endif %}>
                 {{ custom_bg_form }}
-                {% endif %}
+                </div>
                 {% endwith %}
             </div></span>
         </div> 
@@ -235,6 +235,7 @@ $(function () {
         dataString = window['imgjson'].document.getElementsByTagName('body')[0].innerHTML;
         data = JSON.parse(dataString);
         $(data.selector).text(data.css);
+        $("#bg-options").slideDown();
     });
 
     /*************
