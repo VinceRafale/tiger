@@ -44,7 +44,6 @@ def get_bg_css(request):
 def get_custom_bg_css(request):
     form = CustomBackgroundForm(request.POST, instance=request.site.background)
     form.full_clean()
-    print form._errors
     bg = form.save(commit=False)
     return HttpResponse(bg.as_css())
 
