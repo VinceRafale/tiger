@@ -1,18 +1,24 @@
 {% extends 'base.html' %}
 
 {% block extrahead %}
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/colorpicker.js"></script>
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/colorpicker.css" />
+<script src="{{ MEDIA_URL }}js/json2.js"></script>
 <style type="text/css">
 #toolbar {
-    background-color: #d2d2d2;
-    border-bottom: 1px solid grey;
     width:100%;
+    position:fixed;
+    z-index:999;
+    top:0;
+    left:0;
+    font-family:Arial !important;
 }
-#toolbar div {
+#toolbar div.toolbar-inner {
     padding:6px 10px;
 }
+
 #toolbar ul {
-    float:right;
     list-style-type:none;
     margin:0;
 }
@@ -30,27 +36,191 @@
     background-color:white;
     margin-left:10px;
 }
+div.tab_container {
+    z-index:1000;
+    position:absolute;
+    top:40px;
+    left:7px;
+    padding:10px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    width:auto;
+    background-color:grey;
+}
+.colorpicker {
+    z-index:1001;
+}
+ul.tabs li {
+    background-color: grey;
+    padding: 6px 9px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    margin-left:0;
+    margin-right:20px;
+}
+ul.tabs li button {
+    background-color:inherit;
+    border:none;
+    color:white;
+}
+ul.tabs li a {
+    color:white;
+    text-decoration:none;
+}
+ul.tabs li.active {
+    background-color: black;
+    color:white;
+}
+#toolbar textarea {
+    border:0;
+    width: 400px;
+    height: 300px;
+}
 </style>
+{% endblock %}
+
+{% block toolbar-override %}
+    <style id="header-font" type="text/css"></style>
+    <style id="body-font" type="text/css"></style>
+    <style id="background" type="text/css"></style>
+    <style id="background-color" type="text/css"></style>
+    <style id="override-css" type="text/css"></style>
 {% endblock %}
 
 {% block toolbar %}
 <div id="toolbar">
-<div>
-<ul>
-    <li><button id="save">Save</button></li>
-    <li><a class="back" href="#" onclick="window.history.go(-2)">Back to dashboard</a></li>
-</ul>
-{{ form }}
+    <div class="toolbar-inner">
+    <ul class="tabs"> 
+        <li><a href="#tab1">Colors</a></li> 
+        <li><a href="#tab2">Background</a></li> 
+        <li><a href="#tab3">Fonts</a></li> 
+        <li><a href="#tab4">CSS</a></li> 
+        <li><button id="save">Save</button></li>
+        <li><a class="back" href="#" onclick="window.history.go(-2)">Back to dashboard</a></li>
+    </ul> 
+
+
+    <div class="tab_container"> 
+        <div id="tab1" class="tab_content">
+        </div> 
+        <div id="tab2" class="tab_content">
+            <a id="bg-toggle" href="#">More options</a>
+            <div id="bg-standard">
+                {{ bg_form }}
+            </div>
+            <div id="bg-custom" style="display:none;">
+                {{ bg_color_form }}
+                {% with site.background.image as image %}
+                <form method="POST" enctype="multipart/form-data" action="{% url set_img %}" target="imgjson">
+                {{ bg_img_form }}
+                </form>
+                {% if image %}
+                {{ custom_bg_form }}
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div> 
+        <div id="tab3" class="tab_content">
+            {{ header_font_form }}<br />
+            {{ body_font_form }}
+        </div> 
+        <div id="tab4" class="tab_content">
+            <textarea></textarea><br/>
+            <button>Preview</button>
+        </div> 
+    </div>
+    </div>
 </div>
-</div>
+<iframe name="imgjson" style="display:none;"></iframe>
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
 var skinIdRegex = new RegExp("^{{ MEDIA_URL }}skins/(\\d+)-\\d+\.css$");
 $(function () {
-    $("#id_skin").change(function () {
-        $("link:last").attr("href", $(this).val());
+    // Ajax image upload handling
+    $("input[type=file]").change(function () {
+        $(this).after(loadingImg);
+        $(this).closest("form")[0].submit();
+    });
+    $("iframe").load(function () {
+        dataString = window['imgjson'].document.getElementsByTagName('body')[0].innerHTML;
+        data = JSON.parse(dataString);
+        $(data.selector).text(data.css);
+    });
+
+    /*************
+    * Tabbing
+    *************/
+    $(".tab_content").hide(); 
+    $("ul.tabs li:first").addClass("active").show(); 
+    $(".tab_content:first").show(); 
+
+    $("ul.tabs li").click(function() {
+        $("ul.tabs li").removeClass("active"); 
+        $(this).addClass("active"); 
+        $(".tab_content").hide(); 
+        var activeTab = $(this).find("a").attr("href"); 
+        $(activeTab).fadeIn(); 
+        return false;
+    });
+
+
+
+    $("#id_header_font").change(function () {
+        postData = $.param({'font': $(this).val()});
+        $.post("{% url get_font_css %}", postData, function (data) {
+            $("#header-font").text(data);
+        }, "text");
+    });
+    $("#id_body_font").change(function () {
+        postData = $.param({'body_font': $(this).val()});
+        $.post("{% url get_body_font_css %}", postData, function (data) {
+            $("#body-font").text("body { font-family:" + data + "; }");
+        }, "text");
+    });
+    $("#id_bg").change(function () {
+        if ($(this).val()) {
+            postData = $.param({'bg': $(this).val()});
+            $.post("{% url get_bg_css %}", postData, function (data) {
+                $("#background").text("body {" + data + "; }");
+            }, "text");
+        }
+    });
+    $("#bg-custom select").change(function () {
+        if ($(this).val()) {
+            postData = $("#bg-custom :input").serialize();
+            $.post("{% url get_custom_bg_css %}", postData, function (data) {
+                $("#background").text("body {" + data + "; }");
+            }, "text");
+        }
+    });
+    $("#bg-toggle").click(function () {
+        if ($("#bg-standard").is(":visible")) {
+            $("#bg-standard").hide();
+            $("#bg-custom").show();
+            $(this).text("Fewer options");
+            postData = $("#bg-custom :input").serialize();
+            $.post("{% url get_custom_bg_css %}", postData, function (data) {
+                $("#background").text("body {" + data + "; }");
+            }, "text");
+        } else {
+            $("#bg-standard").show();
+            $("#bg-custom").hide();
+            $(this).text("More options");
+        }
+        return false;
+    });
+    $("#id_background_color").ColorPicker({
+        onChange: function (hsb, hex, rgb) {
+            $('#background-color').text("body {background-color:#" + hex + ";}");
+            $("#id_background_color").val(hex);
+        },
+    });
+    $("#tab4 button").click(function () {
+        $("#override-css").text($("#tab4 textarea").val());
     });
     $("#save").click(function () {
         linkToCss = $(":selected").val();

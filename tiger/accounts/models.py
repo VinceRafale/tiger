@@ -69,7 +69,6 @@ class Site(models.Model):
     timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
-    skin = models.ForeignKey(Skin, default=11)
     hours = models.CharField(null=True, max_length=255)
 
     def __unicode__(self):

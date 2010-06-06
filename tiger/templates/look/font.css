@@ -1,0 +1,7 @@
+{% autoescape off %}
+@font-face {
+    font-family: Opticon;
+    src: url({{ hf.ttf.url }});
+}
+h1, h2, h4 {font-family: Opticon, {{ hf.stack}};}
+{% endautoescape %}

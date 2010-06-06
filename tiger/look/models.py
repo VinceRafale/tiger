@@ -37,20 +37,65 @@ class FontFace(models.Model):
     def __unicode__(self):
         return self.name
 
+    def as_css(self):
+       return render_to_string('look/font.css', {'hf': self}) 
+
 
 class Background(models.Model):
+    REPEAT_X = 'repeat-x'
+    REPEAT_Y = 'repeat-y'
+    REPEAT_BOTH = 'repeat'
+    REPEAT_NONE = 'no-repeat'
+    REPEAT_CHOICES = (
+        (REPEAT_X, 'Across'),
+        (REPEAT_Y, 'Up and down'),
+        (REPEAT_BOTH, 'Both'),
+        (REPEAT_NONE, 'None'),
+    )
+    ATTACHMENT_FIXED = 'fixed'
+    ATTACHMENT_SCROLL = 'scroll'
+    ATTACHMENT_CHOICES = (
+        (ATTACHMENT_FIXED, 'Make background sticky'),
+        (ATTACHMENT_SCROLL, 'Scroll background with page'),
+    )
+    POSITION_TOP_LEFT = 'left top'
+    POSITION_TOP_CENTER = 'top'
+    POSITION_TOP_RIGHT = 'right top'
+    POSITION_MIDDLE_LEFT = 'left center'
+    POSITION_MIDDLE_CENTER = 'center'
+    POSITION_MIDDLE_RIGHT = 'right center'
+    POSITION_BOTTOM_LEFT = 'left bottom'
+    POSITION_BOTTOM_CENTER = 'center bottom'
+    POSITION_BOTTOM_RIGHT = 'right bottom'
+    POSITION_CHOICES = (
+        (POSITION_TOP_LEFT, 'top left'),
+        (POSITION_TOP_CENTER, 'top'),
+        (POSITION_TOP_RIGHT, 'top right'),
+        (POSITION_MIDDLE_LEFT, 'center left'),
+        (POSITION_MIDDLE_CENTER, 'center'),
+        (POSITION_MIDDLE_RIGHT, 'center right'),
+        (POSITION_BOTTOM_LEFT, 'bottom left'),
+        (POSITION_BOTTOM_CENTER, 'bottom center'),
+        (POSITION_BOTTOM_RIGHT, 'bottom right'),
+    )
+
+    site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20)
-    image = models.ImageField(null=True, upload_to='img/backgrounds')
-    color = models.CharField(max_length=6)
-    repeat = models.CharField(max_length=8)
-    position = models.CharField(max_length=20)
-    attachment = models.CharField(max_length=7)
+    image = models.ImageField(null=True, blank=True, upload_to='img/backgrounds')
+    color = models.CharField(max_length=6, default='ffffff')
+    repeat = models.CharField('tiling', max_length=9, default=REPEAT_BOTH, choices=REPEAT_CHOICES)
+    position = models.CharField(max_length=20, default='top left', choices=POSITION_CHOICES)
+    attachment = models.CharField('stickiness', max_length=7, choices=ATTACHMENT_CHOICES, default=ATTACHMENT_SCROLL)
 
     def __unicode__(self):
         return self.name
 
+    def as_css(self):
+       return render_to_string('look/background.css', {'bg': self}) 
+
 
 class Skin(models.Model):
+    site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20)
     header_font = models.ForeignKey(FontFace, null=True, blank=True)
     body_font = models.CharField(max_length=255, choices=FONT_CHOICES)
@@ -83,6 +128,13 @@ class Skin(models.Model):
         uncompressed = render_to_string('look/template.css', {'skin': self})
         compressed = cssmin.cssmin(uncompressed)
         return compressed
+
+    def clone(self, skin):
+        self.header_font = skin.header_font
+        self.body_font = skin.body_font
+        self.background = skin.background
+        self.css = skin.css
+        self.save()
 
 
 admin.site.register(FontFace)

@@ -1,0 +1,9 @@
+background-color: #{{ bg.color }}; 
+{% if bg.image %} 
+    background-image: url({{ bg.image.url }});
+    background-repeat: {{ bg.repeat }};
+    background-position: {{ bg.position }};
+    background-attachment: {{ bg.attachment }}; 
+{% else %}
+    background-image: none;
+{% endif %} 
