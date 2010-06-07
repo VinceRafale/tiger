@@ -176,4 +176,19 @@ form input {
 a.button:hover {text-decoration:underline;}
 form.send label {display:block;}
 .footer {background-color:black; color:white;}
+#orderPreview tr.total td {border-top:4px solid;}
+#submit {
+    border:none;
+    float:right;
+    clear:right;
+}
+a.add, #submit {
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    padding:4px 8px;
+}
+a.button {font-size:16px; padding:4px; text-decoration:none;
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+}
 """

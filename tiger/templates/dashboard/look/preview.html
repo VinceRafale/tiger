@@ -18,8 +18,12 @@
     <style id="background" type="text/css"></style>
     <style id="background-color" type="text/css"></style>
     <style id="masthead-color" type="text/css"></style>
+    <style id="masthead-font-color" type="text/css"></style>
     <style id="menu-color" type="text/css"></style>
     <style id="center-color" type="text/css"></style>
+    <style id="button-color" type="text/css"></style>
+    <style id="button-text-color" type="text/css"></style>
+    <style id="shaded-color" type="text/css"></style>
     <style id="override-css" type="text/css"></style>
 {% endblock %}
 
@@ -149,69 +153,48 @@ $(function () {
         }
         return false;
     });
-    $("#picker-background_color").ColorPicker({
-        onChange: function (hsb, hex, rgb) {
-            $('#background-color').text("body {background-color:#" + hex + ";}");
-            $("#id_background_color").val(hex);
-            $('#picker-background_color div').css('backgroundColor', '#' + hex);
 
-        },
-    });
-    $("#picker-header_color").ColorPicker({
-        onChange: function (hsb, hex, rgb) {
-            $('#header-color').text("h1, h2, h4 {color:#" + hex + ";}");
-            $("#id_header_color").val(hex);
-            $('#picker-header_color div').css('backgroundColor', '#' + hex);
+    function addColorPicker(pickerSelector, styleTagSelector, inputSelector, cssTemplate) {
+        $(pickerSelector).ColorPicker({
+            onChange: function (hsb, hex, rgb) {
+                previewCss = "";
+                if (cssTemplate instanceof Array) {
+                    for (i=0; i < cssTemplate.length; i++) {
+                        previewCss += cssTemplate[i] + hex + " !important;}";
+                    }
+                } else {
+                    previewCss = cssTemplate + hex + " !important;}";
+                }
+                $(styleTagSelector).text(previewCss);
+                $(inputSelector).val(hex);
+                $(pickerSelector + ' div').css('backgroundColor', '#' + hex);
 
-        },
-    });
-    $("#picker-body_color").ColorPicker({
-        onChange: function (hsb, hex, rgb) {
-            $('#body-color').text("body {color:#" + hex + ";}");
-            $("#id_body_color").val(hex);
-            $('#picker-body_color div').css('backgroundColor', '#' + hex);
-
-        },
-    });
-    $("#picker-masthead_color").ColorPicker({
-        onChange: function (hsb, hex, rgb) {
-            $('#masthead-color').text("#masthead {background-color:#" + hex + " !important;}");
-            $("#id_masthead_color").val(hex);
-            $('#picker-masthead_color div').css('backgroundColor', '#' + hex);
-
-        },
-    });
-    $("#picker-masthead_font_color").ColorPicker({
-        onChange: function (hsb, hex, rgb) {
-            $('#masthead-color').text("#masthead h2, #masthead h4, #masthead label {color:#" + hex + " !important;}");
-            $("#id_masthead_font_color").val(hex);
-            $('#picker-masthead_font_color div').css('backgroundColor', '#' + hex);
-
-        },
-    });
-    $("#picker-menu_color").ColorPicker({
-        onChange: function (hsb, hex, rgb) {
-            $('#menu-color').text("#menuWrap, #footer {background-color:#" + hex + " !important;}");
-            $("#id_menu_color").val(hex);
-            $('#picker-menu_color div').css('backgroundColor', '#' + hex);
-
-        },
-    });
-    $("#picker-center_color").ColorPicker({
-        onChange: function (hsb, hex, rgb) {
-            $('#center-color').text("#mainWrap, #sidebarWrap {background-color:#" + hex + ";}");
-            $("#id_center_color").val(hex);
-            $('#picker-center_color div').css('backgroundColor', '#' + hex);
-
-        },
-    });
+            },
+        });
+    }
+    swatchSet = [
+        ["#picker-background_color", '#background-color', "#id_background_color", "body {background-color:#"],
+        ["#picker-header_color", '#header-color', "#id_header_color", "h1, h2, h4 {color:#"],
+        ["#picker-body_color", '#body-color', "#id_body_color", "body {color:#"],
+        ["#picker-masthead_color", '#masthead-color', "#id_masthead_color", "#masthead {background-color:#"],
+        ["#picker-masthead_font_color", '#masthead-font-color', "#id_masthead_font_color", "#masthead h2, #masthead h4, #masthead label {color:#"],
+        ["#picker-menu_color", '#menu-color', "#id_menu_color", "#menuWrap, div.footer {background-color:#"],
+        ["#picker-center_color", '#center-color', "#id_center_color", "#mainWrap, #sidebarWrap {background-color:#"],
+        ["#picker-button_color", '#button-color', "#id_button_color", ["#menu ul li:hover a, #menu ul li a:hover, a.add, #submit, a.button {background-color:#", "#orderPreview tr.total td {border-top-color:#", "a {color:#"]],
+        ["#picker-button_text_color", '#button-text-color', "#id_button_text_color", "a.lightlink, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit {color:#"],
+        ["#picker-shaded_color", '#shaded-color', "#id_shaded_color", "#orderForm, .shaded {background-color:#"]
+    ];
+    
+    for (i=0; i < swatchSet.length; i++) {
+        addColorPicker(swatchSet[i][0], swatchSet[i][1], swatchSet[i][2], swatchSet[i][3]);
+    }
     $("#tab4 button").click(function () {
         $("#override-css").text($("#tab4 textarea").val());
     });
     $("#save").click(function () {
         postData = $("#toolbar :input").not("[type='file']").serialize();
         $.post("{% url save_custom_styles %}", postData, function (data) {
-            alert(data); 
+            $("#skin-css").attr("href", data);
         }, "text");
     });
 });
