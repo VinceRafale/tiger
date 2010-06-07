@@ -10,6 +10,7 @@ from django.db import models
 import pytz
 
 from tiger.look.models import Skin
+from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
 
 TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replace('_', ' ') for tz in pytz.country_timezones('us')])
@@ -70,12 +71,22 @@ class Site(models.Model):
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
     hours = models.CharField(null=True, max_length=255)
+    lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
+    lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
 
     def __unicode__(self):
         if self.custom_domain:
             return 'http://' + self.domain
         else:
             return self.tiger_domain()
+
+    def save(self, *args, **kwargs):
+        if self.address and not (self.lon and self.lat):
+            try:
+                self.lon, self.lat = [str(f) for f in geocode(self.address)]
+            except GeocodeError:
+                pass
+        super(Site, self).save(*args, **kwargs)
 
     def tiger_domain(self, secure=False):
         return 'http%s://%s.takeouttiger.com' % (

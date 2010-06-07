@@ -13,26 +13,8 @@ from olwidget.widgets import EditableMap
 
 from tiger.core.models import *
 from tiger.dashboard.widgets import ImageChooserWidget
+from tiger.utils.geocode import geocode, GeocodeError
 
-GEOCODE_URL = 'http://maps.google.com/maps/api/geocode/json'
-
-class GeocodeError(Exception):
-    pass
-
-def geocode(address):
-    params = {
-        'sensor': 'false',
-        'address': address
-    }
-    try:
-        response = urllib2.urlopen('%s?%s' % (GEOCODE_URL, urllib.urlencode(params)))
-        json = simplejson.loads(response.read())
-        location = json['results'][0]['geometry']['location']
-    except:
-        raise GeocodeError
-    lon = location['lng']
-    lat = location['lat']
-    return lon, lat
 
 
 class BaseOrderForm(forms.Form):
@@ -189,7 +171,7 @@ class OrderSettingsForm(forms.ModelForm):
         )
 
     def __init__(self, data=None, site=None, *args, **kwargs):
-        lon, lat = geocode(site.address)
+        lon, lat = float(site.lon), float(site.lat)
         super(OrderSettingsForm, self).__init__(data, *args, **kwargs)
         self.fields['delivery_area'].widget = EditableMap(options={
             'geometry': 'polygon',
