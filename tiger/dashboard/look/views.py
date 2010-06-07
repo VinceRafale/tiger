@@ -8,27 +8,8 @@ from tiger.look.forms import *
 from tiger.look.models import Skin
 
 def picker(request):
-    skin = request.site.skin
-    form = SkinSelectForm()
-    font_form = HeaderFontForm()
-    body_font_form = BodyFontForm()
-    bg_form = BackgroundForm()
-    bg_color_form = BackgroundColorForm()
-    bg_img_form = BackgroundImageForm()
-    custom_bg_form = CustomBackgroundForm()
-    color_form = ColorForm()
-    return direct_to_template(request, template='dashboard/look/preview.html',
-        extra_context={
-            'header_font_form': font_form,
-            'body_font_form': body_font_form,
-            'bg_form': bg_form,
-            'custom_bg_form': custom_bg_form,
-            'bg_color_form': bg_color_form,
-            'bg_img_form': bg_img_form,
-            'color_form': color_form,
-            'css': skin.css
-    })
-
+    request.session['customizing'] = True
+    return HttpResponseRedirect('/')
 
 def get_font_css(request):
     font = FontFace.objects.get(id=request.POST.get('font'))

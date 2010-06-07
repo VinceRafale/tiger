@@ -10,10 +10,10 @@ admin.autodiscover()
 handler404 = 'tiger.utils.views.handler404'
 handler500 = 'tiger.utils.views.handler500'
 
-urlpatterns = patterns('django.views.generic.simple',
-    url(r'^$', 'direct_to_template', {'template': 'base.html'}, name='home'),
-    url(r'^about/$', 'direct_to_template', {'template': 'about.html'}, name='home'),
-    url(r'^find-us/$', 'direct_to_template', {'template': 'find-us.html'}, name='home'),
+urlpatterns = patterns('tiger.utils.views',
+    url(r'^$', 'render_custom', {'template': 'base.html'}, name='home'),
+    url(r'^about/$', 'render_custom', {'template': 'about.html'}, name='home'),
+    url(r'^find-us/$', 'render_custom', {'template': 'find-us.html'}, name='home'),
 )
 
 order_patterns = patterns('tiger.core.views',

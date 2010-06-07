@@ -7,10 +7,43 @@ from django.template import loader, RequestContext
 from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
+from tiger.look.forms import *
 from tiger.utils.template import load_custom
 
 
 def render_custom(request, template, context=None):
+    if context is None:
+        context = {}
+    # add toolbar if it's an authorized user
+    if request.session.get('customizing'):
+        if template == 'base.html':
+            template = 'dashboard/look/preview.html'
+        skin = request.site.skin
+        form = SkinSelectForm()
+        font_form = HeaderFontForm()
+        body_font_form = BodyFontForm()
+        bg_form = BackgroundForm()
+        bg_color_form = BackgroundColorForm()
+        bg_img_form = BackgroundImageForm()
+        custom_bg_form = CustomBackgroundForm()
+        color_form = ColorForm()
+        logo_form = LogoForm()
+        context.update({
+            'base': 'dashboard/look/preview.html',
+            'header_font_form': font_form,
+            'body_font_form': body_font_form,
+            'bg_form': bg_form,
+            'custom_bg_form': custom_bg_form,
+            'bg_color_form': bg_color_form,
+            'bg_img_form': bg_img_form,
+            'color_form': color_form,
+            'logo_form': logo_form,
+            'css': skin.css
+        })
+    else:
+        context.update({
+            'base': 'base.html',
+        })
     t = load_custom(request, template)
     c = RequestContext(request, context)
     return HttpResponse(t.render(c))
