@@ -1,6 +1,29 @@
 body {color:#{{ skin.body_color }};}
-h1, h2, h3, h4 {color:#{{ skin.header_color }};}
+h1, h2, h4 {color:#{{ skin.header_color }};}
 #masthead {background-color:#{{ skin.masthead_color }};}
 #masthead h2, #masthead h4, #masthead label {color:#{{ skin.masthead_font_color }};}
-#menuWrap, #footer {background-color:#{{ skin.menu_color }};}
+#menuWrap, .footer {background-color:#{{ skin.menu_color }};}
 #mainWrap, #sidebarWrap {background-color:#{{ skin.center_color }};}
+#menu ul li:hover a, #menu ul li a:hover {background-color:#{{ skin.button_color }}; color:#{{ skin.button_text_color }};}
+a {color:#{{ skin.button_color }};}
+a.lightlink {color:#{{ skin.button_text_color }};}
+a.add, #submit {
+    background-color:#{{ skin.button_color }};
+    color:#{{ skin.button_text_color }};
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    padding:4px 8px;
+}
+#submit {
+    border:none;
+    float:right;
+    clear:right;
+}
+a.button {font-size:16px; padding:4px; text-decoration:none;
+background-color:#{{ skin.button_color }};
+    color:#{{ skin.button_text_color }};
+-moz-border-radius:5px;
+-webkit-border-radius:5px;
+}
+#orderPreview tr.total td {border-top:4px ##{{ skin.button_color }} solid;}
+#orderForm, .shaded {background-color:#{{ skin.shaded_color }};}

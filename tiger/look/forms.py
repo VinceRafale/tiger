@@ -67,6 +67,9 @@ class ColorForm(forms.ModelForm):
     masthead_font_color = forms.CharField(widget=ColorPickerWidget, required=False)
     menu_color = forms.CharField(widget=ColorPickerWidget, required=False)
     center_color = forms.CharField(widget=ColorPickerWidget, required=False)
+    button_color = forms.CharField(widget=ColorPickerWidget, required=False)
+    button_text_color = forms.CharField(widget=ColorPickerWidget, required=False)
+    shaded_color = forms.CharField(label='Accent color', widget=ColorPickerWidget, required=False)
 
     class Meta:
         model = Skin
@@ -75,6 +78,9 @@ class ColorForm(forms.ModelForm):
             'masthead_font_color',
             'menu_color',
             'center_color',
+            'button_color',
+            'button_text_color',
+            'shaded_color',
         )
     
 

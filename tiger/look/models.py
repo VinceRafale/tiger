@@ -9,27 +9,11 @@ from imagekit.models import ImageModel
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
+from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 
-FONT_ARIAL = 'Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif'
-FONT_GARAMOND = '"Palatino Linotype", Palatino, Palladio, "URW Palladio L", "Book Antiqua", Baskerville, "Bookman Old Style", "Bitstream Charter", "Nimbus Roman No9 L", Garamond, "Apple Garamond", "ITC Garamond Narrow", "New Century Schoolbook", "Century Schoolbook", "Century Schoolbook L", Georgia, serif'
-FONT_GEORGIA = 'Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif," "Bitstream Vera Serif", "Liberation Serif", Georgia, serif'
-FONT_IMPACT = 'Impact, Haettenschweiler, "Franklin Gothic Bold", Charcoal, "Helvetica Inserat", "Bitstream Vera Sans Bold", "Arial Black", sans-serif'
-FONT_MONOSPACE = 'Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace'
-FONT_TIMES = 'Cambria, "Hoefler Text", Utopia, "Liberation Serif", "Nimbus Roman No9 L Regular", Times, "Times New Roman", serif'
-FONT_TREBUCHET = '"Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Bitstream Vera Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif'
-FONT_VERDANA = 'Corbel, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", Verdana, "Verdana Ref", sans-serif'
+from tiger.look.constants import *
 
-FONT_CHOICES = (
-    (FONT_ARIAL, 'Arial'),
-    (FONT_GARAMOND, 'Garamond'),
-    (FONT_GEORGIA, 'Georgia'),
-    (FONT_IMPACT, 'Impact'),
-    (FONT_MONOSPACE, 'Monospace'),
-    (FONT_TIMES, 'Times New Roman'),
-    (FONT_TREBUCHET, 'Trebuchet'),
-    (FONT_VERDANA, 'Verdana'),
-)
 
 class FontFace(models.Model):
     name = models.CharField(max_length=20)
@@ -84,7 +68,7 @@ class Background(models.Model):
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20, blank=True)
     image = models.ImageField(null=True, blank=True, upload_to='img/backgrounds')
-    color = models.CharField(max_length=6, default='ffffff', blank=True)
+    color = models.CharField(max_length=6, default='D9D4D9', blank=True)
     repeat = models.CharField('tiling', max_length=9, default=REPEAT_BOTH, choices=REPEAT_CHOICES, blank=True)
     position = models.CharField(max_length=20, default='top left', choices=POSITION_CHOICES, blank=True)
     attachment = models.CharField('stickiness', max_length=7, choices=ATTACHMENT_CHOICES, default=ATTACHMENT_SCROLL, blank=True)
@@ -95,21 +79,32 @@ class Background(models.Model):
     def as_css(self):
        return render_to_string('look/background.css', {'bg': self}) 
 
+    def clone(self, bg):
+        self.image = bg.image
+        self.color = bg.color
+        self.repeat = bg.repeat
+        self.position = bg.position
+        self.attachment = bg.attachment
+        self.save()
+
 
 class Skin(models.Model):
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20)
     logo = models.ImageField(upload_to='img/logos', null=True, blank=True)
-    header_font = models.ForeignKey(FontFace, null=True, blank=True)
-    body_font = models.CharField(max_length=255, choices=FONT_CHOICES)
-    header_color = models.CharField(max_length=6, default='000000')
+    header_font = models.ForeignKey(FontFace, null=True, blank=True, default=FontFace.objects.get(name='Chunk').id)
+    body_font = models.CharField(max_length=255, choices=FONT_CHOICES, default=FONT_ARIAL)
+    header_color = models.CharField(max_length=6, default='301613')
     body_color = models.CharField(max_length=6, default='000000')
-    masthead_color = models.CharField(max_length=6, default='000000')
-    masthead_font_color = models.CharField(max_length=6, default='000000')
-    menu_color = models.CharField(max_length=6, default='000000')
-    center_color = models.CharField(max_length=6, default='000000')
+    masthead_color = models.CharField(max_length=6, default='121012')
+    masthead_font_color = models.CharField(max_length=6, default='E3E3BE')
+    menu_color = models.CharField(max_length=6, default='2B292B')
+    center_color = models.CharField(max_length=6, default='f5f5f5')
+    button_color = models.CharField(max_length=6, default='C76218')
+    button_text_color = models.CharField(max_length=6, default='f7f7f7')
+    shaded_color = models.CharField('Accent color', max_length=6, default='bfccd1')
     background = models.ForeignKey(Background)
-    css = models.TextField(blank=True)
+    css = models.TextField(blank=True, default=DEFAULT_CSS)
     timestamp = models.DateTimeField(editable=False)
 
     class IKOptions:
@@ -120,6 +115,9 @@ class Skin(models.Model):
 
     def save(self, *args, **kwargs):
         self.timestamp = datetime.now()
+        if not self.name:
+            self.name = self.site.name
+
         super(Skin, self).save(*args, **kwargs) 
         f = open(self.path, 'w')
         f.write(self.bundle())
@@ -147,11 +145,30 @@ class Skin(models.Model):
     def clone(self, skin):
         self.header_font = skin.header_font
         self.body_font = skin.body_font
-        self.background = skin.background
+        self.header_color = skin.header_color
+        self.body_color = skin.body_color
+        self.masthead_color = skin.masthead_color
+        self.masthead_font_color = skin.masthead_font_color
+        self.menu_color = skin.menu_color
+        self.center_color = skin.center_color
+        self.button_color = skin.button_color
+        self.button_text_color = skin.button_text_color
+        self.shaded_color = skin.shaded_color
+        self.background.clone(skin.background)
         self.css = skin.css
         self.save()
+
+
+def new_site_setup(sender, instance, created, **kwargs):
+    if created:
+        Site = models.get_model('accounts', 'site')
+        if isinstance(instance, Site):
+            background = Background.objects.create(site=instance)
+            skin = Skin.objects.create(site=instance, background=background)
 
 
 admin.site.register(FontFace)
 admin.site.register(Background)
 admin.site.register(Skin)
+
+post_save.connect(new_site_setup)
