@@ -88,11 +88,14 @@ class Background(models.Model):
         self.save()
 
 
+def get_default_font():
+    return FontFace.objects.get(name='Chunk').id
+
 class Skin(models.Model):
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20)
     logo = models.ImageField(upload_to='img/logos', null=True, blank=True)
-    header_font = models.ForeignKey(FontFace, null=True, blank=True, default=FontFace.objects.get(name='Chunk').id)
+    header_font = models.ForeignKey(FontFace, null=True, blank=True, default=get_default_font)
     body_font = models.CharField(max_length=255, choices=FONT_CHOICES, default=FONT_ARIAL)
     header_color = models.CharField(max_length=6, default='301613')
     body_color = models.CharField(max_length=6, default='000000')
