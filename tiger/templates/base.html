@@ -16,6 +16,8 @@
     {# {% endcache %}#}
     {% block extrahead %}
     {% endblock %}
+    {% block extrahead2 %}
+    {% endblock %}
     {% block toolbar-override %}
     {% endblock %}
 </head>
@@ -137,6 +139,8 @@
         </div> 
     </div>
     {% block js %}
+    {% endblock %}
+    {% block js2 %}
     {% endblock %}
     {{ site.tracking_code|safe }}
 </body>
