@@ -60,3 +60,8 @@ class ColorForm(forms.Form):
     menu_color = forms.CharField(widget=ColorPickerWidget, required=False)
     center_color = forms.CharField(widget=ColorPickerWidget, required=False)
     
+
+class LogoForm(forms.Form):
+    class Meta:
+        model = Skin
+        fields = ('logo',)

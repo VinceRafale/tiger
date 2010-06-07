@@ -4,6 +4,8 @@ from datetime import datetime
 
 import cssmin
 
+from imagekit.models import ImageModel
+
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
@@ -97,6 +99,7 @@ class Background(models.Model):
 class Skin(models.Model):
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20)
+    logo = models.ImageField(upload_to='img/logos', null=True, blank=True)
     header_font = models.ForeignKey(FontFace, null=True, blank=True)
     header_color = models.CharField(max_length=6, default='000000')
     body_font = models.CharField(max_length=255, choices=FONT_CHOICES)
@@ -104,6 +107,9 @@ class Skin(models.Model):
     background = models.ForeignKey(Background)
     css = models.TextField(blank=True)
     timestamp = models.DateTimeField(editable=False)
+
+    class IKOptions:
+        spec_module = 'tiger.look.specs'
     
     def __unicode__(self):
         return self.name
