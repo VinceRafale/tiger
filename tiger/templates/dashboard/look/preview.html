@@ -65,6 +65,7 @@ div.tab_container div span{
     border-radius:3px;
     display:block;
     margin-top:10px;
+    overflow:auto;
 }
 
 div.picker-widget{margin-bottom:10px;}
@@ -92,7 +93,7 @@ ul.tabs li a {
     display:block;
 }
 
-ul.tabs li a, ul.tabs li button {
+ul.tabs li a, ul.tabs li button,button#preview {
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;   
@@ -110,6 +111,18 @@ ul.tabs li button {
     font-family:Arial,sans-serif;
     cursor:pointer;
     padding: 5px 9px;
+}
+
+button#preview{
+    background-color:#6c8fa0;
+    border:none;
+    color:#ffffff;
+    font-size:12px;
+    font-family:Arial,sans-serif;
+    cursor:pointer;
+    padding: 3px 7px;    
+    margin-top:5px;
+    float:right;
 }
 
 ul.tabs li.active a{
@@ -133,6 +146,8 @@ ul.tabs li.back a:hover{
 }
 
 div.tab_container label{display:block;color:#444444;font-size:12px;}
+
+a#bg-toggle{color:#4d4d4d;float:right;font-size:12px;margin-top:20px;}
 
 #toolbar textarea {
     border:0;
@@ -197,7 +212,7 @@ div.picker-widget div {
             <span>{{ color_form }}</span>
         </div> 
         <div id="tab3" class="tab_content">
-            <span><a id="bg-toggle" href="#">More options</a>
+            <span>
             <div id="bg-standard">
                 {{ bg_form }}
             </div>
@@ -211,11 +226,13 @@ div.picker-widget div {
                 {{ custom_bg_form }}
                 </div>
                 {% endwith %}
-            </div></span>
+            </div>
+            <a id="bg-toggle" href="#">Show more options</a>
+            </span>
         </div> 
         <div id="tab4" class="tab_content">
             <textarea></textarea><br/>
-            <button>Preview</button>
+            <button id="preview">Preview</button>
         </div> 
     </div>
     </div>
@@ -288,7 +305,7 @@ $(function () {
         if ($("#bg-standard").is(":visible")) {
             $("#bg-standard").hide();
             $("#bg-custom").show();
-            $(this).text("Fewer options");
+            $(this).text("Show fewer options");
             postData = $("#bg-custom :input").serialize();
             $.post("{% url get_custom_bg_css %}", postData, function (data) {
                 $("#background").text("body {" + data + "; }");
