@@ -8,6 +8,7 @@ from tiger.look.forms import *
 from tiger.look.models import Skin
 
 def picker(request):
+    skin = request.site.skin
     form = SkinSelectForm()
     font_form = HeaderFontForm()
     body_font_form = BodyFontForm()
@@ -25,6 +26,7 @@ def picker(request):
             'bg_color_form': bg_color_form,
             'bg_img_form': bg_img_form,
             'color_form': color_form,
+            'css': skin.css
     })
 
 
