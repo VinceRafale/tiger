@@ -13,4 +13,4 @@ parts
 src
 tiger/media/skins
 tiger/media/pdfmenus
-tiger/media/img/backgrounds
+tiger/media/img/backgrounds/custom
