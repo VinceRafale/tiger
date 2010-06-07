@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ MEDIA_URL }}css/colorpicker.css" />
 <link rel="stylesheet" href="{{ MEDIA_URL }}css/customize.css" />
 <script src="{{ MEDIA_URL }}js/json2.js"></script>
+<script src="{{ MEDIA_URL }}js/jquery.cooquery.min.js"></script>
 {% endblock %}
 
 {% block body-class %}customizing{% endblock %}
@@ -80,6 +81,34 @@
 {% block js2 %}
 <script type="text/javascript">
 $(function () {
+
+    /*************
+    * Tabbing
+    *************/
+    $(".tab_content").hide(); 
+    // set up current tab from cookie
+    currentTabId = $.readCookie("activeTab");
+    if (!currentTabId) {
+        $("ul.tabs li:first").addClass("active").show(); 
+        $(".tab_content:first").show(); 
+    } else {
+        $("ul.tabs li").removeClass("active");
+        $("a[href='" + currentTabId + "']").parent().addClass("active");
+        $(currentTabId).show();
+    }
+
+    $("ul.tabs li").click(function() {
+        $("ul.tabs li").removeClass("active"); 
+        $(this).addClass("active"); 
+        $(".tab_content").hide(); 
+        var activeTab = $(this).find("a").attr("href"); 
+        $(activeTab).fadeIn(); 
+        // set cookie for active tab
+        activeId = $(this).find("a").attr("href");
+        $.setCookie('activeTab', activeId, {duration: 1});
+        return false;
+    });
+
     // Ajax image upload handling
     $("input[type=file]").change(function () {
         $(this).closest("form")[0].submit();
@@ -90,23 +119,6 @@ $(function () {
         $(data.selector).text(data.css);
         $("#bg-options").slideDown();
     });
-
-    /*************
-    * Tabbing
-    *************/
-    $(".tab_content").hide(); 
-    $("ul.tabs li:first").addClass("active").show(); 
-    $(".tab_content:first").show(); 
-
-    $("ul.tabs li").click(function() {
-        $("ul.tabs li").removeClass("active"); 
-        $(this).addClass("active"); 
-        $(".tab_content").hide(); 
-        var activeTab = $(this).find("a").attr("href"); 
-        $(activeTab).fadeIn(); 
-        return false;
-    });
-
 
 
     $("#id_header_font").change(function () {
