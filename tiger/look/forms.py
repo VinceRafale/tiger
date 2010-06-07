@@ -10,9 +10,13 @@ class SkinSelectForm(forms.Form):
     skin = forms.ChoiceField(label='Theme', choices=get_skin_choices())
 
 
-class HeaderFontForm(forms.Form):
-    header_font = forms.ModelChoiceField(queryset=FontFace.objects.all())
+class HeaderFontForm(forms.ModelForm):
+    header_font = forms.ModelChoiceField(queryset=FontFace.objects.all(), empty_label=None)
     header_color = forms.CharField(widget=ColorPickerWidget, required=False)
+
+    class Meta:
+        model = Skin
+        fields = ('header_font', 'header_color',)
     
     def __init__(self, *args, **kwargs):
         """Ensures that the list of available FontFace objects is not cached,
@@ -22,10 +26,14 @@ class HeaderFontForm(forms.Form):
         self.fields['header_font'].queryset = FontFace.objects.all()
 
 
-class BodyFontForm(forms.Form):
+class BodyFontForm(forms.ModelForm):
     body_font = forms.ChoiceField(choices=FONT_CHOICES)
     body_color = forms.CharField(widget=ColorPickerWidget, required=False)
 
+    class Meta:
+        model = Skin
+        fields = ('body_font', 'body_color',)
+    
 
 class BackgroundForm(forms.Form):
     bg = forms.ModelChoiceField(label='Preloaded backgrounds', queryset=Background.objects.all())
@@ -54,11 +62,20 @@ class BackgroundImageForm(forms.ModelForm):
         fields = ('image',)
 
 
-class ColorForm(forms.Form):
+class ColorForm(forms.ModelForm):
     masthead_color = forms.CharField(widget=ColorPickerWidget, required=False)
     masthead_font_color = forms.CharField(widget=ColorPickerWidget, required=False)
     menu_color = forms.CharField(widget=ColorPickerWidget, required=False)
     center_color = forms.CharField(widget=ColorPickerWidget, required=False)
+
+    class Meta:
+        model = Skin
+        fields = (
+            'masthead_color',
+            'masthead_font_color',
+            'menu_color',
+            'center_color',
+        )
     
 
 class LogoForm(forms.Form):

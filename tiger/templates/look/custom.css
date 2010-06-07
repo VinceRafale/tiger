@@ -1,0 +1,6 @@
+body {color:#{{ skin.body_color }};}
+h1, h2, h3, h4 {color:#{{ skin.header_color }};}
+#masthead {background-color:#{{ skin.masthead_color }};}
+#masthead h2, #masthead h4, #masthead label {color:#{{ skin.masthead_font_color }};}
+#menuWrap, #footer {background-color:#{{ skin.menu_color }};}
+#mainWrap, #sidebarWrap {background-color:#{{ skin.center_color }};}

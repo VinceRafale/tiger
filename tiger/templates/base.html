@@ -11,9 +11,9 @@
     <!--[if IE]>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
     <![endif]--> 
-    {% cache 300 skin site.subdomain %}
+    {# {% cache 300 skin site.subdomain %} #}
     <link rel="stylesheet" type="text/css" href="{{ site.skin.url }}" />
-    {% endcache %}
+    {# {% endcache %}#}
     {% block extrahead %}
     {% endblock %}
     {% block toolbar-override %}

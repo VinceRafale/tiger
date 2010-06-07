@@ -19,14 +19,19 @@ def render_custom(request, template, context=None):
         if template == 'base.html':
             template = 'dashboard/look/preview.html'
         skin = request.site.skin
-        form = SkinSelectForm()
-        font_form = HeaderFontForm()
-        body_font_form = BodyFontForm()
+        font_form = HeaderFontForm(initial={
+            'header_font': skin.header_font,
+            'header_color': skin.header_color
+        })
+        body_font_form = BodyFontForm(initial={
+            'body_font': skin.body_font,
+            'body_color': skin.body_color
+        })
         bg_form = BackgroundForm()
-        bg_color_form = BackgroundColorForm()
+        bg_color_form = BackgroundColorForm(initial={'background_color': skin.background.color})
         bg_img_form = BackgroundImageForm()
-        custom_bg_form = CustomBackgroundForm()
-        color_form = ColorForm()
+        custom_bg_form = CustomBackgroundForm(instance=skin.background)
+        color_form = ColorForm(instance=skin)
         logo_form = LogoForm()
         context.update({
             'base': 'dashboard/look/preview.html',

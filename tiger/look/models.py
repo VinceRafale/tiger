@@ -101,9 +101,13 @@ class Skin(models.Model):
     name = models.CharField(max_length=20)
     logo = models.ImageField(upload_to='img/logos', null=True, blank=True)
     header_font = models.ForeignKey(FontFace, null=True, blank=True)
-    header_color = models.CharField(max_length=6, default='000000')
     body_font = models.CharField(max_length=255, choices=FONT_CHOICES)
     header_color = models.CharField(max_length=6, default='000000')
+    body_color = models.CharField(max_length=6, default='000000')
+    masthead_color = models.CharField(max_length=6, default='000000')
+    masthead_font_color = models.CharField(max_length=6, default='000000')
+    menu_color = models.CharField(max_length=6, default='000000')
+    center_color = models.CharField(max_length=6, default='000000')
     background = models.ForeignKey(Background)
     css = models.TextField(blank=True)
     timestamp = models.DateTimeField(editable=False)
@@ -132,6 +136,9 @@ class Skin(models.Model):
     def url(self):
         return settings.MEDIA_URL + self._tail
 
+    def custom_colors(self):
+        return render_to_string('look/custom.css', {'skin': self})
+        
     def bundle(self):
         uncompressed = render_to_string('look/template.css', {'skin': self})
         compressed = cssmin.cssmin(uncompressed)

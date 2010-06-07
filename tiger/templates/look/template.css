@@ -6,5 +6,7 @@ body {
 
 {{ skin.header_font.as_css }}
 
+{{ skin.custom_colors }}
+
 {{ skin.css }}
 {% endautoescape %}

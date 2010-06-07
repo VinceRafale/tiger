@@ -8,5 +8,6 @@ urlpatterns = patterns('tiger.dashboard.look.views',
     url(r'^get-bg-css/$', 'get_bg_css', name='get_bg_css'),
     url(r'^get-custom-bg-css/$', 'get_custom_bg_css', name='get_custom_bg_css'),
     url(r'^set-img/$', 'set_img', name='set_img'),
+    url(r'^save/$', 'save', name='save_custom_styles'),
 )
 

@@ -64,7 +64,7 @@
             </span>
         </div> 
         <div id="tab4" class="tab_content">
-            <textarea>{% autoescape off %}{{ css }}{% endautoescape %}</textarea><br/>
+            <textarea name="css">{% autoescape off %}{{ css }}{% endautoescape %}</textarea><br/>
             <button id="preview">Preview</button>
         </div> 
     </div>
@@ -75,7 +75,6 @@
 
 {% block js %}
 <script type="text/javascript">
-var skinIdRegex = new RegExp("^{{ MEDIA_URL }}skins/(\\d+)-\\d+\.css$");
 $(function () {
     // Ajax image upload handling
     $("input[type=file]").change(function () {
@@ -210,11 +209,8 @@ $(function () {
         $("#override-css").text($("#tab4 textarea").val());
     });
     $("#save").click(function () {
-        linkToCss = $(":selected").val();
-        console.log(linkToCss);
-        console.log(skinIdRegex);
-        postVars = $.param({id: skinIdRegex.exec(linkToCss)[1]});
-        $.post("{% url select_skin %}", postVars, function (data) {
+        postData = $("#toolbar :input").not("[type='file']").serialize();
+        $.post("{% url save_custom_styles %}", postData, function (data) {
             alert(data); 
         }, "text");
     });

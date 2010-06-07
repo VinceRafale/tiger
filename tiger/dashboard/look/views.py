@@ -47,3 +47,15 @@ def select_skin(request):
     site.skin = skin
     site.save()
     return HttpResponse("Your settings have been saved.")
+
+def save(request):
+    skin = request.site.skin
+    font_form = HeaderFontForm(request.POST, instance=skin)
+    body_font_form = BodyFontForm(request.POST, instance=skin)
+    color_form = ColorForm(request.POST, instance=skin)
+    forms = (font_form, body_font_form, color_form,)
+    [f.full_clean() for f in forms]
+    [f.save() for f in forms]
+    skin.css = request.POST.get('css', '')
+    skin.save()
+    return HttpResponse(skin.url)
