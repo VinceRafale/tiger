@@ -369,7 +369,7 @@ li.menu-items ul li{cursor: move;}
 
 span.buttons {float:right;}
 
-span.buttons a {
+span.buttons a, a.chooser, a#price-points, a#extras, a#side-groups, a.button {
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
     border-radius:3px;
@@ -383,7 +383,11 @@ span.buttons a {
     padding:2px 10px;
     text-decoration:none;
 }
-span.buttons a:hover {
+
+a.chooser,a#price-points,a#extras,a#side-groups,a.button{float:none;display:inline-block;margin-top:20px;}
+a#side-groups{margin-top:0;}
+
+span.buttons a:hover,a.chooser:hover,a#price-points:hover,a#extras:hover;a#side-groups:hover,a.button:hover {
     background-color:#6c8fa0;
 }
 p.greenlight {color:#126612;background-color:#d3ead3;border-color:#126612;}
@@ -414,3 +418,10 @@ div.location{float: left; margin-right: 10px;}
 #published li li {
     float: left; 
 }
+
+/* MARKETING */
+#faxlists{margin-top:10px;}
+#faxlists li{margin-left:0;margin-bottom:20px;}
+#faxlists li a{/*margin-right:10px;*/}
+#faxlists li a:first-child{font-weight:bold;display:block;font-size:16px;}
+#faxlists li a:last-child{font-size:12px;}

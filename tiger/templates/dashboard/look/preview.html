@@ -43,14 +43,14 @@
 
     <div class="tab_container"> 
         <div id="tab1" class="tab_content">
-            <span>{{ header_font_form }}</span>
-            <span>{{ body_font_form }}</span>
+            <div class="bg">{{ header_font_form }}</div>
+            <div class="bg">{{ body_font_form }}</div>
         </div> 
         <div id="tab2" class="tab_content">
-            <span><ul id="color-form">{{ color_form.as_ul }}</ul></span>
+            <div class="bg"><ul id="color-form">{{ color_form.as_ul }}</ul></div>
         </div> 
         <div id="tab3" class="tab_content">
-            <span>
+            <div class="bg">
             <div id="bg-standard">
                 {{ bg_form }}
             </div>
@@ -67,7 +67,7 @@
                 {% endwith %}
             </div>
             <a id="bg-toggle" href="#">Show more options</a>
-            </span>
+            </div>
         </div> 
         <div id="tab4" class="tab_content">
             <textarea name="css">{% autoescape off %}{{ css }}{% endautoescape %}</textarea><br/>

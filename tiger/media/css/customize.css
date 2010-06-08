@@ -49,7 +49,7 @@ div.tab_container {
     -moz-box-shadow:0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-div.tab_container div span{
+div.tab_container div.bg{
     padding:10px;
     background:rgba(234,234,234,0.6);
     border:1px solid rgba(75,75,75,0.15);
@@ -58,13 +58,12 @@ div.tab_container div span{
     border-radius:3px;
     display:block;
     margin-top:10px;
-    overflow:auto;
 }
 
 div.picker-widget{margin-bottom:10px;}
     div.picker-widget:last-child{margin:0;}
 
-div.tab_container div span:first-child{margin:0;}
+div.tab_container div.bg:first-child{margin:0;}
 
 .colorpicker {
     z-index:1001;
