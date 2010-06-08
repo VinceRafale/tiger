@@ -93,7 +93,7 @@ class ItemManager(models.Manager):
         return render_to_string(template, {'site': site, 'items': items})
 
     def active(self):
-        return self.filter(archived=False)
+        return self.filter(archived=False, price_list__isnull=False).exclude(price_list=[])
 
 
 class Item(models.Model):
@@ -141,6 +141,10 @@ class Item(models.Model):
     def update_price(self):
         self.price_list = get_price_list(self)
         self.save()
+
+    @property
+    def incomplete(self):
+        return self.price_list in (None, [])
 
 
 class Variant(models.Model):

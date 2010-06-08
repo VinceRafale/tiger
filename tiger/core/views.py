@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.validators import email_re
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 
 from greatape import MailChimp
@@ -24,6 +24,8 @@ def section_detail(request, section):
     
 def item_detail(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
+    if i.price_list in (None, []):
+        raise Http404
     return render_custom(request, 'core/item_detail.html', 
         {'item': i, 'sections': request.site.section_set.all()})
 
