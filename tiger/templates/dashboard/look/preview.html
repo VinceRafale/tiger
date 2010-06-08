@@ -81,6 +81,7 @@
 {% block js2 %}
 <script type="text/javascript">
 $(function () {
+    var modified = false;
 
     /*************
     * Tabbing
@@ -112,6 +113,7 @@ $(function () {
     // Ajax image upload handling
     $("input[type=file]").change(function () {
         $(this).closest("form")[0].submit();
+        modified = true;
     });
     $("iframe").load(function () {
         dataString = window['imgjson'].document.getElementsByTagName('body')[0].innerHTML;
@@ -126,12 +128,14 @@ $(function () {
         $.post("{% url get_font_css %}", postData, function (data) {
             $("#header-font").text(data);
         }, "text");
+        modified = true;
     });
     $("#id_body_font").change(function () {
         postData = $.param({'body_font': $(this).val()});
         $.post("{% url get_body_font_css %}", postData, function (data) {
             $("#body-font").text("body { font-family:" + data + "; }");
         }, "text");
+        modified = true;
     });
     $("#id_bg").change(function () {
         if ($(this).val()) {
@@ -140,6 +144,7 @@ $(function () {
                 $("#background").text("body {" + data + "; }");
             }, "text");
         }
+        modified = true;
     });
     $("#bg-custom select").change(function () {
         if ($(this).val()) {
@@ -148,6 +153,7 @@ $(function () {
                 $("#background").text("body {" + data + "; }");
             }, "text");
         }
+        modified = true;
     });
     $("#bg-toggle").click(function () {
         if ($("#bg-standard").is(":visible")) {
@@ -181,6 +187,7 @@ $(function () {
                 $(inputSelector).val(hex);
                 $(pickerSelector + ' div').css('backgroundColor', '#' + hex);
 
+                modified = true;
             },
         });
     }
@@ -202,12 +209,22 @@ $(function () {
     }
     $("#tab4 button").click(function () {
         $("#override-css").text($("#tab4 textarea").val());
+        modified = true;
     });
     $("#save").click(function () {
         postData = $("#toolbar :input").not("[type='file']").serialize();
         $.post("{% url save_custom_styles %}", postData, function (data) {
             $("#skin-css").attr("href", data);
         }, "text");
+        modified = false;
+    });
+    $("div.wrapper a").click(function () {
+        if (modified) {
+            c = confirm("You have unsaved style changes.  Click OK to abandon them or Cancel and then Save to save them.");
+            if (!c) {
+                return false;
+            }
+        }
     });
 });
 </script>
