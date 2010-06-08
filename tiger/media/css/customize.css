@@ -138,7 +138,7 @@ ul.tabs li.back a:hover{
     color:#DEDEDE;
 }
 
-div.tab_container label{display:block;color:#444444;font-size:12px;}
+div.tab_container label, p#spinner {display:block;color:#444444;font-size:12px;}
 
 a#bg-toggle{color:#4d4d4d;float:right;font-size:12px;margin-top:20px;}
 
@@ -173,3 +173,4 @@ div.picker-widget div {
     width:140px;
     margin-left:0;
 }
+
