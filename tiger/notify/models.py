@@ -54,6 +54,7 @@ class Social(models.Model):
     mailchimp_allow_signup = models.BooleanField('Provide a signup box on your web site', default=False)
     mailchimp_send_blast = models.IntegerField(
         default=CAMPAIGN_NO_CREATE, choices=CAMPAIGN_CHOICES)
+    mailchimp_from_email = models.EmailField(null=True, blank=True)
 
     @property
     def mailchimp_lists(self):
@@ -114,7 +115,7 @@ class Release(models.Model):
                 options={
                     'list_id': social.mailchimp_list_id,
                     'subject': self.title,
-                    'from_email': site.email,
+                    'from_email': social.mailchimp_from_email,
                     'from_name': site.name,
                     'to_name': '%s subscribers' % site.name,
                 },

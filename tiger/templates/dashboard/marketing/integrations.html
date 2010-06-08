@@ -49,15 +49,19 @@ Social media integrations
             <p>Current API key: {{ site.social.mailchimp_api_key }}</p>
             {% if not site.social.mailchimp_list_name %}
             <form method="POST" action="{% url set_mailchimp_list %}">
+                <label>Choose the mailing list you want to use:</label>
                 <select name="mail_list">
                 {% for id, name in site.social.mailchimp_lists %}
                     <option value="{{ id }}">{{ name }}</option>
                 {% endfor %}
                 </select>
-                <input type="submit" value="Add" />
+                <label>Your "From" e-mail address for campaigns:</label>
+                <input type="text" name="from_email" />
+                <input type="submit" value="Save" />
             </form>
             {% else %}
             <p>Current mailing list: {{ site.social.mailchimp_list_name }}</p>
+            <p>Your "From" e-mail address for campaigns: {{ site.social.mailchimp_from_email }}</p>
             <form method="POST" action="{% url edit_mailchimp_settings %}">
             <label>{{ mailchimp_form.mailchimp_allow_signup }} {{ mailchimp_form.mailchimp_allow_signup.label }}</label>
             {{ mailchimp_form.mailchimp_send_blast.label_tag }}

@@ -204,10 +204,12 @@ def get_mailchimp_lists(request):
     return HttpResponse(social.get_mailchimp_lists())
 
 def set_mailchimp_list(request):
+    #TODO: validation. Ajax.  Magicks.
     social = request.site.social
     list_id = request.POST.get('mail_list')
     social.mailchimp_list_id = list_id
     social.mailchimp_list_name = dict(social.mailchimp_lists)[list_id]
+    social.mailchimp_from_email = request.POST.get('from_email')
     social.save()
     return HttpResponseRedirect(reverse('dashboard_marketing'))
 
