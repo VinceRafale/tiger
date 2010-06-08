@@ -1,6 +1,10 @@
 background-color: #{{ bg.color }}; 
-{% if bg.image %} 
+{% if bg.image or bg.staged_image %} 
+    {% if staged %}
+    background-image: url({{ bg.staged_image.url }});
+    {% else %}
     background-image: url({{ bg.image.url }});
+    {% endif %}
     background-repeat: {{ bg.repeat }};
     background-position: {{ bg.position }};
     background-attachment: {{ bg.attachment }}; 

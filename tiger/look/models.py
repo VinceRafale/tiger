@@ -67,7 +67,8 @@ class Background(models.Model):
 
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20, blank=True)
-    image = models.ImageField(null=True, blank=True, upload_to='img/backgrounds')
+    image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds')
+    staged_image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds')
     color = models.CharField(max_length=6, default='D9D4D9', blank=True)
     repeat = models.CharField('tiling', max_length=9, default=REPEAT_BOTH, choices=REPEAT_CHOICES, blank=True)
     position = models.CharField(max_length=20, default='top left', choices=POSITION_CHOICES, blank=True)
@@ -76,8 +77,8 @@ class Background(models.Model):
     def __unicode__(self):
         return self.name
 
-    def as_css(self):
-       return render_to_string('look/background.css', {'bg': self}) 
+    def as_css(self, staged=False):
+       return render_to_string('look/background.css', {'bg': self, 'staged': staged}) 
 
     def clone(self, bg):
         self.image = bg.image

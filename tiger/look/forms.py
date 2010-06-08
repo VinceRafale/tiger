@@ -53,13 +53,13 @@ class BackgroundColorForm(forms.Form):
 class CustomBackgroundForm(forms.ModelForm):
     class Meta:
         model = Background
-        exclude = ('site', 'name', 'image', 'color',)
+        exclude = ('site', 'name', 'image', 'staged_image', 'color',)
 
 
 class BackgroundImageForm(forms.ModelForm):
     class Meta:
         model = Background
-        fields = ('image',)
+        fields = ('staged_image',)
 
 
 class ColorForm(forms.ModelForm):

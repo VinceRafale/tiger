@@ -43,7 +43,7 @@ def set_img(request):
     bg = form.save()
     data = {
         'selector': '#background',
-        'css': 'body { %s }' % bg.as_css()
+        'css': 'body { %s }' % bg.as_css(staged=True)
     }
     return HttpResponse(json.dumps(data))
 
@@ -66,5 +66,14 @@ def save(request):
     [f.full_clean() for f in forms]
     [f.save() for f in forms]
     skin.css = request.POST.get('css', '')
+    background = skin.background
+    bg_id = request.POST.get('bg')
+    if bg_id:
+        background.clone(Background.objects.get(id=bg_id))
+    else:
+        if background.staged_image:
+            background.image.save(background.staged_image.name.split('/')[-1], background.staged_image.file)
+    if background.staged_image:
+        background.staged_image.delete()
     skin.save()
     return HttpResponse(skin.url)

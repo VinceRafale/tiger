@@ -166,7 +166,9 @@ $(function () {
             $("#bg-standard").hide();
             $("#bg-custom").show();
             $(this).text("Show fewer options");
-            postData = $("#bg-custom :input").serialize();
+            postData = $("#bg-custom :input").not("[type='file']").serialize();
+            $("#bg-standard :selected").attr("selected", "");
+            $("#bg-standard [value='']").attr("selected", "");
             $.post("{% url get_custom_bg_css %}", postData, function (data) {
                 $("#background").text("body {" + data + "; }");
             }, "text");
