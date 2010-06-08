@@ -59,7 +59,7 @@
                 {% with site.background.image as image %}
                 <form method="POST" enctype="multipart/form-data" action="{% url set_img %}" target="imgjson">
                 {{ bg_img_form }}
-                <p id="spinner" style="display:none;"><img src="{{ MEDIA_URL }}img/ajax-loader.gif" /> Uploading, please be patient...</p>
+                <div class="upload"><p id="spinner" style="display:none;"><img src="{{ MEDIA_URL }}img/ajax-loader.gif" /> Uploading, please be patient...</p></div>
                 </form>
                 <div id="bg-options" {% if not image %}style="display:none;"{% endif %}>
                 {{ custom_bg_form }}
@@ -116,7 +116,7 @@ $(function () {
 
     // Ajax image upload handling
     $("input[type=file]").change(function () {
-        $("p#spinner").show();
+        $("p#spinner").fadeIn('fast');
         $(this).closest("form")[0].submit();
         modified = true;
     });
@@ -125,7 +125,7 @@ $(function () {
         data = JSON.parse(dataString);
         $(data.selector).text(data.css);
         $("#bg-options").slideDown();
-        $("#spinner").hide();
+        $("#spinner").fadeOut('slow');
     });
 
 
