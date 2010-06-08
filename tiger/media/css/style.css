@@ -38,11 +38,14 @@ legend#two{background-position:left -108px;}
 legend#three{background-position:left -162px;}
 label{margin:0 0 0 51px;padding-top:20px;display:block;color:#e0e0e0;font:1.13em Georgia,serif;}
 .domain label{padding:0;}
+label.promo{margin-bottom:20px;}
 input[type=text],input[type=password]{width:371px;font-size:1em;padding:0 3px;height:29px;background-color:#E0E0E0;border:0;}
 label span{width:382px;height:34px;background:url(../img/sprite_forms.png)left bottom no-repeat;display:block;padding:5px 0 0 5px;}
 h3{background:#34484f;margin:30px 0 10px;padding:6px;color:#d9d4d9;font:normal 0.81em Georgia,serif;}
 
 fieldset.billing{margin-top:40px;}
+    fieldset.billing ul{margin-left:51px;}
+    fieldset.billing li{float:left;margin-left:5px;}
 
 fieldset.domain{margin:40px 0 0;}
 fieldset.domain label{overflow:auto;}
@@ -71,7 +74,7 @@ fieldset.domain strong,label.expiration strong{font-weight:normal;padding-top:8p
 
 input[type=submit]{width:136px;height:45px;margin-top:40px;margin-left:51px;/*float:right;*/cursor:pointer;background:url(../img/sprite_buttons.png)top center no-repeat;border:0;}
 input[type=submit]:hover{background:url(../img/sprite_buttons.png)bottom center no-repeat;}
-input[type=submit]:active{margin-top:41px;}
+input[type=submit]:active{position:relative;top:1px;}
 
 label.expiration{overflow:auto;}
 label.expiration input[type=text]{width:44px;}
