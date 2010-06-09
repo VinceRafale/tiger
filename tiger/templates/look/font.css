@@ -1,7 +1,8 @@
 {% autoescape off %}
 @font-face {
     font-family: Opticon;
-    src: url({{ hf.ttf.url }});
+	src: url('{{ hf.eot.url }}');
+	src: local('☺'), url('{{ hf.woff.url }}') format('woff'), url('{{ hf.ttf.url }}') format('truetype'), url('{{ hf.svg.url }}#webfont') format('svg');
 }
 h1, h2, h4 {font-family: Opticon, {{ hf.stack }};}
 {% endautoescape %}

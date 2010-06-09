@@ -6,6 +6,7 @@ import cssmin
 
 from imagekit.models import ImageModel
 
+from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
@@ -17,8 +18,11 @@ from tiger.look.constants import *
 
 class FontFace(models.Model):
     name = models.CharField(max_length=20)
-    ttf = models.FileField(upload_to='fonts')
-    stack = models.CharField(max_length=255, choices=FONT_CHOICES)
+    ttf = models.FileField(upload_to='fonts/ttf')
+    eot = models.FileField(upload_to='fonts/eot')
+    woff = models.FileField(upload_to='fonts/woff')
+    svg = models.FileField(upload_to='fonts/svg')
+    stack = models.TextField(max_length=255, choices=FONT_CHOICES)
 
     def __unicode__(self):
         return self.name
@@ -90,7 +94,10 @@ class Background(models.Model):
 
 
 def get_default_font():
-    return FontFace.objects.get(name='Chunk').id
+    try:
+        return FontFace.objects.get(name='Chunk').id
+    except:
+        return 1
 
 class Skin(models.Model):
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
