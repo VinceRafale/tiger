@@ -13,8 +13,6 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('tiger.accounts.views',
-    url(r'^domain-check/$', 'domain_check', name='domain_check'),
-    url(r'^validate-coupon/$', 'validate_coupon', name='validate_coupon'),
     url(r'^cancelled/$', 'cancelled', name='cancelled'),
     url(r'^privacy/$', 'privacy', name='privacy'),
     url(r'^terms/$', 'terms', name='terms'),
@@ -23,10 +21,14 @@ urlpatterns += patterns('tiger.accounts.views',
 if settings.DEBUG:
     urlpatterns += patterns('tiger.accounts.views',
         url(r'^signup/$', 'signup', name='tiger_signup'),
+        url(r'^validate-coupon/$', 'validate_coupon', name='validate_coupon'),
+        url(r'^domain-check/$', 'domain_check', name='domain_check'),
     )
 else:
     urlpatterns += patterns('tiger.accounts.views',
         url(r'^signup/$', 'signup', {'SSL': True}, name='tiger_signup'),
+        url(r'^domain-check/$', 'domain_check', {'SSL': True}, name='domain_check'),
+        url(r'^validate-coupon/$', 'validate_coupon', {'SSL': True}, name='validate_coupon'),
     )
 
 # Social API connectivity URLS
