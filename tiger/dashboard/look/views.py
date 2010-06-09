@@ -34,7 +34,11 @@ def get_custom_bg_css(request):
     form = CustomBackgroundForm(request.POST, instance=request.site.background)
     form.full_clean()
     bg = form.save(commit=False)
-    return HttpResponse(bg.as_css())
+    if bg.staged_image:
+        css = bg.as_css(staged=True)
+    else:
+        css = bg.as_css()
+    return HttpResponse(css)
 
 @login_required
 def set_img(request):
