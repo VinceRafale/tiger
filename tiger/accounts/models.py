@@ -136,7 +136,8 @@ class Site(models.Model):
     def is_open(self):
         return is_available(
             timeslots=self.timeslot_set.all(), 
-            tz=self.timezone
+            tz=self.timezone,
+            buff=self.ordersettings.eod_buffer
         )
 
     @property

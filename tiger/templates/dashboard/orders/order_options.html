@@ -13,6 +13,7 @@ display:inline-block;
 p .olControlDrawFeaturePolygonItemInactive {
 background-position:-26px 0;
 }
+#id_eod_buffer {width:25px;}
 </style>
 {% endblock %}
 
@@ -37,6 +38,7 @@ Edit your online ordering options
 {{ form.dine_in }} {{ form.dine_in.label }}
 {{ form.takeout }} {{ form.takeout.label }}
 {{ form.delivery }} {{ form.delivery.label }}
+<label for='eod_buffer'>Stop taking orders {{ form.eod_buffer }} minutes prior to closing</label>
 {% if form.delivery_minimum.errors %}
 {{ form.delivery_minimum.errors }}
 {% endif %}

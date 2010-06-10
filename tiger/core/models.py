@@ -312,6 +312,7 @@ class OrderSettings(models.Model):
     takes_discover = models.BooleanField(default=False)
     takes_mc = models.BooleanField(default=False)
     takes_visa = models.BooleanField(default=False)
+    eod_buffer = models.PositiveIntegerField(default=30)
 
     @property
     def choices(self):

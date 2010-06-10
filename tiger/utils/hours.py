@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.conf import settings
 from pytz import timezone
 
@@ -20,7 +20,7 @@ DOW_CHOICES = (
     (DOW_SUNDAY, 'Sunday'),
 )
 
-def is_available(timeslots, tz):
+def is_available(timeslots, tz, buff=0):
     server_tz = timezone(settings.TIME_ZONE)
     site_tz = timezone(tz)
     now = server_tz.localize(datetime.now())
@@ -29,7 +29,7 @@ def is_available(timeslots, tz):
         return False
     for timeslot in timeslots:
         start_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.start))
-        stop_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.stop))
+        stop_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.stop)) - timedelta(seconds=buff*60)
         if start_dt < now < stop_dt:
             return True
     return False

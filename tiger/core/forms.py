@@ -163,6 +163,7 @@ class OrderSettingsForm(forms.ModelForm):
         model = OrderSettings
         fields = (
             'dine_in', 
+            'eod_buffer',
             'takeout', 
             'delivery', 
             'delivery_minimum', 
