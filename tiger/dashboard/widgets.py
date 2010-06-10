@@ -27,7 +27,7 @@ class ImageChooserWidget(forms.HiddenInput):
         if value:
             html += '<img src="%s" />' % ItemImage.objects.get(id=value).thumb.url
         else:
-            html += 'No image selected.'
+            html += '<img src="%s" />' % '/static/img/blank.jpg'
         html += '</div>'
         anchor = ' <a href="%s" class="chooser">%s</a> ' % (
             reverse('dashboard_get_images'),
