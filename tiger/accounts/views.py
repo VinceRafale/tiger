@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import SignupForm, SpanErrorList
-from tiger.accounts.models import Site
+from tiger.accounts.models import Site, SalesRep
 
 
 def signup(request):
