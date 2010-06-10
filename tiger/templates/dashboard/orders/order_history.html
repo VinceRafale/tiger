@@ -31,11 +31,12 @@ Online orders status
     <div id="chart"></div>
 
     <h3>Latest orders</h3>
-    <table id="subscribers">
+    <table>
         <thead>
             <tr>
                 <th>For</th>
                 <th>Placed at</th>
+                <th>Payment</th>
                 <th>Ready by</th>
                 <th>Phone</th>
                 <th class="total">Total</th>
@@ -46,6 +47,7 @@ Online orders status
             <tr class="{% cycle '' 'shaded' %}">
                 <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
                 <td><a href="{{ order.get_absolute_url }}">{{ order.timestamp|date:"fa m/d" }}</a></td>
+                <td><a href="{{ order.get_absolute_url }}">{% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}</a></td>
                 <td><a href="{{ order.get_absolute_url }}">{{ order.pickup }}</a></td>
                 <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
                 <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total|floatformat:"-2" }}</a></td>
