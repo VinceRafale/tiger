@@ -172,7 +172,10 @@ class OrderSettingsForm(forms.ModelForm):
         )
 
     def __init__(self, data=None, site=None, *args, **kwargs):
-        lon, lat = float(site.lon), float(site.lat)
+        try:
+            lon, lat = float(site.lon), float(site.lat)
+        except TypeError:
+            raise GeocodeError
         super(OrderSettingsForm, self).__init__(data, *args, **kwargs)
         self.fields['delivery_area'].widget = EditableMap(options={
             'geometry': 'polygon',
