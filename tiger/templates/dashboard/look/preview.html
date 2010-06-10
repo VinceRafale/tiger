@@ -225,7 +225,7 @@ $(function () {
         addColorPicker(swatchSet[i][0], swatchSet[i][1], swatchSet[i][2], swatchSet[i][3]);
     }
     $("#tab4 button").click(function () {
-        $("#override-css").text($("#tab4 textarea").val());
+        setCss("#override-css", $("#tab4 textarea").val());
         modified = true;
     });
     $("#save").click(function () {
