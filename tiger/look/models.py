@@ -1,3 +1,4 @@
+import codecs
 import os
 import time
 from datetime import datetime
@@ -130,7 +131,7 @@ class Skin(models.Model):
             self.name = self.site.name
 
         super(Skin, self).save(*args, **kwargs) 
-        f = open(self.path, 'w')
+        f = codecs.open(self.path, 'w', 'utf-8')
         f.write(self.bundle())
 
     @property
