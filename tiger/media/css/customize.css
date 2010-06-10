@@ -19,7 +19,8 @@
 }
 
 #toolbar li {
-    display:inline-block;
+    display:block;
+    float:left;
 }
 
 #toolbar form {
@@ -45,18 +46,20 @@ div.tab_container {
     border-radius:5px;
     width:auto;
     border:1px solid rgba(75,75,75,0.15);
-    background-color:rgba(247,247,247,0.95);
+    background-color:rgb(247,247,247);
+    /*background-color:rgba(247,247,247,0.95);*/
     -moz-box-shadow:0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 div.tab_container div.bg{
     padding:10px;
+    background:rgb(234,234,234);
     background:rgba(234,234,234,0.6);
     border:1px solid rgba(75,75,75,0.15);
     -moz-border-radius:3px;
     -webkit-border-radius:3px;
     border-radius:3px;
-    display:block;
+    /*display:block;*/
     margin-top:10px;
 }
 
@@ -126,7 +129,7 @@ ul.tabs li.active a{
 }
 
 ul.tabs li.back,ul.tabs li.button{
-    float:right;
+    float:right !important;
 }
 
 ul.tabs li.back a{
@@ -152,6 +155,14 @@ div.picker-widget {
     height:36px;
     position:relative;
     width:36px;
+}
+
+#tab3{
+    width:275px;
+}
+
+#tab4{
+    width:410px;
 }
 
 div.picker-widget div {
