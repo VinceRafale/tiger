@@ -1,5 +1,8 @@
 $(function () {
     $("a.chooser").fancybox();
+    $("a.closing-link").live("click", function () {
+        $.fancybox.close();
+    });
     $("#images a").live("click", function () {
         imageId = $(this).attr("id");
         selectedImg = $(this).children()[0];

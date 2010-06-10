@@ -108,4 +108,7 @@ def get_images(request):
         '<li><a href="#" id="%d"><img src="%s" /></a></li>' % (img.id, img.thumb.url)
         for img in request.site.itemimage_set.all()
     ])
-    return HttpResponse('<ul id="images">%s</ul>' % list_items)
+    content = '<ul id="images">%s</ul>' % list_items
+    if not list_items:
+        content = '<p>You currently do not have any images in your image library. You can <a class="closing-link" href="%s" target="_blank">add one</a> now.' % reverse('dashboard_add_img')
+    return HttpResponse(content)
