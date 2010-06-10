@@ -350,7 +350,7 @@ class AuthNetForm(forms.Form):
             amount=self.order.total, 
             invoice_num=unicode(self.order.id),
             description=u'Order for %s' % self.order.name,
-            exp_date=exp_date,
+            exp_date=unicode(exp_date),
             **data
         )
         if transaction['reason_code'] != u'1':
