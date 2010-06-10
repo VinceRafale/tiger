@@ -344,7 +344,7 @@ class AuthNetForm(forms.Form):
             return cleaned_data
         data = cleaned_data.copy()
         api = Api(self.login, self.key, delimiter=u'|')
-        exp_date = '-'.join([data.pop('month'), data.pop('year')])
+        exp_date = '-'.join([str(data.pop('month')), str(data.pop('year'))])
         transaction = api.transaction(
             type=u'AUTH_CAPTURE', 
             amount=self.order.total, 
