@@ -19,7 +19,7 @@ TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replac
 class SalesRep(models.Model):
     user = models.ForeignKey(User)
     code = models.CharField(max_length=8)
-    plan = models.CharField(max_length=12)
+    plan = models.CharField(max_length=12, default=settings.DEFAULT_BONUS_PRODUCT_HANDLE)
 
 
 class Account(models.Model):
