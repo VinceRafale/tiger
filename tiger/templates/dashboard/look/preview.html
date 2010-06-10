@@ -81,6 +81,34 @@
 
 {% block js2 %}
 <script type="text/javascript">
+function setCss(styleTagSelector, css) {
+    styleTag = $(styleTagSelector)[0];
+    if (styleTag.styleSheet) {
+        styleTag.styleSheet.cssText = css;
+    } else {
+        styleTag.innerHTML(css);
+    }
+}
+
+function addColorPicker(pickerSelector, styleTagSelector, inputSelector, cssTemplate) {
+    $(pickerSelector).ColorPicker({
+        onChange: function (hsb, hex, rgb) {
+            previewCss = "";
+            if (cssTemplate instanceof Array) {
+                for (i=0; i < cssTemplate.length; i++) {
+                    previewCss += cssTemplate[i] + hex + " !important;}";
+                }
+            } else {
+                previewCss = cssTemplate + hex + " !important;}";
+            }
+            setCss(styleTagSelector, previewCss);
+            $(inputSelector).val(hex);
+            $(pickerSelector + ' div').css('backgroundColor', '#' + hex);
+
+            modified = true;
+        },
+    });
+}
 $(function () {
     var modified = false;
 
@@ -180,25 +208,6 @@ $(function () {
         return false;
     });
 
-    function addColorPicker(pickerSelector, styleTagSelector, inputSelector, cssTemplate) {
-        $(pickerSelector).ColorPicker({
-            onChange: function (hsb, hex, rgb) {
-                previewCss = "";
-                if (cssTemplate instanceof Array) {
-                    for (i=0; i < cssTemplate.length; i++) {
-                        previewCss += cssTemplate[i] + hex + " !important;}";
-                    }
-                } else {
-                    previewCss = cssTemplate + hex + " !important;}";
-                }
-                $(styleTagSelector).text(previewCss);
-                $(inputSelector).val(hex);
-                $(pickerSelector + ' div').css('backgroundColor', '#' + hex);
-
-                modified = true;
-            },
-        });
-    }
     swatchSet = [
         ["#picker-background_color", '#background-color', "#id_background_color", "body {background-color:#"],
         ["#picker-header_color", '#header-color', "#id_header_color", "h1, h2, h4 {color:#"],
