@@ -86,7 +86,7 @@ function setCss(styleTagSelector, css) {
     if (styleTag.styleSheet) {
         styleTag.styleSheet.cssText = css;
     } else {
-        styleTag.innerHTML(css);
+        styleTag.innerHTML = css;
     }
 }
 
