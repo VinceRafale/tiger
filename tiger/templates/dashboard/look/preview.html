@@ -106,7 +106,7 @@ function addColorPicker(pickerSelector, styleTagSelector, inputSelector, cssTemp
             $(pickerSelector + ' div').css('backgroundColor', '#' + hex);
 
             modified = true;
-        },
+        }
     });
 }
 $(function () {
@@ -160,14 +160,14 @@ $(function () {
     $("#id_header_font").change(function () {
         postData = $.param({'font': $(this).val()});
         $.post("{% url get_font_css %}", postData, function (data) {
-            $("#header-font").text(data);
+            setCss("#header-font", data);
         }, "text");
         modified = true;
     });
     $("#id_body_font").change(function () {
         postData = $.param({'body_font': $(this).val()});
         $.post("{% url get_body_font_css %}", postData, function (data) {
-            $("#body-font").text("body { font-family:" + data + "; }");
+            setCss("#body-font", "body { font-family:" + data + "; }");
         }, "text");
         modified = true;
     });
@@ -175,7 +175,7 @@ $(function () {
         if ($(this).val()) {
             postData = $.param({'bg': $(this).val()});
             $.post("{% url get_bg_css %}", postData, function (data) {
-                $("#background").text("body {" + data + "; }");
+                setCss("#background", "body {" + data + "; }");
             }, "text");
         }
         modified = true;
@@ -184,7 +184,7 @@ $(function () {
         if ($(this).val()) {
             postData = $("#bg-custom :input").serialize();
             $.post("{% url get_custom_bg_css %}", postData, function (data) {
-                $("#background").text("body {" + data + "; }");
+                setCss("#background", "body {" + data + "; }");
             }, "text");
         }
         modified = true;
@@ -198,7 +198,7 @@ $(function () {
             $("#bg-standard :selected").attr("selected", "");
             $("#bg-standard [value='']").attr("selected", "");
             $.post("{% url get_custom_bg_css %}", postData, function (data) {
-                $("#background").text("body {" + data + "; }");
+                setCss("#background", "body {" + data + "; }");
             }, "text");
         } else {
             $("#bg-standard").show();
