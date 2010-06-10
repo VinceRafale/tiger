@@ -36,6 +36,7 @@ def home(request):
     })
 
 
+@login_required
 def integration_settings(request):
     data = json.loads(request.POST.get('data'))
     social = request.site.social
@@ -106,6 +107,7 @@ def fax_list(request):
     return object_list(request, FaxList.objects.filter(site=request.site), 
         template_name='dashboard/marketing/fax_list.html')
 
+@login_required
 def add_fax_list(request):
     if not request.is_ajax() or request.method != 'POST':
         raise Http404
@@ -123,6 +125,7 @@ def add_fax_list(request):
         result = {'errors': form._errors}
     return HttpResponse(json.dumps(result))
 
+@login_required
 def delete_fax_list(request, fax_list_id):
     FaxList.objects.get(id=fax_list_id).delete()
     return HttpResponseRedirect(reverse('fax_list'))
@@ -186,6 +189,7 @@ def add_twitter(request):
 def xd_receiver(request):
     return direct_to_template(request, template='dashboard/marketing/xd_receiver.htm')
 
+@login_required
 def register_id(request):
     social = request.site.social
     social.facebook_id = request.POST.get('id')
@@ -193,16 +197,19 @@ def register_id(request):
     social.save()
     return HttpResponse('')
 
+@login_required
 def add_mailchimp_key(request):
     social = request.site.social
     social.mailchimp_api_key = request.POST.get('api_key')
     social.save()
     return HttpResponseRedirect(reverse('dashboard_marketing'))
 
+@login_required
 def get_mailchimp_lists(request):
     social = request.site.social
     return HttpResponse(social.get_mailchimp_lists())
 
+@login_required
 def set_mailchimp_list(request):
     #TODO: validation. Ajax.  Magicks.
     social = request.site.social
@@ -213,6 +220,7 @@ def set_mailchimp_list(request):
     social.save()
     return HttpResponseRedirect(reverse('dashboard_marketing'))
 
+@login_required
 def edit_mailchimp_settings(request):
     social = request.site.social
     form = MailChimpForm(request.POST, instance=social)
@@ -220,6 +228,7 @@ def edit_mailchimp_settings(request):
     messages.success(request, 'MailChimp settings saved successfully.')
     return HttpResponseRedirect(reverse('dashboard_marketing'))
 
+@login_required
 def fetch_coupon(request):
     coupon_id = request.GET.get('coupon')
     coupon = Coupon.objects.get(id=coupon_id)

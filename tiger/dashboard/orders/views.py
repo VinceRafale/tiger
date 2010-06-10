@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
@@ -6,16 +7,19 @@ from django.views.generic.simple import direct_to_template
 from tiger.core.forms import OrderSettingsForm, OrderPaymentForm, GeocodeError, OrderMessageForm
 from tiger.core.models import Order
 
+@login_required
 def home(request):
     return direct_to_template(request, template='dashboard/orders/order_history.html', extra_context={
         'orders': Order.objects.order_by('-timestamp')[:10] 
     })
 
+@login_required
 def order_detail(request, order_id):
     return direct_to_template(request, template='dashboard/orders/order_detail.html', extra_context={
         'order': Order.objects.get(id=order_id) 
     })
 
+@login_required
 def order_options(request):
     if request.method == 'POST':
         form = OrderSettingsForm(request.POST, site=request.site, instance=request.site.ordersettings)
@@ -42,6 +46,7 @@ def order_options(request):
         'form': form
     })
 
+@login_required
 def order_payment(request):
     if request.method == 'POST':
         form = OrderPaymentForm(request.POST, instance=request.site.ordersettings)
@@ -68,4 +73,3 @@ def order_messages(request):
     return direct_to_template(request, template='dashboard/orders/order_messages.html', extra_context={
         'form': form
     })
-

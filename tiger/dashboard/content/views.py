@@ -102,6 +102,7 @@ def custom_domain(request):
         'NGINX_IP_ADDRESS': settings.NGINX_IP_ADDRESS
     })
 
+@login_required
 def get_images(request):
     list_items = ''.join([
         '<li><a href="#" id="%d"><img src="%s" /></a></li>' % (img.id, img.thumb.url)

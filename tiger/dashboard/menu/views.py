@@ -93,12 +93,15 @@ def add_related(request, object_type, object_id, form_class):
         result = {'errors': form._errors}
     return HttpResponse(json.dumps(result))
 
+@login_required
 def add_pricepoint(request, object_type, object_id):
     return add_related(request, object_type, object_id, VariantForm)
 
+@login_required
 def add_extra(request, object_type, object_id):
     return add_related(request, object_type, object_id, UpgradeForm)
 
+@login_required
 def add_sidegroup(request, object_type, object_id):
     if not request.is_ajax() or request.method != 'POST':
         raise Http404
@@ -118,6 +121,7 @@ def add_sidegroup(request, object_type, object_id):
         result['success'] = False
     return HttpResponse(json.dumps(result))
 
+@login_required
 def add_side(request, object_id, instance=None):
     if not request.is_ajax() or request.method != 'POST':
         raise Http404
@@ -159,12 +163,15 @@ def edit_related(request, item_id, model, form_class, attr_list, object_type):
         result = {'errors': form._errors}
     return HttpResponse(json.dumps(result))
 
+@login_required
 def edit_pricepoint(request, item_id):
     return edit_related(request, item_id, Variant, VariantForm, ('description', 'price',), 'variant')
 
+@login_required
 def edit_side(request, item_id):
     return edit_related(request, item_id, SideDish, SideDishForm, ('name', 'price',), 'side')
 
+@login_required
 def edit_extra(request, item_id):
     return edit_related(request, item_id, Upgrade, UpgradeForm, ('name', 'price',), 'upgrade')
 
@@ -178,15 +185,19 @@ def delete_object(model, object_id):
         deleted = True
     return HttpResponse(json.dumps({'deleted': deleted}))
 
+@login_required
 def delete_pricepoint(request, object_id):
     return delete_object(Variant, object_id)
 
+@login_required
 def delete_extra(request, object_id):
     return delete_object(Upgrade, object_id)
 
+@login_required
 def delete_sidegroup(request, object_id):
     return delete_object(SideDishGroup, object_id)
 
+@login_required
 def delete_side(request, object_id):
     return delete_object(SideDish, object_id)
 

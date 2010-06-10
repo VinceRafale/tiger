@@ -8,6 +8,7 @@ from tiger.dashboard.account.forms import CancellationForm
 from tiger.utils.chargify import Chargify
 
 
+@login_required
 def cancel(request):
     if request.method == 'POST':
         form = CancellationForm(request.POST)
@@ -27,6 +28,7 @@ def cancel(request):
     return direct_to_template(request, template='dashboard/account/cancel.html',
         extra_context={'form': form})
 
+@login_required
 def update_contact(request):
     if request.method == 'POST':
         form = ContactInfoForm(request.POST, instance=request.site.account)
@@ -42,6 +44,7 @@ def update_contact(request):
     return direct_to_template(request, template='dashboard/account/update_contact.html',
         extra_context={'form': form})
 
+@login_required
 def update_cc(request):
     if request.method == 'POST':
         form = CreditCardForm(request.POST, instance=request.site.account)

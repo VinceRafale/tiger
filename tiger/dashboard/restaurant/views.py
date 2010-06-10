@@ -11,16 +11,19 @@ from tiger.content.models import Content
 from tiger.utils.hours import DOW_CHOICES
 
 
+@login_required
 def home(request):
     return direct_to_template(request, template='dashboard/restaurant/home.html', extra_context={
     })
 
 
+@login_required
 def location(request):
     return update_object(request, form_class=LocationForm, object_id=request.site.id, 
         template_name='dashboard/restaurant/location_form.html', post_save_redirect='/dashboard/restaurant/location/')
         
 
+@login_required
 def edit_content(request, slug):
     instance = Content.objects.get(site=request.site, slug=slug)
     if request.method == 'POST':
@@ -38,6 +41,7 @@ def edit_content(request, slug):
     })
         
 
+@login_required
 def edit_hours(request):
     def get_forms(data=None):
         forms = []
@@ -65,6 +69,7 @@ def edit_hours(request):
     return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context={'form_list': form_list})
 
 
+@login_required
 def toggle_order_status(request):
     site = request.site
     if not site.ordersettings.can_receive_orders():
