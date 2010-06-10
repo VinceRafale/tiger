@@ -304,8 +304,8 @@ class OrderSettings(models.Model):
     delivery_area = models.MultiPolygonField(null=True, blank=True) 
     # customer's authorize.net information for online orders
     payment_type = models.IntegerField('Collect payment via', null=True, choices=PAYMENT_TYPE_CHOICES)
-    auth_net_api_login = models.CharField(max_length=255, blank=True, null=True)
-    auth_net_api_key = models.CharField(max_length=255, blank=True, null=True)
+    auth_net_api_login = models.CharField('API Login ID', max_length=255, blank=True, null=True)
+    auth_net_api_key = models.CharField('Transaction Key', max_length=255, blank=True, null=True)
     paypal_email = models.EmailField(blank=True, null=True)
     require_payment = models.BooleanField('Make online payment required for online orders', default=False)
     takes_amex = models.BooleanField(default=False)
