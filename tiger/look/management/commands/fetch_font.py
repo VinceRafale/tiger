@@ -15,8 +15,13 @@ from tiger.look.constants import FONT_CHOICES
 
 def save_fontkit(file_obj, name=None):
     zip_file = zipfile.ZipFile(file_obj)
-    os.mkdir('tmp')
+    try:
+        os.mkdir('tmp')
+    except OSError:
+        shutil.rmtree('./tmp')
+        os.mkdir('tmp')
     zip_file.extractall('./tmp')
+
     def get_path(ext):
         return os.path.join('./tmp', [path for path in zip_file.namelist() if path.endswith(ext)][0])
 
@@ -30,7 +35,7 @@ def save_fontkit(file_obj, name=None):
     fontface.name = name
     stack = -1
     while int(stack) not in range(len(FONT_CHOICES)):
-        stack = raw_input('Choose the alternate font stack for %s:\n%s' % (name, '\n'.join(' [%s] %s' % (i, choice[1]) for i, choice in enumerate(FONT_CHOICES))))
+        stack = raw_input('Choose the alternate font stack for %s:\n%s\n' % (name, '\n'.join(' [%s] %s' % (i, choice[1]) for i, choice in enumerate(FONT_CHOICES))))
     fontface.stack = FONT_CHOICES[int(stack)][0]
     fontface.save()
     fontface.eot.save(eot.name.split('/')[-1], ContentFile(eot.read()))
@@ -44,6 +49,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         doc = parse('http://www.fontsquirrel.com/fontface').getroot()
         doc.make_links_absolute()
+        args = list(args)
         for arg in args:
             if arg.endswith('.zip'):
                 save_fontkit(open(arg))
@@ -56,3 +62,6 @@ class Command(BaseCommand):
                         buff = StringIO.StringIO()
                         buff.write(data)
                         save_fontkit(buff, label)
+                        args.remove(label)
+                else:
+                    print "No font '%s' found on fontsquirrel.com/fontface." % arg
