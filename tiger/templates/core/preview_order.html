@@ -1,6 +1,10 @@
 {% extends base %}
 
 {% block content %}
+<h1>Preview your order</h1>
+{% if site.ordersettings.review_page_text %}
+{{ site.ordersettings.review_page_text|linebreaks }}
+{% endif %}
 <table id="orderPreview">
 <tr>
     <th>Item</th>

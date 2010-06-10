@@ -313,6 +313,8 @@ class OrderSettings(models.Model):
     takes_mc = models.BooleanField(default=False)
     takes_visa = models.BooleanField(default=False)
     eod_buffer = models.PositiveIntegerField(default=30)
+    review_page_text = models.TextField('Additional text for the "Review your order" page', blank=True, default='')
+    send_page_text = models.TextField('Additional text for the "Contact Information" page', blank=True, default='')
 
     @property
     def choices(self):

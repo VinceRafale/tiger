@@ -226,6 +226,15 @@ class OrderSettingsForm(forms.ModelForm):
         return fax
 
 
+class OrderMessageForm(forms.ModelForm):
+    class Meta:
+        model = OrderSettings
+        fields = (
+            'review_page_text', 
+            'send_page_text',
+        )
+
+
 class OrderPaymentForm(forms.ModelForm):
     payment_type = forms.TypedChoiceField(
         label='Collect payment via', 

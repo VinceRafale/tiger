@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
-from tiger.core.forms import OrderSettingsForm, OrderPaymentForm, GeocodeError
+from tiger.core.forms import OrderSettingsForm, OrderPaymentForm, GeocodeError, OrderMessageForm
 from tiger.core.models import Order
 
 def home(request):
@@ -54,3 +54,18 @@ def order_payment(request):
     return direct_to_template(request, template='dashboard/orders/order_payment.html', extra_context={
         'form': form
     })
+
+@login_required
+def order_messages(request):
+    if request.method == 'POST':
+        form = OrderMessageForm(request.POST, instance=request.site.ordersettings)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your ordering messages have been updated.')
+            return HttpResponseRedirect(reverse('dashboard_orders'))
+    else:
+        form = OrderMessageForm(instance=request.site.ordersettings)
+    return direct_to_template(request, template='dashboard/orders/order_messages.html', extra_context={
+        'form': form
+    })
+

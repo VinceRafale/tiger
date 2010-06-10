@@ -1,0 +1,30 @@
+{% extends 'dashboard/orders/home.html' %}
+
+{% block body-class %}{{ block.super }}payment{% endblock %}
+
+{% block h2 %}
+Online order payments
+{% endblock %}
+
+{% block help %}
+<p>This page provides you with the ability to customize the text shown to patrons when they are placing an online order.</p>
+<p>You might include something about how long someone can expect their order to take on average, or mention that you make a confirmation phone call before delivering food.</p>
+{% endblock %}
+
+{% block content %}
+<div class="grid_12 alpha omega">
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+<form method="POST">
+<label>{{ form.review_page_text.label }}</label>
+{{ form.review_page_text }}
+<label>{{ form.send_page_text.label }}</label>
+{{ form.send_page_text }}
+<div class="clear"></div>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_content %}">Cancel</a>
+<input type="submit" value="Save" class="submit" />
+</div>
+</form>
+{% endblock %}
