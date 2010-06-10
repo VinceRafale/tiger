@@ -1,7 +1,7 @@
 <html>
     <head>
         <style>
-        @page {size:letter; top:1.5cm; left:1.5cm;bottom:1.5cm; right:1.5cm;}
+        @page {size:letter; top:1.5cm; left:1.5cm;bottom:1.5cm; right:1.5cm; {% if order.status == 3 %}background-image: url({{ MEDIA_URL }}drawing.pdf);{% endif %} }
         * {font-family: Arial, sans-serif;}
         h1 {font-size:24px; margin-bottom:0;}
         h2 {font-size:18px; text-decoration:underline; margin-bottom:0;}
@@ -84,7 +84,7 @@
             <td class="item">Total</td>
             <td></td>
             <td></td>
-            <td>${{ cart.total|floatformat:"-2" }}</td>
+            <td>${{ order.total|floatformat:"-2" }}</td>
         </tr>
         </table>
     </body>
