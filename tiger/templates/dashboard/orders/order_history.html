@@ -50,7 +50,7 @@ Online orders status
                 <td><a href="{{ order.get_absolute_url }}">{% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}</a></td>
                 <td><a href="{{ order.get_absolute_url }}">{{ order.pickup }}</a></td>
                 <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
-                <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total|floatformat:"-2" }}</a></td>
+                <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total_plus_tax|floatformat:"-2" }}</a></td>
             </tr>
         {% endfor %}
         </tbody>

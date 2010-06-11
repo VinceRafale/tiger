@@ -111,6 +111,7 @@ class Item(models.Model):
     vegetarian = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
     out_of_stock = models.BooleanField(default=False)
+    taxable = models.BooleanField(default=True)
     price_list = PickledObjectField(null=True, editable=False)
     objects = ItemManager()
 
@@ -259,6 +260,7 @@ class Order(models.Model):
     zip = models.CharField(max_length=10, blank=True, null=True)
     pickup = models.CharField('Time you will pick up your order', max_length=20)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
+    tax = models.DecimalField(editable=False, max_digits=6, decimal_places=2, default='0.00')
     cart = PickledObjectField(editable=False)
     timestamp = models.DateTimeField(default=datetime.now, editable=False)
     method = models.IntegerField('This order is for', default=1, choices=METHOD_CHOICES)
@@ -286,6 +288,9 @@ class Order(models.Model):
             fax_machine.send(self.site.fax_number, content)
         self.status = status
         self.save()
+
+    def total_plus_tax(self):
+        return self.total + self.tax
 
 class OrderSettings(models.Model):
     PAYMENT_PAYPAL = 1
@@ -317,6 +322,7 @@ class OrderSettings(models.Model):
     takes_discover = models.BooleanField(default=False)
     takes_mc = models.BooleanField(default=False)
     takes_visa = models.BooleanField(default=False)
+    tax_rate = models.DecimalField(decimal_places=3, max_digits=5, null=True)
     eod_buffer = models.PositiveIntegerField(default=30)
     review_page_text = models.TextField('Additional text for the "Review your order" page', blank=True, default='')
     send_page_text = models.TextField('Additional text for the "Contact Information" page', blank=True, default='')

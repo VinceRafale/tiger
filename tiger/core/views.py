@@ -109,6 +109,7 @@ def send_order(request):
         if form.is_valid():
             order = form.save(commit=False)
             order.total = request.cart.total()
+            order.tax = request.cart.taxes()
             order.cart = request.cart.session.get_decoded()
             order.site = request.site
             order.save()

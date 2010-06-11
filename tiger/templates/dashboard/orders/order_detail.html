@@ -14,6 +14,7 @@ FIXME
         <strong>Time placed:</strong> {{ order.timestamp|date:"fa m/d/y" }}<br />
         <strong>Pickup/delivery time:</strong> {{ order.pickup|date:"fa m/d/y" }}<br />
         <strong>Phone number:</strong> {{ order.phone }}<br />
+        <strong>Payment:</strong> {% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}<br />
     </div>
     <div class="omega grid_8">
         <table id="subscribers">
@@ -53,6 +54,18 @@ FIXME
             <td></td>
             <td></td>
             <td class="total">${{ order.total|floatformat:"-2" }}</td>
+        </tr>
+        <tr class="total">
+            <td class="item">Tax</td>
+            <td></td>
+            <td></td>
+            <td class="total">${{ order.tax|floatformat:"-2" }}</td>
+        </tr>
+        <tr class="total">
+            <td class="item">Total w/ tax</td>
+            <td></td>
+            <td></td>
+            <td class="total">${{ order.total_plus_tax|floatformat:"-2" }}</td>
         </tr>
         </table>
     </div>

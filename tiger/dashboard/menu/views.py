@@ -64,7 +64,7 @@ def add_edit_menu(request, object_type, object_id=None):
     else:
         form_kwds = {}
         if all([instance is None, request.GET.get('pk'), model == Item]):
-            form_kwds['initial'] = {'section': request.GET['pk']}
+            form_kwds['initial'] = {'section': request.GET['pk'], 'taxable': True}
         form = form_class(instance=instance, **form_kwds)
     return direct_to_template(request, template='dashboard/menu/%s_form.html' % object_type, extra_context={
         'form': form,

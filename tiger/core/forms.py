@@ -71,6 +71,7 @@ class SectionForm(forms.ModelForm):
 
 def get_item_form(site):
     class ItemForm(forms.ModelForm):
+        taxable = forms.BooleanField(label='Is this item taxable?', required=False)
         section = forms.ModelChoiceField(queryset=site.section_set.all())
         class Meta:
             model = Item
@@ -260,6 +261,7 @@ class OrderPaymentForm(forms.ModelForm):
     class Meta:
         model = OrderSettings
         fields = (
+            'tax_rate',
             'require_payment',
             'auth_net_api_login',
             'auth_net_api_key',

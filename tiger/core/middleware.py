@@ -56,6 +56,11 @@ class Cart(object):
                 cleaned_data['sides'].append(cleaned_data.pop(k))
         cleaned_data['total'] = self.tally(cleaned_data)
         cleaned_data['name'] = '%s - %s' % (item.section.name, cleaned_data['name'])
+        if item.taxable:
+            tax_rate = item.site.ordersettings.tax_rate / 100
+        else:
+            tax_rate = Decimal('0.00')
+        cleaned_data['tax'] = cleaned_data['total'] * tax_rate
         self[len(self) + 1] = cleaned_data
 
     def remove(self, key):
@@ -87,6 +92,9 @@ class Cart(object):
     def subtotal(self):
         return sum(item['total'] for k, item in self if type(k) == int)
 
+    def taxes(self):
+        return sum(item['tax'] for k, item in self if type(k) == int)
+
     def discount(self):
         if not self.has_coupon:
             return 0
@@ -95,6 +103,9 @@ class Cart(object):
 
     def total(self):
         return self.subtotal() - self.discount()
+
+    def total_plus_tax(self):
+        return self.total() + self.taxes()
 
 
 class ShoppingCartMiddleware(object):

@@ -86,6 +86,20 @@
             <td></td>
             <td>${{ order.total|floatformat:"-2" }}</td>
         </tr>
+        <tr class="discount">
+            <td class="item">Tax ({{ site.ordersettings.tax_rate }}%)</td>
+            <td></td>
+            <td></td>
+            <td>${{ order.tax|floatformat:"-2" }}</td>
+            <td class="remove"></td>
+        </tr>
+        <tr class="total">
+            <td class="item">Total w/ tax</td>
+            <td></td>
+            <td></td>
+            <td>${{ order.total_plus_tax|floatformat:"-2" }}</td>
+            <td class="remove"></td>
+        </tr>
         </table>
     </body>
 </html>

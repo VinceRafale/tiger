@@ -78,6 +78,9 @@ def toggle_order_status(request):
     if not site.ordersettings.can_receive_orders():
         messages.error(request, "You must enter a fax number or e-mail address to receive online orders.") 
         return HttpResponseRedirect(reverse('order_options'))
+    if not site.ordersettings.tax_rate:
+        messages.error(request, "You must enter a sales tax rate to receive online orders.") 
+        return HttpResponseRedirect(reverse('order_payment'))
     if site.enable_orders:
         site.enable_orders = False
         messages.warning(request, "You have disabled online orders.") 

@@ -46,11 +46,25 @@
     <td class="remove"></td>
 </tr>
 {% endif %}
+<tr class="discount">
+    <td class="item">Tax ({{ site.ordersettings.tax_rate }}%)</td>
+    <td></td>
+    <td></td>
+    <td>${{ cart.taxes|floatformat:"-2" }}</td>
+    <td class="remove"></td>
+</tr>
 <tr class="total">
     <td class="item">Total</td>
     <td></td>
     <td></td>
     <td>${{ cart.total|floatformat:"-2" }}</td>
+    <td class="remove"></td>
+</tr>
+<tr class="total">
+    <td class="item">Total w/ tax</td>
+    <td></td>
+    <td></td>
+    <td>${{ cart.total_plus_tax|floatformat:"-2" }}</td>
     <td class="remove"></td>
 </tr>
 </table>
