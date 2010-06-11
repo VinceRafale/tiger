@@ -125,14 +125,14 @@ class Skin(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
+    def save(self, bundle=True, *args, **kwargs):
         self.timestamp = datetime.now()
         if not self.name:
             self.name = self.site.name
-
         super(Skin, self).save(*args, **kwargs) 
-        f = codecs.open(self.path, 'w', 'utf-8')
-        f.write(self.bundle())
+        if bundle:
+            f = codecs.open(self.path, 'w', 'utf-8')
+            f.write(self.bundle())
 
     @property
     def _tail(self):

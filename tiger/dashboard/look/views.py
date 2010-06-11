@@ -68,7 +68,9 @@ def save(request):
     color_form = ColorForm(request.POST, instance=skin)
     forms = (font_form, body_font_form, color_form,)
     [f.full_clean() for f in forms]
-    [f.save() for f in forms]
+    for form in forms:
+        instance = form.save(commit=False)
+        instance.save(bundle=False)
     skin.css = request.POST.get('css', '')
     background = skin.background
     bg_id = request.POST.get('bg')
