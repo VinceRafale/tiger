@@ -191,18 +191,18 @@ def add_twitter(request):
 @login_required
 def remove_twitter(request):
     social = request.site.social
-    social.twitter_token = None
-    social.twitter_secret = None
-    social.twitter_screen_name = None
+    social.twitter_token = ''
+    social.twitter_secret = ''
+    social.twitter_screen_name = ''
     social.save()
     return HttpResponseRedirect(reverse('integration_settings'))
 
 @login_required
 def remove_facebook(request):
     social = request.site.social
-    social.facebook_id = None
-    social.facebook_url = None
-    social.facebook_auto_items = None
+    social.facebook_id = ''
+    social.facebook_url = ''
+    social.facebook_auto_items = ''
     social.save()
     return HttpResponseRedirect(reverse('integration_settings'))
 
