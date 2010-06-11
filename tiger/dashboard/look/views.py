@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
@@ -79,7 +80,16 @@ def save(request):
     else:
         if background.staged_image:
             background.image.save(background.staged_image.name.split('/')[-1], background.staged_image.file)
+    bg_form = CustomBackgroundForm(request.POST, instance=background)
+    bg_form.save()
     if background.staged_image:
         background.staged_image.delete()
     skin.save()
+    messages.success(request, 'Look and feel updated successfully.')
     return HttpResponse(skin.url)
+
+
+@login_required
+def back(request):
+    request.session['customizing'] = False
+    return HttpResponseRedirect(reverse('dashboard_content'))

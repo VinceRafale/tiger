@@ -36,7 +36,7 @@
         <li><a href="#tab2">Colors</a></li> 
         <li><a href="#tab3">Background</a></li> 
         <li><a href="#tab4">CSS</a></li> 
-        <li class="back"><a class="back" href="{% url dashboard_content %}">Back to dashboard</a></li>
+        <li class="back"><a class="back" href="{% url back_to_dashboard %}">Back to dashboard</a></li>
         <li class="button"><button id="save">Save</button></li>
     </ul> 
 
@@ -231,7 +231,7 @@ $(function () {
     $("#save").click(function () {
         postData = $("#toolbar :input").not("[type='file']").serialize();
         $.post("{% url save_custom_styles %}", postData, function (data) {
-            $("#skin-css").attr("href", data);
+            window.location.href = '{% url back_to_dashboard %}';
         }, "text");
         modified = false;
     });
