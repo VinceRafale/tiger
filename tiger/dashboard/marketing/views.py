@@ -189,7 +189,7 @@ def add_twitter(request):
         extra_context={'form': form})
 
 @login_required
-def remove_twitter(request)
+def remove_twitter(request):
     social = request.site.social
     social.twitter_token = None
     social.twitter_secret = None
@@ -198,7 +198,7 @@ def remove_twitter(request)
     return HttpResponseRedirect(reverse('integration_settings'))
 
 @login_required
-def remove_facebook(request)
+def remove_facebook(request):
     social = request.site.social
     social.facebook_id = None
     social.facebook_url = None
