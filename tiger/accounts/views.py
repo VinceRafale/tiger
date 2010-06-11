@@ -14,6 +14,7 @@ def signup(request):
         form = SignupForm(request.POST, error_class=SpanErrorList)
         if form.is_valid():
             instance = form.save()
+            instance.send_confirmation_email()
             return HttpResponseRedirect(unicode(form.site) + reverse('dashboard', urlconf='tiger.urls'))
     else:
         form = SignupForm()

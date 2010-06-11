@@ -5,7 +5,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.db import models
+from django.template.loader import render_to_string
 
 import pytz
 
@@ -48,6 +50,10 @@ class Account(models.Model):
         if not self.id:
             self.signup_date = date.today()
         super(Account, self).save(*args, **kwargs)
+
+    def send_confirmation_email(self):
+        body = render_to_string('accounts/confirmation.txt', {'account': self})
+        send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
 
 
 class Site(models.Model):
