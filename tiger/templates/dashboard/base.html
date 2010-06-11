@@ -43,7 +43,10 @@
                 {% if messages %}
                     <ul class="messages">
                     {% for message in messages %}
-                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        <a href="#" class="close-message">[x]</a>
+                        {{ message|safe }}
+                        </li>
                     {% endfor %}
                     </ul>
                 {% endif %}
@@ -74,7 +77,9 @@
     </div>
     <script type="text/javascript">
     $(function () {
-        $("ul.messages").delay(5000).slideUp();
+        $("a.close-message").click(function () {
+            $(this).parent().fadeOut("fast", function () { $(this).parent().remove(); }); 
+        });
         $("#help-button").toggle(
             function () {
                 $(this).text("Hide help");

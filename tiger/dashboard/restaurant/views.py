@@ -64,6 +64,8 @@ def edit_hours(request):
                     instance.dow = dow
                     instance.site = request.site
                     instance.save()
+            messages.success(request, 'Restaurant hours updated successfully.')
+            return HttpResponseRedirect(reverse('dashboard_menu'))
     else:
         forms = get_forms()
     form_list = zip([label for dow, label in DOW_CHOICES], forms)
