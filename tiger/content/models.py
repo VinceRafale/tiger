@@ -22,10 +22,15 @@ class Content(models.Model):
         TYPE_FINDUS,
         TYPE_ABOUT,
     )
+    CONTENT_TYPE_TITLES = {
+        TYPE_HOMEPAGE: 'Welcome!',
+        TYPE_FINDUS: 'Find us',
+        TYPE_ABOUT: 'About us',
+    }
     site = models.ForeignKey('accounts.Site')
     slug = models.SlugField(editable=False)
     title = models.CharField(max_length=200, default='')
-    text = models.TextField(default='')
+    text = models.TextField(default='Welcome to Takeout Tiger.  You can edit this content in your dashboard under Site > Content.')
     image = models.ForeignKey('ItemImage', null=True, blank=True)
 
 
@@ -127,7 +132,7 @@ def new_site_setup(sender, instance, created, **kwargs):
         Site = models.get_model('accounts', 'site')
         if isinstance(instance, Site):
             for content_type in Content.CONTENT_TYPES:
-                Content.objects.create(site=instance, slug=content_type)
+                Content.objects.create(site=instance, slug=content_type, title=Content.CONTENT_TYPE_TITLES[content_type])
 
 
 post_save.connect(new_site_setup)

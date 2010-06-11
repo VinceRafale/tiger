@@ -61,7 +61,7 @@ class Site(models.Model):
     displaying a specific site.
     """
     account = models.ForeignKey(Account)
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, default='Your Restaurant Name')
     subdomain = models.CharField(max_length=200)
     domain = models.CharField(max_length=200, null=True, blank=True)
     enable_blog = models.BooleanField(default=False)
