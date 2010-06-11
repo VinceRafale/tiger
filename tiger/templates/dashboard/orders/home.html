@@ -4,7 +4,7 @@
 
 {% block submenu %}
 <li><a class="history" href="{% url dashboard_orders %}">History</a></li>
-<li><a class="checkout-messages" href="">Checkout messages</a></li>
+<li><a class="checkout-messages" href="{% url order_messages %}">Checkout messages</a></li>
 <li><a class="payment" href="{% url order_payment %}">Payment</a></li>
 <li><a class="order-settings" href="{% url order_options %}">Settings</a></li>
 {% endblock %}
