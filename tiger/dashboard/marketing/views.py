@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
@@ -127,12 +128,13 @@ def add_fax_list(request):
 
 @login_required
 def delete_fax_list(request, fax_list_id):
-    FaxList.objects.get(id=fax_list_id).delete()
+    fax_list = get_object_or_404(FaxList, id=fax_list_id)
+    fax_list.delete()
     return HttpResponseRedirect(reverse('fax_list'))
 
 @login_required
 def fax_list_detail(request, fax_list_id):
-    fax_list = FaxList.objects.filter(site=request.site).get(id=fax_list_id)
+    fax_list = get_object_or_404(FaxList, id=fax_list_id, site=request.site)
     return object_list(request, fax_list.subscriber_set.all(), 
         template_name='dashboard/marketing/subscriber_list.html', extra_context={
         'current_list': fax_list,
