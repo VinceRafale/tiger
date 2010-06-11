@@ -195,7 +195,7 @@ def remove_twitter(request):
     social.twitter_secret = ''
     social.twitter_screen_name = ''
     social.save()
-    return HttpResponseRedirect(reverse('integration_settings'))
+    return HttpResponseRedirect(reverse('dashboard_marketing'))
 
 @login_required
 def remove_facebook(request):
@@ -204,7 +204,7 @@ def remove_facebook(request):
     social.facebook_url = ''
     social.facebook_auto_items = ''
     social.save()
-    return HttpResponseRedirect(reverse('integration_settings'))
+    return HttpResponseRedirect(reverse('dashboard_marketing'))
 
 @login_required
 def register_id(request):
