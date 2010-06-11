@@ -188,8 +188,23 @@ def add_twitter(request):
     return direct_to_template(request, template='dashboard/marketing/twitter_connect.html', 
         extra_context={'form': form})
 
-def xd_receiver(request):
-    return direct_to_template(request, template='dashboard/marketing/xd_receiver.htm')
+@login_required
+def remove_twitter(request)
+    social = request.site.social
+    social.twitter_token = None
+    social.twitter_secret = None
+    social.twitter_screen_name = None
+    social.save()
+    return HttpResponseRedirect(reverse('integration_settings'))
+
+@login_required
+def remove_facebook(request)
+    social = request.site.social
+    social.facebook_id = None
+    social.facebook_url = None
+    social.facebook_auto_items = None
+    social.save()
+    return HttpResponseRedirect(reverse('integration_settings'))
 
 @login_required
 def register_id(request):

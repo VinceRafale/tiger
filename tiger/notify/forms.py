@@ -8,6 +8,8 @@ from tiger.utils.widgets import MarkItUpWidget
 
 
 class TwitterForm(forms.ModelForm):
+    twitter_screen_name = forms.CharField(required=True)
+
     class Meta:
         model = Social
         fields = ['twitter_screen_name']

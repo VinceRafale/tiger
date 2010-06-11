@@ -26,6 +26,7 @@ urlpatterns = patterns('tiger.dashboard.marketing.views',
     url(r'^fax-lists/(\d+)/edit/(\d+)/$', 'add_edit_subscriber', name='dashboard_edit_subscriber'),
     url(r'^fax-lists/(\d+)/delete/(\d+)/$', 'delete_subscriber', name='dashboard_delete_subscriber'),
     url(r'^twitter/$', 'add_twitter', name='dashboard_add_twitter'),
-    url(r'^xd_receiver.htm$', 'xd_receiver', name='xd_receiver'),
+    url(r'^twitter/rm/$', 'remove_twitter', name='dashboard_remove_twitter'),
+    url(r'^fb/rm/$', 'remove_facebook', name='dashboard_remove_facebook'),
     url(r'^register-id/$', 'register_id', name='register_id'),
 )
