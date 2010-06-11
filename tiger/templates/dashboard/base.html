@@ -29,6 +29,7 @@
 	                </ul>
                 </div>
                 <div id="search" class="grid_1 push_3">
+                    <a id="bookmark" href="#">Bookmark this page</a>
                 	<ul class="menu">
 	                    <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
 	                </ul>
@@ -84,6 +85,24 @@
                 $("#help-content").slideUp("fast");
             }
         );
+        $("#bookmark").click(function () {
+            arguments[0].preventDefault(); // this will prevent the anchor tag from going the user off to the link
+            var bookmarkUrl = this.href;
+            var bookmarkTitle = this.title;
+
+            if (window.sidebar) { // For Mozilla Firefox Bookmark
+                window.sidebar.addPanel(bookmarkTitle, bookmarkUrl,"");
+            } else if( window.external || document.all) { // For IE Favorite
+                window.external.AddFavorite( bookmarkUrl, bookmarkTitle);
+            } else if(window.opera) { // For Opera Browsers
+                $("a.jQueryBookmark").attr("href",bookmarkUrl);
+                $("a.jQueryBookmark").attr("title",bookmarkTitle);
+                $("a.jQueryBookmark").attr("rel","sidebar");
+            } else { // for other browsers which does not support
+                alert('Your browser does not support this bookmark action');
+                return false;
+            }
+        });
     });
     </script>
     {% block js %}
