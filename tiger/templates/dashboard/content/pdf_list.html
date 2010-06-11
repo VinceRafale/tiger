@@ -38,7 +38,9 @@ PDF Menus
                 <td><a href="{% url dashboard_delete_pdf pdf.id %}">Delete</a></td>
             </tr> 
         {% empty %}
-            <li>You currently have no PDF menus. <a href="">Create a pdf</a></li>
+            <tr>
+            <td colspan="7">You currently have no PDF menus. <a href="{% url dashboard_add_pdf %}">Create a pdf</a></td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
