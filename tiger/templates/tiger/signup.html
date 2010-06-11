@@ -103,9 +103,15 @@
                         {% endif %}
 					    <br /><span>{{ form.cc_number }}</span></label>
 					
-			        <label class="expiration">Expiration date:
-			            <br /><span>{{ form.month }}</span><strong>/</strong><span>{{ form.year }}</span>
+			        <label>Expiration date:</label>
+			        <div class="clear"></div>
+			        <div ><label class="expiration">
+			            <span>{{ form.month }}</span><strong>/</strong>
 			        </label>
+			        
+			        <label class="expiration">
+			            <span>{{ form.year }}</span>
+			        </label></div>
 			        
 			        {% if form.month.errors %}
                         {{ form.month.errors }}
@@ -113,6 +119,8 @@
                     {% if form.year.errors %}
                         {{ form.year.errors }}
                     {% endif %}
+			        
+			        <div class="clear"></div>
 			        
 					<label>{{ form.zip.label }}:
 					    {% if form.zip.errors %}

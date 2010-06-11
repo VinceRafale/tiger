@@ -50,6 +50,9 @@ ul.menu li a:hover{background-color:#7e3700;color:#fff;}
 a {color:#34484f;}
 a.lightlink {color:white;}
 
+.group-wrap a{color:#ffffff;}
+a.delete-group{color:#cccccc;}
+
 a.buttonTop, a.add-row, a.delete-row {
     background-color:#004c00;
     color:white;
@@ -86,6 +89,26 @@ div.save-row{
     padding: 10px;
     margin:20px 0 0 0;
 }
+
+.inline-save{
+    background-color:#c76218;
+    cursor:pointer;
+    float:right;
+    font-size:12px;
+    font-weight:bold;
+    padding:4px 9px;
+    text-decoration:none;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    color:#ffffff;
+    margin-left:20px;
+}
+
+.inline-cancel{
+    float:right;
+    margin-top:3px;
+}
+
 #menuWrap{background: black;background: rgba(0,0,0,.5);padding: 10px 0;}
 #menu ul li ul li a:hover, a.buttonTop, a.add-row, a.delete-row {
     background-color: #c76218;
@@ -317,7 +340,7 @@ ul.section ul {margin-bottom:0;}
 ul.section li {margin:0;}
 li.section-header {color:white; background-color:#34484f; font-size:14px; padding:5px;}
 li.menu-items li {
-    padding:1px;
+    padding:5px 5px 5px 10px;
     background-color:white;
 }
 li.menu-items li span, li.menu-items li em{display: block;padding: 2px 0;}
@@ -368,6 +391,11 @@ li.menu-items div.controls.special span.archived {
     font-weight:bold;
 }
 li.menu-items ul li{cursor: move;}
+li.menu-items ul li.incomplete{background:#cccccc;}
+
+li.menu-items ul li.incomplete span:before{
+    content: 'INCOMPLETE: ';
+}
 
 span.buttons {float:right;}
 
