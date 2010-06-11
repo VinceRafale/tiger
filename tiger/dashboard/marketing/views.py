@@ -97,7 +97,7 @@ def coupon_list(request):
 @login_required
 def add_edit_coupon(request, coupon_id=None):
     return add_edit_site_object(request, Coupon, CouponCreationForm, 
-        'dashboard/marketing/coupon_form.html', 'dashboard_marketing', object_id=coupon_id)
+        'dashboard/marketing/coupon_form.html', 'dashboard_coupon_list', object_id=coupon_id)
 
 @login_required
 def delete_coupon(request, coupon_id):

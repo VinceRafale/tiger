@@ -2,6 +2,11 @@
 
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="/media/css/widgets.css" />
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/ui-lightness/jquery-ui.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+    <style type="text/css">
+    #id_discount {width:30px;}
+    </style>
 {% endblock %}
 
 {% block body-class %}{{ block.super }}coupons{% endblock %}
@@ -18,15 +23,40 @@
 {% block content %}
 
 <form method="POST" action=".">
-{{ form.as_p }}
+{% if form.short_code.errors %}
+{{ form.short_code.errors }}
+{% endif %}
+{{ form.short_code.label_tag }}
+{{ form.short_code }}
+<p class="help">{{ form.short_code.help_text }}</p>
+{% if form.discount.errors %}
+{{ form.discount.errors }}
+{% endif %}
+{{ form.discount.label_tag }}
+{{ form.discount }}%
+{% if form.exp_date.errors %}
+{{ form.exp_date.errors }}
+{% endif %}
+{{ form.exp_date.label_tag }}
+{{ form.exp_date }}
+{% if form.max_clicks.errors %}
+{{ form.max_clicks.errors }}
+{% endif %}
+{{ form.max_clicks.label_tag }}
+{{ form.max_clicks }}
 <div class="clear"></div>
 <div class="save-row">
-<a class="cancel" href="{% url dashboard_marketing %}">Cancel</a>
+<a class="cancel" href="{% url dashboard_coupon_list %}">Cancel</a>
 <input type="submit" class="submit" value="Save" />
 </div>
 </form>
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
+$(function () {
+    $("#id_exp_date").datepicker();
+});
+</script>
 {% endblock %}
 

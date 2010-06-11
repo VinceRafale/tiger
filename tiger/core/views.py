@@ -94,7 +94,7 @@ def add_coupon(request):
     code = request.GET.get('cc')
     if code is None:
         raise Http404
-    coupon = Coupon.objects.get(id=code)
+    coupon = get_object_or_404(Coupon, id=code, site=request.site)
     if request.cart.has_coupon:
         messages.error(request, 'You already have a coupon in your cart.')   
     else:

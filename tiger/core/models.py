@@ -375,10 +375,13 @@ class OrderSettings(models.Model):
 class Coupon(models.Model):
     site = models.ForeignKey('accounts.Site', editable=False)
     short_code = models.CharField(max_length=20, help_text='Uppercase letters and numbers only. Leave this blank to have a randomly generated coupon code.', blank=True)
-    exp_date = models.DateField('Expiration date', null=True, blank=True)
+    exp_date = models.DateField('Expiration date (optional)', null=True, blank=True)
     click_count = models.IntegerField('Number of uses', editable=False, default=0)
-    max_clicks = models.IntegerField('Max. allowed uses', null=True, blank=True)
-    discount = models.IntegerField()
+    max_clicks = models.PositiveIntegerField('Max. allowed uses (optional)', null=True, blank=True)
+    discount = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ('site', 'short_code',)
 
     def __unicode__(self):
         return self.short_code
@@ -396,6 +399,11 @@ class Coupon(models.Model):
             self.click_count += 1
         self.save()
         CouponUse.objects.create(order=order, coupon=self)
+
+    def remaining_clicks(self):
+        if self.max_clicks is None:
+            return None
+        return self.max_clicks - self.click_count
 
     def boilerplate(self):
         msg = 'Get %d%% off your online order at %s with coupon code %s!' % (

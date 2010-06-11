@@ -14,14 +14,13 @@ Your coupons
 <span class="buttons">
 <a href="{% url dashboard_add_coupon %}">+ Add a coupon</a>
 </span>
-<table id="subscribers">
+<table>
     <thead>
         <tr>
             <th>Coupon code</th>
             <th>Discount</th>
             <th>Expiration date</th>
-            <th>Total uses available</th>
-            <th>Total clicks</th>
+            <th>Total uses remaining</th>
             <th>Link</th>
         </tr>
     </thead>
@@ -30,10 +29,9 @@ Your coupons
     <tr>
         <td>{{ coupon.short_code }}</td>
         <td>{{ coupon.discount }}%</td>
-        <td>{{ coupon.exp_date|date }}</td>
-        <td>{{ coupon.max_clicks }}</td>
-        <td>{{ coupon.click_count }}</td>
-        <th>{{ site }}{{ coupon.get_absolute_url }}</th>
+        <td>{{ coupon.exp_date|date|default:"no exp. date" }}</td>
+        <td>{{ coupon.remaining_clicks|default_if_none:"no limit" }}</td>
+        <th><input type="text" readonly value="{{ site }}{{ coupon.get_absolute_url }}" /></th>
     </tr>
     {% endfor %}
     </tbody>

@@ -151,6 +151,18 @@ class CouponCreationForm(forms.ModelForm):
     class Meta:
         model = Coupon
 
+    def clean_discount(self):
+        discount = self.cleaned_data.get('discount')
+        if type(discount) == int and discount > 100:
+            raise forms.ValidationError('Please enter a percentage between 0% and 100%.')
+        return discount
+
+    def clean_exp_date(self):
+        exp_date = self.cleaned_data.get('exp_date')
+        if exp_date and exp_date <= date.today():
+            raise forms.ValidationError('Please enter an expiration date in the future.')
+        return exp_date
+
 
 class OrderSettingsForm(forms.ModelForm):
     receive_via = forms.TypedChoiceField(
