@@ -110,3 +110,7 @@ def short_code_redirect(request, item_id, model):
     item_id = base36_to_int(item_id)
     object = get_object_or_404(model, id=item_id, site=request.site)
     return HttpResponseRedirect(object.get_absolute_url())
+
+
+def robots(request):
+    return render_custom(request, 'robots.txt', {'site_name': request.META['HTTP_HOST']})

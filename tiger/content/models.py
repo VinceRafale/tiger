@@ -2,7 +2,6 @@ from decimal import Decimal
 import os.path
 
 from django.conf import settings
-from django.contrib import admin
 from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
@@ -136,4 +135,3 @@ def new_site_setup(sender, instance, created, **kwargs):
 
 
 post_save.connect(new_site_setup)
-admin.site.register(ItemImage)

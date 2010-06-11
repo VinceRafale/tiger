@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /bahl-hornin/
+Disallow: /cancelled/
+Disallow: /domain-check/
+Disallow: /validate-coupon/
+Disallow: /record-fax/
+Disallow: /twitter/

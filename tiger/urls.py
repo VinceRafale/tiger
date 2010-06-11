@@ -1,17 +1,15 @@
 from django.conf import settings
 from django.conf.urls.defaults import *
-from django.contrib import admin
 
 from tiger.core.models import Item, Coupon
 from tiger.notify.models import Release
-
-admin.autodiscover()
 
 handler404 = 'tiger.utils.views.handler404'
 handler500 = 'tiger.utils.views.handler500'
 
 urlpatterns = patterns('tiger.utils.views',
     url(r'^$', 'render_custom', {'template': 'base.html'}, name='home'),
+    url(r'^robots.txt$', 'robots'),
     url(r'^about/$', 'render_custom', {'template': 'about.html'}, name='home'),
     url(r'^find-us/$', 'render_custom', {'template': 'find-us.html'}, name='home'),
 )
@@ -41,9 +39,7 @@ urlpatterns += patterns('',
     (r'^order/', include(order_patterns)),
     (r'^images/', include('tiger.content.urls')),
     url(r'^search/', 'tiger.search.views.search', name='menu_search'),
-    (r'^admin/', include(admin.site.urls)),
     url(r'^join/$', 'tiger.core.views.mailing_list_signup', name='mailing_list_signup'),
-    url(r'^s/', include('tiger.look.urls')),
     url(r'^sitemap.xml$', 'tiger.sitemaps.sitemap'),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),

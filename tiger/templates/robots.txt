@@ -1,0 +1,14 @@
+Sitemap: http://{{ site_name }}/sitemap.xml
+User-agent: *
+Disallow: /dashboard/
+Disallow: /remove/
+Disallow: /send/
+Disallow: /success/
+Disallow: /pay/
+Disallow: /add-coupon/
+Disallow: /order/
+Disallow: /search/
+Disallow: /join/
+Disallow: /m/
+Disallow: /p/
+Disallow: /c/
