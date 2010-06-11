@@ -174,6 +174,11 @@ class Variant(models.Model):
         if new and self.item:
             self.item.update_price()
 
+    def delete(self, *args, **kwargs):
+        item = self.item
+        super(Variant, self).delete(*args, **kwargs)
+        item.update_price()
+
 
 class Upgrade(models.Model):
     """Provides additional cost data and/or order processing instructions. For
