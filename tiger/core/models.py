@@ -121,7 +121,7 @@ class Item(models.Model):
     out_of_stock = models.BooleanField(default=False)
     taxable = models.BooleanField(default=True)
     price_list = PickledObjectField(null=True, editable=False)
-    posting_stage = models.SmallIntegerField(default=0, choices=STAGE_CHOICES)
+    posting_stage = models.SmallIntegerField(default=0, choices=STAGE_CHOICES, editable=False)
     objects = ItemManager()
 
     class Meta:
