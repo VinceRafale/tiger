@@ -47,11 +47,14 @@
 $(function () {
     $("li.menu-items ul").sortable({
         stop: function(event, ui) { 
-            $.post("items/reorder/", $.param({
-                item_ids: $(this).sortable('toArray')
-            }, true));
-            $(this).children().filter(":odd").addClass("shaded");
-            $(this).children().filter(":even").removeClass("shaded");
+            item_ids = $(this).sortable('toArray');
+            if (item_ids.length > 1) {
+                $.post("items/reorder/", $.param({
+                    item_ids: item_ids
+                }, true));
+                $(this).children().filter(":odd").addClass("shaded");
+                $(this).children().filter(":even").removeClass("shaded");
+            }
         },
         cancel: "a,label"
     });
@@ -67,9 +70,12 @@ $(function () {
             $("li.menu-items").hide();
             $("div.sections").sortable({
                 stop: function(event, ui) { 
-                    $.post("sections/reorder/", $.param({
-                        section_ids: $(this).sortable('toArray')
-                    }, true));
+                    section_ids = $(this).sortable('toArray');
+                    if (section_ids.length > 1) {
+                        $.post("sections/reorder/", $.param({
+                            section_ids: section_ids
+                        }, true));
+                    }
                 },
                 cancel: "a"
             });
