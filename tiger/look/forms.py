@@ -43,7 +43,7 @@ class BackgroundForm(forms.Form):
         as ``forms.ChoiceField`` deliberately does.
         """
         super(BackgroundForm, self).__init__(*args, **kwargs)
-        self.fields['bg'].queryset = Background.objects.all()
+        self.fields['bg'].queryset = Background.objects.filter(site__isnull=True)
 
 
 class BackgroundColorForm(forms.Form):
