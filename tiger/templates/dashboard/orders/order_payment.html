@@ -5,6 +5,8 @@
 {% block extrahead %}
 <style type="text/css">
 #id_tax_rate {width:40px;}
+#credit-cards li {margin-left:0; margin-right:10px; display:inline;}
+#credit-cards input, #credit-cards img {vertical-align:middle;}
 </style>
 {% endblock %}
 
@@ -36,8 +38,8 @@ Online order payments
 <div id="auth_creds">
 <label>{{ form.auth_net_api_login.label }} {{ form.auth_net_api_login }}</label>
 <label>{{ form.auth_net_api_key.label }} {{ form.auth_net_api_key }}</label>
-<p>Select the credit cards that you accept:</p>
-<ul>
+<label>Select the credit cards that you accept:</label>
+<ul id="credit-cards">
     <li>{{ form.takes_amex }} <img src="{{ MEDIA_URL }}img/Card - AmEx_32x32.png" /></li>
     <li>{{ form.takes_discover }} <img src="{{ MEDIA_URL }}img/Card - Discover_32x32.png" /></li>
     <li>{{ form.takes_mc }} <img src="{{ MEDIA_URL }}img/Card - Mastercard_32x32.png" /></li>
