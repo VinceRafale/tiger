@@ -43,6 +43,7 @@ def integration_settings(request):
     social = request.site.social
     for k, v in data.items():
         setattr(social, k, v)
+    social.save()
     return HttpResponse(json.dumps({}))
 
 
