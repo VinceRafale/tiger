@@ -12,6 +12,7 @@ def deploy():
         run('bin/django syncdb')
         run('bin/django migrate')
         run('touch bin/django.wsgi')
+        run('touch bin/tiger.wsgi')
         sudo('/etc/init.d/celeryd stop')
         sudo('/etc/init.d/celeryd start')
 
