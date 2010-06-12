@@ -56,7 +56,9 @@ class PublishForm(forms.ModelForm):
 
     def __init__(self, data=None, files=None, site=None, *args, **kwargs):
         super(PublishForm, self).__init__(data=data, files=files, *args, **kwargs)
+        self.fields['coupon'].queryset = site.coupon_set.all()
         self.fields['fax_list'].queryset = site.faxlist_set.all()
+        self.fields['pdf'].queryset = site.pdfmenu_set.all()
         self.site = site
 
     def clean_twitter(self):
