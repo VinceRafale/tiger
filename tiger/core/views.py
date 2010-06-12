@@ -113,7 +113,9 @@ def send_order(request):
             order = form.save(commit=False)
             order.total = request.cart.total()
             order.tax = request.cart.taxes()
-            order.cart = request.cart.session.get_decoded()
+            cart = request.cart.session.get_decoded()
+            cart.pop('coupon', '')
+            order.cart = cart
             order.site = request.site
             try:
                 order.save()
@@ -122,7 +124,7 @@ def send_order(request):
             else:
                 if request.cart.has_coupon:
                     coupon = Coupon.objects.get(id=request.cart['coupon']['id'])
-                    coupon.log_use(order)
+                    coupon.log_use(order, request.cart.discount())
                 if 'pay' in request.POST:
                     request.session['order_id'] = order.id
                     return HttpResponseRedirect(

@@ -72,14 +72,16 @@
                 <td>${{ item.total|floatformat:"-2" }}</td>
             </tr>
         {% endfor %}
-        {% if cart.has_coupon %}
+        {% with order.coupon as coupon %}
+        {% if coupon %}
         <tr class="discount">
-            <td class="item">Coupon code {{ cart.coupon.short_code }} - {{ cart.coupon.discount }}% off</td>
+            <td class="item">Coupon code {{ coupon.short_code }} - {{ coupon.discount }}% off</td>
             <td></td>
             <td></td>
-            <td>-${{ cart.discount|floatformat:"-2" }}</td>
+            <td>-${{ order.couponuse_set.all.0.amount|floatformat:"-2" }}</td>
         </tr>
         {% endif %}
+        {% endwith %}
         <tr class="total">
             <td class="item">Total</td>
             <td></td>
@@ -91,14 +93,12 @@
             <td></td>
             <td></td>
             <td>${{ order.tax|floatformat:"-2" }}</td>
-            <td class="remove"></td>
         </tr>
         <tr class="total">
             <td class="item">Total w/ tax</td>
             <td></td>
             <td></td>
             <td>${{ order.total_plus_tax|floatformat:"-2" }}</td>
-            <td class="remove"></td>
         </tr>
         </table>
     </body>

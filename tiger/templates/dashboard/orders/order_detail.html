@@ -12,12 +12,12 @@ FIXME
         <strong>Customer:</strong> {{ order.name }}<br />
         <strong>For:</strong> {{ order.get_method_display }}<br />
         <strong>Time placed:</strong> {{ order.timestamp|date:"fa m/d/y" }}<br />
-        <strong>Pickup/delivery time:</strong> {{ order.pickup|date:"fa m/d/y" }}<br />
+        <strong>Pickup/delivery time:</strong> {{ order.pickup }}<br />
         <strong>Phone number:</strong> {{ order.phone }}<br />
         <strong>Payment:</strong> {% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}<br />
     </div>
     <div class="omega grid_8">
-        <table id="subscribers">
+        <table>
             <thead>
             <tr>
                 <th>Item</th>
@@ -49,6 +49,16 @@ FIXME
                 <td class="total">${{ item.total|floatformat:"-2" }}</td>
             </tr>
         {% endfor %}
+        {% with order.coupon as coupon %}
+        {% if coupon %}
+        <tr class="discount">
+            <td class="item">Coupon code {{ coupon.short_code }} - {{ coupon.discount }}% off</td>
+            <td></td>
+            <td></td>
+            <td class="total">-${{ order.couponuse_set.all.0.amount|floatformat:"-2" }}</td>
+        </tr>
+        {% endif %}
+        {% endwith %}
         <tr class="total">
             <td class="item">Total</td>
             <td></td>

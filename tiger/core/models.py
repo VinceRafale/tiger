@@ -303,6 +303,13 @@ class Order(models.Model):
     def total_plus_tax(self):
         return self.total + self.tax
 
+    def coupon(self):
+        try:
+            coupon = self.couponuse_set.all()[0].coupon
+        except CouponUse.DoesNotExist:
+            return None
+        return coupon
+
 class OrderSettings(models.Model):
     PAYMENT_PAYPAL = 1
     PAYMENT_AUTHNET = 2
@@ -411,11 +418,11 @@ class Coupon(models.Model):
     def get_absolute_url(self):
         return '%s?cc=%d' % (reverse('add_coupon'), self.id)
 
-    def log_use(self, order):
+    def log_use(self, order, amount):
         if self.max_clicks:
             self.click_count += 1
         self.save()
-        CouponUse.objects.create(order=order, coupon=self)
+        CouponUse.objects.create(order=order, coupon=self, amount=amount)
 
     def remaining_clicks(self):
         if self.max_clicks is None:
@@ -435,7 +442,7 @@ class Coupon(models.Model):
 
     @property
     def is_open(self):
-        date_is_valid = self.exp_date is None or self.exp_date <= date.today()
+        date_is_valid = self.exp_date is None or self.exp_date >= date.today()
         has_clicks_available = self.max_clicks is None or self.click_count < self.max_clicks
         if not (date_is_valid and has_clicks_available):
             return False
@@ -446,6 +453,7 @@ class CouponUse(models.Model):
     coupon = models.ForeignKey(Coupon)
     order = models.ForeignKey(Order)
     timestamp = models.DateTimeField(default=datetime.now)
+    amount = models.DecimalField(max_digits=5, decimal_places=2, default='0.00')
 
 
 def register_paypal_payment(sender, **kwargs):
