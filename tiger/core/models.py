@@ -16,7 +16,7 @@ from paypal.standard.ipn.signals import payment_was_successful
 
 from tiger.content.handlers import pdf_caching_handler
 from tiger.notify.fax import FaxMachine
-from tiger.notify.handlers import item_social_handler, coupon_social_handler
+from tiger.notify.handlers import item_social_handler
 from tiger.utils.fields import PickledObjectField
 from tiger.utils.hours import *
 from tiger.utils.pdf import render_to_pdf
@@ -99,6 +99,14 @@ class ItemManager(models.Manager):
 class Item(models.Model):
     """Represents a single item on the menu in its most basic form.
     """
+    STAGE_PRE = 0
+    STAGE_READY = 1
+    STAGE_POST = 2
+    STAGE_CHOICES = (
+        (STAGE_PRE, 'Cannot post to social media'),
+        (STAGE_READY, 'Ready to post to social media'),
+        (STAGE_POST, 'Has been posted to social media'),
+    )
     name = models.CharField(max_length=100)
     section = models.ForeignKey(Section)
     site = models.ForeignKey('accounts.Site', editable=False)
@@ -113,6 +121,7 @@ class Item(models.Model):
     out_of_stock = models.BooleanField(default=False)
     taxable = models.BooleanField(default=True)
     price_list = PickledObjectField(null=True, editable=False)
+    posting_stage = models.SmallIntegerField(default=0, choices=STAGE_CHOICES)
     objects = ItemManager()
 
     class Meta:
@@ -126,6 +135,8 @@ class Item(models.Model):
         if not self.id:
             self.slug = slugify(self.name)
             self.price_list = []
+        if len(self.price_list) and self.posting_stage != Item.STAGE_POST:
+            self.posting_stage += 1
         super(Item, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
