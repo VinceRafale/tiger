@@ -48,7 +48,7 @@ def edit_hours(request):
         forms = []
         for dow, label in DOW_CHOICES:
             try:
-                instance = TimeSlot.objects.get(site=request.site, dow=dow)
+                instance = TimeSlot.objects.get(site=request.site, section__isnull=True, dow=dow)
             except TimeSlot.DoesNotExist:
                 instance = None
             form = TimeSlotForm(data=data, instance=instance, prefix=dow)
