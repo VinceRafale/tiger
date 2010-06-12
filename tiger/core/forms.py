@@ -361,7 +361,7 @@ class AuthNetForm(forms.Form):
         exp_date = '-'.join([str(data.pop('month')), str(data.pop('year'))])
         transaction = api.transaction(
             type=u'AUTH_CAPTURE', 
-            amount=self.order.total, 
+            amount=self.order.total_plus_tax(), 
             invoice_num=unicode(self.order.id),
             description=u'Order for %s' % self.order.name,
             exp_date=unicode(exp_date),

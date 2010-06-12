@@ -145,7 +145,7 @@ def send_order(request):
 
 def payment_paypal(request):
     try:
-        Order.objects.get(id=request.session['order_id'])
+        order = Order.objects.get(id=request.session['order_id'])
     except (Order.DoesNotExist, KeyError):
         return HttpResponseRedirect(reverse('preview_order'))
     request.cart.clear()
@@ -153,7 +153,7 @@ def payment_paypal(request):
     domain = str(site)
     paypal_dict = {
         'business': site.ordersettings.paypal_email,
-        'amount': request.cart.total,
+        'amount': order.total_plus_tax(),
         'invoice': request.session['order_id'],
         'item_name': 'Your order at %s' % site.name,
         'notify_url': domain + reverse('paypal-ipn'),
