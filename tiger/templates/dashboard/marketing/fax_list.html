@@ -31,8 +31,8 @@ Your fax lists
 <script type="text/javascript">
 $(function () {
     $("a.delete").live("click", function () {
-        h3Text = $($(this).parent().find("h3")[0]).text();
-        c = confirm("Are you sure you want to delete " + h3Text + "? This action cannot be undone.");
+        nameTxt = $($(this).parent().find("a:first-child")[0]).text();
+        c = confirm("Are you sure you want to delete \"" + nameTxt + "\"? This action cannot be undone.");
         if (!c)
             return false;
     });
