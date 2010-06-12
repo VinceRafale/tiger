@@ -1,6 +1,9 @@
+from decimal import InvalidOperation
+
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.validators import email_re
+from django.forms.util import ErrorList
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 
@@ -112,21 +115,25 @@ def send_order(request):
             order.tax = request.cart.taxes()
             order.cart = request.cart.session.get_decoded()
             order.site = request.site
-            order.save()
-            if request.cart.has_coupon:
-                coupon = Coupon.objects.get(id=request.cart['coupon']['id'])
-                coupon.log_use(order)
-            if 'pay' in request.POST:
-                request.session['order_id'] = order.id
-                return HttpResponseRedirect(
-                    request.site.ordersettings.payment_url(
-                        cart_id=request.cart.session.session_key,
-                        order_id=order.id
+            try:
+                order.save()
+            except InvalidOperation:
+                form._errors['__all__'] = ErrorList(['Your order is too large.  Please contact us for catering options.'])
+            else:
+                if request.cart.has_coupon:
+                    coupon = Coupon.objects.get(id=request.cart['coupon']['id'])
+                    coupon.log_use(order)
+                if 'pay' in request.POST:
+                    request.session['order_id'] = order.id
+                    return HttpResponseRedirect(
+                        request.site.ordersettings.payment_url(
+                            cart_id=request.cart.session.session_key,
+                            order_id=order.id
+                        )
                     )
-                )
-            DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
-            request.cart.clear()
-            return HttpResponseRedirect(reverse('order_success'))
+                DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
+                request.cart.clear()
+                return HttpResponseRedirect(reverse('order_success'))
     else:
         form = OrderForm(site=request.site)
     context = {
