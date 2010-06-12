@@ -58,10 +58,12 @@ Edit your online ordering options
 <label id="delivery-fax">{{ form.fax.label }} {{ form.fax }}</label>
 <h3>Delivery area</h3>
 {{ form.delivery_area }}
+<div class="clear"></div>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_orders %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
 </form>
-
-<a class="buttonTop last" href="{% url dashboard_restaurant %}">Cancel</a>
-<a class="buttonTop submit" href="#">Save</a>
 {% endblock %}
 
 {% block js %}

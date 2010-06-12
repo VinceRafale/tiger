@@ -19,7 +19,6 @@ Online order payments
 {% endblock %}
 
 {% block content %}
-<div class="grid_12 alpha omega">
 {% if form.non_field_errors %}
 {{ form.non_field_errors }}
 {% endif %}
@@ -48,7 +47,11 @@ Online order payments
 <div id="paypal_creds">
 <label>{{ form.paypal_email.label }} {{ form.paypal_email }}</label>
 </div>
-<input type="submit" value="Save">
+<div class="clear"></div>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_orders %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
 </form>
 {% endblock %}
 
