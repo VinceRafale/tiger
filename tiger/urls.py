@@ -10,8 +10,8 @@ handler500 = 'tiger.utils.views.handler500'
 urlpatterns = patterns('tiger.utils.views',
     url(r'^$', 'render_custom', {'template': 'base.html'}, name='home'),
     url(r'^robots.txt$', 'robots'),
-    url(r'^about/$', 'render_custom', {'template': 'about.html'}, name='home'),
-    url(r'^find-us/$', 'render_custom', {'template': 'find-us.html'}, name='home'),
+    url(r'^about/$', 'render_custom', {'template': 'about.html'}, name='about'),
+    url(r'^find-us/$', 'render_custom', {'template': 'find-us.html'}, name='find-us'),
 )
 
 order_patterns = patterns('tiger.core.views',

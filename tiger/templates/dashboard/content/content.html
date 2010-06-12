@@ -12,15 +12,15 @@ Primary page content
 
 {% load content_tags %}
 {% block content %}
-        <h3>Your homepage <a href="{% url dashboard_edit_content "homepage" %}">Edit</a></h3>
+        <h3>Your homepage <a href="{% url dashboard_edit_content "homepage" %}">Edit</a> <a target="_blank" href="{% url home %}">View on site</a></h3>
         <h4>{% get_title site "homepage" %}</h4>
         {% get_body site "homepage" %}
         
-		<h3>Your &#8220;About&#8221; page <a href="{% url dashboard_edit_content "about" %}">Edit</a></h3>
+		<h3>Your &#8220;About&#8221; page <a href="{% url dashboard_edit_content "about" %}">Edit</a> <a target="_blank" href="{% url about %}">View on site</a></h3>
         <h4>{% get_title site "about" %}</h4>
         {% get_body site "about" %}
 
-        <h3>Your &#8220;Find us&#8221; page <a href="{% url dashboard_edit_content "find-us" %}">Edit</a></h3>
+        <h3>Your &#8220;Find us&#8221; page <a href="{% url dashboard_edit_content "find-us" %}">Edit</a> <a target="_blank" href="{% url find-us %}">View on site</a></h3>
         <h4>{% get_title site "find-us" %}</h4>
         {% get_body site "find-us" %}
 
