@@ -2,6 +2,28 @@
 
 {% block body-class %}{{ block.super }}pdfs{% endblock %}
 
+{% block extrahead %}
+<style type="text/css">
+a.icon {
+    display:block; 
+    height:24px;
+    width:24px;
+}
+a.featured {
+    background-color: green;
+}
+a.not-featured {
+    background-color: grey;
+}
+a.hovering {
+    background-color: yellow;
+}
+a.thinking {
+    background: transparent url({{ MEDIA_URL }}img/ajax-loader.gif) center center no-repeat;
+}
+</style>
+{% endblock %}
+
 {% block h2 %}
 PDF Menus
 {% endblock %}
@@ -23,7 +45,6 @@ PDF Menus
                 <th></th>
                 <th></th>
                 <th></th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -31,10 +52,11 @@ PDF Menus
             <tr> 
                 <td>{{ pdf.name }}</td>
                 <td>{{ pdf.page_count }}</td>
-                <td>{{ pdf.featured|yesno:"Yes,No" }}</td>
+                <td>
+                <a class="icon {% if pdf.featured %}featured{% else %}not-featured{% endif %}" id="{{ pdf.id }}" href="#"></a>
+                </td>
                 <td><a href="{{ pdf.url }}">Preview</a></td>
                 <td><a href="{% url dashboard_edit_pdf pdf.id %}">Edit</a></td>
-                <td>{% if not pdf.featured %}<a href="{% url dashboard_feature_pdf pdf.id %}">Feature</a>{% endif %}</td>
                 <td><a href="{% url dashboard_delete_pdf pdf.id %}">Delete</a></td>
             </tr> 
         {% empty %}
@@ -46,3 +68,31 @@ PDF Menus
     </table>
 {% endblock %}
 
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.icon").hover(
+        function () {
+            $(this).addClass("hovering");
+        },
+        function () {
+            $(this).removeClass("hovering");
+        }
+    );
+    $("a.icon").click(function () {
+        trgt = $(this);
+        trgt.addClass("thinking");
+        pdfId = trgt.attr("id");
+        $.post("{% url dashboard_feature_pdf %}", $.param({id: pdfId}), function (data) {
+            if (data.success) {
+                trgt.attr("class", "icon");
+                trgt.addClass(data.class);
+                if (data.class == "featured") {
+                    $("a.icon").not(trgt[0]).removeClass("featured").addClass("not-featured");
+                }
+            }
+        }, "json");
+    });
+});
+</script>
+{% endblock %}

@@ -34,7 +34,7 @@ def add_edit_pdf(request, pdf_id=None):
             pdf.update()
             verb = 'edited' if instance else 'created'
             messages.success(request, 'PDF menu %s successfully.' % verb)
-            return HttpResponseRedirect(reverse('dashboard_content'))
+            return HttpResponseRedirect(reverse('dashboard_pdf_list'))
     else:
         form = PdfMenuForm(site=request.site, instance=instance)
     return direct_to_template(request, template='dashboard/content/pdf_form.html', extra_context={
@@ -43,7 +43,7 @@ def add_edit_pdf(request, pdf_id=None):
 
 @login_required
 def delete_pdf(request, pdf_id):
-    return delete_site_object(request, PdfMenu, pdf_id, 'dashboard_content')
+    return delete_site_object(request, PdfMenu, pdf_id, 'dashboard_pdf_list')
 
 @login_required
 def preview_pdf(request, pdf_id):
@@ -54,13 +54,14 @@ def preview_pdf(request, pdf_id):
     return response
 
 @login_required
-def feature_pdf(request, pdf_id):
+def feature_pdf(request):
+    pdf_id = request.POST.get('id')
     pdf = PdfMenu.objects.get(id=pdf_id)
-    pdf.featured = True
+    pdf.featured = True if not pdf.featured else False
     pdf.save()
-    PdfMenu.objects.exclude(id=pdf_id).update(featured=False)
-    messages.success(request, '"%s" has been added to your home page.' % pdf.name)
-    return HttpResponseRedirect(reverse('dashboard_content'))
+    if pdf.featured:
+        PdfMenu.objects.exclude(id=pdf_id).update(featured=False)
+    return HttpResponse('{"success": true, "class": "%s"}' % 'featured' if pdf.featured else 'not-featured')
 
 @login_required
 def pdf_list(request):

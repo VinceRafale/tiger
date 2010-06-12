@@ -72,6 +72,9 @@ class PdfMenu(models.Model):
     sections = models.ManyToManyField('core.Section')
     page_count = models.PositiveIntegerField(default=1)
 
+    class Meta:
+        ordering = ('name',)
+
     def __unicode__(self):
         return self.name
 
