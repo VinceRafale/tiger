@@ -1,4 +1,4 @@
-from tiger.dev_settings import *
+from tiger.prod_settings import *
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'm%b99ylu)be%v!lh+vcgh4&6=_rs@)!s*n_6mjeh_br&$ni0dh'
