@@ -29,9 +29,14 @@ def is_available(timeslots, tz, buff=0):
         return False
     for timeslot in timeslots:
         start_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.start))
-        stop_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.stop)) - timedelta(seconds=buff*60)
+        stop_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.stop))
         if start_dt < now < stop_dt:
-            return True
+            if start_dt < now < stop_dt - timedelta(seconds=buff*60):
+                return True
+            #TODO: my goodness is this ugly.  need to get a different value out to
+            # the view to signal that this is a closing time buffer false rather than
+            # standard hours false.
+            return 0
     return False
 
 def calculate_hour_string(timeslots):

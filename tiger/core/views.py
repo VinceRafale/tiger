@@ -44,7 +44,15 @@ def order_item(request, section, item):
     OrderForm = get_order_form(i)
     total = i.variant_set.order_by('-price')[0].price
     if request.method == 'POST':
-        if not request.site.is_open:
+        #TODO: how about raising some RestaurantNotOpen, ItemNotAvailable, SectionNotAvailable errors in here? would help w/ dry...
+        is_open = request.site.is_open
+        print is_open
+        #TODO: look in utils/hours.py for the explanation of this dumbness
+        if is_open is 0:
+            msg = "Sorry!  Orders must be placed within %d minutes of closing." % request.site.ordersettings.eod_buffer
+            messages.warning(request, msg) 
+            return HttpResponseRedirect(i.section.get_absolute_url())
+        elif not is_open:
             msg = """%s is currently closed. Please try ordering during normal
             restaurant hours, %s.""" % (request.site.name, request.site.hours)
             messages.warning(request, msg) 
@@ -106,6 +114,16 @@ def add_coupon(request):
     return HttpResponseRedirect(reverse('menu_home'))
 
 def send_order(request):
+    is_open = request.site.is_open
+    if is_open is 0:
+        msg = "Sorry!  Orders must be placed within %d minutes of closing." % request.site.ordersettings.eod_buffer
+        messages.warning(request, msg) 
+        return HttpResponseRedirect(reverse('home'))
+    elif not is_open:
+        msg = """%s is currently closed. Please try ordering during normal
+        restaurant hours, %s.""" % (request.site.name, request.site.hours)
+        messages.warning(request, msg) 
+        return HttpResponseRedirect(reverse('home'))
     if request.method == 'POST':
         form = OrderForm(request.POST, site=request.site)
         form.total = request.cart.total()
