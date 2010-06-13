@@ -140,6 +140,7 @@ def add_sidegroup(request, object_type, object_id):
             'group': group,
             'MEDIA_URL': settings.MEDIA_URL
         })
+        result['add_side_url'] = reverse('add_side', args=[group.id])
     except:
         result['success'] = False
     return HttpResponse(json.dumps(result))

@@ -53,7 +53,7 @@ $(function () {
         trgt = this;
         $.post($(this).attr("rel"), {}, function (data) {
             if (data['success']) {
-                markup = $('<li><ul>' + getForm(trgt) + '</ul>' + data['row'] + '</li>');
+                markup = $('<li><ul class="item-container">' + getForm(trgt, null, data['add_side_url']) + '</ul>' + data['new_row'] + '</li>');
                 $("ul.group-wrap").append(markup); 
                 $("ul.group-wrap > li.empty").remove();
             }
@@ -161,14 +161,5 @@ $(function () {
         return false;
     });
 
-    $("ul.group-wrap a.add").live("click", function () {
-        nestedList = $(this).prev();
-        if (!$(nestedList).find("li.form").length) {
-            $(nestedList).append($(getForm(this)));
-        } else {
-            $(nestedList).find("input:first").focus();
-        }
-        return false;
-    });
 });
 
