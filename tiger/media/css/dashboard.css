@@ -277,7 +277,8 @@ li.form label span.msg {
 *  Publish screen  *
 *******************/
 
-#id_title {width:620px;}
+#id_title {width:620px; height:60px;}
+div.checkbox-select label {margin-top:3px; margin-bottom:7px;}
 span.counter {
     font-family: serif; 
     font-style: italic; 
@@ -295,14 +296,31 @@ div.markItUpContainer {
     width: 365px;
     float: left;
 }
+#editorPreview {
+    width: 385px;
+    margin-left:15px;
+    float:left;
+}
 #editorPreview h1 {
     font-size:1.1em;
 }
 #editorPreview h2, #editorPreview h3 {
     font-size:0.9em;
 }
-#editorPreview p, #editorPreview pli {
+#editorPreview p, #editorPreview li {
     font-size:0.7em;
+}
+#editorPreview ul {list-style-type:circle;}
+
+#editorPreview blockquote {margin-left:15px;}
+
+#editorPreview blockquote p { quotes: '"' '"' "'" "'" }
+
+#editorPreview blockquote p:before{
+    content: open-quote;
+}
+#editorPreview blockquote p:after{
+    content: close-quote;
 }
 
 /********************

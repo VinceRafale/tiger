@@ -75,7 +75,10 @@ Publish to the web
 <label>{{ form.fax }} {{ form.fax.label }}</label> {{ form.fax_list }}
 </div>
 <div class="clear"></div>
-<input id="submit" type="submit" value="Publish" />
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_publish %}">Cancel</a>
+<input type="submit" value="Publish" class="submit buttonTop" />
+</div>
 </form>
 {% endblock %}
 
@@ -83,6 +86,11 @@ Publish to the web
 <script type="text/javascript">
 $(function () {
     $("#id_pdf,#id_coupon,#id_fax_list").hide();
+    $("#id_add_pdf,#id_add_coupon,#id_fax").each(function () {
+        if ($(this).attr("checked")) {
+            $(this).parent().next(":input").show();
+        }
+    });
     $("#id_add_pdf,#id_add_coupon,#id_fax").click(function () {
         if ($(this).attr("checked")) {
             $(this).parent().next(":input").show();
@@ -102,7 +110,7 @@ $(function () {
     $("#id_body").keyup(function () {
         trgt = this;
         $.post("{% url dashboard_publish_preview %}", $.param({preview: $(trgt).val()}), function (data) {
-            $("#editorPreview").html("<h1>" + $("#id_title").val() + "</h1>" + data);
+            $("#editorPreview").html(data);
         }, "html");
     });
     $("#id_title").keyup(function () {
