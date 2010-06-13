@@ -60,7 +60,18 @@ def add_edit_menu(request, object_type, object_id=None):
             obj = form.save(commit=False)
             obj.site = request.site
             obj.save()
-            return HttpResponseRedirect(reverse('dashboard_view_menu', args=[object_type, obj.id]))
+            verb = 'edited' if instance else 'created'
+            if instance:
+                redirect_to = reverse('dashboard_menu')
+                msg = '%s updated successfully.' % object_type.title()
+            else:
+                redirect_to = reverse('dashboard_edit_options', args=[object_type, obj.id])
+                if object_type == 'section':
+                    msg = 'Section "%s" created successfully. Now you can <a href="%s">add a menu item now</a> or configure section options below.' % (obj.name, reverse('dashboard_add_menu', args=['item']) + '?q=%d' % (obj.id),)
+                else:
+                    msg = 'Menu item "%s" created successfully. You can configure section options below.' % obj.name
+            messages.success(request, msg)
+            return HttpResponseRedirect(redirect_to)
     else:
         form_kwds = {}
         if all([instance is None, request.GET.get('pk'), model == Item]):
@@ -70,6 +81,18 @@ def add_edit_menu(request, object_type, object_id=None):
         'form': form,
         'object': instance,
         'type': object_type
+    })
+
+@login_required
+def add_edit_menu_options(request, object_type, object_id):
+    model = get_model('core', object_type)
+    instance = get_object_or_404(model, id=object_id)
+    if instance and instance.site != request.site:
+        raise Http404()
+    return direct_to_template(request, template='dashboard/menu/%s_options.html' % object_type, extra_context={
+        'object': instance,
+        'type': object_type,
+        'options': True
     })
 
 def add_related(request, object_type, object_id, form_class):

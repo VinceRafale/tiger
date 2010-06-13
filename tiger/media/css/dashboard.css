@@ -229,6 +229,8 @@ p.help {font-size:12px;}
 *  Item/section editing  *
 *************************/
 
+h2 span {vertical-align:middle;}
+
 input.error {
     background-color:pink; 
     border-color:#930823;

@@ -1,11 +1,15 @@
-{% extends 'dashboard/menu/item_form_base.html' %}
+{% extends 'dashboard/menu/menu_object_base.html' %}
 
 {% block extrahead %}
 {{ form.media }}
 {% endblock %}
 
 {% block help %}
-FIXME
+{% if object %}
+<p>Edit the description of this item below, or click "Edit options" to change prices, side dishes, and extras for this item.</p>
+{% else %}
+<p>Give this menu item a name and a description, choose the appropriate menu classifiers (vegetarian or spicy), and set its taxability status. You can also add an image from your image library. You'll be able to set up prices, side dishes, and extras for it after saving.</p>
+{% endif %}
 {% endblock %}
 
 {% block object_info %}
@@ -52,25 +56,4 @@ FIXME
 <label>Choose an image for this item (optional):<br />
 {{ form.image }}
 </label>
-{% endblock %}
-
-{% block pricepoints %}
-{% if object %}
-{{ block.super }}
-{% endif %}
-{% endblock %}
-
-{% block sides %}
-{% if object %}
-{{ block.super }}
-{% endif %}
-{% endblock %}
-
-{% block extras %}
-{% if object %}
-{{ block.super }}
-{% endif %}
-<div class="clear"></div>
-<a class="buttonTop last" href="{% url dashboard_menu %}">Cancel</a>
-<a class="buttonTop submit" href="#">Save</a>
 {% endblock %}

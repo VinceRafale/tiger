@@ -2,94 +2,18 @@
 
 {% block body-class %}{{ block.super }}menu{% endblock %}
 
+{% block h2 %}
+{% if object %}
+<span>Edit {{ type }} "{{ object.name }}"</span> <a class="button" href="{% url dashboard_edit_options type, object.id %}">edit options</a>
+{% else %}
+New {{ type }}
+{% endif %}
+{% endblock %}
+
+
 {% block help %}
 FIXME
 {% endblock %}
 
 {% block content %}
-<div>
-    {% block object_section %}
-        {% if object %}
-        <a href="{% url dashboard_edit_menu type,object.id %}">Edit</a>
-        {% endif %}
-        {% block object_info %}
-        <h2>{{ object.name }}</h2>
-        <p>{{ object.description|linebreaks }}</p>
-        {% endblock %}
-    {% endblock %}
-</div>
-
-{% block defaults %}
-{% endblock %}
-<div>
-    {% block pricepoints %}
-        <h3>Price points</h3>
-        {% block pricepoints-help %}
-            <p class="help">
-            All menu items must have at least one pricepoint.
-            </p>
-        {% endblock %}
-        <ul class="item-container">
-            {% for obj in object.variant_set.all %}
-            {% include 'dashboard/menu/includes/variant_row.html' %}
-            {% empty %}
-            <li class="empty">You have not defined any price points for this {{ type }}.</li>
-            {% endfor %}
-        </ul>
-        <a id="price-points" class="add" href="#" rel="{% url add_pricepoint type,object.id %}">Add</a>
-    {% endblock %}
-</div>
-
-<div>
-    {% block sides %}
-        <h3>Side dish choices</h3>
-        {% block sides-help %}
-        <p class="help">
-        This is where you define choices that come in sets -- choice between baked potato or side salad, white or fried rice, etc.  You can add as many sets as you like.  If there is no additional cost associated with a choice, just leave the price field blank.
-        </p>
-        {% endblock %}
-        <ul class="group-wrap">
-            {% for group in object.sidedishgroup_set.all %}
-            <li>
-                <ul class="item-container">
-                    {% for obj in group.sidedish_set.all %}
-                    {% include 'dashboard/menu/includes/side_row.html' %}
-                    {% empty %}
-                    <li class="empty">No choices defined.</li>
-                    {% endfor %}
-                </ul>
-                {% include 'dashboard/menu/includes/group_row.html' %}
-            </li>
-            {% empty %}
-            <li class="empty">You have not defined any side dish choices for this {{ type }}.</li>
-            {% endfor %}
-        </ul>
-        <a id="side-groups" href="#" rel="{% url add_sidegroup type,object.id %}">Add</a>
-    {% endblock %}
-</div>
-
-<div>
-    {% block extras %}
-        <h3>Extras</h3>
-        {% block extras-help %}
-        <p class="help">
-            Extras are anything a customer can add to their order for an additional cost, like guacamole or extra cheese.
-        </p>
-        {% endblock %}
-        <ul class="item-container">
-            {% for obj in object.upgrade_set.all %}
-            {% include 'dashboard/menu/includes/upgrade_row.html' %}
-            {% empty %}
-            <li class="empty">You have not defined any extras for this {{ type }}.</li>
-            {% endfor %}
-        </ul>
-        <a id="extras" class="add" href="#" rel="{% url add_extra type,object.id %}">Add</a>
-    {% endblock %}
-</div>
-
-<div class="clear"></div>
-{% endblock %}
-
-{% block js %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/formset.js"></script>
 {% endblock %}
