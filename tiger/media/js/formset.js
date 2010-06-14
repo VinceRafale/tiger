@@ -122,6 +122,9 @@ $(function () {
                     }
                 });
             } else {
+                if ($(trgt).parent().hasClass("populated")) {
+                    $(trgt).parent().prev().remove();
+                }
                 $(trgt).parent().replaceWith(data['new_row']);
                 $(selector).prev().find("li.empty").remove();
             }
