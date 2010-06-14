@@ -10,12 +10,13 @@ function getForm(addAnchor) {
     initial = {};
     action = $(addAnchor).attr("rel");
     if (arguments.length > 1) {
-        initial = arguments[1];
-        action = arguments[2];
+        initial = arguments[1] || {};
+        action = arguments[2] || action;
+        noPopulate = arguments[3];
     }
     fieldKey = $(addAnchor).attr("id") || 'sides';
     inputs = formSnippets[fieldKey];
-    fakeForm = '<li class="form' + ((arguments[1]) ? ' populated' : '') + '">';
+    fakeForm = '<li class="form' + ((arguments[1] && !noPopulate) ? ' populated' : '') + '">';
     $.each(inputs, function () {
         titleCase = this[0].toUpperCase() + this.slice(1);
         fakeForm += '<label for="' + this + '">' + titleCase + ' <input type="text" id="id_' + this + '" name="' + this + '" value="' + (initial[this] || '') + '" /></label>';
@@ -32,7 +33,11 @@ $(function () {
     $("#price-points").click(function () {
         listTag = $(this).prev();
         if (!$(listTag).find("li.form").length) {
-            $(listTag).append($(getForm(this)));
+            initial = {};
+            if (!$(listTag).children().not('.empty').length) {
+                initial = {description: "default"};
+            }
+            $(listTag).append($(getForm(this, initial, null, true)));
         } else {
             $(listTag).find("input:first").focus();
         }
@@ -148,8 +153,8 @@ $(function () {
             trgt = this;
             action = $(this).attr("rel");
             $.post(action, $.param({'delete': true}), function (data) {
+                selector = '[rel="' + action + '"]';
                 if (data['deleted']) {
-                    selector = '[rel="' + action + '"]';
                     containingList = $(selector).parent().parent().parent();
                     $(selector).parent().parent().remove();
                     if (!$(containingList).children().length) {
