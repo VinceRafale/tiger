@@ -178,7 +178,8 @@ def edit_related(request, item_id, model, form_class, attr_list, object_type):
     if form.is_valid():
         obj = form.save()
         row = render_to_string('dashboard/menu/includes/%s_row.html' % object_type, {
-            'obj': obj    
+            'obj': obj,    
+            'MEDIA_URL': settings.MEDIA_URL
         })
         result = {
             'new_row': row

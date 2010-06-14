@@ -61,7 +61,7 @@ def feature_pdf(request):
     pdf.save()
     if pdf.featured:
         PdfMenu.objects.exclude(id=pdf_id).update(featured=False)
-    return HttpResponse('{"success": true, "class": "%s"}' % 'featured' if pdf.featured else 'not-featured')
+    return HttpResponse('{"success": true, "class": "%s"}' % ('featured' if pdf.featured else 'not-featured'))
 
 @login_required
 def pdf_list(request):
