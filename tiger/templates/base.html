@@ -99,14 +99,14 @@
                 {{ site.city }}, {{ site.state }} {{ site.zip }}
                 </address>
                 <p>T: {{ site.phone }}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
-                {% cache 300 pdf site.subdomain %}
+                {# {% cache 300 pdf site.subdomain %} #}
                 {% if site.menu %}
                 <p>
                     <a href="{{ site.menu.url }}">Download our menu</a> as a PDF!  Always guaranteed to be up-to-date.
                 </p>
                 {% endif %}
-                {% endcache %}
-                {% cache 300 social site.subdomain %}
+                {# {% endcache %} #}
+                {# {% cache 300 social site.subdomain %} #}
                 {% if site.twitter %}
                 <div id="twitter">
                    You should <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a> to get menu updates and more!
@@ -125,7 +125,7 @@
                     </form>
                 </div>
                 {% endif %}
-                {% endcache %}
+                {# {% endcache %} #}
             {% endblock %}
             </div>
             </div>
