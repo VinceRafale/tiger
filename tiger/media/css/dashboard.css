@@ -279,7 +279,6 @@ li.form label span.msg {
 *  Publish screen  *
 *******************/
 
-#id_title {width:620px; height:60px;}
 div.checkbox-select label {margin-top:3px; margin-bottom:7px;}
 span.counter {
     font-family: serif; 
@@ -345,7 +344,7 @@ th.total, td.total{text-align: right;}
  * **************/
 
 #images {clear:right;}
-#images li {float:left; width:91px; text-align:center;}
+#images li {float:left; width:91px; text-align:center; margin:15px;}
 #images li img {border:8px #dedede solid; cursor:pointer;}
 #images li img:hover {border-color:#94cad0;}
 #images a {font-size:11px;}
