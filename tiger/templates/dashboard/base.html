@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/dashboard.css" />
-    <link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" />
     <!--[if IE]>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
     <![endif]--> 
@@ -19,19 +18,31 @@
     <div class="wrapper">
         <div id="menuWrap">
             <div class="container_12 clearfix">
-            	<div id="menu" class="grid_8 push_1">
-               	 	<h1>{{site.name}} Dashboard</h1>
+                <div class="grid_8 push_1">
+                    <h1>{{site.name}} Dashboard</h1>
+                </div>  
+                <div id="search" class="grid_1 push_3">
+                	<ul class="menu">
+	                    <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
+	                </ul>
+                </div>
+                <div class="grid_10 push_1">
+                    {% if not first_steps.is_complete %}
+                    <img src="{{ MEDIA_URL }}img/welcome.png" alt="Welcome" />
+    		        <ol id="progress">
+                        {% for step in first_steps %}
+                        <li class="{% if step.status == 'incomplete' %}incomplete{% endif %}{% if step.status == 'complete' %}complete{% endif %}"><div class="prog-{{ forloop.counter }}"></div>{{ step.name }}<br /><a href="{{ step.link }}">See how</a></li>
+                        {% endfor %}
+                    </ol>
+                    {% endif %}
+                </div>    
+            	<div id="menu" class="grid_10 push_1">
 					<ul class="menu">
 	                    <li><a class="restaurant" href="{% url dashboard_menu %}">Restaurant</a></li>
 	                    <li><a class="site" href="{% url dashboard_content %}">Site</a></li>
 	                    <li><a class="marketing" href="{% url dashboard_marketing %}">Marketing</a></li>
 	                    <li><a class="orders" href="{% url dashboard_orders %}">Online Ordering</a></li>
 	                    <li><a class="account" href="{% url account_home %}">Account</a></li>
-	                </ul>
-                </div>
-                <div id="search" class="grid_1 push_3">
-                	<ul class="menu">
-	                    <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
 	                </ul>
                 </div>
             </div> 

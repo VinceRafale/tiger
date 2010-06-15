@@ -18,7 +18,7 @@ ul.menu li a:hover{background-color:#7e3700;color:#fff;}
 #submenu {padding-bottom: 5px; border-bottom: 1px inset #ccc; margin-bottom: 10px;}
 #orderForm ul {list-style-type:none;}
 #orderForm li {display:inline;}
-#menu h1{color: #e3e3be; font-weight: normal;}
+#menuWrap h1{color: #e3e3be; font-weight: normal;}
 #help-button {
     float:right; 
     display: block; 
@@ -474,3 +474,27 @@ div.location{float: left; margin-right: 10px;}
 #faxlists li a{/*margin-right:10px;*/}
 #faxlists li a:first-child{font-weight:bold;display:block;font-size:16px;}
 #faxlists li a:last-child{font-size:12px;}
+
+/* PROGRESS */
+#progress{color:#ffffff;margin:10px 0 20px;list-style:none;line-height:1em;overflow:auto;}
+    #progress li{float:left;width:20%;font-size:0.88em;margin:0;}
+    #progress li div{width:29px;height:27px;float:left;margin-right:9px;}
+    .prog-1,.prog-2,.prog-3,.prog-4,.prog-5{
+        background-image:url(../img/sprite_progress.png);
+    }
+    .prog-1{background-position: 0 top;}
+    .prog-2{background-position: -58px top;}
+    .prog-3{background-position: -116px top;}
+    .prog-4{background-position: -174px top;}
+    .prog-5{background-position: -232px top;}
+    
+    #progress li a{color:#C86319;font-size:0.88em;}
+    
+    #progress li.incomplete{color:#8C9196;}
+    #progress li.incomplete a{color:#994A14;}
+    
+    li.incomplete .prog-1{background-position: 0 bottom;}
+    li.incomplete .prog-2{background-position: -58px bottom;}
+    li.incomplete .prog-3{background-position: -116px bottom;}
+    li.incomplete .prog-4{background-position: -174px bottom;}
+    li.incomplete .prog-5{background-position: -232px bottom;}
