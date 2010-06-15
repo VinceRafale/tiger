@@ -11,6 +11,7 @@ from pyPdf import PdfFileReader
 
 from tiger.utils.pdf import render_to_pdf
 
+DEFAULT_CONTENT = 'Welcome to Takeout Tiger.  You can edit this content in your dashboard under Site > Content.'
 
 class Content(models.Model):
     TYPE_HOMEPAGE = 'homepage'
@@ -29,8 +30,11 @@ class Content(models.Model):
     site = models.ForeignKey('accounts.Site')
     slug = models.SlugField(editable=False)
     title = models.CharField(max_length=200, default='')
-    text = models.TextField(default='Welcome to Takeout Tiger.  You can edit this content in your dashboard under Site > Content.')
+    text = models.TextField(default=DEFAULT_CONTENT)
     image = models.ForeignKey('ItemImage', null=True, blank=True)
+
+    def is_default(self):
+        return self.text == DEFAULT_CONTENT
 
 
 class ItemImage(ImageModel):
