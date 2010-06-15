@@ -105,7 +105,7 @@ class Skin(models.Model):
     name = models.CharField(max_length=20)
     logo = models.ImageField(upload_to='img/logos', null=True, blank=True)
     header_font = models.ForeignKey(FontFace, null=True, blank=True, default=get_default_font)
-    body_font = models.CharField(max_length=255, choices=FONT_CHOICES, default=FONT_ARIAL)
+    body_font = models.TextField(max_length=255, choices=FONT_CHOICES, default=FONT_ARIAL)
     header_color = models.CharField(max_length=6, default='301613')
     body_color = models.CharField(max_length=6, default='000000')
     masthead_color = models.CharField(max_length=6, default='121012')

@@ -306,7 +306,7 @@ class Order(models.Model):
     def coupon(self):
         try:
             coupon = self.couponuse_set.all()[0].coupon
-        except CouponUse.DoesNotExist:
+        except (IndexError, AttributeError):
             return None
         return coupon
 
