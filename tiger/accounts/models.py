@@ -79,6 +79,7 @@ class Site(models.Model):
     hours = models.CharField(null=True, max_length=255)
     lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
     lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
+    walkthrough_complete = models.BooleanField(default=False, editable=False)
 
     def __unicode__(self):
         if self.custom_domain:
