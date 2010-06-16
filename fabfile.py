@@ -4,10 +4,10 @@ from fabric.api import *
 prod = 'threadsafe@takeouttiger.com:1123'
 staging = 'threadsafe@demo.takeouttiger.com:1123'
 
-def deploy():
-    local('git push origin master')
+def deploy(branch):
+    local('git push origin %s' % branch)
     with cd('/home/threadsafe/tiger/'):
-        run('git pull origin master')
+        run('git pull origin %s' % branch)
         run('bin/buildout -N -c production.cfg')
         run('bin/django syncdb')
         run('bin/django migrate')
@@ -18,11 +18,11 @@ def deploy():
 
 @hosts(staging)
 def deploy_staging():
-    deploy()
+    deploy('staging')
 
 @hosts(prod)
 def deploy_prod():
-    deploy()
+    deploy('master')
 
 def apply_remote_changes():
     with cd('/home/threadsafe/tiger/'):
