@@ -58,6 +58,15 @@ class ItemImage(ImageModel):
             self.slug = slugify(self.title)
         super(ItemImage, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        for content in self.content_set.all():
+            content.image = None
+            content.save()
+        for item in self.item_set.all():
+            item.image = None
+            item.save()
+        super(ItemImage, self).delete(*args, **kwargs)
+
     @models.permalink
     def get_absolute_url(self):
         return 'image_detail', (), {'image_id': self.id, 'slug': self.slug}
