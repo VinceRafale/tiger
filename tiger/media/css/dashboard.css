@@ -490,11 +490,13 @@ div.location{float: left; margin-right: 10px;}
     
     #progress li a{color:#C86319;font-size:0.88em;}
     
-    #progress li.incomplete{color:#8C9196;}
-    #progress li.incomplete a{color:#994A14;}
+    #progress li.incomplete,#progress li.complete{color:#8C9196;}
+    #progress li.incomplete a,#progress li.complete a{color:#994A14;}
     
     li.incomplete .prog-1{background-position: 0 bottom;}
     li.incomplete .prog-2{background-position: -58px bottom;}
     li.incomplete .prog-3{background-position: -116px bottom;}
     li.incomplete .prog-4{background-position: -174px bottom;}
     li.incomplete .prog-5{background-position: -232px bottom;}
+
+    li.complete div{background:url(../img/checkmark.png) center center no-repeat;}
