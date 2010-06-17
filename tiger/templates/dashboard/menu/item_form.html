@@ -56,4 +56,9 @@
 <label>Choose an image for this item (optional):<br />
 {{ form.image }}
 </label>
+<div class="clear"></div>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_menu %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
 {% endblock %}
