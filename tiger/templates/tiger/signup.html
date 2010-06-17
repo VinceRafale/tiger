@@ -203,7 +203,7 @@
         }
 		$(function(){
             $("span#promo").hide();
-            if (!$("label.promo").prev().hasClass("errorlist")) {
+            if (!$("#id_promo").val()) {
                 $("label.promo").hide();
             }
             $("#id_subdomain").keyup(function () {
