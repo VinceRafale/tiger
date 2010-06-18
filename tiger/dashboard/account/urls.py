@@ -3,7 +3,6 @@ from django.conf.urls.defaults import *
 
 
 urlpatterns = patterns('tiger.dashboard.account.views',
-    url(r'^$', 'update_contact', name='account_home'),
     url(r'^cancel/$', 'cancel', name='cancel'),
 )
 
