@@ -46,7 +46,6 @@ def order_item(request, section, item):
     if request.method == 'POST':
         #TODO: how about raising some RestaurantNotOpen, ItemNotAvailable, SectionNotAvailable errors in here? would help w/ dry...
         is_open = request.site.is_open
-        print is_open
         #TODO: look in utils/hours.py for the explanation of this dumbness
         if is_open is 0:
             msg = "Sorry!  Orders must be placed within %d minutes of closing." % request.site.ordersettings.eod_buffer
