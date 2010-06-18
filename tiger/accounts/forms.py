@@ -247,6 +247,11 @@ class CreditCardForm(forms.ModelForm):
     class Meta:
         model = Account
         fields = (
+            'first_name',
+            'last_name',
+            'card_number',
+            'month',
+            'year',
             'company_name',
             'phone',
             'fax',
@@ -254,7 +259,6 @@ class CreditCardForm(forms.ModelForm):
             'city',
             'state',
             'zip',
-            'card_number',
         )
 
     def __init__(self, *args, **kwargs):
@@ -265,7 +269,7 @@ class CreditCardForm(forms.ModelForm):
             'last_name': instance.user.last_name,
             'email': instance.user.email
         }
-        super(ContactInfoForm, self).__init__(initial=initial,  *args, **kwargs)
+        super(CreditCardForm, self).__init__(initial=initial,  *args, **kwargs)
 
     def clean_month(self):
         month = self.cleaned_data['month']
@@ -306,7 +310,7 @@ class CreditCardForm(forms.ModelForm):
                     'credit_card_attributes':{
                         'full_number': cleaned_data.get('card_number'),
                         'expiration_month': cleaned_data.get('month'),
-                        'expiration_year': cleaned_data.get('year')
+                        'expiration_year': cleaned_data.get('year'),
                         'billing_address': cleaned_data.get('street'),
                         'billing_city': cleaned_data.get('city'),
                         'billing_state': cleaned_data.get('state'),
@@ -316,28 +320,6 @@ class CreditCardForm(forms.ModelForm):
             })
         except ChargifyError, e:
             raise forms.ValidationError('Unable to update your information with our payment processor.')
-        return cleaned_data
-
-
-class CreditCardForm(forms.ModelForm):
-    def clean(self):
-        cleaned_data = super(CreditCardForm, self).clean()
-        if not len(self._errors):
-            chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
-            subscription_id = self.instance.subscription_id
-            try:
-                result = chargify.subscriptions.update(subscription_id=subscription_id, data={
-                    'subscription': {
-                        'credit_card_attributes':{
-                            'full_number': cleaned_data.get('card_number'),
-                            'expiration_month': cleaned_data.get('month'),
-                            'expiration_year': cleaned_data.get('year')
-                        }
-                    }
-                })
-            except ChargifyError:
-                raise forms.ValidationError('Unable to update your information with our payment processor.')
-            self.subscription = result['subscription']
         return cleaned_data
 
 

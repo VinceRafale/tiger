@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
-from tiger.accounts.forms import ContactInfoForm, CreditCardForm
+from tiger.accounts.forms import CreditCardForm
 from tiger.dashboard.account.forms import CancellationForm
 from tiger.utils.chargify import Chargify
 
@@ -30,22 +30,6 @@ def cancel(request):
         extra_context={'form': form})
 
 @login_required
-def update_contact(request):
-    if request.method == 'POST':
-        form = ContactInfoForm(request.POST, instance=request.site.account)
-        if form.is_valid():
-            account = form.save()
-            user = request.user
-            for attr in ('first_name', 'last_name', 'email'):
-                setattr(user, attr, cleaned_data.get(attr, ''))
-            user.save()
-            return HttpResponseRedirect(reverse('account_home'))
-    else:
-        form = ContactInfoForm(instance=request.site.account)
-    return direct_to_template(request, template='dashboard/account/update_contact.html',
-        extra_context={'form': form})
-
-@login_required
 def update_cc(request):
     if request.method == 'POST':
         form = CreditCardForm(request.POST, instance=request.site.account)
@@ -56,6 +40,7 @@ def update_cc(request):
             account.save()
             return HttpResponseRedirect(reverse('update_cc'))
     else:
-        form = CreditCardForm(instance=request.site.account)
+        instance = request.site.account
+        form = CreditCardForm(instance=instance)
     return direct_to_template(request, template='dashboard/account/update_cc.html',
         extra_context={'form': form})
