@@ -81,7 +81,7 @@ class StepThree(Step):
 
 class StepFour(Step):
     conditions = tuple(
-        lambda site: Content.objects.get(site=site, slug=slug).is_default()
+        lambda site: not Content.objects.get(site=site, slug=slug).is_default()
         for slug in Content.CONTENT_TYPES
     )
     name = 'Edit info pages'
