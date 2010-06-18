@@ -50,6 +50,9 @@ class Section(models.Model):
         verbose_name = 'menu section'
         ordering = ('ordering',)
 
+    def natural_key(self):
+        return (self.name,) + self.site.natural_key()
+
     def __unicode__(self):
         return self.name
 
@@ -128,6 +131,9 @@ class Item(models.Model):
         verbose_name = 'menu item'
         ordering = ('ordering',)
 
+    def natural_key(self):
+        return (self.name,) + self.section.natural_key()
+
     def __unicode__(self):
         return self.name
 
@@ -172,6 +178,9 @@ class Variant(models.Model):
 
     class Meta:
         ordering = ['price']
+
+    def natural_key(self):
+        return (self.price,) + self.item.natural_key()
 
     def __unicode__(self):
         s = '%s ($<span>%s</span>)' % (self.description, self.price)

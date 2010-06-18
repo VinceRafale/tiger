@@ -43,6 +43,9 @@ class Account(models.Model):
     card_type = models.CharField(max_length=50, null=True)
     referrer = models.ForeignKey(SalesRep, null=True, editable=False)
 
+    def natural_key(self):
+        return (self.user.username,)
+
     def __unicode__(self):
         return self.company_name
 
@@ -80,6 +83,9 @@ class Site(models.Model):
     lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
     lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
+
+    def natural_key(self):
+        return (self.subdomain,)
 
     def __unicode__(self):
         if self.custom_domain:
