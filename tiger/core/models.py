@@ -52,6 +52,7 @@ class Section(models.Model):
 
     def natural_key(self):
         return (self.name,) + self.site.natural_key()
+    natural_key.dependencies = ['accounts.site']
 
     def __unicode__(self):
         return self.name
@@ -133,6 +134,7 @@ class Item(models.Model):
 
     def natural_key(self):
         return (self.name,) + self.section.natural_key()
+    natural_key.dependencies = ['core.section']
 
     def __unicode__(self):
         return self.name
@@ -181,6 +183,7 @@ class Variant(models.Model):
 
     def natural_key(self):
         return (self.price,) + self.item.natural_key()
+    natural_key.dependencies = ['core.item']
 
     def __unicode__(self):
         s = '%s ($<span>%s</span>)' % (self.description, self.price)
