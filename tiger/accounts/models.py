@@ -115,7 +115,10 @@ class Site(models.Model):
 
     @property
     def address(self):
-        return ' '.join([self.street, self.city, self.state, self.zip])
+        address_pieces = [self.street, self.city, self.state, self.zip]
+        if all(address_pieces):
+            return ' '.join(address_pieces)
+        return ''
 
     def calculate_hour_string(self, commit=True):
         """Returns a nicely formatted string representing availability based on the

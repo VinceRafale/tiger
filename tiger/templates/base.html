@@ -93,12 +93,16 @@
                 {% endblock %}
                 {% block sections %}
                 {% endblock %}
-                <p>{{ site.hours }}</p>
+                <p>Hours: {{ site.hours|default:'[your restaurant hours]' }}</p>
                 <address>
+                {% if site.address %}
                 {{ site.street }}<br>
                 {{ site.city }}, {{ site.state }} {{ site.zip }}
+                {% else %}
+                [your restaurant address]
+                {% endif %}
                 </address>
-                <p>T: {{ site.phone }}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
+                <p>T: {% if site.phone %}{{ site.phone }}{% else %}[your phone number ]{% endif %}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
                 {# {% cache 300 pdf site.subdomain %} #}
                 {% if site.menu %}
                 <p>
@@ -134,7 +138,7 @@
     </div>
     <div class="footer">
         <div class="container_12">
-            <address>{{ site.hours }} &bull; {{ site.address }} &bull; {{ site.phone }}</address>
+            <address>{{ site.hours|default:'[your restaurant hours]' }} &bull; {% if site.address %}{{ site.address }}{% else %}[your restaurant address]{% endif %} &bull; {% if site.phone %}{{ site.phone }}{% else %}[your phone number]{% endif %}</address>
             <p>Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
         </div> 
     </div>
