@@ -16,7 +16,7 @@ from tiger.accounts.forms import TimeSlotForm
 from tiger.accounts.models import TimeSlot
 from tiger.utils.forms import RequireOneFormSet
 from tiger.utils.views import add_edit_site_object, delete_site_object
-from tiger.utils.hours import *
+from tiger.dashboard.restaurant.views import save_hours
 
 def _reorder_objects(model, id_list):
     for i, obj_id in enumerate(id_list):
@@ -259,30 +259,7 @@ def flag_item(request):
 def section_hours(request, section_id):
     #TODO: make this DRY with the restaurant hours view
     section = Section.objects.get(id=section_id)
-    def get_forms(data=None):
-        forms = []
-        for dow, label in DOW_CHOICES:
-            try:
-                instance = TimeSlot.objects.get(site=request.site, section=section, dow=dow)
-            except TimeSlot.DoesNotExist:
-                instance = None
-            form = TimeSlotForm(data=data, instance=instance, prefix=dow)
-            forms.append(form)
-        return forms
-    if request.method == 'POST':
-        forms = get_forms(request.POST)
-        if all(form.is_valid() for form in forms):
-            for dow, form in zip([dow for dow, label in DOW_CHOICES], forms):
-                instance = form.save()
-                # overridden save() will return None if no times are given for a day
-                if instance is not None:
-                    instance.dow = dow
-                    instance.site = request.site
-                    instance.section = section
-                    instance.save()
-            messages.success(request, 'Hours updated successfully.')
-            return HttpResponseRedirect(reverse('dashboard_view_menu', args=['section', section.id]))
-    else:
-        forms = get_forms()
-    form_list = zip([label for dow, label in DOW_CHOICES], forms)
-    return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context={'form_list': form_list, 'section': section})
+    instance_kwds = {
+        'section': section
+    }
+    return save_hours(request, section=section, instance_kwds=instance_kwds, extra_context={'section': section}, redirect_to=reverse('dashboard_edit_options', args=['section', section.id]))

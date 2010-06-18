@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic.create_update import update_object
 from django.views.generic.simple import direct_to_template
 
@@ -9,7 +9,7 @@ from tiger.accounts.forms import LocationForm, TimeSlotForm
 from tiger.accounts.models import TimeSlot
 from tiger.content.forms import ContentForm
 from tiger.content.models import Content
-from tiger.utils.hours import DOW_CHOICES
+from tiger.utils.hours import *
 
 
 @login_required
@@ -42,13 +42,12 @@ def edit_content(request, slug):
     })
         
 
-@login_required
-def edit_hours(request):
+def save_hours(request, section=None, instance_kwds={}, extra_context={}, redirect_to=None):
     def get_forms(data=None):
         forms = []
         for dow, label in DOW_CHOICES:
             try:
-                instance = TimeSlot.objects.get(site=request.site, section__isnull=True, dow=dow)
+                instance = TimeSlot.objects.get(site=request.site, dow=dow, **instance_kwds)
             except TimeSlot.DoesNotExist:
                 instance = None
             form = TimeSlotForm(data=data, instance=instance, prefix=dow)
@@ -63,14 +62,27 @@ def edit_hours(request):
                 if instance is not None:
                     instance.dow = dow
                     instance.site = request.site
+                    instance.section = section
                     instance.save()
-            messages.success(request, 'Restaurant hours updated successfully.')
-            return HttpResponseRedirect(reverse('dashboard_menu'))
+            display_hours = request.POST.get('hours_display')
+            if section:
+                section.hours = display_hours
+                section.save()
+            else:
+                request.site.hours = display_hours
+                request.site.save()
+            messages.success(request, 'Hours updated successfully.')
+            return HttpResponseRedirect(redirect_to)
     else:
         forms = get_forms()
     form_list = zip([label for dow, label in DOW_CHOICES], forms)
-    return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context={'form_list': form_list})
+    context = {'form_list': form_list}
+    context.update(extra_context)
+    return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context=context)
 
+@login_required
+def edit_hours(request):
+    return save_hours(request, instance_kwds={'section__isnull': True}, redirect_to=reverse('dashboard_menu'))
 
 @login_required
 def toggle_order_status(request):
@@ -89,3 +101,21 @@ def toggle_order_status(request):
         messages.success(request, "You are now taking orders online.") 
     site.save()
     return HttpResponseRedirect(reverse('dashboard_orders'))
+
+@login_required
+def fetch_hours(request):
+    forms = []
+    for dow, label in DOW_CHOICES:
+        form = TimeSlotForm(request.POST, prefix=dow)
+        forms.append(form)
+    if all(form.is_valid() for form in forms):
+        instances = []
+        for dow, form in zip([dow for dow, label in DOW_CHOICES], forms):
+            instance = form.save(commit=False)
+            if instance:
+                instance.dow = dow
+                instances.append(instance)
+        hour_string = calculate_hour_string(instances)
+        return HttpResponse(hour_string)
+    else:
+        return HttpResponse('')

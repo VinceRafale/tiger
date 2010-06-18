@@ -7,4 +7,5 @@ urlpatterns = patterns('tiger.dashboard.restaurant.views',
     url(r'^profile/(?P<slug>[\w-]+)/$', 'edit_content', name='dashboard_edit_content'),
     url(r'^hours/$', 'edit_hours', name='edit_hours'),
     url(r'^toggle-order-status/$', 'toggle_order_status', name='toggle_order_status'),
+    url(r'^fetch-hours/$', 'fetch_hours', name='fetch_hours'),
 )

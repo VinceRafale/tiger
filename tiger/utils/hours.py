@@ -42,7 +42,8 @@ def is_available(timeslots, tz, buff=0):
 def calculate_hour_string(timeslots):
     # this implementation is a little naive, but let's just assume our customers
     # don't keep ridiculous hours
-    timeslots = timeslots.order_by('dow')
+    if type(timeslots) != list:
+        timeslots = timeslots.order_by('dow')
     times = {}
     for timeslot in timeslots:
         time_range = '%s-%s' % (timeslot.pretty_start, timeslot.pretty_stop)
