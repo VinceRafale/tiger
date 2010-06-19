@@ -27,7 +27,7 @@ def order_options(request):
             form.save()
             site = request.site
             site.email = form.cleaned_data.get('email', '')
-            site.fax = form.cleaned_data.get('fax', '')
+            site.fax_number = form.cleaned_data.get('fax', '')
             site.save()
             messages.success(request, 'Your order options have been updated.')
             return HttpResponseRedirect(reverse('dashboard_orders'))
