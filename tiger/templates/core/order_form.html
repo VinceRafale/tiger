@@ -21,6 +21,12 @@
     {% endif %}
     {{ form.variant }}
 {% endif %}
+{% for field in form.sidedish_fields %}
+    <div class="upgrades">
+    <label>Your choice of:</label>
+    {{ field }}
+    </div>
+{% endfor %}
 {% if form.upgrades %}
     <div class="upgrades">
     {% if form.upgrades.errors %}
@@ -29,13 +35,7 @@
     {{ form.upgrades }}
     </div>
 {% endif %}
-{% for field in form.sidedish_fields %}
-    <div class="upgrades">
-    <label>Your choice of:</label>
-    {{ field }}
-    </div>
-{% endfor %}
-<label id="qty">
+<label>
 Special instructions ("No MSG", "Extra lettuce")
 {{ form.notes }}
 </label>
