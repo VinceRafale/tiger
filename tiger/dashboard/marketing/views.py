@@ -213,7 +213,8 @@ def register_id(request):
     social.facebook_id = request.POST.get('id')
     social.facebook_url = request.POST.get('url')
     social.save()
-    return HttpResponse('')
+    snippet = render_to_string('dashboard/marketing/includes/facebook.html', {'site': request.site})
+    return HttpResponse(snippet)
 
 @login_required
 def add_mailchimp_key(request):

@@ -1,0 +1,3 @@
+Your Facebook page: <a href="{{ site.facebook }}">{{ site.facebook }}</a> / <a href="{% url dashboard_remove_facebook %}">(remove)</a>
+<label class="ajax-checkbox"><input name="facebook_auto_items" type="checkbox"{% if site.social.facebook_auto_items %} checked{% endif %} /> Automatically post new menu items to your Facebook page</label>
+
