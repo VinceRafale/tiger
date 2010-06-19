@@ -12,20 +12,50 @@
 {% block body-class %}customizing{% endblock %}
 
 {% block toolbar-override %}
-    <style id="header-font" type="text/css"></style>
-    <style id="header-color" type="text/css"></style>
-    <style id="body-font" type="text/css"></style>
-    <style id="body-color" type="text/css"></style>
-    <style id="background" type="text/css"></style>
-    <style id="background-color" type="text/css"></style>
-    <style id="masthead-color" type="text/css"></style>
-    <style id="masthead-font-color" type="text/css"></style>
-    <style id="menu-color" type="text/css"></style>
-    <style id="center-color" type="text/css"></style>
-    <style id="button-color" type="text/css"></style>
-    <style id="button-text-color" type="text/css"></style>
-    <style id="shaded-color" type="text/css"></style>
-    <style id="override-css" type="text/css"></style>
+    <style id="body-font" type="text/css">
+    body {font-family: {{ site.skin.body_font }};}
+    </style>
+    <style id="body-color" type="text/css">
+    body {color:#{{ site.skin.body_color }};}
+    </style>
+    <style id="header-font" type="text/css">{{ toolbar }}
+    {{ site.skin.header_font.as_css }}
+    </style>
+    <style id="header-color" type="text/css">
+    h1, h2, h4 {color:#{{ site.skin.header_color }};}
+    </style>
+    <style id="masthead-color" type="text/css">
+    #masthead {background-color:#{{ site.skin.masthead_color }};}
+    </style>
+    <style id="masthead-font-color" type="text/css">
+    #masthead h2, #masthead h4, #masthead label {color:#{{ site.skin.masthead_font_color }};}
+    </style>
+    <style id="menu-color" type="text/css">
+    #menuWrap, .footer {background-color:#{{ site.skin.menu_color }};}
+    </style>
+    <style id="center-color" type="text/css">
+    #mainWrap, #sidebarWrap {background-color:#{{ site.skin.center_color }};}
+    </style>
+    <style id="shaded-color" type="text/css">
+    #orderForm, .shaded {background-color:#{{ site.skin.shaded_color }};}
+    </style>
+    <style id="button-color" type="text/css">
+    #orderPreview tr.total td {border-top-color:#{{ site.skin.button_color }};}
+    a {color:#{{ site.skin.button_color }};}
+    #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit { background-color:#{{ site.skin.button_color }}; }
+    </style>
+    <style id="button-text-color" type="text/css">
+    a.lightlink, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit { color:#{{ site.skin.button_text_color }}; }
+    </style>
+    <style id="background" type="text/css">
+    {{ site.skin.background.as_css }}
+    </style>
+    <style id="background-color" type="text/css">
+    body {background-color:#{{ site.skin.background.color }};}
+    </style>
+    <style id="override-css" type="text/css">
+    {{ site.skin.css }}
+    </style>
 {% endblock %}
 
 {% block toolbar %}
@@ -90,21 +120,24 @@ function setCss(styleTagSelector, css) {
     }
 }
 
+function setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, hex) {
+    previewCss = "";
+    if (cssTemplate instanceof Array) {
+        for (i=0; i < cssTemplate.length; i++) {
+            previewCss += cssTemplate[i] + hex + ";}";
+        }
+    } else {
+        previewCss = cssTemplate + hex + ";}";
+    }
+    setCss(styleTagSelector, previewCss);
+    $(inputSelector).val(hex);
+    $(pickerSelector + ' div').css('backgroundColor', '#' + hex);
+}
+
 function addColorPicker(pickerSelector, styleTagSelector, inputSelector, cssTemplate) {
     $(pickerSelector).ColorPicker({
         onChange: function (hsb, hex, rgb) {
-            previewCss = "";
-            if (cssTemplate instanceof Array) {
-                for (i=0; i < cssTemplate.length; i++) {
-                    previewCss += cssTemplate[i] + hex + " !important;}";
-                }
-            } else {
-                previewCss = cssTemplate + hex + " !important;}";
-            }
-            setCss(styleTagSelector, previewCss);
-            $(inputSelector).val(hex);
-            $(pickerSelector + ' div').css('backgroundColor', '#' + hex);
-
+            setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, hex);
             modified = true;
         }
     });

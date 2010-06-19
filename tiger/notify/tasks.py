@@ -94,10 +94,14 @@ class PublishTask(Task):
             link_title = 'Read on our site'
         short_url = unicode(site) + short_url
         if site.twitter() and twitter:
-            msg = ' '.join([msg, short_url]) 
+            if release.visible:
+                msg = ' '.join([msg, short_url]) 
             TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret, release_id=release_id)
         if site.facebook() and facebook:
-            PublishToFacebookTask.delay(social.facebook_id, msg, link_title=link_title, href=short_url, release_id=release_id)
+            kwds = {}
+            if release.visible:
+                kwds.update(dict(link_title=link_title, href=short_url)) 
+            PublishToFacebookTask.delay(social.facebook_id, msg, release_id=release_id, **kwds)
         if mailchimp:
             SendMailChimpTask.delay(release_id=release.id)
         if fax_list:

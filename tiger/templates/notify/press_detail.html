@@ -7,6 +7,8 @@
 {% block content %}
 <h1>{{ release.title }}</h1>
 
+<p><em>Published {{ release.time_sent|date }}</em></p>
+
 {{ release.body_html|safe }}
 
 {% if release.pdf %}

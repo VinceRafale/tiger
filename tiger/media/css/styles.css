@@ -22,12 +22,13 @@ h1 {clear:right;}
 #menu ul li ul {margin:0;width:179px;padding:0;overflow:auto;}
 #menu ul li ul li{float:none;margin:0;padding:0;font-weight:normal;}
 #menu ul li ul li a{display:block; padding:5px;}
-#menuitems {list-style-type:none;}
-#menuitems h4 {margin-bottom:0;}
-#menuitems li {margin:0; padding:10px;}
-#menuitems li p {margin-bottom:0; padding-bottom:0;}
+#newsitems, #menuitems {list-style-type:none;}
+#newsitems h4, #menuitems h4 {margin-bottom:0;}
+#newsitems li, #menuitems li {margin:0; padding:10px;}
+#newsitems li p, #menuitems li p {margin-bottom:0; padding-bottom:0;}
 #menuitems ul {float:right; list-style-type:none; margin-bottom:5px;clear:right;}
 #menuitems ul li {display:inline; font-style:italic; padding-right:0;}
+#newsitems li p {font-size:13px;}
 
 div.prices {text-align:right;}
 a.add {

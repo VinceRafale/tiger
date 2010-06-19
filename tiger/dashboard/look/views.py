@@ -80,6 +80,8 @@ def save(request):
     else:
         if background.staged_image:
             background.image.save(background.staged_image.name.split('/')[-1], background.staged_image.file)
+        background.color = request.POST.get('background_color')
+        background.save()
     bg_form = CustomBackgroundForm(request.POST, instance=background)
     bg_form.save()
     if background.staged_image:

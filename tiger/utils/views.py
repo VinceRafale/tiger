@@ -20,7 +20,7 @@ def render_custom(request, template, context=None):
             template = 'dashboard/look/preview.html'
         skin = request.site.skin
         font_form = HeaderFontForm(initial={
-            'header_font': skin.header_font,
+            'header_font': skin.header_font.id,
             'header_color': skin.header_color
         })
         body_font_form = BodyFontForm(initial={

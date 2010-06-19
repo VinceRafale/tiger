@@ -46,7 +46,8 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('tiger.notify.views',
-    url(r'^press/(?P<object_id>\d+)/(?P<slug>[\w-]+)/$', 'press_detail', name='press_detail'),
+    url(r'^news/$', 'press_list', name='press_list'),
+    url(r'^news/(?P<object_id>\d+)/(?P<slug>[\w-]+)/$', 'press_detail', name='press_detail'),
 )
 
 urlpatterns += patterns('tiger.utils.views',

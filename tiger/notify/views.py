@@ -86,7 +86,11 @@ def twitter_return(request):
     social.save()
     return HttpResponseRedirect(str(social.site) + reverse('dashboard_marketing', urlconf='tiger.urls')) 
 
+def press_list(request):
+    return render_custom(request, 'notify/press_list.html', 
+        {'releases': request.site.release_set.filter(visible=True).order_by('-time_sent')})
+
 def press_detail(request, object_id, slug):
-    press = get_object_or_404(Release, id=object_id, site=request.site)
+    press = get_object_or_404(Release, id=object_id, site=request.site, visible=True)
     return render_custom(request, 'notify/press_detail.html', 
         {'release': press})
