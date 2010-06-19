@@ -69,6 +69,12 @@ class Social(models.Model):
             cache.set(CACHE_KEY, mailchimp_choices, 3600)
         return mailchimp_choices
 
+class ReleaseManager(models.Manager):
+    use_for_related_fields = True
+
+    def visible(self):
+        return self.filter(visible=True)
+
 
 class Release(models.Model):
     site = models.ForeignKey('accounts.Site')
@@ -84,6 +90,7 @@ class Release(models.Model):
     facebook = models.CharField(max_length=200, null=True, editable=False)
     mailchimp = models.CharField(max_length=200, null=True, editable=False)
     visible = models.BooleanField('Under "News" on your site', default=False)
+    objects = ReleaseManager()
 
     def __unicode__(self):
         return self.title
