@@ -237,7 +237,7 @@ class SideDishGroup(models.Model):
             sides = ' or '.join(sides)
         else:
             last = sides[-1]
-            sides = ' '.join('%s,' % side for side in sides)
+            sides = ' '.join('%s,' % side for side in sides[:-1])
             sides = '%s or %s' % (sides, last)
         return 'Choice of ' + sides
 

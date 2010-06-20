@@ -52,6 +52,15 @@ a.add {
 #orderPreview td {text-align:right;}
 #orderPreview td.item {width:70%; text-align:left;}
 
+#item-options {
+    list-style-type: none;
+}
+#item-options li {
+    margin-left: 30px;
+    font-style:italic;
+    font-size:13px;
+}
+
 .messages, .errorlist {list-style-type:none;}
 .errorlist {margin:15px 0 0;}
 .messages li, .errorlist li {

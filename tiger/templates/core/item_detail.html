@@ -26,6 +26,14 @@
 {{ item.description|linebreaks }}
 {% endif %}
 {% block form %}
+<ul id="item-options">
+{% for choice in item.sidedishgroup_set.all %}
+    <li>&bull; {{ choice|safe }}</li>
+{% endfor %}
+{% for extra in item.upgrade_set.all %}
+    <li>&bull; {{ extra|safe }}</li>
+{% endfor %}
+</ul>
 {% endblock %}
 <a href="{{ item.section.get_absolute_url }}">&laquo; back to {{ item.section.name }}</a>
 </div>
