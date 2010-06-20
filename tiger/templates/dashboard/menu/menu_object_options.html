@@ -7,7 +7,7 @@ FIXME
 {% endblock %}
 
 {% block h2 %}
-<span>Options for "{{ object.name }}"</span> <a class="button" href="{% url dashboard_edit_menu type, object.id %}">edit main</a>
+<span>Options for "{{ object.name }}"</span> <a class="button" href="{% url dashboard_edit_menu type, object.id %}">edit main</a> <a class="button" href="{{ object.get_absolute_url }}">view on site</a>
 {% endblock %}
 
 {% block content %}
@@ -16,26 +16,29 @@ FIXME
 {% endblock %}
 <div>
     {% block pricepoints %}
-        <h3>Price points</h3>
+        <h3>Price points 
+        <a id="price-points" class="add" href="#" rel="{% url add_pricepoint type,object.id %}">Add</a>
+        </h3>
         {% block pricepoints-help %}
             <p class="help">
             All menu items must have at least one pricepoint.
             </p>
         {% endblock %}
-        <ul class="item-container">
+        <ul id="price-points-list" class="item-container">
             {% for obj in object.variant_set.all %}
             {% include 'dashboard/menu/includes/variant_row.html' %}
             {% empty %}
             <li class="empty">You have not defined any price points for this {{ type }}.</li>
             {% endfor %}
         </ul>
-        <a id="price-points" class="add" href="#" rel="{% url add_pricepoint type,object.id %}">Add</a>
     {% endblock %}
 </div>
 
 <div>
     {% block sides %}
-        <h3>Side dish choices</h3>
+        <h3>Customer choices
+        <a id="side-groups" href="#" rel="{% url add_sidegroup type,object.id %}">Add</a>
+        </h3>
         {% block sides-help %}
         <p class="help">
         This is where you define choices that come in sets -- choice between baked potato or side salad, white or fried rice, etc.  You can add as many sets as you like.  If there is no additional cost associated with a choice, just leave the price field blank.
@@ -57,26 +60,26 @@ FIXME
             <li class="empty">You have not defined any side dish choices for this {{ type }}.</li>
             {% endfor %}
         </ul>
-        <a id="side-groups" href="#" rel="{% url add_sidegroup type,object.id %}">Add</a>
     {% endblock %}
 </div>
 
 <div>
     {% block extras %}
-        <h3>Extras</h3>
+        <h3>Extras
+        <a id="extras" class="add" href="#" rel="{% url add_extra type,object.id %}">Add</a>
+        </h3>
         {% block extras-help %}
         <p class="help">
             Extras are anything a customer can add to their order for an additional cost, like guacamole or extra cheese.
         </p>
         {% endblock %}
-        <ul class="item-container">
+        <ul id="extras-list" class="item-container">
             {% for obj in object.upgrade_set.all %}
             {% include 'dashboard/menu/includes/upgrade_row.html' %}
             {% empty %}
             <li class="empty">You have not defined any extras for this {{ type }}.</li>
             {% endfor %}
         </ul>
-        <a id="extras" class="add" href="#" rel="{% url add_extra type,object.id %}">Add</a>
     {% endblock %}
 </div>
 

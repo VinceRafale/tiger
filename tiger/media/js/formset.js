@@ -31,7 +31,7 @@ $(function () {
     });
 
     $("#price-points").click(function () {
-        listTag = $(this).prev();
+        listTag = $("#price-points-list");
         if (!$(listTag).find("li.form").length) {
             initial = {};
             if (!$(listTag).children().not('.empty').length) {
@@ -45,7 +45,7 @@ $(function () {
     });
 
     $("#extras").click(function () {
-        listTag = $(this).prev();
+        listTag = $("#extras-list");
         if (!$(listTag).find("li.form").length) {
             $(listTag).append($(getForm(this)));
         } else {
@@ -66,7 +66,7 @@ $(function () {
         return false;
     });
 
-    $("ul.group-wrap a.add").click(function () {
+    $("ul.group-wrap a.add").live("click", function () {
         listTag = $(this).prev();
         if (!$(listTag).find("li.form").length) {
             $(listTag).append($(getForm(this)));
@@ -109,6 +109,7 @@ $(function () {
 
     $("a.inline-save").live("click", function () {
         trgt = this;
+        listTag = $(this).parent().parent();
         action = $(trgt).attr("rel");
         params = $(this).parent().find(":input").serialize();
         selector = '[rel="' + action + '"]';
@@ -131,7 +132,7 @@ $(function () {
                     $(trgt).parent().prev().remove();
                 }
                 $(trgt).parent().replaceWith(data['new_row']);
-                $(selector).prev().find("li.empty").remove();
+                $(listTag).find("li.empty").remove();
             }
         }, "json");
         return false;

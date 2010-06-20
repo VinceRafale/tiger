@@ -50,8 +50,7 @@ ul.menu li a:hover{background-color:#7e3700;color:#fff;}
 a {color:#34484f;}
 a.lightlink {color:white;}
 
-.group-wrap a{color:#ffffff;}
-a.delete-group{color:#cccccc;}
+.group-wrap a, a.delete-group{color:#192326;}
 
 a.buttonTop, a.add-row, a.delete-row {
     background-color:#004c00;
@@ -250,7 +249,7 @@ ul.item-container li {
 }
 ul.group-wrap > li {
     margin: 0 0 8px 0;
-    background-color:rgba(199, 98, 24, 0.8) !important;
+    background-color:#becece !important;
     padding:5px;
     -moz-border-radius:2px;
     -webit-border-radius:2px;
@@ -422,8 +421,6 @@ span.buttons a, a.chooser, a#price-points, a#extras, a#side-groups, a.button {
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
     border-radius:3px;
-    background-color:#192326;
-    color:white;
     cursor:pointer;
     display:block;
     float:right;
@@ -432,8 +429,16 @@ span.buttons a, a.chooser, a#price-points, a#extras, a#side-groups, a.button {
     padding:2px 10px;
     text-decoration:none;
 }
+span.buttons a, a.chooser, a.button {
+    background-color:#192326;
+    color:white;
+}
 
-a.chooser,a#price-points,a#extras,a#side-groups,a.button{float:none;display:inline-block;margin-top:20px;}
+a#price-points, a#extras, a#side-groups {
+    color:white !important;
+    background-color:#c76218 !important;
+}
+a.chooser,a.button{float:none;display:inline-block;margin-top:20px;}
 a#side-groups{margin-top:0;}
 
 span.buttons a:hover,a.chooser:hover,a#price-points:hover,a#extras:hover;a#side-groups:hover,a.button:hover {

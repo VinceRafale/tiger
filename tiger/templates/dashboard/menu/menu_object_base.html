@@ -4,7 +4,7 @@
 
 {% block h2 %}
 {% if object %}
-<span>Edit {{ type }} "{{ object.name }}"</span> <a class="button" href="{% url dashboard_edit_options type, object.id %}">edit options</a>
+<span>Edit {{ type }} "{{ object.name }}"</span> <a class="button" href="{% url dashboard_edit_options type, object.id %}">edit options</a> <a class="button" href="{{ object.get_absolute_url }}">view on site</a>
 {% else %}
 New {{ type }}
 {% endif %}
