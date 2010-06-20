@@ -67,7 +67,7 @@ def add_edit_menu(request, object_type, object_id=None):
             else:
                 redirect_to = reverse('dashboard_edit_options', args=[object_type, obj.id])
                 if object_type == 'section':
-                    msg = 'Section "%s" created successfully. Now you can <a href="%s">add a menu item now</a> or configure section options below.' % (obj.name, reverse('dashboard_add_menu', args=['item']) + '?q=%d' % (obj.id),)
+                    msg = 'Section "%s" created successfully. Now you can <a href="%s">add a menu item now</a> or configure section options below.' % (obj.name, reverse('dashboard_add_menu', args=['item']) + '?pk=%d' % (obj.id),)
                 else:
                     msg = 'Menu item "%s" created successfully. You can configure section options below.' % obj.name
             messages.success(request, msg)
