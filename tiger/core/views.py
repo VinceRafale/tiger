@@ -28,7 +28,10 @@ def section_detail(request, section):
 def item_detail(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
     if i.price_list in (None, []):
-        raise Http404
+        if request.user.is_authenticated() and request.site.account.user == request.user:
+            messages.warning(request, 'This is menu item is incomplete and will not appear to users.  To complete it, <a href="%s">add a price</a>.' % reverse('dashboard_edit_options', args=['item', i.id]))
+        else:
+            raise Http404
     return render_custom(request, 'core/item_detail.html', 
         {'item': i, 'sections': request.site.section_set.all()})
 
