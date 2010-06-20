@@ -63,6 +63,7 @@ class StepOne(Step):
         lambda site: site.lon and site.lat,
     )
     name = 'Add location'
+    link = 'http://www.youtube.com/watch?v=vTk6TT7jdLs'
         
 
 class StepTwo(Step):
@@ -70,6 +71,7 @@ class StepTwo(Step):
         lambda site: site.timeslot_set.count(),
     )
     name = 'Add hours'
+    link = 'http://www.youtube.com/watch?v=ORFoWj9YR9c'
         
 
 class StepThree(Step):
@@ -77,6 +79,7 @@ class StepThree(Step):
         lambda site: site.item_set.count(),
     )
     name = 'Add menu items'
+    link = 'http://www.youtube.com/watch?v=l5Z7bs0DXr4'
         
 
 class StepFour(Step):
