@@ -27,6 +27,14 @@ class SalesRep(models.Model):
 class Account(models.Model):
     """Stores data for customer billing and contact.
     """
+    STATUS_ACTIVE = 1
+    STATUS_COMPONENT_SUSPENSION = 2
+    STATUS_FULL_SUSPENSION = 3
+    STATUS_CHOICES = (
+        (STATUS_ACTIVE, 'Active'),
+        (STATUS_COMPONENT_SUSPENSION, 'Components suspended'),
+        (STATUS_FULL_SUSPENSION, 'All service suspended'),
+    )
     user = models.ForeignKey(User)
     company_name = models.CharField(max_length=200)
     email = models.EmailField('billing e-mail address')
@@ -42,6 +50,7 @@ class Account(models.Model):
     card_number = models.CharField('credit card number', max_length=30, null=True)
     card_type = models.CharField(max_length=50, null=True)
     referrer = models.ForeignKey(SalesRep, null=True, editable=False)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_COMPONENT_SUSPENSION)
 
     def natural_key(self):
         return (self.user.username,)

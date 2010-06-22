@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import CreditCardForm
+from tiger.accounts.models import Account
 from tiger.dashboard.account.forms import CancellationForm
 from tiger.utils.chargify import Chargify
 
@@ -39,6 +40,7 @@ def update_cc(request):
             account.card_type = form.subscription['credit_card']['card_type']
             account.subscription_id = form.subscription['id']
             account.customer_id = form.subscription['customer']['id']
+            account.status = Account.STATUS_ACTIVE
             account.save()
             return HttpResponseRedirect(reverse('update_cc'))
     else:

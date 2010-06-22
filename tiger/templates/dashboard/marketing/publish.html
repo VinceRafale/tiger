@@ -23,6 +23,9 @@ Publish to the web
 {% endblock %}
 
 {% block content %}
+{% if form.errors %}
+<ul class="errorlist"><li>There are errors below.</li></ul>
+{% endif %}
 <form method="POST">
 <div class='checkbox-select'>
 <label>{{ form.add_coupon }} {{ form.add_coupon.label }}</label> {{ form.coupon }}
@@ -73,6 +76,9 @@ Publish to the web
 <label>{{ form.mailchimp }} {{ form.mailchimp.label }}</label>
 </div>
 <div class='checkbox-select'>
+{% if form.fax.errors %}
+{{ form.fax.errors }}
+{% endif %}
 <label>{{ form.fax }} {{ form.fax.label }}</label> {{ form.fax_list }}
 </div>
 <div class="clear"></div>
