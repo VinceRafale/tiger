@@ -299,27 +299,46 @@ class CreditCardForm(forms.ModelForm):
         chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
         subscription_id = self.instance.subscription_id
         try:
-            result = chargify.subscriptions.update(subscription_id=subscription_id, data={
-                'subscription': {
-                    'customer_attributes':{
-                        'first_name': cleaned_data.get('first_name'),
-                        'last_name': cleaned_data.get('last_name'),
-                        'email': cleaned_data.get('email'),
-                        'organization': cleaned_data.get('company_name')
-                    },
-                    'credit_card_attributes':{
-                        'full_number': cleaned_data.get('card_number'),
-                        'expiration_month': cleaned_data.get('month'),
-                        'expiration_year': cleaned_data.get('year'),
-                        'billing_address': cleaned_data.get('street'),
-                        'billing_city': cleaned_data.get('city'),
-                        'billing_state': cleaned_data.get('state'),
-                        'billing_zip': cleaned_data.get('cc_zip')
+            if subscription_id:
+                result = chargify.subscriptions.update(subscription_id=subscription_id, data={
+                    'subscription': {
+                        'customer_attributes':{
+                            'first_name': cleaned_data.get('first_name'),
+                            'last_name': cleaned_data.get('last_name'),
+                            'email': cleaned_data.get('email'),
+                            'organization': cleaned_data.get('company_name')
+                        },
+                        'credit_card_attributes':{
+                            'full_number': cleaned_data.get('card_number'),
+                            'expiration_month': cleaned_data.get('month'),
+                            'expiration_year': cleaned_data.get('year'),
+                            'billing_address': cleaned_data.get('street'),
+                            'billing_city': cleaned_data.get('city'),
+                            'billing_state': cleaned_data.get('state'),
+                            'billing_zip': cleaned_data.get('cc_zip')
+                        }
                     }
-                }
-            })
+                })
+            else:
+                result = chargify.subscriptions.create(data={
+                    'subscription':{
+                        'product_handle': 'chomp',
+                        'customer_attributes':{
+                            'first_name': cleaned_data.get('first_name'),
+                            'last_name': cleaned_data.get('last_name'),
+                            'email': cleaned_data.get('email')
+                        },
+                        'credit_card_attributes':{
+                            'full_number': cleaned_data.get('cc_number'),
+                            'expiration_month': cleaned_data.get('month'),
+                            'expiration_year': cleaned_data.get('year'),
+                            'billing_zip': cleaned_data.get('cc_zip')
+                        }
+                    }
+                })
         except ChargifyError, e:
             raise forms.ValidationError('Unable to update your information with our payment processor.')
+        self.subscription = result['subscription']
         return cleaned_data
 
 

@@ -37,6 +37,8 @@ def update_cc(request):
             account = form.save(commit=False)
             account.card_number = form.subscription['credit_card']['masked_card_number']
             account.card_type = form.subscription['credit_card']['card_type']
+            account.subscription_id = form.subscription['id']
+            account.customer_id = form.subscription['customer']['id']
             account.save()
             return HttpResponseRedirect(reverse('update_cc'))
     else:
