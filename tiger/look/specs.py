@@ -4,8 +4,7 @@ from imagekit import processors
 # first we define our thumbnail resize processor 
 class ResizeLogo(processors.Resize): 
     width = 620 
-    height = 200 
-    crop = True
+    height = 100 
 
 
 class LogoSpec(ImageSpec):

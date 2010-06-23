@@ -61,7 +61,8 @@ def set_logo(request):
     skin.staged_logo = logo
     skin.save()
     data = {
-        'path': logo.resized.url
+        'path': logo.resized.url,
+        'css': logo.as_css()
     }
     return HttpResponse(json.dumps(data))
 
@@ -99,6 +100,10 @@ def save(request):
     bg_form.save()
     if background.staged_image:
         background.staged_image.delete()
+    if skin.logo:
+        skin.logo.delete()
+    skin.logo = skin.staged_logo
+    skin.staged_logo = None
     skin.save()
     messages.success(request, 'Look and feel updated successfully.')
     return HttpResponse(skin.url)

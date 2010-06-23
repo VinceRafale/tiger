@@ -56,6 +56,9 @@
     <style id="override-css" type="text/css">
     {{ site.skin.css }}
     </style>
+    <style id="logo" type="text/css">
+    {{ site.skin.logo.as_css }}
+    </style>
 {% endblock %}
 
 {% block toolbar %}
@@ -192,12 +195,11 @@ $(function () {
     });
     $("iframe").load(function () {
         dataString = window['imgjson'].document.getElementsByTagName('body')[0].innerHTML;
+        if (!dataString)
+            return;
         data = JSON.parse(dataString);
         if (data.path) {
-            $("#masthead h2").css({
-                "textIndent": "-9999px",
-                "background": "transparent url('" + data.path + "') no-repeat"
-            });
+            setCss("#logo", data.css);
         } else {
             $(data.selector).text(data.css);
             $("#bg-options").slideDown();

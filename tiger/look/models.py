@@ -106,6 +106,16 @@ class Logo(ImageModel):
 
     class IKOptions:
         spec_module = 'tiger.look.specs'
+
+    def as_css(self):
+        return """#masthead h2 {
+            background: url(%s) 0 center no-repeat;
+            height: 102px;
+            margin-top:0;
+            margin-bottom:0;
+            text-indent:-9999px;
+        }
+        """ % self.resized.url
     
 
 class Skin(models.Model):
