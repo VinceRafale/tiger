@@ -100,10 +100,19 @@ def get_default_font():
     except:
         return 1
 
+
+class Logo(ImageModel):
+    image = models.ImageField('Choose your logo file', upload_to='img/logos', null=True, blank=True)
+
+    class IKOptions:
+        spec_module = 'tiger.look.specs'
+    
+
 class Skin(models.Model):
     site = models.OneToOneField('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=20)
-    logo = models.ImageField(upload_to='img/logos', null=True, blank=True)
+    logo = models.ForeignKey(Logo, null=True, blank=True)
+    staged_logo = models.ForeignKey(Logo, null=True, blank=True, verbose_name='Select your logo image file', related_name='temporary_skins')
     header_font = models.ForeignKey(FontFace, null=True, blank=True, default=get_default_font)
     body_font = models.TextField(max_length=255, choices=FONT_CHOICES, default=FONT_ARIAL)
     header_color = models.CharField(max_length=6, default='301613')
@@ -119,9 +128,6 @@ class Skin(models.Model):
     css = models.TextField(blank=True, default=DEFAULT_CSS)
     timestamp = models.DateTimeField(editable=False)
 
-    class IKOptions:
-        spec_module = 'tiger.look.specs'
-    
     def __unicode__(self):
         return self.name
 

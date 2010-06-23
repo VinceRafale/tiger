@@ -53,6 +53,19 @@ def set_img(request):
     return HttpResponse(json.dumps(data))
 
 @login_required
+def set_logo(request):
+    form = LogoForm(request.POST, request.FILES)
+    form.full_clean()
+    logo = form.save()
+    skin = request.site.skin
+    skin.staged_logo = logo
+    skin.save()
+    data = {
+        'path': logo.resized.url
+    }
+    return HttpResponse(json.dumps(data))
+
+@login_required
 def select_skin(request):
     skin_id = request.POST.get('id')
     skin = Skin.objects.get(id=skin_id)

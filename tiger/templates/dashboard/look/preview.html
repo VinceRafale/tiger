@@ -63,9 +63,10 @@
     <div class="toolbar-inner">
     <ul class="tabs"> 
         <li><a href="#tab1">Fonts</a></li> 
-        <li><a href="#tab2">Colors</a></li> 
-        <li><a href="#tab3">Background</a></li> 
-        <li><a href="#tab4">CSS</a></li> 
+        <li><a href="#tab2">Logo</a></li> 
+        <li><a href="#tab3">Colors</a></li> 
+        <li><a href="#tab4">Background</a></li> 
+        <li><a href="#tab5">CSS</a></li> 
         <li class="back"><a class="back" href="{% url back_to_dashboard %}">Back to dashboard</a></li>
         <li class="button"><button id="save">Save</button></li>
     </ul> 
@@ -77,9 +78,17 @@
             <div class="bg">{{ body_font_form }}</div>
         </div> 
         <div id="tab2" class="tab_content">
-            <div class="bg"><ul id="color-form">{{ color_form.as_ul }}</ul><div class="clear"></div></div>
+            <div class="bg">
+                <form method="POST" enctype="multipart/form-data" action="{% url set_logo %}" target="imgjson">
+                {{ logo_form }}
+                <div class="upload"><p id="spinner" style="display:none;"><img src="{{ MEDIA_URL }}img/ajax-loader.gif" /> Uploading, please be patient...</p></div>
+                </form>
+            </div>
         </div> 
         <div id="tab3" class="tab_content">
+            <div class="bg"><ul id="color-form">{{ color_form.as_ul }}</ul><div class="clear"></div></div>
+        </div> 
+        <div id="tab4" class="tab_content">
             <div class="bg">
             <div id="bg-standard">
                 {{ bg_form }}
@@ -99,7 +108,7 @@
             <a id="bg-toggle" href="#">Show more options</a>
             </div>
         </div> 
-        <div id="tab4" class="tab_content">
+        <div id="tab5" class="tab_content">
             <textarea name="css">{% autoescape off %}{{ css }}{% endautoescape %}</textarea><br/>
             <button id="preview">Preview</button>
         </div> 
@@ -184,8 +193,15 @@ $(function () {
     $("iframe").load(function () {
         dataString = window['imgjson'].document.getElementsByTagName('body')[0].innerHTML;
         data = JSON.parse(dataString);
-        $(data.selector).text(data.css);
-        $("#bg-options").slideDown();
+        if (data.path) {
+            $("#masthead h2").css({
+                "textIndent": "-9999px",
+                "background": "transparent url('" + data.path + "') no-repeat"
+            });
+        } else {
+            $(data.selector).text(data.css);
+            $("#bg-options").slideDown();
+        }
         $("#spinner").fadeOut('slow');
     });
 
@@ -257,8 +273,8 @@ $(function () {
     for (i=0; i < swatchSet.length; i++) {
         addColorPicker(swatchSet[i][0], swatchSet[i][1], swatchSet[i][2], swatchSet[i][3]);
     }
-    $("#tab4 button").click(function () {
-        setCss("#override-css", $("#tab4 textarea").val());
+    $("#tab5 button").click(function () {
+        setCss("#override-css", $("#tab5 textarea").val());
         modified = true;
     });
     $("#save").click(function () {

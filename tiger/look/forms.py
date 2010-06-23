@@ -62,6 +62,11 @@ class BackgroundImageForm(forms.ModelForm):
         fields = ('staged_image',)
 
 
+class LogoForm(forms.ModelForm):
+    class Meta:
+        model = Logo
+
+
 class ColorForm(forms.ModelForm):
     masthead_color = forms.CharField(widget=ColorPickerWidget, required=False)
     masthead_font_color = forms.CharField(widget=ColorPickerWidget, required=False)
@@ -82,9 +87,3 @@ class ColorForm(forms.ModelForm):
             'button_text_color',
             'shaded_color',
         )
-    
-
-class LogoForm(forms.Form):
-    class Meta:
-        model = Skin
-        fields = ('logo',)
