@@ -88,6 +88,7 @@ class StepFour(Step):
         for slug in Content.CONTENT_TYPES
     )
     name = 'Edit info pages'
+    link = 'http://www.youtube.com/watch?v=YRP8FuVYycI'
         
 
 class StepFive(Step):
@@ -95,6 +96,7 @@ class StepFive(Step):
         lambda site: site.menu,
     )
     name = 'Create PDF menu'
+    link = 'http://www.youtube.com/watch?v=EU912IoxOL4'
 
 def first_steps(site):
     return StepBundle(site, 'walkthrough_complete', StepOne, StepTwo, StepThree, StepFour, StepFive)
