@@ -21,78 +21,45 @@
 <form method="POST" action=".">
     <div class="grid_6 alpha">
         <h2>Content</h2>
-        {% if form.name.errors %}
-        {{ form.name.errors }}
-        <label class="errorname">
-        {% else %}
         <label>
-        {% endif %}
-        {{ form.name.label }}<br />{{ form.name }}
+        {{ form.name.label }} {% if form.name.errors %} {{ form.name.errors }} {% endif %}<br />
+        {{ form.name }}
         </label>
 
-        {% if form.title.errors %}
-        {{ form.title.errors }}
-        <label class="errortitle">
-        {% else %}
         <label>
-        {% endif %}
-        {{ form.title.label }}<br />{{ form.title }}
+        {{ form.title.label }}{% if form.title.errors %} {{ form.title.errors }} {% endif %} <br />
+        {{ form.title }}
         </label>
     
-        {% if form.sections.errors %}
-        {{ form.sections.errors }}
-        <label class="errorcontent">
-        {% else %}
         <label>
-        {% endif %}
-        {{ form.sections.label }}<br />{{ form.sections }}
+        {{ form.sections.label }}{% if form.sections.errors %} {{ form.sections.errors }} {% endif %} <br />
+        {{ form.sections }}
         </label>
     
-        {% if form.show_descriptions.errors %}
-        {{ form.show_descriptions.errors }}
-        <label class="errorshow_descriptions">
-        {% else %}
         <label>
-        {% endif %}
         {{ form.show_descriptions }} {{ form.show_descriptions.label }}
         </label>
-    
-        {% if form.footer.errors %}
-        {{ form.footer.errors }}
-        <label class="errorshow_descriptions">
-        {% else %}
+
         <label>
-        {% endif %}
-        {{ form.footer.label }}<br />{{ form.footer }} 
+        {{ form.footer.label }}{% if form.footer.errors %} {{ form.footer.errors }} {% endif %} <br />
+        {{ form.footer }} 
         </label>
     </div>
     <div class="grid_6 omega">
         <h2>Layout</h2>
-        {% if form.columns.errors %}
-        {{ form.columns.errors }}
-        <label class="errorname">
-        {% else %}
         <label>
-        {% endif %}
-        {{ form.columns.label }}<br />{{ form.columns }}
+        {{ form.columns.label }}{% if form.columns.errors %} {{ form.columns.errors }} {% endif %} <br />
+        {{ form.columns }}
         </label>
 
-        {% if form.column_height.errors %}
-        {{ form.column_height.errors }}
-        <label class="errortitle">
-        {% else %}
         <label>
-        {% endif %}
-        {{ form.column_height.label }}<br />{{ form.column_height }}
+        {{ form.column_height.label }}{% if form.column_height.errors %} {{ form.column_height.errors }} {% endif %} <br />
+        {{ form.column_height }}
         </label>
     
-        {% if form.orientation.errors %}
-        {{ form.orientation.errors }}
-        <label class="errorcontent">
-        {% else %}
         <label>
-        {% endif %}
-        {{ form.orientation.label }}<br />{{ form.orientation }}
+        {{ form.orientation.label }}{% if form.orientation.errors %} {{ form.orientation.errors }} {% endif %} <br />
+        {{ form.orientation }}
         </label>
     </div>
 <div class="clear"></div>

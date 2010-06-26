@@ -125,7 +125,7 @@ input, select, textarea {border:1px solid grey; font-family:Arial; font-size:16p
 input:focus, select:focus, textarea:focus {background-color:#cde0e8; border-color:#c76218; -webkit-box-shadow: 0 0 5px #c76218; -moz-box-shadow: 0 0 5px #c76218;}
 input[type="submit"]{}
 
-ul.errorlist {background-color:pink; color:red; border: 1px solid red; margin-bottom:1px;}
+span.errorlist {background-color:pink; color:#930823; padding:1px 3px;}
 
 ul.drag {margin:0; padding:0;}
 ul.drag li {margin:0 0 10px 0; padding:12px;}
@@ -456,6 +456,7 @@ div.day, div.day label{float:left; margin-top: 0;}
 div.day{margin-right:10px;}
 .day h4{margin-bottom:10px;}
 div.day label{clear:left;}
+div.day.errors input {background-color:pink; color:#930823; border-color:#930823;}
 
 /* LOCATION PAGE */
 div.location{float: left; margin-right: 10px;}

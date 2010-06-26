@@ -17,7 +17,8 @@ Connect to your Twitter account
 
 {% block content %}
 <form method="POST" action=".">
-{{ form.as_p }}
+<label>{{ form.twitter_screen_name.label }} {% if form.twitter_screen_name.errors %} {{ form.twitter_screen_name.errors }} {% endif %}</label>
+{{ form.twitter_screen_name }}
 <div class="clear"></div>
  <div class="save-row">
     <a href="{% url dashboard_marketing %}" class="cancel">Cancel</a>

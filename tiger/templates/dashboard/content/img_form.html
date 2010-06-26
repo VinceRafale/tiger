@@ -12,7 +12,12 @@
 
 {% block content %}
 <form method="POST" enctype="multipart/form-data">
-{{ form.as_p }}
+<label>{{ form.title.label }} {% if form.title.errors %} {{ form.title.errors }} {% endif %}</label>
+{{ form.title }}
+<label>{{ form.image.label }} {% if form.image.errors %} {{ form.image.errors }} {% endif %}</label>
+{{ form.image }}
+<label>{{ form.description.label }} {% if form.description.errors %} {{ form.description.errors }} {% endif %}</label>
+{{ form.description }}
 <div class="clear"></div>
 <div class="save-row clearfix">
 <a class="cancel" href="{% url dashboard_content %}">Cancel</a>

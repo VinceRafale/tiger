@@ -4,10 +4,11 @@ from django.utils.safestring import mark_safe
 
 from tiger.accounts.models import Subscriber, FaxList
 from tiger.notify.models import Social, Release
+from tiger.utils.forms import BetterModelForm
 from tiger.utils.widgets import MarkItUpWidget
 
 
-class TwitterForm(forms.ModelForm):
+class TwitterForm(BetterModelForm):
     twitter_screen_name = forms.CharField(required=True)
 
     class Meta:
@@ -25,7 +26,7 @@ class MailChimpForm(forms.ModelForm):
         fields = ['mailchimp_allow_signup', 'mailchimp_send_blast']
 
 
-class PublishForm(forms.ModelForm):
+class PublishForm(BetterModelForm):
     title = forms.CharField(widget=forms.Textarea, help_text="""
         This text will also be used as the content of Twitter and Facebook
         updates. For Twitter, it will be truncated if it (plus the link to your

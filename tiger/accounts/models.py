@@ -223,7 +223,7 @@ class FaxList(models.Model):
 
 class Subscriber(models.Model):
     fax_list = models.ForeignKey(FaxList)
-    organization = models.CharField('Name', max_length=255, blank=True)
+    organization = models.CharField('Name', max_length=255)
     fax = PhoneNumberField()
 
     def __unicode__(self):

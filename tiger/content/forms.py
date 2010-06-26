@@ -2,9 +2,10 @@ from django import forms
 
 from tiger.content.models import Content, PdfMenu, ItemImage
 from tiger.dashboard.widgets import ImageChooserWidget
+from tiger.utils.forms import BetterModelForm
 
 
-class ContentForm(forms.ModelForm):
+class ContentForm(BetterModelForm):
     class Meta:
         model = Content
         exclude = ['site']
@@ -14,7 +15,7 @@ class ContentForm(forms.ModelForm):
         self.fields['image'].widget = ImageChooserWidget(site=site)
 
 
-class PdfMenuForm(forms.ModelForm):
+class PdfMenuForm(BetterModelForm):
     class Meta:
         model = PdfMenu
         exclude = ['site', 'page_count', 'featured']
@@ -25,13 +26,13 @@ class PdfMenuForm(forms.ModelForm):
         self.fields['sections'].queryset = site.section_set.all()
 
 
-class AddImageForm(forms.ModelForm):
+class AddImageForm(BetterModelForm):
     class Meta:
         model = ItemImage
         exclude = ['site']
 
 
-class EditImageForm(forms.ModelForm):
+class EditImageForm(BetterModelForm):
     class Meta:
         model = ItemImage
         fields = ['title', 'description']

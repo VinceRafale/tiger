@@ -11,7 +11,8 @@ Your custom domain
 
 {% block content %}
 <form method="POST">
-{{ form.as_p }}
+<label>{{ form.domain.label }} {% if form.domain.errors %} {{ form.domain.errors }} {% endif %}</label>
+{{ form.domain }}
 <div class="save-row clearfix">
 <a class="cancel" href="{% url dashboard_content %}">Cancel</a>
 <input type="submit" value="Save" class="submit" />

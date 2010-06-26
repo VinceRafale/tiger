@@ -38,24 +38,15 @@ Edit your online ordering options
 {{ form.dine_in }} {{ form.dine_in.label }}
 {{ form.takeout }} {{ form.takeout.label }}
 {{ form.delivery }} {{ form.delivery.label }}
-<label for='eod_buffer'>Stop taking orders {{ form.eod_buffer }} minutes prior to closing</label>
-{% if form.delivery_minimum.errors %}
-{{ form.delivery_minimum.errors }}
-{% endif %}
-<label id="delivery-minimum">{{ form.delivery_minimum.label }} {{ form.delivery_minimum }}</label>
+<label for='eod_buffer'>Stop taking orders {{ form.eod_buffer }} minutes prior to closing {% if form.eod_buffer.errors %} {{ form.eod_buffer.errors }} {% endif %}</label>
+<label id="delivery-minimum">{{ form.delivery_minimum.label }} {{ form.delivery_minimum }} {% if form.delivery_minimum.errors %} {{ form.delivery_minimum.errors }} {% endif %}</label>
 <h3>How do you want to receive orders?</h3>
 {% if form.receive_via.errors %}
 {{ form.receive_via.errors }}
 {% endif %}
 {{ form.receive_via }}
-{% if form.email.errors %}
-{{ form.email.errors }}
-{% endif %}
-<label id="delivery-email">{{ form.email.label }} {{ form.email }}</label>
-{% if form.fax.errors %}
-{{ form.fax.errors }}
-{% endif %}
-<label id="delivery-fax">{{ form.fax.label }} {{ form.fax }}</label>
+<label id="delivery-email">{% if form.email.errors %} {{ form.email.errors }} {% endif %}<br />{{ form.email.label }} {{ form.email }} </label>
+<label id="delivery-fax">{% if form.fax.errors %} {{ form.fax.errors }} {% endif %}<br />{{ form.fax.label }} {{ form.fax }} </label>
 <h3>Delivery area</h3>
 {{ form.delivery_area }}
 <div class="clear"></div>

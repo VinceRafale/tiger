@@ -5,8 +5,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.views.generic.simple import direct_to_template
 
-from tiger.accounts.forms import SignupForm, SpanErrorList
+from tiger.accounts.forms import SignupForm
 from tiger.accounts.models import Site, SalesRep
+from tiger.utils.forms import SpanErrorList
 
 
 def signup(request):

@@ -5,16 +5,13 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
-from django.forms.util import ErrorList
-from django.utils.encoding import force_unicode
-from django.utils.html import conditional_escape
-from django.utils.safestring import mark_safe
 
 from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep, FaxList
 from tiger.utils.chargify import Chargify, ChargifyError
+from tiger.utils.forms import BetterModelForm
 
 
-class SubscriberForm(forms.ModelForm):
+class SubscriberForm(BetterModelForm):
     fax_list = forms.ModelChoiceField(queryset=FaxList.objects.all(), empty_label=None)
 
     class Meta:
@@ -52,7 +49,7 @@ class AmPmTimeField(forms.Field):
         return None
 
 
-class LocationForm(forms.ModelForm):
+class LocationForm(BetterModelForm):
     state = forms.ChoiceField(choices=[(abbr, abbr) for abbr, full in STATE_CHOICES])
 
     class Meta:
@@ -60,7 +57,7 @@ class LocationForm(forms.ModelForm):
         fields = ['name', 'street', 'city', 'state', 'zip', 'phone', 'timezone']
 
 
-class TimeSlotForm(forms.ModelForm):
+class TimeSlotForm(BetterModelForm):
     start = AmPmTimeField(label='Open', required=False)
     stop = AmPmTimeField(label='Close', required=False)
 
@@ -231,13 +228,15 @@ class SignupForm(forms.ModelForm):
         return instance
 
 
-class DomainForm(forms.ModelForm):
+class DomainForm(BetterModelForm):
+    domain = forms.URLField(required=True)
+
     class Meta:
         model = Site
         fields = ('domain',)
 
 
-class CreditCardForm(forms.ModelForm):
+class CreditCardForm(BetterModelForm):
     first_name = forms.CharField()
     last_name = forms.CharField()
     email = forms.EmailField()
@@ -347,14 +346,3 @@ class FaxListForm(forms.ModelForm):
         model = FaxList
         exclude = ('site',)
 
-
-class SpanErrorList(ErrorList):
-    def __unicode__(self):
-        return self.as_spans()
-
-    def as_spans(self):
-        if not self:
-            return u''
-        return mark_safe(''.join(
-            u'<span class="errorlist">%s</span>' % conditional_escape(force_unicode(e)) for e in self
-        ))

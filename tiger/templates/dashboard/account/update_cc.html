@@ -8,9 +8,18 @@ FIXME
 
 {% block content %}
 <div class="grid_5 alpha">
-<p>Currently using your {{ site.account.card_type }} {{ site.account.card_number }}</p>
+{% if form.errors %}
+<span class="errorlist">There are errors below.</span>
+{% endif %}
+<p><em>Currently using your {{ site.account.card_type }} {{ site.account.card_number }}</em></p>
 <form method="POST" action=".">
-{{ form.as_p }}
+{% for field in form %}
+<label>{{ field.label }}  {% if field.errors  %}
+{{ field.errors }}
+{% endif %}
+</label>
+{{ field }}
+{% endfor %}
 </form>
 </div>
 <div class="clear"></div>

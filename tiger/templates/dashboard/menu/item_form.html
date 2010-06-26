@@ -17,27 +17,15 @@
 {{ form.non_field_errors }}
 {% endif %}
 <form method="POST" action=".">
-{% if form.name.errors %}
-{{ form.name.errors }}
-{% endif %}
-<label>{{ form.name.label }}<br />
+<label>{{ form.name.label }} {% if form.name.errors %} {{ form.name.errors }} {% endif %}<br />
 {{ form.name }}
 </label>
-{% if form.description.errors %}
-{{ form.description.errors }}
-{% endif %}
-<label>{{ form.description.label }}<br />
+<label>{{ form.description.label }} {% if form.description.errors %} {{ form.description.errors }} {% endif %}<br />
 {{ form.description }}
 </label>
-{% if form.section.errors %}
-{{ form.section.errors }}
-{% endif %}
-<label>{{ form.section.label }}<br />
+<label>{{ form.section.label }} {% if form.section.errors %} {{ form.section.errors }} {% endif %}<br />
 {{ form.section }}
 </label>
-{% if form.special.errors %}
-{{ form.special.errors }}
-{% endif %}
 <label>{{ form.special }}
 {{ form.special.label }}
 </label>

@@ -23,26 +23,14 @@
 {% block content %}
 
 <form method="POST" action=".">
-{% if form.short_code.errors %}
-{{ form.short_code.errors }}
-{% endif %}
-{{ form.short_code.label_tag }}
+<label>{{ form.short_code.label }} {% if form.short_code.errors %} {{ form.short_code.errors }} {% endif %}</label>
 {{ form.short_code }}
 <p class="help">{{ form.short_code.help_text }}</p>
-{% if form.discount.errors %}
-{{ form.discount.errors }}
-{% endif %}
-{{ form.discount.label_tag }}
+<label>{{ form.discount.label }} {% if form.discount.errors %} {{ form.discount.errors }} {% endif %}</label>
 {{ form.discount }}%
-{% if form.exp_date.errors %}
-{{ form.exp_date.errors }}
-{% endif %}
-{{ form.exp_date.label_tag }}
+<label>{{ form.exp_date.label }} {% if form.exp_date.errors %} {{ form.exp_date.errors }} {% endif %}</label>
 {{ form.exp_date }}
-{% if form.max_clicks.errors %}
-{{ form.max_clicks.errors }}
-{% endif %}
-{{ form.max_clicks.label_tag }}
+<label>{{ form.max_clicks.label }} {% if form.max_clicks.errors %} {{ form.max_clicks.errors }} {% endif %}</label>
 {{ form.max_clicks }}
 <div class="clear"></div>
 <div class="save-row">

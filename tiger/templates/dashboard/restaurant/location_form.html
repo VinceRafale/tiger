@@ -21,8 +21,7 @@
         <div class="csz clearfix">
         {% endif %}
         <div class="location">
-        {{ field.errors }}
-        {{ field.label_tag }}
+        <label>{{ field.label }} {{ field.errors }}</label>
         {{ field }}
         </div>
         {% if forloop.counter == 5 %}
@@ -30,9 +29,8 @@
         {% endif %}
 
         {% else %}
-        {{ field.errors }}
-        {{ field.label_tag }}
-        {{ field }} 
+        <label>{{ field.label }} {{ field.errors }}</label>
+        {{ field }}
         {% endif %}
     {% endfor %}
 

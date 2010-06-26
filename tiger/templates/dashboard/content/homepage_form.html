@@ -16,7 +16,10 @@ Edit your home page
 
 {% block content %}
 <form method="POST" action=".">
-{{ form.as_p }}
+<label>{{ form.title.label }} {% if form.title.errors %} {{ form.title.errors }} {% endif %}</label>
+{{ form.title }}
+<label>{{ form.text.label }} {% if form.text.errors %} {{ form.text.errors }} {% endif %}</label>
+{{ form.text }}
 <div class="clear"></div>
 <div class="save-row clearfix">
 <a class="cancel" href="{% url dashboard_content %}">Cancel</a>

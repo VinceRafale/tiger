@@ -13,6 +13,7 @@ from olwidget.widgets import EditableMap
 
 from tiger.core.models import *
 from tiger.dashboard.widgets import ImageChooserWidget
+from tiger.utils.forms import BetterModelForm
 from tiger.utils.geocode import geocode, GeocodeError
 
 
@@ -60,7 +61,7 @@ def get_order_form(instance):
             ) 
     return type('OrderForm', (BaseOrderForm,), attrs) 
 
-class SectionForm(forms.ModelForm):
+class SectionForm(BetterModelForm):
     class Meta:
         model = Section
         exclude = ['site', 'hours']
@@ -70,7 +71,7 @@ class SectionForm(forms.ModelForm):
 
 
 def get_item_form(site):
-    class ItemForm(forms.ModelForm):
+    class ItemForm(BetterModelForm):
         taxable = forms.BooleanField(label='Is this item taxable?', required=False)
         section = forms.ModelChoiceField(queryset=site.section_set.all())
         class Meta:
@@ -148,7 +149,7 @@ class CouponForm(forms.Form):
         return code
 
 
-class CouponCreationForm(forms.ModelForm):
+class CouponCreationForm(BetterModelForm):
     class Meta:
         model = Coupon
 
@@ -165,7 +166,7 @@ class CouponCreationForm(forms.ModelForm):
         return exp_date
 
 
-class OrderSettingsForm(forms.ModelForm):
+class OrderSettingsForm(BetterModelForm):
     receive_via = forms.TypedChoiceField(
         widget=forms.RadioSelect, choices=OrderSettings.RECEIPT_CHOICES, coerce=int)
     delivery_area = forms.CharField(required=False)
@@ -251,7 +252,7 @@ class OrderMessageForm(forms.ModelForm):
         )
 
 
-class OrderPaymentForm(forms.ModelForm):
+class OrderPaymentForm(BetterModelForm):
     payment_type = forms.TypedChoiceField(
         label='Collect payment via', 
         widget=forms.RadioSelect, 
@@ -275,18 +276,18 @@ class OrderPaymentForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(OrderPaymentForm, self).clean()
+        payment_type = cleaned_data.get('payment_type')
         if cleaned_data.get('require_payment'):
-            payment_type = cleaned_data.get('payment_type')
             if not payment_type:
                 raise forms.ValidationError('You must choose a payment type to receive online payments.')
-            if payment_type == OrderSettings.PAYMENT_PAYPAL: 
-                if not cleaned_data.get('paypal_email'):
-                    raise forms.ValidationError('You must enter your PayPal e-mail address to receive payments via PayPal.')
-            else:
-                auth_login = cleaned_data.get('auth_net_api_login')
-                auth_key = cleaned_data.get('auth_net_api_key')
-                if not (auth_login and auth_key):
-                    raise forms.ValidationError('You must provide your Authorize.net credentials to receive payments via Authorize.net.')
+        if payment_type == OrderSettings.PAYMENT_PAYPAL: 
+            if not cleaned_data.get('paypal_email'):
+                raise forms.ValidationError('You must enter your PayPal e-mail address to receive payments via PayPal.')
+        else:
+            auth_login = cleaned_data.get('auth_net_api_login')
+            auth_key = cleaned_data.get('auth_net_api_key')
+            if not (auth_login and auth_key):
+                raise forms.ValidationError('You must provide your Authorize.net credentials to receive payments via Authorize.net.')
         return cleaned_data
 
 

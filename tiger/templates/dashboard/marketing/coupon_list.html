@@ -33,6 +33,10 @@ Your coupons
         <td>{{ coupon.remaining_clicks|default_if_none:"no limit" }}</td>
         <th><input type="text" readonly value="{{ site }}{{ coupon.get_absolute_url }}" /></th>
     </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">You have not created any coupons yet.</td>
+    </tr>
     {% endfor %}
     </tbody>
 </table>

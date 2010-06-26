@@ -10,7 +10,12 @@
 
 {% block content %}
 <form method="POST">
-    {{ form }} 
+    <label>{{ form.name.label }} {% if form.name.errors %} {{ form.name.errors }} {% endif %}<br />
+    {{ form.name }}
+    </label>
+    <label>{{ form.description.label }} {% if form.description.errors %} {{ form.description.errors }} {% endif %}<br />
+    {{ form.description }}
+    </label>
     <div class="clear"></div>
     <div class="save-row clearfix">
     <a class="cancel" href="{% url dashboard_menu %}">Cancel</a>

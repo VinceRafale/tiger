@@ -24,7 +24,7 @@ Publish to the web
 
 {% block content %}
 {% if form.errors %}
-<ul class="errorlist"><li>There are errors below.</li></ul>
+<span class="errorlist">There are errors below.</span>
 {% endif %}
 <form method="POST">
 <div class='checkbox-select'>
@@ -35,11 +35,9 @@ Publish to the web
 </div>
 <div class="clear"></div>
 <label>
-<h3>Title text</h3>
+<h3>Title text </h3>
 <p class="help">{{ form.title.help_text }}</p>
-{% if form.title.errors %}
-{{ form.title.errors }}
-{% endif %}
+ {% if form.title.errors %} {{ form.title.errors }} {% endif %}
 {{ form.title }}<span class="counter"></span>
 </label>
 <div id="editor">

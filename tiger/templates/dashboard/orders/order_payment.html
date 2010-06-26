@@ -25,15 +25,9 @@ Online order payments
 {{ form.non_field_errors }}
 {% endif %}
 <form method="POST">
-{% if form.tax_rate.errors %}
-{{ form.tax_rate.errors }}
-{% endif %}
-<label>{{ form.tax_rate.label }}: {{ form.tax_rate }}%</label>
+<label>{{ form.tax_rate.label }}: {{ form.tax_rate }}% {% if form.tax_rate.errors %} {{ form.tax_rate.errors }} {% endif %}</label>
 <label>{{ form.require_payment }} {{ form.require_payment.label }}</label>
-{% if form.payment_type.errors %}
-{{ form.payment_type.errors }}
-{% endif %}
-{{ form.payment_type.label_tag }}
+<label>{{ form.payment_type.label }} {% if form.payment_type.errors %} {{ form.payment_type.errors }} {% endif %}</label>
 {{ form.payment_type }}
 <div id="auth_creds">
 <label>{{ form.auth_net_api_login.label }} {{ form.auth_net_api_login }}</label>

@@ -33,13 +33,15 @@ label {display:inline;}
 {% block title %}{% endblock %}
 
 {% block content %}
-<form method="POST" action="." class="clearfix">
 {% for dow, form in form_list %}
-<div class="day">
-<h4>{{ dow }}</h4>
 {% if form.non_field_errors %}
 {{ form.non_field_errors }}
 {% endif %}
+{% endfor %}
+<form method="POST" action="." class="clearfix">
+{% for dow, form in form_list %}
+<div class="day{% if form.non_field_errors %} errors{% endif %}">
+<h4>{{ dow }}</h4>
 <label class="open">{{ form.start.label }}: {{ form.start }}</label>
 <label class="close">{{ form.stop.label }}: {{ form.stop }}</label>
 </div>
