@@ -6,9 +6,11 @@
         <h3></h3>
         <ul id="menuitems">
         {% for result in results %}
+	{% with result.get_additional_fields as fields %}
             <li class="{% cycle 'shaded' '' %}">
-                <a href="{{ result.object.get_absolute_url }}">{{ result.object.name }}</a>
+                <a href="{{ fields.url }}">{{ fields.item }} ({{ fields.section }})</a>
             </li>
+	{% endwith %}
         {% empty %}
             <li>No results found.</li>
         {% endfor %}
