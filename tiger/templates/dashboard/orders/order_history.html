@@ -52,6 +52,10 @@ Online orders status
                 <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
                 <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total_plus_tax|floatformat:"-2" }}</a></td>
             </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6">You have not received any orders.</td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>

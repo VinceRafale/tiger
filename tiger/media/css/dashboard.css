@@ -444,9 +444,16 @@ a#side-groups{margin-top:0;}
 span.buttons a:hover,a.chooser:hover,a#price-points:hover,a#extras:hover;a#side-groups:hover,a.button:hover {
     background-color:#6c8fa0;
 }
-p.greenlight {color:#126612;background-color:#d3ead3;border-color:#126612;}
+p.usage {text-indent:30px;}
+p.greenlight {color:#126612;
+    background:#d3ead3 url('../img/Status (Green)_24x24.png') no-repeat 10px center ;
+    border-color:#126612;}
 p.greenlight a {color:#126612;}
-p.redlight {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}
+p.redlight {
+    color:#ae0001;
+    background:#f1abab url('../img/Status (Red)_24x24.png') no-repeat 10px center ;
+    border-color:#ae0001;
+    }
 p.redlight a {color:#ae0001;}
 
 
