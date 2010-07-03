@@ -13,3 +13,4 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_SOLR_URL = 'http://10.176.224.6:8080/solr'
 
+CACHE_BACKEND = 'redis_cache.cache://10.176.225.139:6379'
