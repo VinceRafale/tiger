@@ -7,11 +7,13 @@ from django.contrib.localflavor.us.models import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db import models
+from django.template import Template
 from django.template.loader import render_to_string
 
 import pytz
 
 from tiger.look.models import Skin
+from tiger.utils.cache import cachedmethod, KeyChain
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
 
@@ -171,6 +173,13 @@ class Site(models.Model):
             return self.pdfmenu_set.get(featured=True)
         except ObjectDoesNotExist:
             return None
+
+    @cachedmethod(KeyChain.template)
+    def template(self):
+        pre_base_shell = """
+            {%% extends 'head.html' %%}
+            {%% block main %%}%s{%% endblock %%}""" % self.skin.pre_base
+        return Template(pre_base_shell)
 
 
 class TimeSlot(models.Model):

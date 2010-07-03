@@ -136,6 +136,7 @@ class Skin(models.Model):
     shaded_color = models.CharField('Accent color', max_length=6, default='bfccd1')
     background = models.ForeignKey(Background)
     css = models.TextField(blank=True, default=DEFAULT_CSS)
+    pre_base = models.TextField(default=DEFAULT_PRE_BASE)
     timestamp = models.DateTimeField(editable=False)
 
     def __unicode__(self):

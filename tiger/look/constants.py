@@ -192,3 +192,60 @@ a.button {font-size:16px; padding:4px; text-decoration:none;
 -webkit-border-radius:5px;
 }
 """
+
+
+DEFAULT_PRE_BASE = """
+<div class="wrapper">
+    <div id="masthead">
+        <div class="container_12">
+            <div id="menu" class="grid_8">
+            {% block logo %}{% endblock %}
+            </div>
+            <div id="search" class="grid_4">
+            <h4>Menu search</h4>
+            {% block search %}{% endblock %}
+            </div>
+        </div> 
+    </div>
+    <div id="menuWrap">
+        <div class="container_12">
+            <div id="menu" class="grid_8">
+            {% block menu %}{% endblock %}
+            </div>
+            <div class="grid_4">
+            </div>
+        </div> 
+    </div>
+    <div id="content" class="container_12">
+        <div id="mainWrap" class="grid_8 alpha">
+        <div id="main">
+        {% block messages %}{% endblock %}
+
+        {% block content %}{% endblock %}
+        </div>
+        </div>
+        <div id="sidebarWrap" class="grid_4 omega">
+        <div id="sidebar">
+            {% block cart %}{% endblock %}
+
+            {% block sections %}{% endblock %}
+
+            {% block contact %}{% endblock %}
+
+            {% block pdf %}{% endblock %}
+
+            {% block social %}{% endblock %}
+
+            {% block mail %}{% endblock %}
+        </div>
+        </div>
+    </div>
+<div class="shim"></div>
+</div>
+<div class="footer">
+    <div class="container_12">
+        {% block footer %}
+        {% endblock %}
+    </div> 
+</div>
+"""

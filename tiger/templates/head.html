@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{{ site.name }} |{% block title %} Welcome{% endblock %}</title>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/styles.css" />
+    <!--[if IE]>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
+    <![endif]--> 
+    {# {% cache 300 skin site.subdomain %} #}
+    <link id="skin-css" rel="stylesheet" type="text/css" href="{{ site.skin_url }}" />
+    {# {% endcache %}#}
+    {% block extrahead %}
+    {% endblock %}
+    {% block extrahead2 %}
+    {% endblock %}
+    {% block toolbar-override %}
+    {% endblock %}
+</head>
+<body class="{% block body-class %}{% endblock %}">
+    {% block toolbar %}
+    {% endblock %}
+    {% block main %}
+    {% endblock %}
+    {% block js %}
+    {% endblock %}
+    {% block js2 %}
+    {% endblock %}
+</body>
+</html>

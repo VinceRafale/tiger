@@ -1,151 +1,106 @@
-{% load cache %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>{{ site.name }} |{% block title %} Welcome{% endblock %}</title>
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" />
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/styles.css" />
-    <!--[if IE]>
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
-    <![endif]--> 
-    {# {% cache 300 skin site.subdomain %} #}
-    <link id="skin-css" rel="stylesheet" type="text/css" href="{{ site.skin.url }}" />
-    {# {% endcache %}#}
-    {% block extrahead %}
-    {% endblock %}
-    {% block extrahead2 %}
-    {% endblock %}
-    {% block toolbar-override %}
-    {% endblock %}
-</head>
-<body class="{% block body-class %}{% endblock %}">
-    {% block toolbar %}
-    {% endblock %}
-    <div class="wrapper">
-        <div id="masthead">
-            <div class="container_12">
-                <div id="menu" class="grid_8">
-                <h2>{{ site.name }}</h2>
-                </div>
-                <div id="search" class="grid_4">
-                <h4>Menu search</h4>
-                <form method="GET" action="{% url menu_search %}">
-                    {{ search_form.q }} <input type="submit" value="Go" /><br />
-                    {{ search_form.vegetarian }} {{ search_form.vegetarian.label_tag }}
-                    {{ search_form.spicy }} {{ search_form.spicy.label_tag }}
-                </form>
-                </div>
-            </div> 
-        </div>
-        <div id="menuWrap">
-            <div class="container_12">
-                <div id="menu" class="grid_8">
-                <ul>
-                    <li><a class="lightlink" href="/">Home</a></li>
-                    <li><a class="lightlink" href="{% url menu_home %}">Menu</a></li>
-                    <li><a class="lightlink" href="/about/">About</a></li>
-                    <li><a class="lightlink" href="/find-us/">Find Us</a></li>
-                    {% if site.release_set.visible.count %}
-                    <li><a class="lightlink" href="/news/">News</a></li>
-                    {% endif %}
-                </ul>
-                </div>
-                <div class="grid_4">
-                </div>
-            </div> 
-        </div>
-        <div id="content" class="container_12">
-            <div id="mainWrap" class="grid_8 alpha">
-            <div id="main">
-            {% if messages %}
-                <ul class="messages">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-            {% block content %}
-            {% load content_tags %}
-            <h1>{% get_title site "homepage" %}</h1>
-            <div>
-            {% get_image site "homepage" "medium" %}
-            {% get_body site "homepage" %}
-            </div>
-            {% endblock %}
-            </div>
-            </div>
-            <div id="sidebarWrap" class="grid_4 omega">
-            <div id="sidebar">
-            {% block sidebar %}
-                {% block cart %}
-                {% if site.enable_orders %}
-                {% if cart|length %}
-                <h3>Your order</h3>
-                <p>You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}">Complete your order</a></p>
-                {% else %}
-                <h3>Order online!</h3>
-                <p>Just browse our menu and choose what you'd like to eat, and you can fax your order in right from our site!</p>
-                {% endif %}
-                {% endif %}
-                {% endblock %}
-                {% block sections %}
-                {% endblock %}
-                <p>Hours: {{ site.hours|default:'[your restaurant hours]' }}</p>
-                <address>
-                {% if site.address %}
-                {{ site.street }}<br>
-                {{ site.city }}, {{ site.state }} {{ site.zip }}
-                {% else %}
-                [your restaurant address]
-                {% endif %}
-                </address>
-                <p>T: {% if site.phone %}{{ site.phone }}{% else %}[your phone number ]{% endif %}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
-                {# {% cache 300 pdf site.subdomain %} #}
-                {% if site.menu %}
-                <p>
-                    <a href="{{ site.menu.url }}">Download our menu</a> as a PDF!  Always guaranteed to be up-to-date.
-                </p>
-                {% endif %}
-                {# {% endcache %} #}
-                {# {% cache 300 social site.subdomain %} #}
-                {% if site.twitter %}
-                <div id="twitter">
-                   You should <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a> to get menu updates and more!
-                </div>
-                {% endif %}
-                {% if site.facebook %}
-                <div id="facebook">
-                   Become a fan on <a href="{{ site.facebook }}">Facebook</a>!
-                </div>
-                {% endif %}
-                {% if site.mailchimp %}
-                <div id="mailchimp">
-                    <form method="POST" action="{% url mailing_list_signup %}">
-                    Join our mailing list!
-                    <input type="text" name="email" /> <input type="submit" value="Join" />
-                    </form>
-                </div>
-                {% endif %}
-                {# {% endcache %} #}
-            {% endblock %}
-            </div>
-            </div>
-        </div>
-    <div class="shim"></div>
-    </div>
-    <div class="footer">
-        <div class="container_12">
-            <address>{{ site.hours|default:'[your restaurant hours]' }} &bull; {% if site.address %}{{ site.address }}{% else %}[your restaurant address]{% endif %} &bull; {% if site.phone %}{{ site.phone }}{% else %}[your phone number]{% endif %}</address>
-            <p>Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
-        </div> 
-    </div>
-    {% block js %}
-    {% endblock %}
-    {% block js2 %}
-    {% endblock %}
-    {{ site.tracking_code|safe }}
-</body>
-</html>
+{% extends pre_base %}
+
+{% block logo %}
+<h2>{{ site.name }}</h2>
+{% endblock %}
+
+{% block search %}
+<form method="GET" action="{% url menu_search %}">
+    {{ search_form.q }} <input type="submit" value="Go" /><br />
+    {{ search_form.vegetarian }} {{ search_form.vegetarian.label_tag }}
+    {{ search_form.spicy }} {{ search_form.spicy.label_tag }}
+</form>
+{% endblock %}
+
+{% block menu %}
+<ul>
+    <li><a class="lightlink" href="/">Home</a></li>
+    <li><a class="lightlink" href="{% url menu_home %}">Menu</a></li>
+    <li><a class="lightlink" href="/about/">About</a></li>
+    <li><a class="lightlink" href="/find-us/">Find Us</a></li>
+    {% if site.release_set.visible.count %}
+    <li><a class="lightlink" href="/news/">News</a></li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{% block messages %}
+{% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% load content_tags %}
+<h1>{% get_title site "homepage" %}</h1>
+<div>
+{% get_image site "homepage" "medium" %}
+{% get_body site "homepage" %}
+</div>
+{% endblock %}
+
+{% block cart %}
+{% if site.enable_orders %}
+{% if cart|length %}
+<h3>Your order</h3>
+<p>You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}">Complete your order</a></p>
+{% else %}
+<h3>Order online!</h3>
+<p>Just browse our menu and choose what you'd like to eat, and you can send your order in right from our site!</p>
+{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block contact %}
+<p>Hours: {{ site.hours|default:'[your restaurant hours]' }}</p>
+<address>
+{% if site.address %}
+{{ site.street }}<br>
+{{ site.city }}, {{ site.state }} {{ site.zip }}
+{% else %}
+[your restaurant address]
+{% endif %}
+</address>
+<p>T: {% if site.phone %}{{ site.phone }}{% else %}[your phone number ]{% endif %}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
+{% endblock %}
+
+{% block pdf %}
+{% if site.menu %}
+<p>
+    <a href="{{ site.menu.url }}">Download our menu</a> as a PDF!  Always guaranteed to be up-to-date.
+</p>
+{% endif %}
+{% endblock %}
+
+{% block social %}
+{% if site.twitter %}
+<div id="twitter">
+   You should <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a> to get menu updates and more!
+</div>
+{% endif %}
+{% if site.facebook %}
+<div id="facebook">
+   Become a fan on <a href="{{ site.facebook }}">Facebook</a>!
+</div>
+{% endif %}
+{% endblock %}
+
+{% block mail %}
+{% if site.mailchimp %}
+<div id="mailchimp">
+    <form method="POST" action="{% url mailing_list_signup %}">
+    Join our mailing list!
+    <input type="text" name="email" /> <input type="submit" value="Join" />
+    </form>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+<address>{{ site.hours|default:'[your restaurant hours]' }} &bull; {% if site.address %}{{ site.address }}{% else %}[your restaurant address]{% endif %} &bull; {% if site.phone %}{{ site.phone }}{% else %}[your phone number]{% endif %}</address>
+<p>Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
+{% endblock %}

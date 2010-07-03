@@ -1,3 +1,5 @@
+from django.core.cache import cache
+from django.template import Template
 from django.template.loader import find_template_source, get_template_from_string, get_template
 
 

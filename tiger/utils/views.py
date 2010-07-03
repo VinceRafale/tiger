@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.template import loader, RequestContext
+from django.template import loader, RequestContext, Template
 from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
@@ -12,8 +13,15 @@ from tiger.utils.template import load_custom
 
 
 def render_custom(request, template, context=None):
+    pre_base = request.site.template()
     if context is None:
-        context = {}
+        context = {
+            'pre_base': pre_base
+        }
+    else:
+        context.update({
+            'pre_base': pre_base
+        })
     # add toolbar if it's an authorized user
     if request.session.get('customizing'):
         if template == 'base.html':
@@ -51,7 +59,8 @@ def render_custom(request, template, context=None):
         })
     t = load_custom(request, template)
     c = RequestContext(request, context)
-    return HttpResponse(t.render(c))
+    rendered = t.render(c)
+    return HttpResponse(rendered)
     
 def handler404(request):
     if request.path.startswith('/dashboard'):
