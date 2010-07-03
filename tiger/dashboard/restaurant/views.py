@@ -95,10 +95,8 @@ def toggle_order_status(request):
         return HttpResponseRedirect(reverse('order_payment'))
     if site.enable_orders:
         site.enable_orders = False
-        messages.warning(request, "You have disabled online orders.") 
     else:
         site.enable_orders = True
-        messages.success(request, "You are now taking orders online.") 
     site.save()
     return HttpResponseRedirect(reverse('dashboard_orders'))
 

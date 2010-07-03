@@ -38,8 +38,8 @@ Edit your online ordering options
 {{ form.dine_in }} {{ form.dine_in.label }}
 {{ form.takeout }} {{ form.takeout.label }}
 {{ form.delivery }} {{ form.delivery.label }}
-<label for='eod_buffer'>Stop taking orders {{ form.eod_buffer }} minutes prior to closing {% if form.eod_buffer.errors %} {{ form.eod_buffer.errors }} {% endif %}</label>
 <label id="delivery-minimum">{{ form.delivery_minimum.label }} {{ form.delivery_minimum }} {% if form.delivery_minimum.errors %} {{ form.delivery_minimum.errors }} {% endif %}</label>
+<label for='eod_buffer'>Stop taking orders {{ form.eod_buffer }} minutes prior to closing {% if form.eod_buffer.errors %} {{ form.eod_buffer.errors }} {% endif %}</label>
 <h3>How do you want to receive orders?</h3>
 {% if form.receive_via.errors %}
 {{ form.receive_via.errors }}

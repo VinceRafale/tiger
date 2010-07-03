@@ -178,6 +178,7 @@ div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
 .messages li.error {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}
 
 a.close-message {float:right; color: green;}
+.messages li.error a.close-message {float:right; color: #ae0001;}
 
 /********************
 * NAV ACTIVE STATES *
