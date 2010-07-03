@@ -11,6 +11,10 @@ downloads
 eggs
 parts
 src
+tiger/media/cache
 tiger/media/skins
 tiger/media/pdfmenus
+tiger/media/fonts
 tiger/media/img/backgrounds/custom
+tiger/media/img/logos
+tiger/media/uploaded_images
