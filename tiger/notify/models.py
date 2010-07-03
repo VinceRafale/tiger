@@ -11,6 +11,7 @@ from markdown import markdown
 
 from tiger.content.models import PdfMenu
 from tiger.notify.fax import FaxMachine
+from tiger.utils.cache import KeyChain
 from tiger.utils.pdf import render_to_pdf
 
 
@@ -55,6 +56,12 @@ class Social(models.Model):
     mailchimp_send_blast = models.IntegerField(
         default=CAMPAIGN_NO_CREATE, choices=CAMPAIGN_CHOICES)
     mailchimp_from_email = models.EmailField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(Social, self).save(*args, **kwargs)
+        KeyChain.twitter.invalidate(self.site.id)
+        KeyChain.facebook.invalidate(self.site.id)
+        KeyChain.mail.invalidate(self.site.id)
 
     @property
     def mailchimp_lists(self):

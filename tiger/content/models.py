@@ -2,6 +2,7 @@ from decimal import Decimal
 import os.path
 
 from django.conf import settings
+from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
@@ -32,6 +33,10 @@ class Content(models.Model):
     title = models.CharField(max_length=200, default='')
     text = models.TextField(default=DEFAULT_CONTENT)
     image = models.ForeignKey('ItemImage', null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super(Content, self).save(*args, **kwargs)
+        cache.delete('%d-%s' % (self.site.id, self.slug))
 
     def is_default(self):
         return self.text == DEFAULT_CONTENT

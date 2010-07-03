@@ -141,18 +141,21 @@ class Site(models.Model):
             self.save()
         return self.hours
 
+    @cachedmethod(KeyChain.twitter)
     def twitter(self):
         social = self.social
         if social.twitter_token and social.twitter_secret:
             return social.twitter_screen_name
         return False
 
+    @cachedmethod(KeyChain.facebook)
     def facebook(self):
         social = self.social
         if social.facebook_id and social.facebook_url:
             return social.facebook_url
         return False
 
+    @cachedmethod(KeyChain.mail)
     def mailchimp(self):
         social = self.social
         if social.mailchimp_api_key and social.mailchimp_allow_signup:
@@ -167,7 +170,7 @@ class Site(models.Model):
             buff=self.ordersettings.eod_buffer
         )
 
-    @property
+    @cachedmethod(KeyChain.pdf)
     def menu(self):
         try:
             return self.pdfmenu_set.get(featured=True)
@@ -180,6 +183,11 @@ class Site(models.Model):
             {%% extends 'head.html' %%}
             {%% block main %%}%s{%% endblock %%}""" % self.skin.pre_base
         return Template(pre_base_shell)
+
+    @cachedmethod(KeyChain.skin)
+    def skin_url(self):
+        return self.skin.url
+
 
 
 class TimeSlot(models.Model):

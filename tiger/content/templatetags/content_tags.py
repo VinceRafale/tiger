@@ -12,12 +12,12 @@ def get_content(site, slug):
     """Checks the cache for the current content item, retrieves it if
     possible, and retrieves from database and adds to cache if not.  
     """
-    #cache_key = '%d-%s' % (site.id, slug)
-    #content = cache.get(cache_key)
-    #if content is None:
-    #    content = Content.objects.get(site=site, slug=slug)
-    #    cache.set(cache_key, content)
-    content = Content.objects.get(site=site, slug=slug)
+    cache_key = '%d-%s' % (site.id, slug)
+    content = cache.get(cache_key)
+    if content is None:
+        print 'caching fail'
+        content = Content.objects.select_related().get(site=site, slug=slug)
+        cache.set(cache_key, content, 60 * 60 * 24 * 7)
     return content
 
 @register.simple_tag
