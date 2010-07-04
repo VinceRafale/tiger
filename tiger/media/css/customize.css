@@ -88,7 +88,7 @@ ul.tabs li a {
     display:block;
 }
 
-ul.tabs li a, ul.tabs li button,button#preview {
+ul.tabs li a, ul.tabs li button,button.preview {
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;   
@@ -108,7 +108,7 @@ ul.tabs li button {
     padding: 5px 9px;
 }
 
-button#preview{
+button.preview{
     background-color:#6c8fa0;
     border:none;
     color:#ffffff;
@@ -117,6 +117,7 @@ button#preview{
     cursor:pointer;
     padding: 3px 7px;    
     margin-top:5px;
+    margin-left:5px;
     float:right;
 }
 

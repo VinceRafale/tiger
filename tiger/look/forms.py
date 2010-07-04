@@ -87,3 +87,14 @@ class ColorForm(forms.ModelForm):
             'button_text_color',
             'shaded_color',
         )
+
+
+pseudoblock_re = re.compile(r'<%([a-z]+)%>')
+
+class HtmlForm(forms.Form):
+    html = forms.CharField()
+
+    def clean_html(self):
+        html = self.cleaned_data['html']
+        return pseudoblock_re.sub(r'{% block \1 %}{% endblock %}', html)
+

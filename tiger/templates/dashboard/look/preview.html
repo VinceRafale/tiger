@@ -70,6 +70,7 @@
         <li><a href="#tab3">Colors</a></li> 
         <li><a href="#tab4">Background</a></li> 
         <li><a href="#tab5">CSS</a></li> 
+        <li><a href="#tab6">HTML</a></li> 
         <li class="back"><a class="back" href="{% url back_to_dashboard %}">Back to dashboard</a></li>
         <li class="button"><button id="save">Save</button></li>
     </ul> 
@@ -113,7 +114,14 @@
         </div> 
         <div id="tab5" class="tab_content">
             <textarea name="css">{% autoescape off %}{{ css }}{% endautoescape %}</textarea><br/>
-            <button id="preview">Preview</button>
+            <button class="preview">Preview</button>
+        </div> 
+        <div id="tab6" class="tab_content">
+            <form method="POST" action="{% url stage_html %}">
+            <textarea name="html">{% autoescape off %}{{ site.skin.prepped_html }}{% endautoescape %}</textarea><br/>
+            </form>
+            <button id="revert" class="preview">Revert</button>
+            <button id="save-html" class="preview">Preview</button>
         </div> 
     </div>
     </div>
@@ -278,6 +286,14 @@ $(function () {
     $("#tab5 button").click(function () {
         setCss("#override-css", $("#tab5 textarea").val());
         modified = true;
+    });
+    $("#tab6 #save-html").click(function () {
+        $(this).parent().find('form').submit();
+    });
+    $("#tab6 #revert").click(function () {
+        htmlForm = $(this).parent().find('form');
+        $(htmlForm).attr("action", "{% url revert_html %}");
+        htmlForm.submit();
     });
     $("#save").click(function () {
         postData = $("#toolbar :input").not("[type='file']").serialize();

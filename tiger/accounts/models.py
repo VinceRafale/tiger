@@ -179,9 +179,15 @@ class Site(models.Model):
 
     @cachedmethod(KeyChain.template)
     def template(self):
+        return self._template(self.skin.pre_base)
+
+    def staged_template(self):
+        return self._template(self.skin.staged_pre_base)
+
+    def _template(self, html):
         pre_base_shell = """
             {%% extends 'head.html' %%}
-            {%% block main %%}%s{%% endblock %%}""" % self.skin.pre_base
+            {%% block main %%}%s{%% endblock %%}""" % html
         return Template(pre_base_shell)
 
     @cachedmethod(KeyChain.skin)

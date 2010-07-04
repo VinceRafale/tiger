@@ -1,5 +1,6 @@
 import codecs
 import os
+import re
 import time
 from datetime import datetime
 
@@ -16,6 +17,7 @@ from django.template.loader import render_to_string
 
 from tiger.look.constants import *
 
+block_re = re.compile(r'\{% block ([a-z]+) %\}\{% endblock %\}')
 
 class FontFace(models.Model):
     name = models.CharField(max_length=20)
@@ -137,6 +139,7 @@ class Skin(models.Model):
     background = models.ForeignKey(Background)
     css = models.TextField(blank=True, default=DEFAULT_CSS)
     pre_base = models.TextField(default=DEFAULT_PRE_BASE)
+    staged_pre_base = models.TextField(default=DEFAULT_PRE_BASE)
     timestamp = models.DateTimeField(editable=False)
 
     def __unicode__(self):
@@ -186,6 +189,9 @@ class Skin(models.Model):
         self.background.clone(skin.background)
         self.css = skin.css
         self.save()
+
+    def prepped_html(self):
+        return block_re.sub(r'<%\1%>', self.staged_pre_base)
 
 
 def new_site_setup(sender, instance, created, **kwargs):

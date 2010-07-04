@@ -108,6 +108,21 @@ def save(request):
     messages.success(request, 'Look and feel updated successfully.')
     return HttpResponse(skin.url)
 
+@login_required
+def stage_html(request):
+    skin = request.site.skin
+    form = HtmlForm(request.POST)
+    if form.is_valid():
+        skin.staged_pre_base = form.cleaned_data.get('html')
+        skin.save()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+@login_required
+def revert_html(request):
+    skin = request.site.skin
+    skin.staged_pre_base = skin.pre_base
+    skin.save()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @login_required
 def back(request):

@@ -13,15 +13,8 @@ from tiger.utils.template import load_custom
 
 
 def render_custom(request, template, context=None):
-    pre_base = request.site.template()
     if context is None:
-        context = {
-            'pre_base': pre_base
-        }
-    else:
-        context.update({
-            'pre_base': pre_base
-        })
+        context = {}
     # add toolbar if it's an authorized user
     if request.session.get('customizing'):
         if template == 'base.html':
@@ -43,6 +36,7 @@ def render_custom(request, template, context=None):
         logo_form = LogoForm()
         context.update({
             'base': 'dashboard/look/preview.html',
+            'pre_base': request.site.staged_template(),
             'header_font_form': font_form,
             'body_font_form': body_font_form,
             'bg_form': bg_form,
@@ -56,6 +50,7 @@ def render_custom(request, template, context=None):
     else:
         context.update({
             'base': 'base.html',
+            'pre_base': request.site.template()
         })
     t = load_custom(request, template)
     c = RequestContext(request, context)
