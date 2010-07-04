@@ -244,8 +244,31 @@ DEFAULT_PRE_BASE = """
 </div>
 <div class="footer">
     <div class="container_12">
-        {% block footer %}
-        {% endblock %}
+        {% block footer %}{% endblock %}
     </div> 
 </div>
 """
+
+TEMPLATE_TAG_ESCAPES = (
+    ('{%', '{% templatetag openblock %}'),
+    ('%}', '{% templatetag closeblock %}'),
+    ('{{', '{% templatetag openvariable %}'),
+    ('}}', '{% templatetag closevariable %}'),
+    ('{#', '{% templatetag opencomment %}'),
+    ('#}', '{% templatetag closecomment %}'),
+)
+
+REQUIRED_BLOCKS = (
+    'logo',
+    'search',
+    'menu',
+    'content',
+    'messages',
+    'cart',
+    'sections',
+    'contact',
+    'pdf',
+    'social',
+    'mail',
+    'footer',
+)

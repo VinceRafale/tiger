@@ -45,7 +45,9 @@ def render_custom(request, template, context=None):
             'bg_img_form': bg_img_form,
             'color_form': color_form,
             'logo_form': logo_form,
-            'css': skin.css
+            'css': skin.css,
+            'html_errors': request.session.pop('html_errors', None),
+            'html': request.session.pop('invalid_html', skin.prepped_html())
         })
     else:
         context.update({

@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 
 from tiger.look.constants import *
 
-block_re = re.compile(r'\{% block ([a-z]+) %\}\{% endblock %\}')
+block_re = re.compile(r'\{% block ([a-z]+) %\}\s*\{% endblock %\}')
 
 class FontFace(models.Model):
     name = models.CharField(max_length=20)
@@ -191,7 +191,10 @@ class Skin(models.Model):
         self.save()
 
     def prepped_html(self):
-        return block_re.sub(r'<%\1%>', self.staged_pre_base)
+        html = self.staged_pre_base
+        for bit, tag in TEMPLATE_TAG_ESCAPES:
+            html = html.replace(tag, bit)
+        return block_re.sub(r'{{\1}}', html)
 
 
 def new_site_setup(sender, instance, created, **kwargs):

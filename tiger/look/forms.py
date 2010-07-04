@@ -1,5 +1,11 @@
 from django import forms
+from django.template import Template
+from django.template.loader_tags import BlockNode
 
+from lxml.html import fragments_fromstring, tostring
+from lxml.html.clean import clean_html
+
+from tiger.look.constants import TEMPLATE_TAG_ESCAPES, REQUIRED_BLOCKS
 from tiger.look.models import *
 from tiger.look.widgets import *
 
@@ -89,12 +95,36 @@ class ColorForm(forms.ModelForm):
         )
 
 
-pseudoblock_re = re.compile(r'<%([a-z]+)%>')
+pseudoblock_re = re.compile(r'\{\{([a-z]+)\}\}')
 
 class HtmlForm(forms.Form):
     html = forms.CharField()
 
     def clean_html(self):
-        html = self.cleaned_data['html']
-        return pseudoblock_re.sub(r'{% block \1 %}{% endblock %}', html)
-
+        elements = fragments_fromstring(self.cleaned_data['html'])
+        html = ''.join(tostring(clean_html(element)) for element in elements)
+        with_blocks = pseudoblock_re.sub(r'&& block \1 &&&& endblock &&', html)
+        for bit, tag in TEMPLATE_TAG_ESCAPES:
+            with_blocks = with_blocks.replace(bit, tag)    
+        with_blocks = re.sub(r'&& block ([a-z]+) &&&& endblock &&', r'{% block \1 %}{% endblock %}', with_blocks)
+        t = Template(with_blocks)
+        required = list(REQUIRED_BLOCKS)
+        invalid = []
+        dups = []
+        block_nodes = t.nodelist.get_nodes_by_type(BlockNode)
+        for node in block_nodes:
+            name = node.name
+            if name in required:
+                required.remove(name)
+            else:
+                if name in REQUIRED_BLOCKS:
+                    dups.append(name)
+                else:
+                    invalid.append(name)
+        if len(required):
+            raise forms.ValidationError("You are missing the following tags: %s" % ', '.join('{{%s}}' % r for r in required))
+        if len(dups):
+            raise forms.ValidationError("The following tags appear more than once: %s" % ', '.join('{{%s}}' % d for d in dups))
+        if len(invalid):
+            raise forms.ValidationError("The following tags are invalid: %s" % ', '.join('{{%s}}' % i for i in invalid))
+        return with_blocks

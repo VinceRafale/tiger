@@ -117,8 +117,11 @@
             <button class="preview">Preview</button>
         </div> 
         <div id="tab6" class="tab_content">
+            {% for error in html_errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
             <form method="POST" action="{% url stage_html %}">
-            <textarea name="html">{% autoescape off %}{{ site.skin.prepped_html }}{% endautoescape %}</textarea><br/>
+            <textarea name="html">{% autoescape off %}{{ html }}{% endautoescape %}</textarea><br/>
             </form>
             <button id="revert" class="preview">Revert</button>
             <button id="save-html" class="preview">Preview</button>

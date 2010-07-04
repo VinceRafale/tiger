@@ -115,6 +115,9 @@ def stage_html(request):
     if form.is_valid():
         skin.staged_pre_base = form.cleaned_data.get('html')
         skin.save()
+    else:
+        request.session['html_errors'] = form._errors['html']
+        request.session['invalid_html'] = request.POST.get('html')
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 @login_required
