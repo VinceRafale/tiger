@@ -113,3 +113,8 @@ def get_images(request):
     if not list_items:
         content = '<p>You currently do not have any images in your image library. You can <a class="closing-link" href="%s" target="_blank">add one</a> now.' % reverse('dashboard_add_img')
     return HttpResponse(content)
+
+@login_required
+def look_docs(request):
+    return direct_to_template(request, template='dashboard/content/look_docs.html')
+    

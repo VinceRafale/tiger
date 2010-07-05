@@ -102,5 +102,5 @@
 
 {% block footer %}
 <address>{{ site.hours|default:'[your restaurant hours]' }} &bull; {% if site.address %}{{ site.address }}{% else %}[your restaurant address]{% endif %} &bull; {% if site.phone %}{{ site.phone }}{% else %}[your phone number]{% endif %}</address>
-<p>Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
+<p><a class="lightlink" href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> &bull; powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
 {% endblock %}

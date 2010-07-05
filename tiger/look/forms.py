@@ -122,9 +122,9 @@ class HtmlForm(forms.Form):
                 else:
                     invalid.append(name)
         if len(required):
-            raise forms.ValidationError("You are missing the following tags: %s" % ', '.join('{{%s}}' % r for r in required))
+            raise forms.ValidationError("You are missing the following blocks: %s" % ', '.join('<code>{{%s}}</code>' % r for r in required))
         if len(dups):
-            raise forms.ValidationError("The following tags appear more than once: %s" % ', '.join('{{%s}}' % d for d in dups))
+            raise forms.ValidationError("The following blocks appear more than once: %s" % ', '.join('<code>{{%s}}</code>' % d for d in dups))
         if len(invalid):
-            raise forms.ValidationError("The following tags are invalid: %s" % ', '.join('{{%s}}' % i for i in invalid))
+            raise forms.ValidationError("The following blocks are invalid: %s" % ', '.join('<code>{{%s}}</code>' % i for i in invalid))
         return with_blocks

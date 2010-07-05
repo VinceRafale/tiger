@@ -8,6 +8,7 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.look.forms import *
 from tiger.look.models import Skin
+from tiger.utils.cache import KeyChain
 
 @login_required
 def picker(request):
@@ -103,6 +104,8 @@ def save(request):
     if skin.logo:
         skin.logo.delete()
     skin.logo = skin.staged_logo
+    skin.pre_base = skin.staged_pre_base
+    KeyChain.template.invalidate(request.site.id)
     skin.staged_logo = None
     skin.save()
     messages.success(request, 'Look and feel updated successfully.')

@@ -141,7 +141,7 @@ ul.tabs li.back a:hover{
     color:#DEDEDE;
 }
 
-div.tab_container label, p#spinner {display:block;color:#444444;font-size:12px;}
+div.tab_container label, div.tab_container p, p#spinner {display:block;color:#444444;font-size:12px;}
 
 a#bg-toggle{color:#4d4d4d;float:right;font-size:12px;margin-top:20px;}
 
@@ -158,12 +158,22 @@ div.picker-widget {
     width:36px;
 }
 
-#tab3{
+#tab4{
     width:275px;
 }
 
-#tab4{
+#tab5{
     width:410px;
+}
+
+#tab6{
+    width:410px;
+}
+
+#tab6 span.error {
+    color:#ea0000;
+    font-size:12px;
+    display:block;
 }
 
 div.picker-widget div {

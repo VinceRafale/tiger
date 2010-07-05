@@ -456,6 +456,8 @@ p.redlight {
     border-color:#ae0001;
     }
 p.redlight a {color:#ae0001;}
+dt {margin-top:6px; font-weight:bold;}
+dd {padding-left:20px;}
 
 
 /* HOURS PAGE */

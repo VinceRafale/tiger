@@ -117,8 +117,11 @@
             <button class="preview">Preview</button>
         </div> 
         <div id="tab6" class="tab_content">
+            <p><strong>Warning: HTML editing is for advanced users!</strong>
+            For a complete overview of what you can do here, see the <a href="{% url look_docs %}">layout customization documentation</a>.
+            </p>
             {% for error in html_errors %}
-            <span>{{ error }}</span>
+            <span class="error">{{ error|safe }}</span>
             {% endfor %}
             <form method="POST" action="{% url stage_html %}">
             <textarea name="html">{% autoescape off %}{{ html }}{% endautoescape %}</textarea><br/>
