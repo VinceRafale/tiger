@@ -1,0 +1,46 @@
+{% extends 'dashboard/content/home.html' %}
+
+{% block body-class %}{{ block.super }}look{% endblock %}
+
+{% block h2 %}
+Customizing your layout
+{% endblock %}
+
+{% block help %}
+<p>Need professional help getting your layout exactly how you want it?  Write us at designs@takeouttiger.com for more information.</p>
+{% endblock %}
+
+{% block content %}
+<h3>Overview</h3>
+<p>The <strong>HTML</strong> tab on the Look &amp; Feel toolbar gives you a high level of control over the layout of your Takeout Tiger website.  We are going to assume that, if you are reading this, you are familiar with HTML and CSS.</p>
+<p>When you open the <strong>HTML</strong> tab, what you are looking at is more or less the contents of the <code>&lt;body&gt;</code> tag.  You can do what you like with this markup, with two caveats:</p>
+<ol>
+    <li>We automatically strip out any potentially malicious markup &mdash; <code>&lt;style&gt;</code> tags, <code>&lt;script&gt;</code> tags, inline JavaScript, etc.  It's not that we don't trust you.  We just don't necessarily trust the person who told you that embed code is safe.</li>
+    <li>There are some big blocks of markup that, at least for now, you can't touch.  Instead, you place them within your markup using a <code>{% templatetag openvariable %}blockname{% templatetag closevariable %}</code> syntax.</li>
+</ol>
+<h3>Block variables</h3>
+<dl>
+    <dt><code>{% templatetag openvariable %}logo{% templatetag closevariable %}</code></dt>
+    <dd>An <code>&lt;h2&gt;</code> tag containing the name of your restaurant.  If you've uploaded a logo, CSS will be generated to set <code>text-indent</code> to -9999px and will set the logo as the background image.</dd>
+    <dt><code>{% templatetag openvariable %}search{% templatetag closevariable %}</code></dt>
+    <dd>A menu search form for your site.</dd>
+    <dt><code>{% templatetag openvariable %}menu{% templatetag closevariable %}</code></dt>
+    <dd>An unordered list tag containing all the main menu items as list elements.</dd>
+    <dt><code>{% templatetag openvariable %}messages{% templatetag closevariable %}</code></dt>
+    <dd>An unordered list tag containing messages for the site visitor (menu item added to order successfully, restaurant currently closed, etc.) as list elements.</dd>
+    <dt><code>{% templatetag openvariable %}cart{% templatetag closevariable %}</code></dt>
+    <dd>Block of text showing the number of items in the current order with a link to complete the order, or a message encouraging the view to place an online order.  Only shown if online ordering is enabled.</dd>
+    <dt><code>{% templatetag openvariable %}sections{% templatetag closevariable %}</code></dt>
+    <dd>List of menu sections. Only displayed when viewing a menu section or menu item.</dd>
+    <dt><code>{% templatetag openvariable %}contact{% templatetag closevariable %}</code></dt>
+    <dd>Hours, address, and phone/fax for the restaurant.</dd>
+    <dt><code>{% templatetag openvariable %}pdf{% templatetag closevariable %}</code></dt>
+    <dd>Link to the PDF menu set to "featured".  Only displayed if the restaurant has a featured PDF menu.</dd>
+    <dt><code>{% templatetag openvariable %}social{% templatetag closevariable %}</code></dt>
+    <dd>Displays "follow us on Twitter" / "become our fan on Facebook" depending on whether those services have been configured.</dd>
+    <dt><code>{% templatetag openvariable %}mail{% templatetag closevariable %}</code></dt>
+    <dd>A "join our mailing list" form.  Displayed only if configured to do so on the <strong>Marketing > Integrations</strong> tab.</dd>
+    <dt><code>{% templatetag openvariable %}footer{% templatetag closevariable %}</code></dt>
+    <dd>Restaurant contact info plus Takeout Tiger branding and restaurant login links.</dd>
+</dl>
+{% endblock %}
