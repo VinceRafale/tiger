@@ -8,6 +8,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'tiger/index.html'}, name='home'),
     url(r'^robots.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'tiger/robots.txt'}),
+    url(r'^blog/', include('tiger.glass.urls')),
     (r'^bahl-hornin/', include(admin.site.urls)),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),

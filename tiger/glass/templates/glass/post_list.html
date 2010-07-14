@@ -1,0 +1,8 @@
+{% extends 'glass/base.html' %}
+
+{% block content %}
+{% for object in object_list %}
+{% include 'glass/post_body.html' %}
+{% if not forloop.last %}<hr>{% endif %}
+{% endfor %}
+{% endblock %}

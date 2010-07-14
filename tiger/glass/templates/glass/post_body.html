@@ -1,0 +1,8 @@
+<aside class="grid_2 alpha">
+    <span><strong>{{ object.date_posted|date }}</strong></span>
+    <span>by {{ object.author }}</span>
+</aside>    
+<article class="grid_7 omega">
+    <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
+    {{ object.body|linebreaks }}
+</article>

@@ -1,0 +1,17 @@
+{% extends 'glass/base.html' %}
+
+{% block title %}Archives for {{ month|date:"F Y" }}{% endblock %}
+
+{% block content %}
+{% for object in object_list %}
+{% include 'glass/post_body.html' %}
+{% endfor %}
+{% endblock %}
+
+{% block archives %}
+<ul>
+{% for archive_month in archives %}
+<li><a href="{% url post_month_archive month.year month.month %}">{{ archive_month|date:"F Y" }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}

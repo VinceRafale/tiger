@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{% block title %}The Takeout Tiger blog{% endblock %}</title>
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="stylesheet" href="{{ MEDIA_URL }}css/style.css">
+		<script src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
+		<script src="{{ MEDIA_URL }}js/loopedslider.min.js"></script>
+		<!--[if lte IE 8]>
+			<script>
+				// For discussion and comments, see: http://remysharp.com/2009/01/07/html5-enabling-script/ (credit to @jdalton for minif)
+				/*@cc_on'abbr article aside audio canvas details figcaption figure footer header hgroup mark menu meter nav output progress section summary time video'.replace(/\w+/g,function(n){document.createElement(n)})@*/
+			</script>
+		<![endif]-->
+	</head>
+	<body id="blog">
+	    <header id="" class="container_12 clearfix">
+	        <nav class="grid_3 push_9">
+    	       <a href="#">Back to Takeout Tiger</a>
+    	    </nav>
+	        <div class="grid_12">
+	            <h1><a href="#"></a></h1>
+	            <hr>
+	        </div>
+	    </header>
+	    <section class="container_12 clearfix">
+            <section class="grid_9">
+            {% block content %}
+            {% for object in object_list %}
+            {% include 'glass/post_body.html' %}
+            {% endfor %}
+            {% endblock %}
+            </section>
+	        <aside id="archives" class="grid_2 push_1">
+	            <div><h3>Archives</h3>
+                {% block archive %}
+                <ul>
+                {% for archive_month in archives %}
+                <li><a href="{% url month_archive archive_month.year archive_month|date:"b" %}">{{ archive_month|date:"F Y" }}</a></li>
+                {% endfor %}
+                </ul>
+                {% endblock %}
+                </div>
+	        </aside>
+	    </section>
+	    <footer class="container_12 clearfix">
+			<div class="grid_12">
+			    <ul>
+    			     <li><a href="#">Privacy Policy</a></li>
+    			     <li><a href="#">Terms of Service</a></li>
+			    </ul>
+			</div>
+		</footer>
+	</body>
+</html>	

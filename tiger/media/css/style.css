@@ -134,3 +134,23 @@ div.slides > div p{font:1em/1.31em "Trebuchet MS",sans-serif;color:#e4e4e4;}
 .pagination li{float:left;margin-right:10px;}
 .pagination li a{display:block;width:10px;height:9px;background:url(../img/bg_pager.png)left top;}
 .pagination li.active a{background:url(../img/bg_pager.png)right top;}
+/* BLOG */
+#blog{background:url(../img/bg_signup.png) repeat;}
+#blog nav{margin-bottom:30px;}
+#blog nav a{float:right;color:#34484F;font-size:0.81em;}
+#blog header{height:auto;padding-top:20px;}
+#blog article{margin-bottom:1em;}
+#blog h1{background:0;height:auto;width:auto;margin-left:150px;}
+#blog h1 a{display:block;width:480px;height:63px;background:url(../img/header_blog.png);}
+#blog h2{display:block;font-size:1.5em;margin-bottom:1em;}
+#blog h2 a{text-decoration:none;}
+#blog h3{margin-bottom:0.5em;padding:0;background:0;font:1em;color:#E0E0E0;font-size:1.25em;}
+#blog span{color:#33494F;font-size:0.88em;margin-bottom:0.5em;display:block;}
+#blog span strong{color:#E0E0E0;}
+#blog span a,#blog aside a,#blog h2 a{color:#6C8FA0;}
+#blog p{color:#fff;margin-bottom:1em;line-height:1.75;font-family:Georgia,Times,serif;}
+#blog hr{margin:1em 0 2em;}
+#blog aside li{margin-bottom:0.5em;}
+#blog aside li:last-child{margin:0;}
+#archives div{padding:10px;background-color:#192326;}
+#blog footer div{margin:35px 0;padding-top:15px;border-top:3px solid #34484F;}
