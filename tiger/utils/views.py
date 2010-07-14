@@ -74,6 +74,13 @@ def handler500(request):
     return HttpResponseServerError(t)
 
 
+def tiger404(request):
+    return direct_to_template(request, 'tiger/404.html')
+
+def tiger500(request):
+    return direct_to_template(request, 'tiger/500.html')
+
+
 def add_edit_site_object(request, model, form_class, template, reverse_on, object_id=None):
     instance = None
     site = request.site
