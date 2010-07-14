@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
 from django.views.generic.simple import direct_to_template
 
 from tiger.core.forms import OrderSettingsForm, OrderPaymentForm, GeocodeError, OrderMessageForm
@@ -14,9 +15,20 @@ def home(request):
     })
 
 @login_required
+def get_new_orders(request):
+    lastId = request.POST.get('id')
+    new_orders = Order.objects.filter(site=request.site, id__gt=lastId).order_by('-timestamp')
+    rows = render_to_string('dashboard/orders/new_order.html', {'orders': new_orders})
+    return HttpResponse(rows)
+
+
+@login_required
 def order_detail(request, order_id):
+    order = Order.objects.get(id=order_id) 
+    order.unread = False
+    order.save()
     return direct_to_template(request, template='dashboard/orders/order_detail.html', extra_context={
-        'order': Order.objects.get(id=order_id) 
+        'order': order
     })
 
 @login_required

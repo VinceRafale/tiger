@@ -177,6 +177,10 @@ class Site(models.Model):
         except ObjectDoesNotExist:
             return None
 
+    @cachedmethod(KeyChain.news)
+    def has_news(self):
+        return self.release_set.count()
+
     @cachedmethod(KeyChain.template)
     def template(self):
         return self._template(self.skin.pre_base)

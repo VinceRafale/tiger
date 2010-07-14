@@ -288,6 +288,7 @@ class Order(models.Model):
     timestamp = models.DateTimeField(default=datetime.now, editable=False)
     method = models.IntegerField('This order is for', default=1, choices=METHOD_CHOICES)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_INCOMPLETE)
+    unread = models.BooleanField(default=True)
 
     @models.permalink
     def get_absolute_url(self):

@@ -18,7 +18,7 @@
     <li><a class="lightlink" href="{% url menu_home %}">Menu</a></li>
     <li><a class="lightlink" href="/about/">About</a></li>
     <li><a class="lightlink" href="/find-us/">Find Us</a></li>
-    {% if site.release_set.visible.count %}
+    {% if site.has_news %}
     <li><a class="lightlink" href="/news/">News</a></li>
     {% endif %}
 </ul>

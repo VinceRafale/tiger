@@ -31,6 +31,7 @@ Online orders status
     <div id="chart"></div>
 
     <h3>Latest orders</h3>
+    <p class=help>Your orders are listed below in reverse chronological order. Orders that you have not yet read are <span class="sample-highlight">highlighted in yellow</span>.</p>
     <table>
         <thead>
             <tr>
@@ -44,7 +45,7 @@ Online orders status
         </thead>
         <tbody>
         {% for order in orders %}
-            <tr class="{% cycle '' 'shaded' %}">
+            <tr id="{{ order.id }}" class="{% cycle '' 'shaded' %} {% if order.unread %}unread{% endif %}">
                 <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
                 <td><a href="{{ order.get_absolute_url }}">{{ order.timestamp|date:"fa m/d" }}</a></td>
                 <td><a href="{{ order.get_absolute_url }}">{% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}</a></td>
@@ -65,33 +66,19 @@ Online orders status
 {% endblock %}
 
 {% block js %}
-{% comment %}
 <script type="text/javascript">
-window.onload = function () {
-    var r = Raphael("chart"),
-        fin = function () {
-            this.flag = r.g.popup(this.bar.x, this.bar.y, "$" + this.bar.value || "0").insertBefore(this);
-        },
-        fout = function () {
-            this.flag.animate({opacity: 0}, 300, function () {this.remove();});
-        },
-        fin2 = function () {
-            var y = [], res = [];
-            for (var i = this.bars.length; i--;) {
-                y.push(this.bars[i].y);
-                res.push(this.bars[i].value || "0");
-            }
-            this.flag = r.g.popup(this.bars[0].x, Math.min.apply(Math, y), res.join(", ")).insertBefore(this);
-        },
-        fout2 = function () {
-            this.flag.animate({opacity: 0}, 300, function () {this.remove();});
-        };
-    r.g.txtattr.font = "16px 'Fontin Sans', Fontin-Sans, sans-serif";
-    r.g.text(230, 10, "Online sales volume");
-    
-    r.g.barchart(10, 20, 445, 260, [[155, 20, 13, 0, 5, 1, 2, 20, 13, 32, 5, 1, 2, 20, 13, 32, 5, 1, 2, 10]]).hover(fin, fout);
-};
+function updateOrders() {
+    orderId = $("tbody tr:first").attr("id");
+    $.post("{% url get_new_orders %}", $.param({id: orderId}), function(data) {
+        if (data) {
+            $("tbody").prepend(data);
+            $("tbody tr").removeClass("shaded");
+            $("tbody tr:odd").addClass("shaded");
+        }
+    }, "html");
+}
+
+setInterval('updateOrders()', 1000 * 60);
 </script>
-{% endcomment %}
 {% endblock %}
 
