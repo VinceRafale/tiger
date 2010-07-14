@@ -10,8 +10,6 @@ urlpatterns = patterns('',
     url(r'^robots.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'tiger/robots.txt'}),
     url(r'^blog/', include('tiger.glass.urls')),
     (r'^bahl-hornin/', include(admin.site.urls)),
-    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': settings.MEDIA_ROOT}),
 )
 
 urlpatterns += patterns('tiger.accounts.views',
@@ -21,11 +19,16 @@ urlpatterns += patterns('tiger.accounts.views',
 )
 
 if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^static/(?P<path>.*)$', 'django.views.static.serve',
+                {'document_root': settings.MEDIA_ROOT}),
+        )
+
+if settings.DEBUG:
     urlpatterns += patterns('tiger.accounts.views',
         url(r'^signup/$', 'signup', name='tiger_signup'),
         url(r'^validate-coupon/$', 'validate_coupon', name='validate_coupon'),
         url(r'^domain-check/$', 'domain_check', name='domain_check'),
-    )
 else:
     urlpatterns += patterns('tiger.accounts.views',
         url(r'^signup/$', 'signup', {'SSL': True}, name='tiger_signup'),
