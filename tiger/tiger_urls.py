@@ -22,13 +22,14 @@ if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve',
                 {'document_root': settings.MEDIA_ROOT}),
-        )
+    )
 
 if settings.DEBUG:
     urlpatterns += patterns('tiger.accounts.views',
         url(r'^signup/$', 'signup', name='tiger_signup'),
         url(r'^validate-coupon/$', 'validate_coupon', name='validate_coupon'),
         url(r'^domain-check/$', 'domain_check', name='domain_check'),
+    )
 else:
     urlpatterns += patterns('tiger.accounts.views',
         url(r'^signup/$', 'signup', {'SSL': True}, name='tiger_signup'),
