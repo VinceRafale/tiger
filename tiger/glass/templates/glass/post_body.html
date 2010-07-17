@@ -2,7 +2,7 @@
     <span><strong>{{ object.date_posted|date }}</strong></span>
     <span>by {{ object.author }}</span>
 </aside>    
-<article class="grid_7 omega">
+<article class="grid_7 omega post-content">
     <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
-    {{ object.body|linebreaks }}
+    {{ object.body|safe }}
 </article>

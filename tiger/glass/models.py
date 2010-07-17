@@ -17,7 +17,7 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.title)[:50]
         super(Post, self).save(*args, **kwargs)
 
     @models.permalink
