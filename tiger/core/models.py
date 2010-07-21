@@ -141,7 +141,7 @@ class Item(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.slug = slugify(self.name)
+            self.slug = slugify(self.name)[:50]
             self.price_list = []
         if len(self.price_list) and self.posting_stage != Item.STAGE_POST:
             self.posting_stage += 1

@@ -33,8 +33,6 @@ ROOT_URLCONF = 'tiger.tiger_urls'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, 'templates'),
-    # separately versioned custom templates
-    os.path.join(PROJECT_ROOT, '../templates/'),
 )
 
 AUTH_PROFILE_MODULE = 'accounts.Subscriber'

@@ -202,7 +202,7 @@ def new_site_setup(sender, instance, created, **kwargs):
         Site = models.get_model('accounts', 'site')
         if isinstance(instance, Site):
             background = Background.objects.create(site=instance)
-            skin = Skin.objects.create(site=instance, background=background)
+            skin = Skin.objects.create(site=instance, name=instance.name[:20], background=background)
 
 
 admin.site.register(FontFace)
