@@ -1,3 +1,5 @@
+import re
+
 from django.conf import settings
 from django.core.cache import cache
 
@@ -30,6 +32,13 @@ class CacheProxy(object):
         cache.delete(self.key(id))
 
 
+class KeyChainError(Exception):
+    pass
+
+
+key_re = re.compile(r'KEY_([A-Z]+)')
+
+
 class KeyChainMetaclass(type):
     def __new__(cls, name, bases, dct):
         """Sets cache key templates declared in settings as class
@@ -38,16 +47,13 @@ class KeyChainMetaclass(type):
         new_class = super(KeyChainMetaclass, cls).__new__(cls, name, bases, dct)
         cache_keys = getattr(settings, 'KEYCHAIN_CACHE_KEYS', {})
         for k, v in cache_keys.items():
-            setattr(new_class, k, v)
+            m = key_re.match(k)
+            if not m:
+                raise KeyChainError('Invalid keychain key %s' % k)
+            name = m.group(1).lower()
+            setattr(new_class, name, CacheProxy(v))
         return new_class
 
-    def __getattr__(cls, name):
-        try:
-            key_template = getattr(cls, 'KEY_%s' % name.upper())
-        except AttributeError:
-            raise AttributeError('No key template defined for %s' % name)
-        return CacheProxy(key_template)
-        
 
 class KeyChain(object):
     __metaclass__ = KeyChainMetaclass
