@@ -20,6 +20,8 @@ Provide a detailed description here of your restaurant, staff, the history of yo
 {{ form.title }}
 <label>{{ form.text.label }} {% if form.text.errors %} {{ form.text.errors }} {% endif %}</label>
 {{ form.text }}
+<label>{% if form.image.errors %} {{ form.image.errors }} {% endif %}</label>
+{{ form.image }}
 <div class="clear"></div>
 <div class="save-row clearfix">
 <a class="cancel" href="{% url dashboard_content %}">Cancel</a>
