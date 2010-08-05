@@ -19,12 +19,12 @@ class RequestSite(BaseRequestSite):
         if m:
             subdomain = m.group(1)
             try:
-                return Site.objects.get(subdomain=subdomain)
+                return Site.objects.get(subdomain__iexact=subdomain)
             except Site.DoesNotExist:
                 return None
         # if not, check for custom domains
         try:
-            domain = Site.objects.get(domain=self.domain)
+            domain = Site.objects.get(domain__iexact=self.domain)
         except Site.DoesNotExist:
             return None
         return domain
