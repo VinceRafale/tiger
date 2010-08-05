@@ -48,7 +48,11 @@
     a.lightlink, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit { color:#{{ site.skin.button_text_color }}; }
     </style>
     <style id="background" type="text/css">
+    {% if site.skin.background.staged_image %}
+    {{ site.skin.background.as_css_staged }}
+    {% else %}
     {{ site.skin.background.as_css }}
+    {% endif %}
     </style>
     <style id="background-color" type="text/css">
     body {background-color:#{{ site.skin.background.color }};}

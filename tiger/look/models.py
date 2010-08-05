@@ -87,6 +87,9 @@ class Background(models.Model):
     def as_css(self, staged=False):
        return render_to_string('look/background.css', {'bg': self, 'staged': staged}) 
 
+    def as_css_staged(self):
+        return self.as_css(staged=True)
+
     def clone(self, bg):
         self.image = bg.image
         self.color = bg.color
