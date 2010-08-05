@@ -106,6 +106,7 @@ def save(request):
     skin.logo = skin.staged_logo
     skin.pre_base = skin.staged_pre_base
     KeyChain.template.invalidate(request.site.id)
+    KeyChain.skin.invalidate(request.site.id)
     skin.staged_logo = None
     skin.save()
     messages.success(request, 'Look and feel updated successfully.')
