@@ -16,7 +16,7 @@ from tiger.accounts.forms import TimeSlotForm
 from tiger.accounts.models import TimeSlot
 from tiger.utils.forms import RequireOneFormSet
 from tiger.utils.views import add_edit_site_object, delete_site_object
-from tiger.dashboard.restaurant.views import save_hours
+#from tiger.dashboard.restaurant.views import save_hours
 
 def _reorder_objects(model, id_list):
     for i, obj_id in enumerate(id_list):
@@ -255,11 +255,11 @@ def flag_item(request):
     item.save()
     return HttpResponse('')
 
-@login_required
-def section_hours(request, section_id):
-    #TODO: make this DRY with the restaurant hours view
-    section = Section.objects.get(id=section_id)
-    instance_kwds = {
-        'section': section
-    }
-    return save_hours(request, section=section, instance_kwds=instance_kwds, extra_context={'section': section}, redirect_to=reverse('dashboard_edit_options', args=['section', section.id]))
+#@login_required
+#def section_hours(request, section_id):
+    ##TODO: make this DRY with the restaurant hours view
+    #section = Section.objects.get(id=section_id)
+    #instance_kwds = {
+        #'section': section
+    #}
+    #return save_hours(request, section=section, instance_kwds=instance_kwds, extra_context={'section': section}, redirect_to=reverse('dashboard_edit_options', args=['section', section.id]))

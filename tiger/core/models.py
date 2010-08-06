@@ -45,6 +45,7 @@ class Section(models.Model):
     slug = models.SlugField(editable=False)
     ordering = models.PositiveIntegerField(editable=False, default=1)
     hours = models.CharField(null=True, max_length=255)
+    schedule = models.ForeignKey('accounts.Schedule', null=True, blank=True)
 
     class Meta:
         verbose_name = 'menu section'
@@ -177,6 +178,7 @@ class Variant(models.Model):
     section = models.ForeignKey(Section, null=True, blank=True)
     description = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=5, decimal_places=2)
+    schedule = models.ForeignKey('accounts.Schedule', null=True, blank=True)
 
     class Meta:
         ordering = ['price']

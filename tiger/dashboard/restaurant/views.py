@@ -40,49 +40,58 @@ def edit_content(request, slug):
     return direct_to_template(request, template='dashboard/content/%s_form.html' % slug, extra_context={
         'form': form
     })
+
+
+@login_required
+def schedule_list(request):
+    schedules = request.site.schedule_set.all()
+    return direct_to_template(request, template='dashboard/restaurant/schedule_list.html', extra_context={
+        'schedules': schedules
+    })
+
         
 
-def save_hours(request, section=None, instance_kwds={}, extra_context={}, redirect_to=None):
+@login_required
+def add_edit_schedule(request, schedule_id=None):
+    schedule = None
+    if schedule_id is not None:
+        schedule = Schedule.objects.get(id=schedule_id)
     def get_forms(data=None):
         forms = []
         for dow, label in DOW_CHOICES:
-            try:
-                instance = TimeSlot.objects.get(site=request.site, dow=dow, **instance_kwds)
-            except TimeSlot.DoesNotExist:
-                instance = None
+            instance = None
+            if schedule is not None:
+                try:
+                    instance = TimeSlot.objects.get(schedule=schedule, dow=dow)
+                except TimeSlot.DoesNotExist:
+                    instance = None
             form = TimeSlotForm(data=data, instance=instance, prefix=dow)
             forms.append(form)
         return forms
     if request.method == 'POST':
         forms = get_forms(request.POST)
         if all(form.is_valid() for form in forms):
+            if schedule is None:
+                schedule = Schedule.objects.create(site=request.site)
             for dow, form in zip([dow for dow, label in DOW_CHOICES], forms):
                 instance = form.save()
                 # overridden save() will return None if no times are given for a day
                 if instance is not None:
                     instance.dow = dow
-                    instance.site = request.site
-                    instance.section = section
+                    instance.schedule = schedule
                     instance.save()
             display_hours = request.POST.get('hours_display')
-            if section:
-                section.hours = display_hours
-                section.save()
-            else:
-                request.site.hours = display_hours
-                request.site.save()
+            schedule.display = display_hours
+            schedule.save()
             messages.success(request, 'Hours updated successfully.')
-            return HttpResponseRedirect(redirect_to)
+            return HttpResponseRedirect(reverse('edit_hours'))
     else:
         forms = get_forms()
     form_list = zip([label for dow, label in DOW_CHOICES], forms)
-    context = {'form_list': form_list}
+    extra_context = {'form_list': form_list}
     context.update(extra_context)
     return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context=context)
 
-@login_required
-def edit_hours(request):
-    return save_hours(request, instance_kwds={'section__isnull': True}, redirect_to=reverse('dashboard_menu'))
 
 @login_required
 def toggle_order_status(request):
