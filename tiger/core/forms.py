@@ -53,7 +53,7 @@ def get_order_form(instance):
             required=False
         ) 
     for sidegroup in sidegroups:
-        if sidegroup.sidedish_set.count():
+        if sidegroup.sidedish_set.count() > 1:
             attrs['side_%d' % sidegroup.id] = forms.ModelChoiceField(
                 queryset=sidegroup.sidedish_set.all(), 
                 widget=forms.RadioSelect, 

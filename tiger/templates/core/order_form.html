@@ -23,8 +23,11 @@
 {% endif %}
 {% for field in form.sidedish_fields %}
     <div class="upgrades">
-    <label>Your choice of:</label>
-    {{ field }}
+        {% if field.errors %}
+        {{ field.errors }}
+        {% endif %}
+        <label>Your choice of:</label>
+        {{ field }}
     </div>
 {% endfor %}
 {% if form.upgrades %}

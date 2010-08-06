@@ -47,6 +47,9 @@ FIXME
         <ul class="group-wrap">
             {% for group in object.sidedishgroup_set.all %}
             <li>
+                {% if group.sidedish_set.count == 1 %}
+                <span class="errorlist">Choice sets must contain two or more items before they will appear to customers.</span>
+                {% endif %}
                 <ul class="item-container">
                     {% for obj in group.sidedish_set.all %}
                     {% include 'dashboard/menu/includes/side_row.html' %}

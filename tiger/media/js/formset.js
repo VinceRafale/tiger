@@ -133,6 +133,7 @@ $(function () {
                 }
                 $(trgt).parent().replaceWith(data['new_row']);
                 $(listTag).find("li.empty").remove();
+                $(listTag).trigger('changeLength');
             }
         }, "json");
         return false;
@@ -161,6 +162,7 @@ $(function () {
                     if (!$(containingList).children().length) {
                         $(containingList).append('<li class="empty">No ' + $(containingList).closest("div").find("h3").text().toLowerCase() + ' defined.</li>');
                     }
+                    $(containingList).trigger('changeLength');
                 } else {
                     $(selector).insertAfter('<span class="fail">An error occurred.</span>');
                     $("span.fail").delay(1500).fadeOut("fast", function () { $(this).remove(); });
@@ -168,6 +170,15 @@ $(function () {
             }, "json");
         }
         return false;
+    });
+
+    $('ul.item-container').bind('changeLength', function () {
+        upOne = $(this).parent();
+        if ($(this).children().length == 1) {
+            $(upOne).prepend('<span class="errorlist">Choice sets must contain two or more items before they will appear to customers.</span>');
+        } else {
+            $(upOne).removeClass("warning");
+        }
     });
 
 });
