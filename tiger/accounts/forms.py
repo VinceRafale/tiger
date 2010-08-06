@@ -39,8 +39,11 @@ class AmPmTimeField(forms.Field):
         
     def clean(self, value):
         if value:
-            t, meridian = value.split()
-            h, m = [int(v) for v in t.split(':')]
+            try:
+                t, meridian = value.split()
+                h, m = [int(v) for v in t.split(':')]
+            except ValueError:
+                return None
             if meridian == 'PM' and h != 12:
                 h += 12
             elif meridian == 'AM' and h == 12:
