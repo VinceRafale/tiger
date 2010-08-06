@@ -174,10 +174,12 @@ $(function () {
 
     $('ul.item-container').bind('changeLength', function () {
         upOne = $(this).parent();
-        if ($(this).children().length == 1) {
-            $(upOne).prepend('<span class="errorlist">Choice sets must contain two or more items before they will appear to customers.</span>');
+        if ($(this).children("li").not(".empty").length == 1) {
+            if (!$(this).find("span.errorlist").length) {
+                $(upOne).prepend('<span class="errorlist">Choice sets must contain two or more items before they will appear to customers.</span>');
+            }
         } else {
-            $(upOne).removeClass("warning");
+            $(upOne).find("span.errorlist").remove();
         }
     });
 
