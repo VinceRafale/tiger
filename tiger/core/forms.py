@@ -283,7 +283,7 @@ class OrderPaymentForm(BetterModelForm):
         if payment_type == OrderSettings.PAYMENT_PAYPAL: 
             if not cleaned_data.get('paypal_email'):
                 raise forms.ValidationError('You must enter your PayPal e-mail address to receive payments via PayPal.')
-        else:
+        elif payment_type == OrderSettings.PAYMENT_AUTHNET:
             auth_login = cleaned_data.get('auth_net_api_login')
             auth_key = cleaned_data.get('auth_net_api_key')
             if not (auth_login and auth_key):
