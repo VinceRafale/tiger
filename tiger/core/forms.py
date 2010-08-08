@@ -390,3 +390,9 @@ class SideDishForm(forms.ModelForm):
     class Meta:
         model = SideDish
         exclude = ('group',)
+
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if not price:
+            return '0.00'
+        return price
