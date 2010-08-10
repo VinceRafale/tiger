@@ -7,7 +7,7 @@ from django.forms.util import ErrorList
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 
-from greatape import MailChimp
+from greatape import MailChimp, MailChimpError
 from paypal.standard.forms import PayPalPaymentsForm
 
 from tiger.core.forms import get_order_form, OrderForm, CouponForm, AuthNetForm
@@ -206,20 +206,25 @@ def order_success(request):
     return render_custom(request, 'core/order_success.html')
 
 def mailing_list_signup(request):
-    email = request.POST.get('email')
+    email = request.POST.get('email', '')
     if email_re.match(email):
         social = request.site.social
         mailchimp = MailChimp(social.mailchimp_api_key)
-        response = mailchimp.listSubscribe(
-            id=social.mailchimp_list_id, 
-            email_address=email,
-            merge_vars=''
-        )
-        if response is True:
-            success_msg = 'Thanks for signing up!  We\'ll send you a confirmation e-mail shortly.'
-            messages.success(request, success_msg)
+        try:
+            response = mailchimp.listSubscribe(
+                id=social.mailchimp_list_id, 
+                email_address=email,
+                merge_vars=''
+            )
+        except MailChimpError, e:
+            if e.code == 214:
+                messages.success(request, 'You are already on our mailing list.  Thanks for your continued interest!')
         else:
-            messages.warning(request, 'We were unable to sign you up at this time.  Please try again.')
+            if response is True:
+                success_msg = 'Thanks for signing up!  We\'ll send you a confirmation e-mail shortly.'
+                messages.success(request, success_msg)
+            else:
+                messages.warning(request, 'We were unable to sign you up at this time.  Please try again.')
     else:
         error_msg = 'Please enter a valid e-mail address.'
         messages.error(request, error_msg)
