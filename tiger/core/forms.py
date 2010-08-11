@@ -150,14 +150,27 @@ class CouponForm(forms.Form):
 
 
 class CouponCreationForm(BetterModelForm):
+    discount_type = forms.TypedChoiceField(coerce=int, choices=Coupon.DISCOUNT_CHOICES, widget=forms.RadioSelect, initial=1)
+
     class Meta:
         model = Coupon
+    
+    def clean_dollars_off(self):
+        discount_type = self.cleaned_data.get('discount_type')
+        dollars_off = self.cleaned_data.get('dollars_off')
+        if discount_type == Coupon.DISCOUNT_DOLLARS and dollars_off is None:
+            raise forms.ValidationError('You must enter dollar amount if you choose a dollar-based discount.') 
+        return dollars_off
 
-    def clean_discount(self):
-        discount = self.cleaned_data.get('discount')
-        if type(discount) == int and discount > 100:
-            raise forms.ValidationError('Please enter a percentage between 0% and 100%.')
-        return discount
+    def clean_percent_off(self):
+        discount_type = self.cleaned_data.get('discount_type')
+        percent_off = self.cleaned_data.get('percent_off')
+        if discount_type == Coupon.DISCOUNT_PERCENT:
+            if percent_off is None:
+                raise forms.ValidationError('You must enter a percentage if you choose a percentage-based discount.')
+            elif type(percent_off) == int and not 0 < percent_off <= 100:
+                raise forms.ValidationError('Please enter a percentage between 1% and 100%.')
+        return percent_off
 
     def clean_exp_date(self):
         exp_date = self.cleaned_data.get('exp_date')

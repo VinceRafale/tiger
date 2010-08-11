@@ -300,7 +300,7 @@ class Order(models.Model):
         """
         content = render_to_pdf('notify/order.html', {
             'order': self,
-            'cart': self.cart,
+            'cart': self.get_cart(),
             'order_no': self.id,
         })
         if self.site.ordersettings.receive_via == OrderSettings.RECEIPT_EMAIL:
@@ -322,6 +322,10 @@ class Order(models.Model):
         except (IndexError, AttributeError):
             return None
         return coupon
+
+    def get_cart(self):
+        from tiger.core.middleware import Cart
+        return Cart(contents=self.cart)
 
 class OrderSettings(models.Model):
     PAYMENT_NONE = 0
@@ -412,12 +416,20 @@ class OrderSettings(models.Model):
     
 
 class Coupon(models.Model):
+    DISCOUNT_DOLLARS = 1
+    DISCOUNT_PERCENT = 2
+    DISCOUNT_CHOICES = (
+        (DISCOUNT_DOLLARS, 'Dollar amount'),
+        (DISCOUNT_PERCENT, 'Percentage of order'),
+    )
     site = models.ForeignKey('accounts.Site', editable=False)
     short_code = models.CharField(max_length=20, help_text='Uppercase letters and numbers only. Leave this blank to have a randomly generated coupon code.', blank=True)
     exp_date = models.DateField('Expiration date (optional)', null=True, blank=True)
     click_count = models.IntegerField('Number of uses', editable=False, default=0)
     max_clicks = models.PositiveIntegerField('Max. allowed uses (optional)', null=True, blank=True)
-    discount = models.PositiveIntegerField()
+    discount_type = models.PositiveIntegerField(choices=DISCOUNT_CHOICES)
+    dollars_off = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    percent_off = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         unique_together = ('site', 'short_code',)

@@ -52,7 +52,7 @@ FIXME
         {% with order.coupon as coupon %}
         {% if coupon %}
         <tr class="discount">
-            <td class="item">Coupon code {{ coupon.short_code }} - {{ coupon.discount }}% off</td>
+            <td class="item">{{ cart.coupon_display }}</td>
             <td></td>
             <td></td>
             <td class="total">-${{ order.couponuse_set.all.0.amount|floatformat:"-2" }}</td>

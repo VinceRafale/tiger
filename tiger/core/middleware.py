@@ -6,15 +6,19 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.sessions.models import Session
 
+from tiger.core.models import Coupon
 from tiger.utils.site import RequestSite
 
 
 class Cart(object):
     contents = {}
 
-    def __init__(self, session):
+    def __init__(self, session=None, contents=None):
         self.session = session
-        self.contents = session.get_decoded()
+        if contents is None:
+            self.contents = session.get_decoded()
+        else:
+            self.contents = contents
 
     def __iter__(self):
         """Iterating over the cart returns a list of tuples consisting of
@@ -98,11 +102,24 @@ class Cart(object):
     def discount(self):
         if not self.has_coupon:
             return 0
-        percent = self['coupon']['discount'] / Decimal('100.00')
-        return percent * self.subtotal()
+        discount_type = self['coupon']['discount_type']
+        discount_actions = {
+            Coupon.DISCOUNT_DOLLARS: lambda coupon: coupon['dollars_off'],
+            Coupon.DISCOUNT_PERCENT: lambda coupon: (coupon['percent_off'] / Decimal('100.00')) * self.subtotal()
+        }
+        return discount_actions[discount_type](self['coupon'])
+
+    def coupon_display(self):
+        discount_type = self['coupon']['discount_type']
+        discount_strings = {
+            Coupon.DISCOUNT_DOLLARS: lambda: '$%.2f' % self['coupon']['dollars_off'],
+            Coupon.DISCOUNT_PERCENT: lambda: '%s%%' % self['coupon']['percent_off']
+        }
+        return 'Coupon %s - %s off' % (self['coupon']['short_code'], discount_strings[discount_type]())
 
     def total(self):
-        return self.subtotal() - self.discount()
+        discounted = self.subtotal() - self.discount()
+        return discounted if discounted > 0 else Decimal('0.00')
 
     def total_plus_tax(self):
         return self.total() + self.taxes()

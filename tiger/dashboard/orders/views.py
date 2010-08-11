@@ -28,7 +28,8 @@ def order_detail(request, order_id):
     order.unread = False
     order.save()
     return direct_to_template(request, template='dashboard/orders/order_detail.html', extra_context={
-        'order': order
+        'order': order,
+        'cart': order.get_cart()
     })
 
 @login_required

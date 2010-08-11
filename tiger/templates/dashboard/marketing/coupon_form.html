@@ -5,7 +5,12 @@
     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/ui-lightness/jquery-ui.css">
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
     <style type="text/css">
-    #id_discount {width:30px;}
+    #id_dollars_off {width:50px;}
+    #id_percent_off {width:30px;}
+    form ul, form ul li, #dollars, #percent {float:left;}
+    form ul li {margin-left:7px; margin-right:7px;}
+    form ul label {margin-top:5px;}
+    form div label {margin-top:0px;}
     </style>
 {% endblock %}
 
@@ -22,12 +27,23 @@
 
 {% block content %}
 
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
 <form method="POST" action=".">
 <label>{{ form.short_code.label }} {% if form.short_code.errors %} {{ form.short_code.errors }} {% endif %}</label>
 {{ form.short_code }}
 <p class="help">{{ form.short_code.help_text }}</p>
-<label>{{ form.discount.label }} {% if form.discount.errors %} {{ form.discount.errors }} {% endif %}</label>
-{{ form.discount }}%
+<label>Discount {% if form.dollars_off.errors %} {{ form.dollars_off.errors }} {% endif %} {% if form.percent_off.errors %} {{ form.percent_off.errors }} {% endif %} {% if form.discount_type.errors %} {{ form.discount_type.errors }} {% endif %}</label>
+<div id="dollars">
+    <label>${{ form.dollars_off }}</label>
+</div>
+<div id="percent">
+<label>{{ form.percent_off }}%</label>
+</div>
+{{ form.discount_type }}
+<div class="clear"></div>
+
 <label>{{ form.exp_date.label }} {% if form.exp_date.errors %} {{ form.exp_date.errors }} {% endif %}</label>
 {{ form.exp_date }}
 <label>{{ form.max_clicks.label }} {% if form.max_clicks.errors %} {{ form.max_clicks.errors }} {% endif %}</label>
@@ -42,9 +58,22 @@
 
 {% block js %}
 <script type="text/javascript">
+var radioMap = {
+    "1": "#dollars",
+    "2": "#percent"
+};
+
 $(function () {
     $("#id_exp_date").datepicker();
+    $("#dollars,#percent").hide();
+    currentRadioVal = $(":radio:checked").val(); 
+    if (currentRadioVal) {
+        $(radioMap[currentRadioVal]).show();
+    }
+    $(":radio").change(function() {
+        $("#percent,#dollars").hide();
+        $(radioMap[$(this).val()]).show();
+    });
 });
 </script>
 {% endblock %}
-
