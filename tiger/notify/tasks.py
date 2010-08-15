@@ -12,7 +12,6 @@ from facebook import Facebook, FacebookError
 
 from oauth import oauth
 
-from tiger.accounts.models import Subscriber, FaxList
 from tiger.notify.fax import FaxServiceError
 from tiger.notify.models import Release
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status

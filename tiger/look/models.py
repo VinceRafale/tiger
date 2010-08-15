@@ -103,7 +103,7 @@ def get_default_font():
     try:
         return FontFace.objects.get(name='Chunk').id
     except:
-        return 1
+        return None
 
 
 class Logo(ImageModel):

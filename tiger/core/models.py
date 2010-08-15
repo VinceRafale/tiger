@@ -12,7 +12,9 @@ from django.template.loader import render_to_string
 from django.utils.http import int_to_base36
 from django.utils.safestring import mark_safe
 
-from paypal.standard.ipn.signals import payment_was_successful
+from paypal.standard.ipn.models import PayPalIPN
+from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged
+from pytz import timezone
 
 from tiger.content.handlers import pdf_caching_handler
 from tiger.notify.fax import FaxMachine
@@ -327,6 +329,18 @@ class Order(models.Model):
         from tiger.core.middleware import Cart
         return Cart(contents=self.cart)
 
+    def localized_timestamp(self):
+        server_tz = timezone(settings.TIME_ZONE)
+        site_tz = timezone(self.site.timezone)
+        timestamp = server_tz.localize(self.timestamp)
+        return timestamp.astimezone(site_tz)
+
+    def paypal_transaction(self):
+        try:
+            return PayPalIPN.objects.get(invoice=unicode(self.id))
+        except PayPalIPN.DoesNotExist:
+            return None
+
 class OrderSettings(models.Model):
     PAYMENT_NONE = 0
     PAYMENT_PAYPAL = 1
@@ -485,8 +499,15 @@ class CouponUse(models.Model):
 
 def register_paypal_payment(sender, **kwargs):
     ipn_obj = sender
-    order = Order.objects.get(id=ipn_obj.invoice)
-    DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
+    # Because of django-paypal's reliance on settings variables, payments 
+    # come through as completed and verified,
+    # but are still flagged with receiver_email as invalid.  This signal
+    # handler is thus used for both payment_was_successful and 
+    # payment_was_flagged.
+    if ipn_obj.payment_status == 'Completed':
+        from tiger.notify.tasks import DeliverOrderTask
+        order = Order.objects.get(id=ipn_obj.invoice)
+        DeliverOrderTask.delay(order.id, Order.STATUS_PAID)
 
 
 def new_site_setup(sender, instance, created, **kwargs):
@@ -521,6 +542,7 @@ def create_defaults(sender, instance, created, **kwargs):
 
 
 payment_was_successful.connect(register_paypal_payment)
+payment_was_flagged.connect(register_paypal_payment)
 post_save.connect(new_site_setup)
 post_save.connect(item_social_handler, sender=Item)
 post_save.connect(pdf_caching_handler, sender=Item)
