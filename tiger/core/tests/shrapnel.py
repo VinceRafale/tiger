@@ -1,5 +1,8 @@
 from decimal import Decimal
 import datetime
+from poseur.fixtures import FakeModel
+from django.contrib.sessions.models import Session
+from tiger.core.models import Coupon
 
 TEST_PAYPAL_TRANSACTION = {
      'address_city': u'',
@@ -85,3 +88,15 @@ TEST_PAYPAL_TRANSACTION = {
      'username': u'',
      'verify_sign': u'AzEP17uSCKIGqIhT5rZpY.vz94soASf4zX6Cfg-l79n2EDV.SA-GpnhJ'
 }
+
+class FakeSession(FakeModel):
+    session_key = 'test_tiger'
+    session_data = Session.objects.encode({})
+    expire_date = datetime.datetime.now() + datetime.timedelta(days=7)
+
+    class Meta:
+        model = Session
+
+class FakeCoupon(FakeModel):
+    class Meta:
+        model = Coupon

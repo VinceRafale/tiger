@@ -76,7 +76,8 @@ class Cart(object):
     def add_coupon(self, coupon):
         self['coupon'] = coupon.__dict__
 
-    def remove_coupon(self, coupon):
+    def remove_coupon(self, coupon=None):
+        #TODO: remove this keyword argument entirely
         self._pop('coupon')
         
     @property
@@ -110,6 +111,8 @@ class Cart(object):
         return discount_actions[discount_type](self['coupon'])
 
     def coupon_display(self):
+        if not self.has_coupon:
+            return ''
         discount_type = self['coupon']['discount_type']
         discount_strings = {
             Coupon.DISCOUNT_DOLLARS: lambda: '$%.2f' % self['coupon']['dollars_off'],

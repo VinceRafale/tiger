@@ -54,8 +54,7 @@ FIXME
                 <td class="total">${{ item.total|floatformat:"-2" }}</td>
             </tr>
         {% endfor %}
-        {% with order.coupon as coupon %}
-        {% if coupon %}
+        {% if cart.has_coupon %}
         <tr class="discount">
             <td class="item">{{ cart.coupon_display }}</td>
             <td></td>
@@ -63,7 +62,6 @@ FIXME
             <td class="total">-${{ order.couponuse_set.all.0.amount|floatformat:"-2" }}</td>
         </tr>
         {% endif %}
-        {% endwith %}
         <tr class="total">
             <td class="item">Total</td>
             <td></td>
