@@ -11,6 +11,7 @@ from tiger.core.models import *
 class FakeUser(FakeModel):
     email = 'test@test.com'
     password = 'sha1$7e4e4$c4c5483c4cd38c9ae9674d9285308045ea900205' # "password"
+    is_active = True
 
     class Meta:
         model = User

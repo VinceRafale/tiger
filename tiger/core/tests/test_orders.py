@@ -1,14 +1,19 @@
 from datetime import timedelta
+import unittest
+
+from djangosanetesting.noseplugins import TestServerThread
 
 from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
+from django.test.testcases import call_command
 
 from poseur.fixtures import load_fixtures
 from pytz import timezone
 from paypal.standard.ipn.models import PayPalIPN
+from selenium import selenium
 
 from tiger.accounts.models import Site
 from tiger.core.models import *
@@ -19,7 +24,8 @@ from tiger.notify.tasks import DeliverOrderTask
 
 class OrderPropertiesTest(TestCase):
     def setUp(self):
-        load_fixtures('tiger.fixtures')
+        if not Site.objects.count():
+            load_fixtures('tiger.fixtures')
 
     def test_display_hours(self):
         """Time that the order was placed should be localized to reflect the
@@ -47,7 +53,8 @@ class OrderPropertiesTest(TestCase):
 
 class PayPalOrderTest(TestCase):
     def setUp(self):
-        load_fixtures('tiger.fixtures')
+        if not Site.objects.count():
+            load_fixtures('tiger.fixtures')
         site = Site.objects.all()[0]
         order_settings = site.ordersettings
         order_settings.receive_via = OrderSettings.RECEIPT_EMAIL
@@ -88,29 +95,51 @@ class PayPalOrderTest(TestCase):
         self.assertContains(response, 'Paid online')
 
 
-class OrderListTest(TestCase): #SeleniumTestCase):
-    start_live_server = True
-    selenium_start = True
-
-    def setUp(self):
-        load_fixtures('tiger.fixtures')
-
+class OrderListTest(unittest.TestCase):
     def test_list_update(self):
+        if not Site.objects.count():
+            load_fixtures('tiger.fixtures')
+        self.server_thread = TestServerThread('127.0.0.1', 8000)
+        self.server_thread.start()
+        self.server_thread.started.wait()
+        if self.server_thread.error:
+            raise self.server_thread.error
+        self.selenium = selenium(
+            'localhost',
+            4444,
+            '*firefox',
+            'http://foo.takeouttiger.com:8000' 
+        )
+        self.selenium.start()
+        self.selenium.open('/dashboard/login/')
+        self.selenium.type('email', 'test@test.com')
+        self.selenium.type('password', 'password')
+        self.selenium.click("css=input[type='submit']")
+        self.selenium.wait_for_page_to_load(2000)
         # create one already-read order
         FakeOrder.generate(count=1)
         order = Order.objects.all()[0]
-        self.sel.open('/')
+        order.unread = True
+        order.save()
         # assert that the one order is on list and does not have class unread
+        self.selenium.open(reverse('dashboard_orders'))
+        self.assertTrue(self.selenium.is_element_present("css=tr.unread"))
+        self.assertFalse(self.selenium.is_element_present("css=tbody tr:nth-child(2)"))
+        # click through on order
+        self.selenium.click("css=tr:first-child a:first-child")
+        self.selenium.wait_for_page_to_load(1000)
+        # assert that no orders have class unread
+        self.selenium.open(reverse('dashboard_orders'))
+        self.assertFalse(self.selenium.is_element_present("css=tr.unread"))
         # create new order
-        # wait for update
+        FakeOrder.generate(count=1)
+        order = Order.objects.order_by('-id')[0]
+        order.unread = True
+        order.save()
+        # wait for update -- page polls every minute
+        time.sleep(60)
         # assert update
+        self.assertTrue(self.selenium.is_element_present("css=tbody tr:nth-child(2)"))
         # assert that new order is on top
         # assert that new order has class unread
-        # click through on order
-        # assert that no orders have class unread
-        self.fail()
-
-    def test_status_in_list(self):
-        # create orders with each different status
-        # assert that each has the correct value displayed in list
-        self.fail()
+        self.assertTrue("unread" in self.selenium.get_attribute("css=tr#%d@class" % order.id))
