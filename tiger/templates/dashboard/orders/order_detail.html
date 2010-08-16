@@ -31,7 +31,7 @@ FIXME
                 <th>Total</th>
             </tr>
             </thead>
-        {% for id, item in order.cart.items %}
+        {% for id, item in order.get_cart %}
             <tr class="{% cycle '' 'shaded' %}">
                 <td class="item">
                 {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}

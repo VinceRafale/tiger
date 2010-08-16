@@ -319,11 +319,11 @@ class Order(models.Model):
         return self.total + self.tax
 
     def coupon(self):
-        try:
+        cart = self.get_cart()
+        if cart.has_coupon:
             coupon = self.couponuse_set.all()[0].coupon
-        except (IndexError, AttributeError):
-            return None
-        return coupon
+            return coupon
+        return ''
 
     def get_cart(self):
         from tiger.core.middleware import Cart
