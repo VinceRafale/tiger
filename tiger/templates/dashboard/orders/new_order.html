@@ -1,7 +1,7 @@
 {% for order in orders %}
-    <tr id="{{ order.id }}" class="{% cycle '' 'shaded' %} {% if order.unread %}unread{% endif %}">
+    <tr id="{{ order.id }}" class="{% cycle '' 'shaded' %} {% if order.unread %}un{% endif %}read">
         <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
-        <td><a href="{{ order.get_absolute_url }}">{{ order.timestamp|date:"fa m/d" }}</a></td>
+        <td><a href="{{ order.get_absolute_url }}">{{ order.localized_timestamp|date:"fa m/d" }}</a></td>
         <td><a href="{{ order.get_absolute_url }}">{% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}</a></td>
         <td><a href="{{ order.get_absolute_url }}">{{ order.pickup }}</a></td>
         <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>

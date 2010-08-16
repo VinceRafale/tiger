@@ -86,7 +86,7 @@ def get_item_form(site):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        exclude = ('status',)
+        exclude = ('status', 'unread')
 
     def __init__(self, data=None, site=None, *args, **kwargs):
         super(OrderForm, self).__init__(data, *args, **kwargs)
