@@ -74,7 +74,7 @@ def order_item(request, section, item):
         if form.is_valid():
             request.cart.add(i, form)
             msg = """%s added to your order. You can 
-            <a href="%s">complete your order now</a> or add more items.""" % (
+            <a href="%s">complete your order now</a> or <a href="/menu/">add more items</a>.""" % (
                 i.name, reverse('preview_order'))
             messages.success(request, msg) 
             return HttpResponseRedirect(i.section.get_absolute_url())
