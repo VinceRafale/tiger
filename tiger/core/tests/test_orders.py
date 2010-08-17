@@ -27,6 +27,15 @@ from tiger.fixtures import FakeOrder
 from tiger.notify.tasks import DeliverOrderTask
 
 
+def data_for_order_form(item):
+    data = {'quantity': random.randint(1, 5)}
+    if item.variant_set.count():
+        data['variant'] = item.variant_set.order_by('?')[0].id
+    for sidegroup in item.sidedishgroup_set.all():
+        if sidegroup.sidedish_set.count() > 1:
+            data['side_%d' % sidegroup.id] = sidegroup.sidedish_set.order_by('?')[0].id 
+    return data
+
 def random_order_form():
     no_variants = True
     while no_variants: 
@@ -36,12 +45,7 @@ def random_order_form():
     item.taxable = True
     item.save()
     form_class = get_order_form(item)
-    data = {'quantity': random.randint(1, 5)}
-    if item.variant_set.count():
-        data['variant'] = item.variant_set.order_by('?')[0].id
-    for sidegroup in item.sidedishgroup_set.all():
-        if sidegroup.sidedish_set.count() > 1:
-            data['side_%d' % sidegroup.id] = sidegroup.sidedish_set.order_by('?')[0].id 
+    data = data_for_order_form(item)
     bound_form = form_class(data)
     bound_form.full_clean()
     return item, bound_form
@@ -65,6 +69,77 @@ def deliver_paypal(order, **kwargs):
     TEST_PAYPAL_TRANSACTION.update(kwargs)
     paypal = PayPalIPN.objects.create(**TEST_PAYPAL_TRANSACTION)
     paypal.send_signals()
+
+
+class CouponTestCase(unittest.TestCase):
+    coupon = True
+
+    @classmethod
+    def setup_class(cls):
+        if not Site.objects.count():
+            load_fixtures('tiger.fixtures')
+        cls.server_thread = TestServerThread('127.0.0.1', 8000)
+        cls.server_thread.start()
+        cls.server_thread.started.wait()
+        if cls.server_thread.error:
+            raise cls.server_thread.error
+        cls.sel = selenium(
+            'localhost',
+            4444,
+            '*firefox',
+            'http://foo.takeouttiger.com:8000' 
+        )
+        cls.sel.start()
+        cls.sel.open('/dashboard/login/')
+        cls.sel.type('email', 'test@test.com')
+        cls.sel.type('password', 'password')
+        cls.sel.click("css=input[type='submit']")
+        cls.sel.wait_for_page_to_load(2000)
+
+    @classmethod
+    def teardown_class(cls):
+        cls.sel.close()
+        cls.server_thread.join()
+
+    def setUp(self):
+        self.site = Site.objects.all()[0]
+
+    def tearDown(self):
+        Coupon.objects.all().delete()
+
+    def test_status_display(self):
+        dollar_coupon = Coupon.objects.create(
+            site=self.site, 
+            short_code='', 
+            discount_type=Coupon.DISCOUNT_DOLLARS,
+            dollars_off='1.00'
+        )
+        self.assertEquals(dollar_coupon.discount, '$1.00')
+        percent_coupon = Coupon.objects.create(
+            site=self.site, 
+            short_code='', 
+            discount_type=Coupon.DISCOUNT_PERCENT,
+            percent_off=10
+        )
+        self.assertEquals(percent_coupon.discount, '10%')
+
+    def test_add_remove_coupon(self):
+        dollar_coupon = Coupon.objects.create(
+            site=self.site, 
+            short_code='TEST', 
+            discount_type=Coupon.DISCOUNT_DOLLARS,
+            dollars_off='1.00'
+        )
+        sel = CouponTestCase.sel
+        sel.open(reverse('preview_order'))
+        sel.type('id_coupon_code', 'TEST')
+        sel.click("css=#main input[type='submit']")
+        sel.wait_for_page_to_load(2000)
+        self.assertTrue(self.sel.is_text_present('Coupon TEST'))
+        sel.click("css=#clear-coupon")
+        sel.wait_for_page_to_load(2000)
+        self.assertFalse(self.sel.is_text_present('Coupon TEST'))
+        self.assertTrue(self.sel.is_text_present('Your coupon has been removed.'))
 
 
 class CartTestCase(unittest.TestCase):

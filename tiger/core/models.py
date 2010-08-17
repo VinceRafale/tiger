@@ -1,6 +1,7 @@
 import time
 from datetime import datetime, date
 from decimal import Decimal
+import random
 
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
@@ -461,7 +462,7 @@ class Coupon(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id and not self.short_code:
-            self.short_code = int_to_base36(int(time.time())).upper()
+            self.short_code = '%02d' % random.randint(1,99) + int_to_base36(int(time.time())).upper()
         super(Coupon, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -479,7 +480,7 @@ class Coupon(models.Model):
         return self.max_clicks - self.click_count
 
     def boilerplate(self):
-        msg = 'Get %d%% off your online order at %s with coupon code %s!' % (
+        msg = 'Get %s off your online order at %s with coupon code %s!' % (
             self.discount, self.site.name, self.short_code)
         if self.exp_date or self.max_clicks:
             msg += ' Valid '
@@ -488,6 +489,12 @@ class Coupon(models.Model):
             if self.exp_date:
                 msg += 'until %s' % self.exp_date.strftime('%m/%d/%y')
         return msg
+
+    @property
+    def discount(self):
+        if self.discount_type == Coupon.DISCOUNT_DOLLARS:
+            return '$%s' % self.dollars_off
+        return '%d%%' % self.percent_off
 
     @property
     def is_open(self):

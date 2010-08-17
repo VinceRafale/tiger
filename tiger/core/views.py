@@ -115,6 +115,11 @@ def add_coupon(request):
         messages.success(request, 'Coupon added to your cart successfully.')   
     return HttpResponseRedirect(reverse('menu_home'))
 
+def clear_coupon(request):
+    request.cart.remove_coupon()
+    messages.success(request, 'Your coupon has been removed.')   
+    return HttpResponseRedirect(reverse('preview_order'))
+
 def send_order(request):
     is_open = request.site.is_open
     if is_open is 0:

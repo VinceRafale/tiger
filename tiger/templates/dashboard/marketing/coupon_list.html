@@ -28,7 +28,7 @@ Your coupons
     {% for coupon in coupons %}
     <tr>
         <td>{{ coupon.short_code }}</td>
-        <td>{{ coupon.discount }}%</td>
+        <td>{{ coupon.discount }}</td>
         <td>{{ coupon.exp_date|date|default:"no exp. date" }}</td>
         <td>{{ coupon.remaining_clicks|default_if_none:"no limit" }}</td>
         <th><input type="text" readonly value="{{ site }}{{ coupon.get_absolute_url }}" /></th>
