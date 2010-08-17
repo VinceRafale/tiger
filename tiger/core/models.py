@@ -269,12 +269,16 @@ class Order(models.Model):
     STATUS_PAID = 3
     STATUS_FULFILLED = 4
     STATUS_CANCELLED = 5
+    STATUS_PENDING = 6
+    STATUS_REFUNDED = 7
     STATUS_CHOICES = (
         (STATUS_INCOMPLETE, 'Incomplete'),
-        (STATUS_SENT, 'Sent'),
-        (STATUS_PAID, 'Paid'),
+        (STATUS_SENT, 'On arrival'),
+        (STATUS_PAID, 'Paid online'),
         (STATUS_FULFILLED, 'Fulfilled'),
         (STATUS_CANCELLED, 'Cancelled'),
+        (STATUS_PENDING, 'Payment pending'),
+        (STATUS_REFUNDED, 'Refunded'),
     )
     site = models.ForeignKey('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=50)
@@ -337,9 +341,13 @@ class Order(models.Model):
 
     def paypal_transaction(self):
         try:
-            return PayPalIPN.objects.get(invoice=unicode(self.id))
+            return PayPalIPN.objects.get(invoice=unicode(self.id), payment_status='Completed')
         except PayPalIPN.DoesNotExist:
-            return None
+            try:
+                return PayPalIPN.objects.get(invoice=unicode(self.id), payment_status='Refunded')
+            except PayPalIPN.DoesNotExist:
+                return None
+
 
 class OrderSettings(models.Model):
     PAYMENT_NONE = 0
@@ -504,10 +512,13 @@ def register_paypal_payment(sender, **kwargs):
     # but are still flagged with receiver_email as invalid.  This signal
     # handler is thus used for both payment_was_successful and 
     # payment_was_flagged.
+    order = Order.objects.get(id=ipn_obj.invoice)
     if ipn_obj.payment_status == 'Completed':
         from tiger.notify.tasks import DeliverOrderTask
-        order = Order.objects.get(id=ipn_obj.invoice)
         DeliverOrderTask.delay(order.id, Order.STATUS_PAID)
+    elif ipn_obj.payment_status == 'Refunded':
+        order.status = Order.STATUS_REFUNDED
+        order.save()
 
 
 def new_site_setup(sender, instance, created, **kwargs):

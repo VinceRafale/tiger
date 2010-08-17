@@ -37,6 +37,12 @@
                             {{ order.street }}
                             {{ order.city }}, {{ order.state }} {{ order.zip }}
                         {% endif %}
+                        <strong>Payment:</strong> {{ order.get_status_display }}<br />
+                        {% with order.paypal_transaction as paypal %}
+                            {% if paypal %}
+                            <strong>Payment e-mail:</strong> {{ paypal.payer_email }}<br />
+                            {% endif %}
+                        {% endwith %}
                     </p>
                 </td>
             </tr>

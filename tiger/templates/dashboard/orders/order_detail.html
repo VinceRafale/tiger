@@ -14,7 +14,7 @@ FIXME
         <strong>Time placed:</strong> {{ order.timestamp|date:"fa m/d/y" }}<br />
         <strong>Pickup/delivery time:</strong> {{ order.pickup }}<br />
         <strong>Phone number:</strong> {{ order.phone }}<br />
-        <strong>Payment:</strong> {% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}<br />
+        <strong>Payment:</strong> {{ order.get_status_display }}<br />
         {% with order.paypal_transaction as paypal %}
             {% if paypal %}
             <strong>Payment e-mail:</strong> {{ paypal.payer_email }}<br />

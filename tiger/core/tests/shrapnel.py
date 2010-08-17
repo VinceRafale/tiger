@@ -3,6 +3,7 @@ import datetime
 from poseur.fixtures import FakeModel
 from django.contrib.sessions.models import Session
 from tiger.core.models import Coupon
+import faker
 
 TEST_PAYPAL_TRANSACTION = {
      'address_city': u'',
@@ -29,7 +30,6 @@ TEST_PAYPAL_TRANSACTION = {
      'flag_code': u'',
      'flag_info': u'Invalid receiver_email. (onlineorders@spinellapastabar.com)',
      'handling_amount': Decimal('0.00'),
-     'id': 3,
      'invoice': u'46',
      'ipaddress': '127.0.0.1',
      'item_name': u'Your order at Spinella Pasta Bar',
