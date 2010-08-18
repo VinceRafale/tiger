@@ -6,7 +6,7 @@ from django.views.generic.create_update import update_object
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import LocationForm, TimeSlotForm
-from tiger.accounts.models import TimeSlot
+from tiger.accounts.models import TimeSlot, Schedule
 from tiger.content.forms import ContentForm
 from tiger.content.models import Content
 from tiger.utils.hours import *
