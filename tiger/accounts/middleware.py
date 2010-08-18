@@ -20,7 +20,7 @@ class DomainDetectionMiddleware(object):
             return None
         site_obj = site.get_site_object()
         if site_obj is None:
-            return HttpResponseNotFound()
+            return HttpResponseRedirect('http://www.takeouttiger.com')
         request.site = site_obj
 
     def process_response(self, request, response):

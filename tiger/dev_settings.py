@@ -15,3 +15,6 @@ HAYSTACK_WHOOSH_PATH = '/home/jonathan/mysite_index'
 DISABLE_SITE_MIDDLEWARE = True
 
 CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379'
+
+CELERY_ALWAYS_EAGER = True
+

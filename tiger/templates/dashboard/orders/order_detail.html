@@ -14,7 +14,12 @@ FIXME
         <strong>Time placed:</strong> {{ order.timestamp|date:"fa m/d/y" }}<br />
         <strong>Pickup/delivery time:</strong> {{ order.pickup }}<br />
         <strong>Phone number:</strong> {{ order.phone }}<br />
-        <strong>Payment:</strong> {% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}<br />
+        <strong>Payment:</strong> {{ order.get_status_display }}<br />
+        {% with order.paypal_transaction as paypal %}
+            {% if paypal %}
+            <strong>Payment e-mail:</strong> {{ paypal.payer_email }}<br />
+            {% endif %}
+        {% endwith %}
     </div>
     <div class="omega grid_8">
         <table>
@@ -26,7 +31,7 @@ FIXME
                 <th>Total</th>
             </tr>
             </thead>
-        {% for id, item in order.cart.items %}
+        {% for id, item in order.get_cart %}
             <tr class="{% cycle '' 'shaded' %}">
                 <td class="item">
                 {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}
@@ -49,16 +54,14 @@ FIXME
                 <td class="total">${{ item.total|floatformat:"-2" }}</td>
             </tr>
         {% endfor %}
-        {% with order.coupon as coupon %}
-        {% if coupon %}
+        {% if cart.has_coupon %}
         <tr class="discount">
-            <td class="item">Coupon code {{ coupon.short_code }} - {{ coupon.discount }}% off</td>
+            <td class="item">{{ cart.coupon_display }}</td>
             <td></td>
             <td></td>
             <td class="total">-${{ order.couponuse_set.all.0.amount|floatformat:"-2" }}</td>
         </tr>
         {% endif %}
-        {% endwith %}
         <tr class="total">
             <td class="item">Total</td>
             <td></td>

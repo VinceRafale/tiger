@@ -7,7 +7,7 @@ from django.forms.util import ErrorList
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 
-from greatape import MailChimp
+from greatape import MailChimp, MailChimpError
 from paypal.standard.forms import PayPalPaymentsForm
 
 from tiger.core.forms import get_order_form, OrderForm, CouponForm, AuthNetForm
@@ -74,7 +74,7 @@ def order_item(request, section, item):
         if form.is_valid():
             request.cart.add(i, form)
             msg = """%s added to your order. You can 
-            <a href="%s">complete your order now</a> or add more items.""" % (
+            <a href="%s">complete your order now</a> or <a href="/menu/">add more items</a>.""" % (
                 i.name, reverse('preview_order'))
             messages.success(request, msg) 
             return HttpResponseRedirect(i.section.get_absolute_url())
@@ -114,6 +114,11 @@ def add_coupon(request):
         request.cart.add_coupon(coupon)
         messages.success(request, 'Coupon added to your cart successfully.')   
     return HttpResponseRedirect(reverse('menu_home'))
+
+def clear_coupon(request):
+    request.cart.remove_coupon()
+    messages.success(request, 'Your coupon has been removed.')   
+    return HttpResponseRedirect(reverse('preview_order'))
 
 def send_order(request):
     is_open = request.site.is_open
@@ -206,20 +211,25 @@ def order_success(request):
     return render_custom(request, 'core/order_success.html')
 
 def mailing_list_signup(request):
-    email = request.POST.get('email')
+    email = request.POST.get('email', '')
     if email_re.match(email):
         social = request.site.social
         mailchimp = MailChimp(social.mailchimp_api_key)
-        response = mailchimp.listSubscribe(
-            id=social.mailchimp_list_id, 
-            email_address=email,
-            merge_vars=''
-        )
-        if response is True:
-            success_msg = 'Thanks for signing up!  We\'ll send you a confirmation e-mail shortly.'
-            messages.success(request, success_msg)
+        try:
+            response = mailchimp.listSubscribe(
+                id=social.mailchimp_list_id, 
+                email_address=email,
+                merge_vars=''
+            )
+        except MailChimpError, e:
+            if e.code == 214:
+                messages.success(request, 'You are already on our mailing list.  Thanks for your continued interest!')
         else:
-            messages.warning(request, 'We were unable to sign you up at this time.  Please try again.')
+            if response is True:
+                success_msg = 'Thanks for signing up!  We\'ll send you a confirmation e-mail shortly.'
+                messages.success(request, success_msg)
+            else:
+                messages.warning(request, 'We were unable to sign you up at this time.  Please try again.')
     else:
         error_msg = 'Please enter a valid e-mail address.'
         messages.error(request, error_msg)

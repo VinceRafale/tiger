@@ -16,8 +16,7 @@ def home(request):
 
 @login_required
 def get_new_orders(request):
-    lastId = request.POST.get('id')
-    new_orders = Order.objects.filter(site=request.site, id__gt=lastId).order_by('-timestamp')
+    new_orders = Order.objects.filter(site=request.site).order_by('-timestamp')
     rows = render_to_string('dashboard/orders/new_order.html', {'orders': new_orders})
     return HttpResponse(rows)
 
@@ -28,7 +27,8 @@ def order_detail(request, order_id):
     order.unread = False
     order.save()
     return direct_to_template(request, template='dashboard/orders/order_detail.html', extra_context={
-        'order': order
+        'order': order,
+        'cart': order.get_cart()
     })
 
 @login_required

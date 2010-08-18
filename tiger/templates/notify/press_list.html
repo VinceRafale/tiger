@@ -18,7 +18,7 @@
         <h4><a href="{{ release.get_absolute_url }}">{{ release.title }}</a></h4>
         <p><em>Published {{ release.time_sent|date }}</em></p>
         {% if release.body %}
-        {{ release.body|linebreaks|truncatewords_html:30 }}
+        {{ release.body_html|striptags|truncatewords_html:30 }}
         {% endif %}
     </li>
 {% empty %}

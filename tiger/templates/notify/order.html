@@ -37,6 +37,12 @@
                             {{ order.street }}
                             {{ order.city }}, {{ order.state }} {{ order.zip }}
                         {% endif %}
+                        <strong>Payment:</strong> {{ order.get_status_display }}<br />
+                        {% with order.paypal_transaction as paypal %}
+                            {% if paypal %}
+                            <strong>Payment e-mail:</strong> {{ paypal.payer_email }}<br />
+                            {% endif %}
+                        {% endwith %}
                     </p>
                 </td>
             </tr>
@@ -49,7 +55,7 @@
             <th>Qty</th>
             <th>Total</th>
         </tr>
-        {% for id, item in cart.items %}
+        {% for id, item in cart %}
             <tr>
                 <td class="item">
                 {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}
@@ -75,7 +81,7 @@
         {% with order.coupon as coupon %}
         {% if coupon %}
         <tr class="discount">
-            <td class="item">Coupon code {{ coupon.short_code }} - {{ coupon.discount }}% off</td>
+            <td class="item">{{ cart.coupon_display }}</td>
             <td></td>
             <td></td>
             <td>-${{ order.couponuse_set.all.0.amount|floatformat:"-2" }}</td>
@@ -89,7 +95,7 @@
             <td>${{ order.total|floatformat:"-2" }}</td>
         </tr>
         <tr class="discount">
-            <td class="item">Tax ({{ site.ordersettings.tax_rate }}%)</td>
+            <td class="item">Tax ({{ order.site.ordersettings.tax_rate }}%)</td>
             <td></td>
             <td></td>
             <td>${{ order.tax|floatformat:"-2" }}</td>

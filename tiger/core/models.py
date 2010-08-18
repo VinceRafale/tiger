@@ -1,6 +1,7 @@
 import time
 from datetime import datetime, date
 from decimal import Decimal
+import random
 
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
@@ -12,7 +13,9 @@ from django.template.loader import render_to_string
 from django.utils.http import int_to_base36
 from django.utils.safestring import mark_safe
 
-from paypal.standard.ipn.signals import payment_was_successful
+from paypal.standard.ipn.models import PayPalIPN
+from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged
+from pytz import timezone
 
 from tiger.content.handlers import pdf_caching_handler
 from tiger.notify.fax import FaxMachine
@@ -247,7 +250,7 @@ class SideDishGroup(models.Model):
 class SideDish(models.Model):
     group = models.ForeignKey(SideDishGroup)
     name = models.CharField(max_length=100)
-    price = models.DecimalField('Additional cost', max_digits=5, decimal_places=2, null=True, blank=True)
+    price = models.DecimalField('Additional cost', max_digits=5, decimal_places=2, default='0.00', blank=True)
 
     def __unicode__(self):
         if self.price > 0:
@@ -269,12 +272,16 @@ class Order(models.Model):
     STATUS_PAID = 3
     STATUS_FULFILLED = 4
     STATUS_CANCELLED = 5
+    STATUS_PENDING = 6
+    STATUS_REFUNDED = 7
     STATUS_CHOICES = (
         (STATUS_INCOMPLETE, 'Incomplete'),
-        (STATUS_SENT, 'Sent'),
-        (STATUS_PAID, 'Paid'),
+        (STATUS_SENT, 'On arrival'),
+        (STATUS_PAID, 'Paid online'),
         (STATUS_FULFILLED, 'Fulfilled'),
         (STATUS_CANCELLED, 'Cancelled'),
+        (STATUS_PENDING, 'Payment pending'),
+        (STATUS_REFUNDED, 'Refunded'),
     )
     site = models.ForeignKey('accounts.Site', null=True, editable=False)
     name = models.CharField(max_length=50)
@@ -302,7 +309,7 @@ class Order(models.Model):
         """
         content = render_to_pdf('notify/order.html', {
             'order': self,
-            'cart': self.cart,
+            'cart': self.get_cart(),
             'order_no': self.id,
         })
         if self.site.ordersettings.receive_via == OrderSettings.RECEIPT_EMAIL:
@@ -319,16 +326,38 @@ class Order(models.Model):
         return self.total + self.tax
 
     def coupon(self):
-        try:
+        cart = self.get_cart()
+        if cart.has_coupon:
             coupon = self.couponuse_set.all()[0].coupon
-        except (IndexError, AttributeError):
-            return None
-        return coupon
+            return coupon
+        return ''
+
+    def get_cart(self):
+        from tiger.core.middleware import Cart
+        return Cart(contents=self.cart)
+
+    def localized_timestamp(self):
+        server_tz = timezone(settings.TIME_ZONE)
+        site_tz = timezone(self.site.timezone)
+        timestamp = server_tz.localize(self.timestamp)
+        return timestamp.astimezone(site_tz)
+
+    def paypal_transaction(self):
+        try:
+            return PayPalIPN.objects.get(invoice=unicode(self.id), payment_status='Completed')
+        except PayPalIPN.DoesNotExist:
+            try:
+                return PayPalIPN.objects.get(invoice=unicode(self.id), payment_status='Refunded')
+            except PayPalIPN.DoesNotExist:
+                return None
+
 
 class OrderSettings(models.Model):
+    PAYMENT_NONE = 0
     PAYMENT_PAYPAL = 1
     PAYMENT_AUTHNET = 2
     PAYMENT_TYPE_CHOICES = (
+        (PAYMENT_NONE, 'Do not take payments online'), 
         (PAYMENT_PAYPAL, 'PayPal'), 
         (PAYMENT_AUTHNET, 'Authorize.net'),
     )
@@ -346,7 +375,7 @@ class OrderSettings(models.Model):
     delivery_minimum = models.DecimalField('minimum amount for delivery orders', max_digits=5, decimal_places=2, default='0.00') 
     delivery_area = models.MultiPolygonField(null=True, blank=True) 
     # customer's authorize.net information for online orders
-    payment_type = models.IntegerField('Collect payment via', null=True, choices=PAYMENT_TYPE_CHOICES)
+    payment_type = models.IntegerField('Collect payment via', null=True, choices=PAYMENT_TYPE_CHOICES, default=PAYMENT_NONE)
     auth_net_api_login = models.CharField('API Login ID', max_length=255, blank=True, null=True)
     auth_net_api_key = models.CharField('Transaction Key', max_length=255, blank=True, null=True)
     paypal_email = models.EmailField(blank=True, null=True)
@@ -412,12 +441,20 @@ class OrderSettings(models.Model):
     
 
 class Coupon(models.Model):
+    DISCOUNT_DOLLARS = 1
+    DISCOUNT_PERCENT = 2
+    DISCOUNT_CHOICES = (
+        (DISCOUNT_DOLLARS, 'Dollar amount'),
+        (DISCOUNT_PERCENT, 'Percentage of order'),
+    )
     site = models.ForeignKey('accounts.Site', editable=False)
     short_code = models.CharField(max_length=20, help_text='Uppercase letters and numbers only. Leave this blank to have a randomly generated coupon code.', blank=True)
     exp_date = models.DateField('Expiration date (optional)', null=True, blank=True)
     click_count = models.IntegerField('Number of uses', editable=False, default=0)
     max_clicks = models.PositiveIntegerField('Max. allowed uses (optional)', null=True, blank=True)
-    discount = models.PositiveIntegerField()
+    discount_type = models.PositiveIntegerField(choices=DISCOUNT_CHOICES)
+    dollars_off = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    percent_off = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         unique_together = ('site', 'short_code',)
@@ -427,7 +464,7 @@ class Coupon(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.id and not self.short_code:
-            self.short_code = int_to_base36(int(time.time())).upper()
+            self.short_code = '%02d' % random.randint(1,99) + int_to_base36(int(time.time())).upper()
         super(Coupon, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -445,7 +482,7 @@ class Coupon(models.Model):
         return self.max_clicks - self.click_count
 
     def boilerplate(self):
-        msg = 'Get %d%% off your online order at %s with coupon code %s!' % (
+        msg = 'Get %s off your online order at %s with coupon code %s!' % (
             self.discount, self.site.name, self.short_code)
         if self.exp_date or self.max_clicks:
             msg += ' Valid '
@@ -454,6 +491,12 @@ class Coupon(models.Model):
             if self.exp_date:
                 msg += 'until %s' % self.exp_date.strftime('%m/%d/%y')
         return msg
+
+    @property
+    def discount(self):
+        if self.discount_type == Coupon.DISCOUNT_DOLLARS:
+            return '$%s' % self.dollars_off
+        return '%d%%' % self.percent_off
 
     @property
     def is_open(self):
@@ -473,8 +516,18 @@ class CouponUse(models.Model):
 
 def register_paypal_payment(sender, **kwargs):
     ipn_obj = sender
+    # Because of django-paypal's reliance on settings variables, payments 
+    # come through as completed and verified,
+    # but are still flagged with receiver_email as invalid.  This signal
+    # handler is thus used for both payment_was_successful and 
+    # payment_was_flagged.
     order = Order.objects.get(id=ipn_obj.invoice)
-    DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
+    if ipn_obj.payment_status == 'Completed':
+        from tiger.notify.tasks import DeliverOrderTask
+        DeliverOrderTask.delay(order.id, Order.STATUS_PAID)
+    elif ipn_obj.payment_status == 'Refunded':
+        order.status = Order.STATUS_REFUNDED
+        order.save()
 
 
 def new_site_setup(sender, instance, created, **kwargs):
@@ -509,6 +562,7 @@ def create_defaults(sender, instance, created, **kwargs):
 
 
 payment_was_successful.connect(register_paypal_payment)
+payment_was_flagged.connect(register_paypal_payment)
 post_save.connect(new_site_setup)
 post_save.connect(item_social_handler, sender=Item)
 post_save.connect(pdf_caching_handler, sender=Item)

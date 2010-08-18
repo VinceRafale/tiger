@@ -45,14 +45,7 @@ Online orders status
         </thead>
         <tbody>
         {% for order in orders %}
-            <tr id="{{ order.id }}" class="{% cycle '' 'shaded' %} {% if order.unread %}unread{% endif %}">
-                <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
-                <td><a href="{{ order.get_absolute_url }}">{{ order.timestamp|date:"fa m/d" }}</a></td>
-                <td><a href="{{ order.get_absolute_url }}">{% if order.status == 3 %}Paid online{% else %}On arrival{% endif %}</a></td>
-                <td><a href="{{ order.get_absolute_url }}">{{ order.pickup }}</a></td>
-                <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
-                <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total_plus_tax|floatformat:"-2" }}</a></td>
-            </tr>
+            {% include 'dashboard/orders/new_order.html' %}
         {% empty %}
             <tr>
                 <td colspan="6">You have not received any orders.</td>
@@ -69,11 +62,9 @@ Online orders status
 <script type="text/javascript">
 function updateOrders() {
     orderId = $("tbody tr:first").attr("id");
-    $.post("{% url get_new_orders %}", $.param({id: orderId}), function(data) {
+    $.post("{% url get_new_orders %}", {}, function(data) {
         if (data) {
-            $("tbody").prepend(data);
-            $("tbody tr").removeClass("shaded");
-            $("tbody tr:odd").addClass("shaded");
+            $("tbody").html(data);
         }
     }, "html");
 }

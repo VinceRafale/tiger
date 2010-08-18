@@ -53,7 +53,7 @@ def get_order_form(instance):
             required=False
         ) 
     for sidegroup in sidegroups:
-        if sidegroup.sidedish_set.count():
+        if sidegroup.sidedish_set.count() > 1:
             attrs['side_%d' % sidegroup.id] = forms.ModelChoiceField(
                 queryset=sidegroup.sidedish_set.all(), 
                 widget=forms.RadioSelect, 
@@ -86,7 +86,7 @@ def get_item_form(site):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        exclude = ('status',)
+        exclude = ('status', 'unread')
 
     def __init__(self, data=None, site=None, *args, **kwargs):
         super(OrderForm, self).__init__(data, *args, **kwargs)
@@ -150,14 +150,27 @@ class CouponForm(forms.Form):
 
 
 class CouponCreationForm(BetterModelForm):
+    discount_type = forms.TypedChoiceField(coerce=int, choices=Coupon.DISCOUNT_CHOICES, widget=forms.RadioSelect, initial=1)
+
     class Meta:
         model = Coupon
+    
+    def clean_dollars_off(self):
+        discount_type = self.cleaned_data.get('discount_type')
+        dollars_off = self.cleaned_data.get('dollars_off')
+        if discount_type == Coupon.DISCOUNT_DOLLARS and dollars_off is None:
+            raise forms.ValidationError('You must enter dollar amount if you choose a dollar-based discount.') 
+        return dollars_off
 
-    def clean_discount(self):
-        discount = self.cleaned_data.get('discount')
-        if type(discount) == int and discount > 100:
-            raise forms.ValidationError('Please enter a percentage between 0% and 100%.')
-        return discount
+    def clean_percent_off(self):
+        discount_type = self.cleaned_data.get('discount_type')
+        percent_off = self.cleaned_data.get('percent_off')
+        if discount_type == Coupon.DISCOUNT_PERCENT:
+            if percent_off is None:
+                raise forms.ValidationError('You must enter a percentage if you choose a percentage-based discount.')
+            elif type(percent_off) == int and not 0 < percent_off <= 100:
+                raise forms.ValidationError('Please enter a percentage between 1% and 100%.')
+        return percent_off
 
     def clean_exp_date(self):
         exp_date = self.cleaned_data.get('exp_date')
@@ -283,7 +296,7 @@ class OrderPaymentForm(BetterModelForm):
         if payment_type == OrderSettings.PAYMENT_PAYPAL: 
             if not cleaned_data.get('paypal_email'):
                 raise forms.ValidationError('You must enter your PayPal e-mail address to receive payments via PayPal.')
-        else:
+        elif payment_type == OrderSettings.PAYMENT_AUTHNET:
             auth_login = cleaned_data.get('auth_net_api_login')
             auth_key = cleaned_data.get('auth_net_api_key')
             if not (auth_login and auth_key):
@@ -390,3 +403,9 @@ class SideDishForm(forms.ModelForm):
     class Meta:
         model = SideDish
         exclude = ('group',)
+
+    def clean_price(self):
+        price = self.cleaned_data.get('price')
+        if not price:
+            return '0.00'
+        return price

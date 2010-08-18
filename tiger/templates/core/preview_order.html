@@ -39,11 +39,11 @@
 {% endfor %}
 {% if cart.has_coupon %}
 <tr class="discount">
-    <td class="item">Coupon code {{ cart.coupon.short_code }} - {{ cart.coupon.discount }}% off</td>
+    <td class="item">Coupon code {{ cart.coupon_display }}</td>
     <td></td>
     <td></td>
     <td>-${{ cart.discount|floatformat:"-2" }}</td>
-    <td class="remove"></td>
+    <td class="remove"><a id="clear-coupon" href="{% url clear_coupon %}">[x]</a></td>
 </tr>
 {% endif %}
 <tr class="discount">
