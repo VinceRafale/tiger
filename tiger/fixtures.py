@@ -41,7 +41,7 @@ class FakeSection(FakeModel):
 
     class Meta:
         model = Section
-        count = 4
+        count = 1
         requires = (FakeSite,)
 
 
