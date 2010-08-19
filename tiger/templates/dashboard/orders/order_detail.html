@@ -11,7 +11,7 @@ FIXME
     <div class="alpha grid_4">
         <strong>Customer:</strong> {{ order.name }}<br />
         <strong>For:</strong> {{ order.get_method_display }}<br />
-        <strong>Time placed:</strong> {{ order.timestamp|date:"fa m/d/y" }}<br />
+        <strong>Time placed:</strong> {{ order.localized_timestamp|date:"fa m/d/y" }}<br />
         <strong>Pickup/delivery time:</strong> {{ order.pickup }}<br />
         <strong>Phone number:</strong> {{ order.phone }}<br />
         <strong>Payment:</strong> {{ order.get_status_display }}<br />
