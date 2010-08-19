@@ -44,13 +44,7 @@ Online orders status
             </tr>
         </thead>
         <tbody>
-        {% for order in orders %}
-            {% include 'dashboard/orders/new_order.html' %}
-        {% empty %}
-            <tr>
-                <td colspan="6">You have not received any orders.</td>
-            </tr>
-        {% endfor %}
+        {% include 'dashboard/orders/new_order.html' %}
         </tbody>
     </table>
 
