@@ -88,9 +88,8 @@ def add_edit_schedule(request, schedule_id=None):
     else:
         forms = get_forms()
     form_list = zip([label for dow, label in DOW_CHOICES], forms)
-    extra_context = {'form_list': form_list}
-    context.update(extra_context)
-    return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context=context)
+    extra_context = {'form_list': form_list, 'schedule': schedule}
+    return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context=extra_context)
 
 
 @login_required

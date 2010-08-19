@@ -68,7 +68,7 @@ class StepOne(Step):
 
 class StepTwo(Step):
     conditions = (
-        lambda site: site.timeslot_set.count(),
+        lambda site: site.schedule_set.all()[0].timeslot_set.count(),
     )
     name = 'Add hours'
     link = 'http://www.youtube.com/watch?v=ORFoWj9YR9c'

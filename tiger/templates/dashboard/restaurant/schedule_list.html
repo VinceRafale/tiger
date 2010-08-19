@@ -25,7 +25,7 @@ You can create as many schedules as you need.  Schedules can then be assigned to
     <tbody>
         {% for schedule in schedules %}
         <tr>
-            <td></td>
+            <td><a href="{{ schedule.get_absolute_url }}">{{ schedule }}</a></td>
             <td></td>
             <td></td>
             <td></td>
