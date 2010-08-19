@@ -200,44 +200,51 @@ class Site(models.Model):
         return self.skin.url
 
 
-class Location(models.Model):
-    site = models.ForeignKey(Site)
-    name = models.CharField(max_length=255, blank=True)
-    street = models.CharField(max_length=255, default='')
-    city = models.CharField(max_length=255, default='')
-    state = USStateField(max_length=255, default='')
-    zip_code = models.CharField(max_length=10, default='')
-    phone = PhoneNumberField(default='')
-    fax_number = PhoneNumberField(default='', blank=True)
-    email = models.EmailField(blank=True, null=True)
-    timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
-    schedule = models.ForeignKey('Schedule')
-    lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
-    lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
+#class Location(models.Model):
+    #site = models.ForeignKey(Site)
+    #name = models.CharField(max_length=255, blank=True)
+    #street = models.CharField(max_length=255, default='')
+    #city = models.CharField(max_length=255, default='')
+    #state = USStateField(max_length=255, default='')
+    #zip_code = models.CharField(max_length=10, default='')
+    #phone = PhoneNumberField(default='')
+    #fax_number = PhoneNumberField(default='', blank=True)
+    #email = models.EmailField(blank=True, null=True)
+    #timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
+    #schedule = models.ForeignKey('Schedule')
+    #lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
+    #lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
 
-    def save(self, *args, **kwargs):
-        if self.address and not (self.lon and self.lat):
-            try:
-                self.lon, self.lat = [str(f) for f in geocode(self.address)]
-            except GeocodeError:
-                pass
-        super(Location, self).save(*args, **kwargs)
+    #def save(self, *args, **kwargs):
+        #if self.address and not (self.lon and self.lat):
+            #try:
+                #self.lon, self.lat = [str(f) for f in geocode(self.address)]
+            #except GeocodeError:
+                #pass
+        #super(Location, self).save(*args, **kwargs)
 
-    @property
-    def address(self):
-        address_pieces = [self.street, self.city, self.state, self.zip_code]
-        if all(address_pieces):
-            return ' '.join(address_pieces)
-        return ''
+    #@property
+    #def address(self):
+        #address_pieces = [self.street, self.city, self.state, self.zip_code]
+        #if all(address_pieces):
+            #return ' '.join(address_pieces)
+        #return ''
 
 
 class Schedule(models.Model):
     site = models.ForeignKey(Site)
     display = models.TextField(null=True)
+    master = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.display or ''
+
+    @models.permalink
+    def get_absolute_url(self):
+        return 'edit_schedule', (), {'schedule_id': self.id}
 
 
 class TimeSlot(models.Model):
-    site = models.ForeignKey(Site)
     schedule = models.ForeignKey(Schedule)
     section = models.ForeignKey('core.Section', null=True, editable=False)
     dow = models.IntegerField(choices=DOW_CHOICES)
@@ -299,7 +306,7 @@ def new_site_setup(sender, instance, created, **kwargs):
         Site = models.get_model('accounts', 'site')
         if isinstance(instance, Site):
             schedule = Schedule.objects.create(site=instance)
-            location = Location.objects.create(site=instance, schedule=schedule)
+            #location = Location.objects.create(site=instance, schedule=schedule)
 
 
 post_save.connect(new_site_setup)
