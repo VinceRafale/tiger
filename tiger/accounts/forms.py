@@ -71,16 +71,21 @@ class TimeSlotForm(BetterModelForm):
     def clean(self):
         super(TimeSlotForm, self).clean()
         cleaned_data = self.cleaned_data
+        self.delete = False
         if all(cleaned_data.values()):
             self.noop = False
             return cleaned_data
         if not any(cleaned_data.values()):
             self.noop = True
+            if self.instance.id:
+                self.delete = True
             return cleaned_data
         raise forms.ValidationError('You must specify an opening and closing time.')
 
     def save(self, commit=False):
         if self.noop:
+            if self.delete:
+                self.instance.delete()
             return
         return super(TimeSlotForm, self).save(commit)
         
