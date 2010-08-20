@@ -63,17 +63,7 @@ class ScheduleRestrictionTestCase(TestCase):
 
     def test_orders_against_location_schedule(self):
         # test application to location / online ordering restrictions
-        set_datetime(datetime(2010, 8, 18, 12, 30))
-        print self.client.get('/').content
-        item = Item.objects.order_by('?')[0]
-        response = self.client.post(reverse('order_item', kwargs={'section': item.section.slug, 'item': item.slug}), data_for_order_form(item), follow=True)
-        print response.redirect_chain
-        self.assertContains(response, 'added to your order. You can')
-
-        set_datetime(datetime(2010, 8, 18, 22, 30))
-        item = Item.objects.order_by('?')[0]
-        response = self.client.post(reverse('order_item', kwargs={'section': item.section.slug, 'item': item.slug}), data_for_order_form(item), follow=True)
-        self.assertContains(response, 'is currently closed')
+        self.fail()
 
     def test_orders_against_section_schedule(self):
         # test application to sections / online ordering restrictions
