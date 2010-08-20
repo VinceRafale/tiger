@@ -22,6 +22,7 @@ from tiger.core.models import Coupon
 from tiger.notify.forms import *
 from tiger.notify.models import Fax, Release
 from tiger.notify.tasks import PublishTask
+from tiger.utils.cache import KeyChain
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 @login_required
@@ -60,6 +61,7 @@ def publish_detail(request, release_id):
 
 @login_required
 def publish_delete(request, release_id):
+    KeyChain.news.invalidate(request.site.id)
     return delete_site_object(request, Release, release_id, 'dashboard_publish')
 
 @login_required
@@ -77,6 +79,7 @@ def publish(request, release_id=None):
                 mailchimp=cleaned_data.get('mailchimp'),
                 fax_list = cleaned_data.get('fax_list')
             )
+            KeyChain.news.invalidate(request.site.id)
             messages.success(request, 'News item published successfully.')
             return HttpResponseRedirect(reverse('dashboard_publish'))
     else:
