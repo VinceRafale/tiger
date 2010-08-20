@@ -305,11 +305,7 @@ class Order(models.Model):
         """Sends a message to the restaurant with the information about the order
         and flags the order as either sent or paid.
         """
-        content = render_to_pdf('notify/order.html', {
-            'order': self,
-            'cart': self.get_cart(),
-            'order_no': self.id,
-        })
+        content = self.get_pdf_invoice()
         if self.site.ordersettings.receive_via == OrderSettings.RECEIPT_EMAIL:
             email = EmailMessage('Takeout Tiger Order #%d' % self.id, 'Your order details are attached as PDF.', 'do-not-reply@takeouttiger.com', [self.site.email])
             email.attach('order-%d.pdf' % self.id, content, 'application/pdf')
@@ -319,6 +315,13 @@ class Order(models.Model):
             fax_machine.send(self.site.fax_number, content)
         self.status = status
         self.save()
+
+    def get_pdf_invoice(self):
+        return render_to_pdf('notify/order.html', {
+            'order': self,
+            'cart': self.get_cart(),
+            'order_no': self.id,
+        })
 
     def total_plus_tax(self):
         return self.total + self.tax

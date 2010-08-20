@@ -139,7 +139,6 @@ def send_order(request):
             order.total = request.cart.total()
             order.tax = request.cart.taxes()
             cart = request.cart.session.get_decoded()
-            cart.pop('coupon', '')
             order.cart = cart
             order.site = request.site
             try:
