@@ -12,6 +12,7 @@ from django.template.loader import render_to_string
 
 import pytz
 
+from tiger.core.exceptions import NoOnlineOrders, ClosingTimeBufferError, RestaurantNotOpen
 from tiger.look.models import Skin
 from tiger.utils.cache import cachedmethod, KeyChain
 from tiger.utils.geocode import geocode, GeocodeError
@@ -164,11 +165,20 @@ class Site(models.Model):
 
     @property
     def is_open(self):
-        return is_available(
+        if not self.enable_orders:
+            # if they don't have online ordering, why proclaim it?
+            raise NoOnlineOrders("Invalid data.  Please try again.", '/')
+        availability = is_available(
             timeslots=self.timeslot_set.all(), 
             tz=self.timezone,
             buff=self.ordersettings.eod_buffer
         )
+        if availability != TIME_OPEN:
+            if availability == TIME_EOD:
+                raise ClosingTimeBufferError("Sorry!  Orders must be placed within %d minutes of closing." % self.ordersettings.eod_buffer, '/')
+            raise RestaurantNotOpen("""%s is currently closed. Please try ordering during normal
+            restaurant hours, %s.""" % (self.name, self.hours), '/')
+        return True
 
     @cachedmethod(KeyChain.pdf)
     def menu(self):

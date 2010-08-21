@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from greatape import MailChimp, MailChimpError
 from paypal.standard.forms import PayPalPaymentsForm
 
+from tiger.core.exceptions import OrderingError
 from tiger.core.forms import get_order_form, OrderForm, CouponForm, AuthNetForm
 from tiger.core.models import Section, Item, Coupon, Order
 from tiger.notify.tasks import DeliverOrderTask
@@ -27,6 +28,10 @@ def section_detail(request, section):
     
 def item_detail(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
+    try:
+        assert i.is_available
+    except OrderingError, e:
+        messages.warning(request, e.msg) 
     if i.price_list in (None, []):
         if request.user.is_authenticated() and request.site.account.user == request.user:
             messages.warning(request, 'This is menu item is incomplete and will not appear to users.  To complete it, <a href="%s">add a price</a>.' % reverse('dashboard_edit_options', args=['item', i.id]))
@@ -37,39 +42,14 @@ def item_detail(request, section, item):
 
 def order_item(request, section, item):
     i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
-    if not request.site.enable_orders:
-        return HttpResponseRedirect(i.get_absolute_url())
-    if not i.available:
-        msg = """%s is currently not available. Please try one of our other
-        menu items.""" % i.name
-        messages.warning(request, msg) 
-        return HttpResponseRedirect(i.section.get_absolute_url())
+    try:
+        assert request.site.is_open and i.is_available
+    except OrderingError, e:
+        messages.warning(request, e.msg) 
+        return HttpResponseRedirect(e.redirect_to)
     OrderForm = get_order_form(i)
     total = i.variant_set.order_by('-price')[0].price
     if request.method == 'POST':
-        #TODO: how about raising some RestaurantNotOpen, ItemNotAvailable, SectionNotAvailable errors in here? would help w/ dry...
-        is_open = request.site.is_open
-        #TODO: look in utils/hours.py for the explanation of this dumbness
-        if is_open is 0:
-            msg = "Sorry!  Orders must be placed within %d minutes of closing." % request.site.ordersettings.eod_buffer
-            messages.warning(request, msg) 
-            return HttpResponseRedirect(i.section.get_absolute_url())
-        elif not is_open:
-            msg = """%s is currently closed. Please try ordering during normal
-            restaurant hours, %s.""" % (request.site.name, request.site.hours)
-            messages.warning(request, msg) 
-            return HttpResponseRedirect(i.section.get_absolute_url())
-        section = i.section
-        if not section.is_available:
-            msg = 'Items from %s are only available %s.' % (
-                section.name, section.hours)
-            messages.warning(request, msg) 
-            return HttpResponseRedirect(i.section.get_absolute_url())
-        if not i.available:
-            msg = """%s is currently not available. Please try one of our other
-            menu items.""" % i.name
-            messages.warning(request, msg) 
-            return HttpResponseRedirect(i.section.get_absolute_url())
         form = OrderForm(request.POST)
         if form.is_valid():
             request.cart.add(i, form)
@@ -121,16 +101,11 @@ def clear_coupon(request):
     return HttpResponseRedirect(reverse('preview_order'))
 
 def send_order(request):
-    is_open = request.site.is_open
-    if is_open is 0:
-        msg = "Sorry!  Orders must be placed within %d minutes of closing." % request.site.ordersettings.eod_buffer
-        messages.warning(request, msg) 
-        return HttpResponseRedirect(reverse('home'))
-    elif not is_open:
-        msg = """%s is currently closed. Please try ordering during normal
-        restaurant hours, %s.""" % (request.site.name, request.site.hours)
-        messages.warning(request, msg) 
-        return HttpResponseRedirect(reverse('home'))
+    try:
+        assert request.site.is_open
+    except OrderingError, e:
+        messages.warning(request, e.msg)
+        return HttpResponseRedirect(e.redirect_to)
     if request.method == 'POST':
         form = OrderForm(request.POST, site=request.site)
         form.total = request.cart.total()
