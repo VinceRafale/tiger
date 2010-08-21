@@ -18,6 +18,8 @@ from paypal.standard.ipn.signals import payment_was_successful, payment_was_flag
 from pytz import timezone
 
 from tiger.content.handlers import pdf_caching_handler
+from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable
+from tiger.core.messages import *
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler
 from tiger.utils.fields import PickledObjectField
@@ -77,10 +79,13 @@ class Section(models.Model):
     def is_available(self):
         if self.timeslot_set.count() == 0:
             return True
-        return is_available(
+        if  is_available(
             timeslots=self.timeslot_set.all(), 
             tz=self.site.timezone
-        )
+        ) != TIME_OPEN:
+            raise SectionNotAvailable(SECTION_NOT_AVAILABLE % (
+                self.name, self.hours), self.get_absolute_url())
+        return True
 
     def calculate_hour_string(self, commit=True):
         """Returns a nicely formatted string representing availability based on the
@@ -159,8 +164,11 @@ class Item(models.Model):
         return reverse('short_code', kwargs={'item_id': int_to_base36(self.id)})
 
     @property
-    def available(self):
-        return not (self.archived or self.out_of_stock)
+    def is_available(self):
+        assert self.section.is_available
+        if self.archived or self.out_of_stock:
+            raise ItemNotAvailable(ITEM_NOT_AVAILABLE % self.name, redirect_to=self.get_absolute_url())
+        return True
 
     def update_price(self):
         self.price_list = get_price_list(self)
@@ -307,11 +315,7 @@ class Order(models.Model):
         """Sends a message to the restaurant with the information about the order
         and flags the order as either sent or paid.
         """
-        content = render_to_pdf('notify/order.html', {
-            'order': self,
-            'cart': self.get_cart(),
-            'order_no': self.id,
-        })
+        content = self.get_pdf_invoice()
         if self.site.ordersettings.receive_via == OrderSettings.RECEIPT_EMAIL:
             email = EmailMessage('Takeout Tiger Order #%d' % self.id, 'Your order details are attached as PDF.', 'do-not-reply@takeouttiger.com', [self.site.email])
             email.attach('order-%d.pdf' % self.id, content, 'application/pdf')
@@ -321,6 +325,13 @@ class Order(models.Model):
             fax_machine.send(self.site.fax_number, content)
         self.status = status
         self.save()
+
+    def get_pdf_invoice(self):
+        return render_to_pdf('notify/order.html', {
+            'order': self,
+            'cart': self.get_cart(),
+            'order_no': self.id,
+        })
 
     def total_plus_tax(self):
         return self.total + self.tax

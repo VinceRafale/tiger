@@ -32,6 +32,13 @@ def order_detail(request, order_id):
     })
 
 @login_required
+def order_pdf(request, order_id):
+    order = Order.objects.get(id=order_id) 
+    response = HttpResponse(order.get_pdf_invoice(), mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=invoice.pdf'
+    return response
+
+@login_required
 def order_options(request):
     if request.method == 'POST':
         form = OrderSettingsForm(request.POST, site=request.site, instance=request.site.ordersettings)

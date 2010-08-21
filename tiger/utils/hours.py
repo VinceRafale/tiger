@@ -20,24 +20,25 @@ DOW_CHOICES = (
     (DOW_SUNDAY, 'Sunday'),
 )
 
+TIME_OPEN = 'open'
+TIME_EOD = 'eod'
+TIME_CLOSED = 'closed'
+
 def is_available(timeslots, tz, buff=0):
     server_tz = timezone(settings.TIME_ZONE)
     site_tz = timezone(tz)
     now = server_tz.localize(datetime.now())
     timeslots = timeslots.filter(dow=now.weekday())
     if not timeslots.count():
-        return False
+        return TIME_CLOSED
     for timeslot in timeslots:
         start_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.start))
         stop_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.stop))
         if start_dt < now < stop_dt:
             if start_dt < now < stop_dt - timedelta(seconds=buff*60):
-                return True
-            #TODO: my goodness is this ugly.  need to get a different value out to
-            # the view to signal that this is a closing time buffer false rather than
-            # standard hours false.
-            return 0
-    return False
+                return TIME_OPEN
+            return TIME_EOD
+    return TIME_CLOSED
 
 def calculate_hour_string(timeslots):
     # this implementation is a little naive, but let's just assume our customers

@@ -12,11 +12,6 @@
 {% if not form and site.enable_orders and item.available %}
 <a class="add top" href="{% url order_item item.section.slug item.slug %}">add to order</a>
 {% endif %}
-{% if not item.available %}
-    <ul class="messages">
-        <li class="warning">This menu item is currently unavailable.</li>
-    </ul>
-{% endif %}
 <h1>{{ item.name }}{% if item.spicy %} <span class="pepper">❧</span>{% endif %}{% if item.vegetarian %} <span class="veg">veg</span>{% endif %}</h1>
 <div>
 {% if item.image %}

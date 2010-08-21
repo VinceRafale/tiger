@@ -1,6 +1,7 @@
-from datetime import timedelta
+from datetime import timedelta, time, datetime
 import random
 import unittest
+from time import sleep
 
 from django.conf import settings
 from django.contrib.sessions.models import Session
@@ -14,17 +15,19 @@ from djangosanetesting.noseplugins import TestServerThread
 from faker.generators.utils import numerify
 from paypal.standard.ipn.models import PayPalIPN
 from poseur.fixtures import load_fixtures
-from poseur.fixtures import load_fixtures
 from pytz import timezone
 from selenium import selenium
 
-from tiger.accounts.models import Site
+from tiger.accounts.models import Site, TimeSlot
+from tiger.core.exceptions import *
 from tiger.core.forms import get_order_form
 from tiger.core.middleware import Cart
-from tiger.core.models import *
-from tiger.core.tests.shrapnel import *
+from tiger.core.models import (Section, Item, Variant, 
+    SideDish, SideDishGroup, Order, Coupon, OrderSettings)
+from tiger.core.tests.shrapnel import TEST_PAYPAL_TRANSACTION, FakeSession, FakeCoupon
 from tiger.fixtures import FakeOrder
 from tiger.notify.tasks import DeliverOrderTask
+from tiger.utils.hours import DOW_CHOICES
 
 
 def data_for_order_form(item):
@@ -337,7 +340,7 @@ class OrderListTest(unittest.TestCase):
         order.unread = True
         order.save()
         # wait for update -- page polls every minute
-        time.sleep(60)
+        sleep(60)
         # assert update
         self.assertTrue(self.sel.is_element_present("css=tbody tr:nth-child(2)"))
         # assert that new order is on top
