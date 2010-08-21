@@ -63,6 +63,8 @@ def order_item(request, section, item):
     return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': '%.2f' % total, 'sections': request.site.section_set.all()})
 
 def preview_order(request):
+    if not hasattr(request, 'cart'):
+        return HttpResponseRedirect('/menu/')
     if request.method == 'POST':
         form = CouponForm(request.site, request.POST)
         if request.cart.has_coupon:
