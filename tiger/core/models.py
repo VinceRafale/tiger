@@ -18,7 +18,7 @@ from paypal.standard.ipn.signals import payment_was_successful, payment_was_flag
 from pytz import timezone
 
 from tiger.content.handlers import pdf_caching_handler
-from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable
+from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable, PricePointNotAvailable
 from tiger.core.messages import *
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler
@@ -212,6 +212,15 @@ class Variant(models.Model):
         item = self.item
         super(Variant, self).delete(*args, **kwargs)
         item.update_price()
+
+    @property
+    def is_available(self):
+        if self.schedule is None:
+            return True
+        if self.schedule.is_open() != TIME_OPEN:
+            raise PricePointNotAvailable(PRICEPOINT_NOT_AVAILABLE % (
+                self.description, self.schedule.display), self.item.get_absolute_url())
+        return True
 
 
 class Upgrade(models.Model):

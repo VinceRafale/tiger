@@ -23,3 +23,7 @@ class ItemNotAvailable(OrderingError):
     
 class SectionNotAvailable(OrderingError):
     pass
+
+
+class PricePointNotAvailable(OrderingError):
+    pass

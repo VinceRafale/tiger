@@ -11,6 +11,7 @@ from django.utils import simplejson
 from authorize.aim import Api
 from olwidget.widgets import EditableMap
 
+from tiger.core.exceptions import PricePointNotAvailable
 from tiger.core.models import *
 from tiger.dashboard.widgets import ImageChooserWidget
 from tiger.utils.forms import BetterModelForm
@@ -19,6 +20,15 @@ from tiger.utils.geocode import geocode, GeocodeError
 
 
 class BaseOrderForm(forms.Form):
+    def clean_variant(self):
+        variant = self.cleaned_data.get('variant')
+        if variant is not None:
+            try:
+                variant.is_available
+            except PricePointNotAvailable, e:
+                raise forms.ValidationError(e.msg)
+        return variant
+
     def sidedish_fields(self):
         return [
             field for field in self
