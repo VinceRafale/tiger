@@ -78,7 +78,7 @@ class Site(models.Model):
     """
     account = models.ForeignKey(Account)
     name = models.CharField(max_length=200, default='Your Restaurant Name')
-    subdomain = models.CharField(max_length=200)
+    subdomain = models.CharField(max_length=200, unique=True)
     domain = models.CharField(max_length=200, null=True, blank=True)
     enable_blog = models.BooleanField(default=False)
     blog_address = models.URLField(blank=True)
