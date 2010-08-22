@@ -19,59 +19,20 @@ from tiger.core.models import Section, Item
 from tiger.core.tests.test_orders import data_for_order_form
 
 
-class ScheduleRestrictionTestCase(TestCase):
+class DefaultScheduleTestCase(TestCase):
     schedule = True
 
-    @classmethod
-    def setup_class(cls):
-        if not Site.objects.count():
-            load_fixtures('tiger.fixtures')
+    #def test_default_schedule(self):
+        #s = Site.objects.order_by('-id')[0]
 
-    @classmethod
-    def teardown_class(cls):
-        call_command('flush', verbosity=0, interactive=False)
+        ## new sites should have no hours in one schedule
+        #assert_true(s.schedule_set.count() == 1)
+        #schedule = s.schedule_set.all()[0]
+        #assert_true(schedule.timeslot_set.count() == 0)
 
-    def test_default_schedule(self):
-        s = Site.objects.all()[0]
+        ## default schedule should be associated with the default location
+        ##assert_true(schedule == s.location_set.all()[0].schedule)
 
-        # new sites should have no hours in one schedule
-        assert_true(s.schedule_set.count() == 1)
-        schedule = s.schedule_set.all()[0]
-        assert_true(schedule.timeslot_set.count() == 0)
-
-        # default schedule should be associated with the default location
-        #assert_true(schedule == s.location_set.all()[0].schedule)
-
-
-class ScheduleRestrictionTestCase(TestCase):
-    schedule = True
-
-    @classmethod
-    def setup_class(cls):
-        if not Site.objects.count():
-            load_fixtures('tiger.fixtures')
-        schedule = Schedule.objects.all()[0]
-        for dow, label in DOW_CHOICES:
-            TimeSlot.objects.create(dow=dow, schedule=schedule, start=time(9, 0), stop=time(9 + 12, 0))
-
-    @classmethod
-    def teardown_class(cls):
-        call_command('flush', verbosity=0, interactive=False)
-
-    def setUp(self):
-        self.client = Client(HTTP_HOST='foo.takeouttiger.com')
-
-    def test_orders_against_location_schedule(self):
-        # test application to location / online ordering restrictions
-        self.fail()
-
-    def test_orders_against_section_schedule(self):
-        # test application to sections / online ordering restrictions
-        self.fail()
-
-    def test_orders_against_price_point_schedule(self):
-        # test application to price point / online ordering restrictions
-        self.fail()
 
 
 class AddEditScheduleTest(TestCase):

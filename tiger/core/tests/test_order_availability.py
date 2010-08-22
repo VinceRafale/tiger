@@ -7,7 +7,7 @@ from django.test.client import Client
 from nose.tools import with_setup, raises
 from poseur.fixtures import load_fixtures
 
-from tiger.accounts.models import Site, TimeSlot
+from tiger.accounts.models import Site, TimeSlot, Schedule
 from tiger.core.exceptions import *
 from tiger.core.messages import *
 from tiger.core.models import Section, Item, Variant
@@ -27,10 +27,10 @@ def setup_timeslots(dt):
         order_settings = site.ordersettings
         order_settings.eod_buffer = 15
         order_settings.save()
-
+        schedule, created = Schedule.objects.get_or_create(site=site, master=True)
         for dow, display in DOW_CHOICES:
             TimeSlot.objects.create(
-                dow=dow, site=site,
+                dow=dow, schedule=schedule,
                 start=(datetime.now() + timedelta(minutes=dt) - timedelta(minutes=30)).time(),
                 stop=(datetime.now() + timedelta(minutes=dt) + timedelta(minutes=30)).time()
             )
@@ -42,9 +42,14 @@ def setup_section_timeslots(dt):
         setup_timeslots(dt)()
         site = Site.objects.all()[0]
         section = Section.objects.all()[0]
+        schedule = section.schedule
+        if schedule is None:
+            schedule = Schedule.objects.create(site=site)
+        section.schedule = schedule
+        section.save()
         for dow, display in DOW_CHOICES:
             TimeSlot.objects.create(
-                dow=dow, site=site, section=section,
+                dow=dow, schedule=schedule,
                 start=(datetime.now() + timedelta(minutes=dt) - timedelta(minutes=30)).time(),
                 stop=(datetime.now() + timedelta(minutes=dt)).time()
             )
@@ -52,7 +57,10 @@ def setup_section_timeslots(dt):
 
 
 def teardown_timeslots():
-    TimeSlot.objects.all().delete()
+    for section in Section.objects.all():
+        section.schedule = None
+        section.save()
+    Schedule.objects.all().delete()
         
 
 @with_setup(setup_timeslots(0), teardown_timeslots)
@@ -135,8 +143,7 @@ def test_item_available():
 
 class ItemDisplayTestCase(TestCase):
     def setUp(self):
-        if not Site.objects.count():
-            load_fixtures('tiger.fixtures')
+        setup_timeslots(0)()
         self.client = Client(HTTP_HOST='foo.takeouttiger.com')
         self.client.get('/')
         self.item = Variant.objects.all()[0].item

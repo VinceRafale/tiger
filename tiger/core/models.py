@@ -77,14 +77,11 @@ class Section(models.Model):
 
     @property
     def is_available(self):
-        if self.timeslot_set.count() == 0:
+        if self.schedule is None:
             return True
-        if  is_available(
-            timeslots=self.timeslot_set.all(), 
-            tz=self.site.timezone
-        ) != TIME_OPEN:
+        if self.schedule.is_open() != TIME_OPEN:
             raise SectionNotAvailable(SECTION_NOT_AVAILABLE % (
-                self.name, self.hours), self.get_absolute_url())
+                self.name, self.schedule.display), self.get_absolute_url())
         return True
 
     def calculate_hour_string(self, commit=True):

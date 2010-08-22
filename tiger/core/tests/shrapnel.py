@@ -98,5 +98,7 @@ class FakeSession(FakeModel):
         model = Session
 
 class FakeCoupon(FakeModel):
+    short_code = None
+
     class Meta:
         model = Coupon

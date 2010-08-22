@@ -169,11 +169,8 @@ class Site(models.Model):
         if not self.enable_orders:
             # if they don't have online ordering, why proclaim it?
             raise NoOnlineOrders("Invalid data.  Please try again.", '/')
-        availability = is_available(
-            timeslots=self.timeslot_set.all(), 
-            tz=self.timezone,
-            buff=self.ordersettings.eod_buffer
-        )
+        master_schedule = self.schedule_set.get(master=True)
+        availability = master_schedule.is_open(buff=self.ordersettings.eod_buffer)
         if availability != TIME_OPEN:
             if availability == TIME_EOD:
                 raise ClosingTimeBufferError("Sorry!  Orders must be placed within %d minutes of closing." % self.ordersettings.eod_buffer, '/')
@@ -253,6 +250,14 @@ class Schedule(models.Model):
     def get_absolute_url(self):
         return 'edit_schedule', (), {'schedule_id': self.id}
 
+    def is_open(self, tz=None, buff=0):
+        if tz is None:
+            tz = self.site.timezone
+        return is_available(
+            timeslots=self.timeslot_set.all(), 
+            tz=tz,
+            buff=buff
+        )
 
 class TimeSlot(models.Model):
     schedule = models.ForeignKey(Schedule)
@@ -315,7 +320,7 @@ def new_site_setup(sender, instance, created, **kwargs):
     if created:
         Site = models.get_model('accounts', 'site')
         if isinstance(instance, Site):
-            schedule = Schedule.objects.create(site=instance)
+            schedule = Schedule.objects.create(site=instance, master=True)
             #location = Location.objects.create(site=instance, schedule=schedule)
 
 
