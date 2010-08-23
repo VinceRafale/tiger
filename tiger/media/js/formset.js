@@ -1,6 +1,6 @@
 // provides lists of names for form inputs
 var formSnippets = {
-    'price-points': ["description", "price"],
+    'price-points': ["description", "price", "schedule"],
     'extras': ["name", "price"],
     'side-groups': ["name", "price"],
     'sides': ["name", "price"],
@@ -19,7 +19,24 @@ function getForm(addAnchor) {
     fakeForm = '<li class="form' + ((arguments[1] && !noPopulate) ? ' populated' : '') + '">';
     $.each(inputs, function () {
         titleCase = this[0].toUpperCase() + this.slice(1);
-        fakeForm += '<label for="' + this + '">' + titleCase + ' <input type="text" id="id_' + this + '" name="' + this + '" value="' + (initial[this] || '') + '" /></label>';
+        fakeForm += '<label for="' + this + '">' + titleCase + ' ';
+        if (this != 'schedule') {
+            fakeForm += ' <input type="text" id="id_' + this + '" name="' + this + '" value="' + (initial[this] || '') + '" />';
+        } else {
+            fakeForm += '<select name="schedule">';
+            current = initial[this] || '';
+            $("#id_schedule").children().each(function () {
+                val = $(this).val();
+                if (val == current) {
+                    selected = true;
+                } else {
+                    selected = false;
+                }
+                fakeForm += '<option ' + (selected ? 'selected ' : '') + 'value="' + val + '">' + $(this).text() + '</option>';
+            })
+            fakeForm += '</select>';
+        }
+        fakeForm += '</label>';
     });
     fakeForm += '<a class="inline-save" href="#" rel="' + action + '">Save</a> <a class="inline-cancel" href="#">Cancel</a><div class="clear"></div></li>';
     return fakeForm;

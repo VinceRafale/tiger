@@ -12,11 +12,10 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.core.forms import *
 from tiger.core.models import *
-from tiger.accounts.forms import TimeSlotForm
+from tiger.accounts.forms import TimeSlotForm, ScheduleSelectForm
 from tiger.accounts.models import TimeSlot
 from tiger.utils.forms import RequireOneFormSet
 from tiger.utils.views import add_edit_site_object, delete_site_object
-#from tiger.dashboard.restaurant.views import save_hours
 
 def _reorder_objects(model, id_list):
     for i, obj_id in enumerate(id_list):
@@ -89,11 +88,16 @@ def add_edit_menu_options(request, object_type, object_id):
     instance = get_object_or_404(model, id=object_id)
     if instance and instance.site != request.site:
         raise Http404()
-    return direct_to_template(request, template='dashboard/menu/%s_options.html' % object_type, extra_context={
+    context = {
         'object': instance,
         'type': object_type,
         'options': True
-    })
+    }
+    if object_type == 'section':
+        context.update({
+            'schedule_form': ScheduleSelectForm(site=request.site, initial={'schedule': getattr(instance.schedule, 'id', '')})
+        })
+    return direct_to_template(request, template='dashboard/menu/%s_options.html' % object_type, extra_context=context)
 
 def add_related(request, object_type, object_id, form_class):
     if not request.is_ajax() or request.method != 'POST':
@@ -171,8 +175,8 @@ def edit_related(request, item_id, model, form_class, attr_list, object_type):
     if request.method == 'GET':
         initial = {}
         for attr in attr_list:
-            val = getattr(instance, attr, '')
-            initial[attr] = str(val) if val else ''
+            val = getattr(instance, attr, '') or ''
+            initial[attr] = str(val) if not hasattr(val, 'pk') else val.pk
         return HttpResponse(json.dumps(initial))
     form = form_class(request.POST, instance=instance)
     if form.is_valid():
@@ -190,7 +194,7 @@ def edit_related(request, item_id, model, form_class, attr_list, object_type):
 
 @login_required
 def edit_pricepoint(request, item_id):
-    return edit_related(request, item_id, Variant, VariantForm, ('description', 'price',), 'variant')
+    return edit_related(request, item_id, Variant, VariantForm, ('description', 'price', 'schedule'), 'variant')
 
 @login_required
 def edit_side(request, item_id):
@@ -255,11 +259,15 @@ def flag_item(request):
     item.save()
     return HttpResponse('')
 
-#@login_required
-#def section_hours(request, section_id):
-    ##TODO: make this DRY with the restaurant hours view
-    #section = Section.objects.get(id=section_id)
-    #instance_kwds = {
-        #'section': section
-    #}
-    #return save_hours(request, section=section, instance_kwds=instance_kwds, extra_context={'section': section}, redirect_to=reverse('dashboard_edit_options', args=['section', section.id]))
+@login_required
+def section_hours(request, section_id):
+    if request.method != 'POST':
+        raise Http404
+    form = ScheduleSelectForm(request.POST, site=request.site)
+    if not form.is_valid():
+        raise Http404
+    section = Section.objects.get(id=section_id)
+    schedule = form.cleaned_data['schedule']
+    section.schedule = schedule
+    section.save()
+    return HttpResponse('true')

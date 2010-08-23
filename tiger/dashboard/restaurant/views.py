@@ -81,7 +81,7 @@ def add_edit_schedule(request, schedule_id=None):
                     instance.schedule = schedule
                     instance.save()
             display_hours = request.POST.get('hours_display')
-            schedule.display = display_hours
+            schedule.display = display_hours or calculate_hour_string(schedule.timeslot_set.all())
             schedule.save()
             messages.success(request, 'Hours updated successfully.')
             return HttpResponseRedirect(reverse('edit_hours'))

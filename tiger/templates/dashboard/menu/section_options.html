@@ -9,12 +9,21 @@
 {% block defaults %}
     {% if object %}
         <h3>Hours of availability</h3>
-        {% if object.hours %}
-        <p>{{ object.hours }}</p>
-        {% else %}
+        {{ schedule_form.schedule }}
         <p class="help">You can control when items from this specific category are ordered, like lunch specials or breakfast items.</p>
-        {% endif %}
-        <a href="{% url dashboard_edit_section_hours object.id %}">Edit availability</a>
-
     {% endif %}
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript">
+$(function () {
+    $("#id_schedule").change(function () {
+        data = $(this).serialize();
+        $.post("{% url dashboard_edit_section_hours object.id %}", data, function (data) {
+
+        }, "json");
+    });
+});
+</script>
 {% endblock %}

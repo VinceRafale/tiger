@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
 
-from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep, FaxList
+from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep, FaxList, Schedule
 from tiger.utils.chargify import Chargify, ChargifyError
 from tiger.utils.forms import BetterModelForm
 
@@ -354,3 +354,10 @@ class FaxListForm(forms.ModelForm):
         model = FaxList
         exclude = ('site',)
 
+
+class ScheduleSelectForm(forms.Form):
+    schedule = forms.ModelChoiceField(queryset=Schedule.objects.all(), empty_label='Available during all business hours')
+
+    def __init__(self, data=None, site=None, *args, **kwargs):
+        super(ScheduleSelectForm, self).__init__(data=data, *args, **kwargs)
+        self.fields['schedule'].queryset = site.schedule_set.filter(master=False)
