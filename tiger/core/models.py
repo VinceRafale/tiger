@@ -296,7 +296,8 @@ class Order(models.Model):
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=2, blank=True, null=True)
     zip = models.CharField(max_length=10, blank=True, null=True)
-    pickup = models.CharField('Time you will pick up your order', max_length=20)
+    pickup = models.CharField('Time you will pick up your order', max_length=20, editable=False, null=True)
+    ready_by = models.DateTimeField('Have order ready by:', null=True)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
     tax = models.DecimalField(editable=False, max_digits=6, decimal_places=2, default='0.00')
     cart = PickledObjectField(editable=False)
@@ -382,6 +383,8 @@ class OrderSettings(models.Model):
     takeout = models.BooleanField(default=True) 
     delivery = models.BooleanField(default=True) 
     delivery_minimum = models.DecimalField('minimum amount for delivery orders', max_digits=5, decimal_places=2, default='0.00') 
+    lead_time = models.PositiveIntegerField('how many minutes before must a pick-up order be placed in advance?', default=0) 
+    delivery_lead_time = models.PositiveIntegerField('how many minutes before must a delivery order be placed in advance?', default=0) 
     delivery_area = models.MultiPolygonField(null=True, blank=True) 
     # customer's authorize.net information for online orders
     payment_type = models.IntegerField('Collect payment via', null=True, choices=PAYMENT_TYPE_CHOICES, default=PAYMENT_NONE)

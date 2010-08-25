@@ -11,6 +11,7 @@ from django.template import Template
 from django.template.loader import render_to_string
 
 import pytz
+from pytz import timezone
 
 from tiger.core.exceptions import NoOnlineOrders, ClosingTimeBufferError, RestaurantNotOpen
 from tiger.look.models import Skin
@@ -207,6 +208,10 @@ class Site(models.Model):
     @cachedmethod(KeyChain.skin)
     def skin_url(self):
         return self.skin.url
+
+    def localize(self, dt):
+        site_tz = timezone(self.timezone)
+        return site_tz.localize(dt)
 
 
 
