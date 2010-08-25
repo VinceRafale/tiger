@@ -140,7 +140,7 @@ class OrderForm(forms.ModelForm):
             lead_time = self.site.ordersettings.lead_time
         ready_by = self.cleaned_data.get('ready_by')
         method_display = dict(Order.METHOD_CHOICES).get(method)
-        if ready_by:
+        if ready_by and method_display:
             server_tz = timezone(settings.TIME_ZONE)
             if ready_by < server_tz.localize(datetime.now() + timedelta(minutes=lead_time)):
                 raise forms.ValidationError('%s orders must be placed %d minutes in advance.' % (method_display, lead_time))
