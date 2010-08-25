@@ -177,12 +177,11 @@ a.button:hover {text-decoration:underline;}
 form.send label {display:block;}
 .footer {background-color:black; color:white;}
 #orderPreview tr.total td {border-top:4px solid;}
-#submit {
+#submit, #pay {
     border:none;
     float:right;
-    clear:right;
 }
-a.add, #submit {
+a.add, #submit, #pay {
     -moz-border-radius:4px;
     -webkit-border-radius:4px;
     padding:4px 8px;

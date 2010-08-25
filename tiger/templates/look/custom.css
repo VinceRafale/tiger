@@ -18,10 +18,10 @@ h1, h2, h4 {color:#{{ skin.header_color }};}
 
 #orderPreview tr.total td {border-top-color:#{{ skin.button_color }};}
 a {color:#{{ skin.button_color }};}
-#menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit {
+#menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit, #pay {
     background-color:#{{ skin.button_color }};
 }
 
-a.lightlink, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit {
+a.lightlink, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit, #pay {
     color:#{{ skin.button_text_color }};
 }
