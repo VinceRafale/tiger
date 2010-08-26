@@ -314,6 +314,7 @@ class Order(models.Model):
         """Sends a message to the restaurant with the information about the order
         and flags the order as either sent or paid.
         """
+        self.status = status
         content = self.get_pdf_invoice()
         if self.site.ordersettings.receive_via == OrderSettings.RECEIPT_EMAIL:
             email = EmailMessage('Takeout Tiger Order #%d' % self.id, 'Your order details are attached as PDF.', 'do-not-reply@takeouttiger.com', [self.site.email])
@@ -322,7 +323,6 @@ class Order(models.Model):
         else:
             fax_machine = FaxMachine(self.site)
             fax_machine.send(self.site.fax_number, content)
-        self.status = status
         self.save()
 
     def get_pdf_invoice(self):
