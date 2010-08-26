@@ -180,6 +180,7 @@ form.send label {display:block;}
 #submit, #pay {
     border:none;
     float:right;
+    margin-left:14px;
 }
 a.add, #submit, #pay {
     -moz-border-radius:4px;
