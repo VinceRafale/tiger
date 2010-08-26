@@ -352,6 +352,12 @@ class Order(models.Model):
         timestamp = server_tz.localize(self.timestamp)
         return timestamp.astimezone(site_tz)
 
+    def localized_ready_by(self):
+        server_tz = timezone(settings.TIME_ZONE)
+        site_tz = timezone(self.site.timezone)
+        timestamp = server_tz.localize(self.ready_by)
+        return timestamp.astimezone(site_tz)
+
     def paypal_transaction(self):
         try:
             return PayPalIPN.objects.get(invoice=unicode(self.id), payment_status='Completed')

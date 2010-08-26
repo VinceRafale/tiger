@@ -30,7 +30,7 @@
                     <p>
                         <strong>Customer:</strong> {{ order.name }}<br/>
                         <strong>Phone number:</strong> {{ order.phone }}<br/>
-                        <strong>Pickup time:</strong> {{ order.ready_by|date:"fa m/d/y" }}<br/>
+                        <strong>Pickup time:</strong> {% if order.pickup %}{{ order.pickup }}{% else %}{{ order.localized_ready_by|date:"fa m/d" }}{% endif %}<br/>
                         <strong>For:</strong> {{ order.get_method_display }}<br/>
                         {% if order.method == 3 %} {# delivery #}
                         <strong>Address:</strong> <br />
