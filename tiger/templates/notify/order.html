@@ -1,7 +1,19 @@
 <html>
     <head>
         <style>
-        @page {size:letter; top:1.5cm; left:1.5cm;bottom:1.5cm; right:1.5cm; {% if order.status == 3 %}background-image: url({{ MEDIA_URL }}drawing.pdf);{% endif %} }
+        @page {
+            size:letter; 
+            top:1.5cm; 
+            left:1.5cm;
+            bottom:1.5cm; 
+            right:1.5cm; 
+            {% if order.status == 3 %}background-image: url({{ MEDIA_URL }}drawing.pdf);{% endif %} 
+            @frame page-count {
+                -pdf-frame-content: header;
+                height:0.6in;
+                margin:1cm 1.5cm;
+            }
+        }
         * {font-family: Arial, sans-serif;}
         h1 {font-size:24px; margin-bottom:0;}
         h2 {font-size:18px; text-decoration:underline; margin-bottom:0;}
@@ -17,9 +29,14 @@
         #orderPreview tr.total {border-top:4px grey solid;}
         td.order-info {width:75%;}
         p {font-size:14px;}
+        #header {text-align:right;}
         </style>
     </head>
     <body>
+        <div id="header">
+            Order #{{ order_no }} :: Page
+            <pdf:pagenumber>
+        </div>
         <table>
             <tr>
                 <td>
