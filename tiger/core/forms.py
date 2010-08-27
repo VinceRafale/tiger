@@ -12,6 +12,7 @@ from authorize.aim import Api
 from olwidget.widgets import EditableMap
 
 from tiger.core.exceptions import PricePointNotAvailable
+from tiger.accounts.forms import AmPmTimeField
 from tiger.core.models import *
 from tiger.dashboard.widgets import ImageChooserWidget
 from tiger.utils.forms import BetterModelForm
@@ -94,9 +95,11 @@ def get_item_form(site):
 
 
 class OrderForm(forms.ModelForm):
+    ready_by = AmPmTimeField(required=True)
+
     class Meta:
         model = Order
-        exclude = ('status', 'unread')
+        exclude = ('status', 'unread', 'pickup',)
 
     def __init__(self, data=None, site=None, *args, **kwargs):
         super(OrderForm, self).__init__(data, *args, **kwargs)
@@ -115,6 +118,13 @@ class OrderForm(forms.ModelForm):
             msg = 'Delivery orders must be %.2f or more.' % self.delivery_minimum 
             raise forms.ValidationError(msg)
         return method
+
+    def clean_ready_by(self):
+        ready_by = self.cleaned_data.get('ready_by')
+        if not ready_by:
+            raise forms.ValidationError('This field is required.')
+        today = date.today()
+        return self.site.localize(datetime.combine(today, ready_by))
 
     def clean(self):
         cleaned_data = super(OrderForm, self).clean()
@@ -135,6 +145,15 @@ class OrderForm(forms.ModelForm):
             area = self.site.ordersettings.delivery_area
             if not area.contains(point):
                 raise forms.ValidationError(msg)
+            lead_time = self.site.ordersettings.delivery_lead_time
+        else:
+            lead_time = self.site.ordersettings.lead_time
+        ready_by = self.cleaned_data.get('ready_by')
+        method_display = dict(Order.METHOD_CHOICES).get(method)
+        if ready_by and method_display:
+            server_tz = timezone(settings.TIME_ZONE)
+            if ready_by < server_tz.localize(datetime.now() + timedelta(minutes=lead_time)):
+                raise forms.ValidationError('%s orders must be placed %d minutes in advance.' % (method_display, lead_time))
         return cleaned_data
 
 
@@ -204,6 +223,8 @@ class OrderSettingsForm(BetterModelForm):
             'takeout', 
             'delivery', 
             'delivery_minimum', 
+            'lead_time',
+            'delivery_lead_time',
             'delivery_area', 
             'receive_via',
         )

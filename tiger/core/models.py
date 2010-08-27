@@ -304,7 +304,8 @@ class Order(models.Model):
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=2, blank=True, null=True)
     zip = models.CharField(max_length=10, blank=True, null=True)
-    pickup = models.CharField('Time you will pick up your order', max_length=20)
+    pickup = models.CharField('Time you will pick up your order', max_length=20, editable=False, null=True)
+    ready_by = models.DateTimeField('Have order ready by:', null=True)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
     tax = models.DecimalField(editable=False, max_digits=6, decimal_places=2, default='0.00')
     cart = PickledObjectField(editable=False)
@@ -321,6 +322,7 @@ class Order(models.Model):
         """Sends a message to the restaurant with the information about the order
         and flags the order as either sent or paid.
         """
+        self.status = status
         content = self.get_pdf_invoice()
         if self.site.ordersettings.receive_via == OrderSettings.RECEIPT_EMAIL:
             email = EmailMessage('Takeout Tiger Order #%d' % self.id, 'Your order details are attached as PDF.', 'do-not-reply@takeouttiger.com', [self.site.email])
@@ -329,7 +331,6 @@ class Order(models.Model):
         else:
             fax_machine = FaxMachine(self.site)
             fax_machine.send(self.site.fax_number, content)
-        self.status = status
         self.save()
 
     def get_pdf_invoice(self):
@@ -357,6 +358,12 @@ class Order(models.Model):
         server_tz = timezone(settings.TIME_ZONE)
         site_tz = timezone(self.site.timezone)
         timestamp = server_tz.localize(self.timestamp)
+        return timestamp.astimezone(site_tz)
+
+    def localized_ready_by(self):
+        server_tz = timezone(settings.TIME_ZONE)
+        site_tz = timezone(self.site.timezone)
+        timestamp = server_tz.localize(self.ready_by)
         return timestamp.astimezone(site_tz)
 
     def paypal_transaction(self):
@@ -390,6 +397,8 @@ class OrderSettings(models.Model):
     takeout = models.BooleanField(default=True) 
     delivery = models.BooleanField(default=True) 
     delivery_minimum = models.DecimalField('minimum amount for delivery orders', max_digits=5, decimal_places=2, default='0.00') 
+    lead_time = models.PositiveIntegerField('how many minutes before must a pick-up order be placed in advance?', default=0) 
+    delivery_lead_time = models.PositiveIntegerField('how many minutes before must a delivery order be placed in advance?', default=0) 
     delivery_area = models.MultiPolygonField(null=True, blank=True) 
     # customer's authorize.net information for online orders
     payment_type = models.IntegerField('Collect payment via', null=True, choices=PAYMENT_TYPE_CHOICES, default=PAYMENT_NONE)

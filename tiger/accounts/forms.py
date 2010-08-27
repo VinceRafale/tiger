@@ -43,7 +43,7 @@ class AmPmTimeField(forms.Field):
                 t, meridian = value.split()
                 h, m = [int(v) for v in t.split(':')]
             except ValueError:
-                return None
+                raise forms.ValidationError('Please entire a clock time, like "12:30 PM".')
             if meridian == 'PM' and h != 12:
                 h += 12
             elif meridian == 'AM' and h == 12:

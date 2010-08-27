@@ -21,9 +21,14 @@ urlpatterns += patterns('tiger.accounts.views',
     url(r'^terms/$', 'terms', name='terms'),
 )
 
+def qunit(request, path):
+    return direct_to_template(request, template='qunit/%s.html' % path)
+
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve',
+                {'document_root': settings.MEDIA_ROOT}),
+        (r'^qunit/(?P<path>[\w-]+)/$', qunit,
                 {'document_root': settings.MEDIA_ROOT}),
     )
 

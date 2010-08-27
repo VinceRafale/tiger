@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
 
 from tiger.core.models import Item, Coupon
 from tiger.notify.models import Release
@@ -42,9 +43,18 @@ urlpatterns += patterns('',
     url(r'^search/', 'tiger.search.views.search', name='menu_search'),
     url(r'^join/$', 'tiger.core.views.mailing_list_signup', name='mailing_list_signup'),
     url(r'^sitemap.xml$', 'tiger.sitemaps.sitemap'),
-    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
-            {'document_root': settings.MEDIA_ROOT}),
 )
+
+def qunit(request, path):
+    return direct_to_template(request, template='qunit/%s.html' % path)
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^static/(?P<path>.*)$', 'django.views.static.serve',
+                {'document_root': settings.MEDIA_ROOT}),
+        (r'^qunit/(?P<path>[\w-]+)/$', qunit),
+    )
+
 
 urlpatterns += patterns('tiger.notify.views',
     url(r'^news/$', 'press_list', name='press_list'),

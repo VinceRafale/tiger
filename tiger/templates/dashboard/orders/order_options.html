@@ -13,7 +13,8 @@ display:inline-block;
 p .olControlDrawFeaturePolygonItemInactive {
 background-position:-26px 0;
 }
-#id_eod_buffer {width:25px;}
+#id_delivery_minimum {width:45px;}
+#id_eod_buffer, #id_lead_time, #id_delivery_lead_time {width:25px;}
 </style>
 {% endblock %}
 
@@ -38,8 +39,13 @@ Edit your online ordering options
 {{ form.dine_in }} {{ form.dine_in.label }}
 {{ form.takeout }} {{ form.takeout.label }}
 {{ form.delivery }} {{ form.delivery.label }}
-<label id="delivery-minimum">{{ form.delivery_minimum.label }} {{ form.delivery_minimum }} {% if form.delivery_minimum.errors %} {{ form.delivery_minimum.errors }} {% endif %}</label>
+<label>Dine-in/takeoout orders must be placed {{ form.lead_time }} minutes in advance {% if form.lead_time.errors %}{{ form.lead_time.errors }}{% endif %}</label> 
 <label for='eod_buffer'>Stop taking orders {{ form.eod_buffer }} minutes prior to closing {% if form.eod_buffer.errors %} {{ form.eod_buffer.errors }} {% endif %}</label>
+<div id="delivery-options">
+<h4>Delivery options</h4>
+<label id="delivery-minimum">{{ form.delivery_minimum.label }} {{ form.delivery_minimum }} {% if form.delivery_minimum.errors %} {{ form.delivery_minimum.errors }} {% endif %}</label>
+<label>Delivery orders must be placed {{ form.delivery_lead_time }} minutes in advance {% if form.delivery_lead_time.errors %}{{ form.delivery_lead_time.errors }}{% endif %}</label> 
+</div>
 <h3>How do you want to receive orders?</h3>
 {% if form.receive_via.errors %}
 {{ form.receive_via.errors }}
@@ -61,9 +67,9 @@ Edit your online ordering options
 <script type="text/javascript">
 $(function () {
     if ($("#id_delivery").attr("checked")) {
-        $("#delivery-minimum").show();
+        $("#delivery-options").show();
     } else {
-        $("#delivery-minimum").hide();
+        $("#delivery-options").hide();
     }
     if ($("input[name='receive_via']:checked").val() == 1) {
         $("#delivery-fax").hide();
@@ -75,9 +81,9 @@ $(function () {
     });
     $("#id_delivery").click(function () {
         if ($(this).attr("checked")) {
-            $("#delivery-minimum").show();
+            $("#delivery-options").show();
         } else {
-            $("#delivery-minimum").hide();
+            $("#delivery-options").hide();
         }
     });
     $("input[name='receive_via']").click(function () {

@@ -4,16 +4,19 @@ from decimal import Decimal
 import random
 
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 
-from nose.tools import with_setup, raises
+from nose.tools import *
 from poseur.fixtures import load_fixtures
+from pytz import timezone
 
 from tiger.accounts.models import Site, TimeSlot, Schedule
 from tiger.core.exceptions import *
+from tiger.core.forms import OrderForm
 from tiger.core.messages import *
-from tiger.core.models import Section, Item, Variant
+from tiger.core.models import Section, Item, Variant, Order
 from tiger.utils.hours import DOW_CHOICES
 
 
@@ -230,3 +233,88 @@ class ItemDisplayTestCase(TestCase):
         self.item.save()
         response = self.client.get(self.item.get_absolute_url())
         self.assertContains(response, ITEM_NOT_AVAILABLE % self.item.name)
+
+
+def setup_order_validation():
+    setup_timeslots(0)()
+    site = Site.objects.all()[0]
+    ordersettings = site.ordersettings
+    ordersettings.lead_time = 30
+    ordersettings.delivery_lead_time = 60
+    ordersettings.save()
+
+def set_timezone(tz):
+    site = Site.objects.all()[0]
+    site.timezone = tz
+    site.save()
+
+
+def get_order_form(ready_by, order_method):
+    site = Site.objects.all()[0]
+    form = OrderForm({
+        'name': 'John Smith',
+        'phone': '12345',
+        'ready_by': ready_by if isinstance(ready_by, basestring) else ready_by.strftime('%I:%M %p'),
+        'method': order_method,
+    }, site=site)
+    form.total = '40.00'
+    return form
+
+def invalid_pickup_time(tz):
+    site = Site.objects.all()[0]
+    server_tz = timezone(settings.TIME_ZONE)
+    site_tz = timezone(tz)
+    form = get_order_form(server_tz.localize(datetime.now()).astimezone(site_tz), Order.METHOD_TAKEOUT)
+    assert_false(form.is_valid())
+    assert_true('Takeout orders must be placed %d minutes in advance.' % site.ordersettings.lead_time in form.non_field_errors())
+
+def valid_pickup_time(tz):
+    # ready_by will not have resolution of seconds
+    site = Site.objects.all()[0]
+    server_tz = timezone(settings.TIME_ZONE)
+    site_tz = timezone(tz)
+    ready_by = server_tz.localize((datetime.now() + timedelta(minutes=(site.ordersettings.lead_time + 5))).replace(second=0, microsecond=0)).astimezone(site_tz)
+    form = get_order_form(ready_by, Order.METHOD_TAKEOUT)
+    assert_true(form.is_valid())
+    order = form.save(commit=False)
+    order.total = '10.00'
+    order.tax = '4.00'
+    order.cart = {}
+    order.site = site
+    order.save()
+
+@with_setup(lambda: (setup_order_validation(), set_timezone('US/Eastern')), teardown_timeslots)
+def test_invalid_pickup_time_server_tz():
+    invalid_pickup_time('US/Eastern')
+
+@with_setup(lambda: (setup_order_validation(), set_timezone('US/Pacific')), teardown_timeslots)
+def test_invalid_pickup_time_east_tz():
+    invalid_pickup_time('US/Pacific')
+
+@with_setup(lambda: (setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
+def test_invalid_pickup_time_west_tz():
+    invalid_pickup_time('Canada/Newfoundland')
+
+@with_setup(lambda: (setup_order_validation(), set_timezone('US/Eastern')), teardown_timeslots)
+def test_valid_pickup_time_server_tz():
+    valid_pickup_time('US/Eastern')
+
+@with_setup(lambda: (setup_order_validation(), set_timezone('US/Pacific')), teardown_timeslots)
+def test_valid_pickup_time_east_tz():
+    valid_pickup_time('US/Pacific')
+
+@with_setup(lambda: (setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
+def test_valid_pickup_time_west_tz():
+    valid_pickup_time('Canada/Newfoundland')
+
+@with_setup(lambda: (setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
+def test_gibberish_pickup_time():
+    form = get_order_form('foobarbaz', Order.METHOD_TAKEOUT)
+    assert_false(form.is_valid())
+    assert_true('Please entire a clock time, like "12:30 PM".' in form['ready_by'].errors)
+
+@with_setup(lambda: (setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
+def test_blank_pickup_time():
+    form = get_order_form('', Order.METHOD_TAKEOUT)
+    assert_false(form.is_valid())
+    assert_true('This field is required.' in form['ready_by'].errors)
