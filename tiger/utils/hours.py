@@ -32,12 +32,9 @@ def is_available(timeslots, tz, buff=0):
     if not timeslots.count():
         return TIME_CLOSED
     for timeslot in timeslots:
-        start_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.start))
-        stop_dt = site_tz.localize(datetime.combine(datetime.now(), timeslot.stop))
-        if start_dt < now < stop_dt:
-            if start_dt < now < stop_dt - timedelta(seconds=buff*60):
-                return TIME_OPEN
-            return TIME_EOD
+        availability = timeslot.get_availability(buff)
+        if availability is not None:
+            return availability
     return TIME_CLOSED
 
 def calculate_hour_string(timeslots):

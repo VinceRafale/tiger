@@ -72,7 +72,7 @@ class TimeSlotForm(BetterModelForm):
         super(TimeSlotForm, self).clean()
         cleaned_data = self.cleaned_data
         self.delete = False
-        if all(cleaned_data.values()):
+        if all(isinstance(v, time) for v in cleaned_data.values()):
             self.noop = False
             return cleaned_data
         if not any(cleaned_data.values()):

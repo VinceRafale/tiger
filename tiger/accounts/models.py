@@ -272,7 +272,7 @@ class TimeSlot(models.Model):
     stop = models.TimeField()
 
     def _pretty_time(self, time_obj):
-        hour = '12' if time_obj.hour == 12 else str(time_obj.hour % 12)
+        hour = '12' if time_obj.hour in (0, 12) else str(time_obj.hour % 12)
         if time_obj.minute:
             return hour + time_obj.strftime(':%M%P')
         else:
@@ -286,6 +286,32 @@ class TimeSlot(models.Model):
     def pretty_stop(self):
         return self._pretty_time(self.stop)
 
+    def prepped_start(self):
+        return self.site.localize(datetime.combine(date.today(), self.start))
+
+    def prepped_stop(self):
+        stop = self.site.localize(datetime.combine(date.today(), self.stop))
+        if self.stop < self.start:
+            stop += timedelta(days=1)
+        return stop
+
+    def get_availability(self, buff=0):
+        now = self.now()
+        start_dt = self.prepped_start()
+        stop_dt = self.prepped_stop()
+        server_tz = timezone(settings.TIME_ZONE)
+        server_now = server_tz.localize(now)
+        if start_dt < server_now < stop_dt:
+            if start_dt < server_now < stop_dt - timedelta(seconds=buff*60):
+                return TIME_OPEN
+            return TIME_EOD
+
+    def now(self):
+        return datetime.now()
+
+    @property
+    def site(self):
+        return self.schedule.site
 
 class Invoice(models.Model):
     account = models.ForeignKey(Account)
