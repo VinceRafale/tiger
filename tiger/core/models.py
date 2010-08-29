@@ -49,7 +49,6 @@ class Section(models.Model):
     description = models.TextField()
     slug = models.SlugField(editable=False)
     ordering = models.PositiveIntegerField(editable=False, default=1)
-    hours = models.CharField(null=True, max_length=255)
     schedule = models.ForeignKey('accounts.Schedule', null=True, blank=True)
 
     class Meta:
@@ -83,16 +82,6 @@ class Section(models.Model):
             raise SectionNotAvailable(SECTION_NOT_AVAILABLE % (
                 self.name, self.schedule.display), self.get_absolute_url())
         return True
-
-    def calculate_hour_string(self, commit=True):
-        """Returns a nicely formatted string representing availability based on the
-        site's associated ``TimeSlot`` objects.
-        """
-        hours = calculate_hour_string(self.timeslot_set.all())
-        if commit:
-            self.hours = hours
-            self.save()
-        return self.hours
 
 
 class ItemManager(models.Manager):

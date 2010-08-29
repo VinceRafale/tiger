@@ -93,7 +93,6 @@ class Site(models.Model):
     timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
-    hours = models.CharField(null=True, max_length=255)
     lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
     lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
@@ -133,16 +132,6 @@ class Site(models.Model):
         if all(address_pieces):
             return ' '.join(address_pieces)
         return ''
-
-    def calculate_hour_string(self, commit=True):
-        """Returns a nicely formatted string representing availability based on the
-        site's associated ``TimeSlot`` objects.
-        """
-        hours = calculate_hour_string(self.timeslot_set.all())
-        if commit:
-            self.hours = hours
-            self.save()
-        return self.hours
 
     @cachedmethod(KeyChain.twitter)
     def twitter(self):
@@ -312,22 +301,6 @@ class TimeSlot(models.Model):
     @property
     def site(self):
         return self.schedule.site
-
-class Invoice(models.Model):
-    account = models.ForeignKey(Account)
-    date = models.DateField()
-
-
-class LineItem(models.Model):
-    invoice = models.ForeignKey(Invoice)
-    description = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    qty = models.IntegerField()
-    total = models.DecimalField(max_digits=9, decimal_places=2)
-
-    def save(self, *args, **kwargs):
-        self.total = self.price * self.qty
-        super(LineItem, self).save(*args, **kwargs)
 
 
 class FaxList(models.Model):
