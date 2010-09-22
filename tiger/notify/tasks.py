@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.db.models import get_model
+from django.utils.http import int_to_base36
 
 from celery.task import Task
 from facebook import Facebook, FacebookError
@@ -86,10 +87,10 @@ class PublishTask(Task):
         social = site.social
         msg = release.title
         if release.coupon:
-            short_url = reverse('coupon_short_code', kwargs={'item_id': release.coupon.id})
+            short_url = reverse('coupon_short_code', kwargs={'item_id': int_to_base36(release.coupon.id)})
             link_title = 'Use it now'
         else:
-            short_url = reverse('press_short_code', kwargs={'item_id': release.id})
+            short_url = reverse('press_short_code', kwargs={'item_id': int_to_base36(release.id)})
             link_title = 'Read on our site'
         short_url = unicode(site) + short_url
         if site.twitter() and twitter:
