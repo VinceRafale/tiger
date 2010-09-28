@@ -24,8 +24,9 @@ def get_new_orders(request):
 @login_required
 def order_detail(request, order_id):
     order = Order.objects.get(id=order_id) 
-    order.unread = False
-    order.save()
+    if order.unread:
+        order.unread = False
+        order.save()
     return direct_to_template(request, template='dashboard/orders/order_detail.html', extra_context={
         'order': order,
         'cart': order.get_cart()
