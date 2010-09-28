@@ -108,8 +108,19 @@ def send_order(request):
     except OrderingError, e:
         messages.warning(request, e.msg)
         return HttpResponseRedirect(e.redirect_to)
+    # cart sanity checks:
+    # if cart is empty, redirect with message
+    if not len(request.cart):
+        messages.warning(request, "Your order is empty.  Please add your desired menu items and try again.")
+        return HttpResponseRedirect(reverse('menu_home'))
+    # if they have an incomplete order, fetch it
+    cart_key = request.cart.session.session_key
+    try:
+        instance = Order.objects.get(session_key=cart_key, status=Order.STATUS_INCOMPLETE)
+    except:
+        instance = None
     if request.method == 'POST':
-        form = OrderForm(request.POST, site=request.site)
+        form = OrderForm(request.POST, site=request.site, instance=instance)
         form.total = request.cart.total()
         if form.is_valid():
             order = form.save(commit=False)
@@ -117,6 +128,7 @@ def send_order(request):
             order.tax = request.cart.taxes()
             cart = request.cart.session.get_decoded()
             order.cart = cart
+            order.session_key = cart_key
             order.site = request.site
             try:
                 order.save()
@@ -135,7 +147,6 @@ def send_order(request):
                         )
                     )
                 DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
-                request.cart.clear()
                 return HttpResponseRedirect(reverse('order_success'))
     else:
         form = OrderForm(site=request.site)
@@ -149,7 +160,6 @@ def payment_paypal(request):
         order = Order.objects.get(id=request.session['order_id'])
     except (Order.DoesNotExist, KeyError):
         return HttpResponseRedirect(reverse('preview_order'))
-    request.cart.clear()
     site = request.site
     domain = str(site)
     paypal_dict = {
@@ -175,7 +185,6 @@ def payment_authnet(request):
         form = AuthNetForm(request.POST, order=order)
         if form.is_valid():
             order.notify_restaurant(Order.STATUS_PAID)
-            request.cart.clear()
             return HttpResponseRedirect(str(request.site) + reverse('order_success'))
     else:
         form = AuthNetForm(order=order)
