@@ -70,7 +70,7 @@ class Section(models.Model):
         super(Section, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('menu_section', kwargs={'section': self.slug})
+        return reverse('menu_section', kwargs={'section_id': self.id, 'section_slug': self.slug})
 
     def price_list(self):
         return get_price_list(self)
@@ -158,7 +158,12 @@ class Item(models.Model):
 
     def get_absolute_url(self):
         return reverse('menu_item', 
-            kwargs={'section': self.section.slug, 'item': self.slug})
+            kwargs={
+                'section_id': self.section.id, 
+                'section_slug': self.section.slug, 
+                'item_id': self.id,
+                'item_slug': self.slug
+        })
 
     def get_short_url(self):
         return reverse('short_code', kwargs={'item_id': int_to_base36(self.id)})

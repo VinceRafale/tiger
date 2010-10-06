@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.validators import email_re
 from django.forms.util import ErrorList
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 
 from greatape import MailChimp, MailChimpError
@@ -21,13 +21,27 @@ def section_list(request):
     return render_custom(request, 'core/section_list.html', 
         {'sections': sections})
 
-def section_detail(request, section):
-    s = get_object_or_404(Section, slug=section, site=request.site)
+def section_detail_abbr(request, section):
+    try:
+        s = Section.objects.filter(slug=section, site=request.site)[0]
+    except:
+        raise Http404
+    return HttpResponsePermanentRedirect(s.get_absolute_url())
+    
+def section_detail(request, section_id, section_slug):
+    s = get_object_or_404(Section, slug=section_slug, id=section_id, site=request.site)
     return render_custom(request, 'core/section_detail.html', 
         {'section': s})
     
-def item_detail(request, section, item):
-    i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
+def item_detail_abbr(request, section, item):
+    try:
+        i = Item.objects.filter(section__slug=section, slug=item, site=request.site)[0]
+    except:
+        raise Http404
+    return HttpResponsePermanentRedirect(i.get_absolute_url())
+
+def item_detail(request, section_id, section_slug, item_id, item_slug):
+    i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
         assert i.is_available
     except OrderingError, e:
@@ -40,8 +54,8 @@ def item_detail(request, section, item):
     return render_custom(request, 'core/item_detail.html', 
         {'item': i, 'sections': request.site.section_set.all()})
 
-def order_item(request, section, item):
-    i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
+def order_item(request, section_id, section_slug, item_id, item_slug):
+    i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
         assert request.site.is_open and i.is_available
     except OrderingError, e:
