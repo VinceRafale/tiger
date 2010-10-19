@@ -104,6 +104,8 @@ def add_coupon(request):
     if code is None:
         raise Http404
     coupon = get_object_or_404(Coupon, id=code, site=request.site)
+    if not hasattr(request, 'cart'):
+        return HttpResponseRedirect('?'.join([reverse('add_coupon'), request.META['QUERY_STRING']]))
     if request.cart.has_coupon:
         messages.error(request, 'You already have a coupon in your cart.')   
     else:
