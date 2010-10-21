@@ -5,138 +5,20 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ("core", "0001_initial"),
+    )
 
     def forwards(self, orm):
         
-        # Adding model 'SalesRep'
-        db.create_table('accounts_salesrep', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('code', self.gf('django.db.models.fields.CharField')(max_length=8)),
-            ('plan', self.gf('django.db.models.fields.CharField')(default='chomp3', max_length=12)),
-        ))
-        db.send_create_signal('accounts', ['SalesRep'])
-
-        # Adding model 'Account'
-        db.create_table('accounts_account', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('company_name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-            ('phone', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(max_length=20, null=True, blank=True)),
-            ('fax', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(max_length=20, null=True, blank=True)),
-            ('street', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('state', self.gf('django.contrib.localflavor.us.models.USStateField')(max_length=2, null=True, blank=True)),
-            ('zip', self.gf('django.db.models.fields.CharField')(max_length=10)),
-            ('signup_date', self.gf('django.db.models.fields.DateField')(default=datetime.datetime.now)),
-            ('customer_id', self.gf('django.db.models.fields.CharField')(default='', max_length=200)),
-            ('subscription_id', self.gf('django.db.models.fields.CharField')(default='', max_length=200)),
-            ('card_number', self.gf('django.db.models.fields.CharField')(max_length=30, null=True)),
-            ('card_type', self.gf('django.db.models.fields.CharField')(max_length=50, null=True)),
-            ('referrer', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.SalesRep'], null=True)),
-            ('status', self.gf('django.db.models.fields.IntegerField')(default=2)),
-        ))
-        db.send_create_signal('accounts', ['Account'])
-
-        # Adding model 'Site'
-        db.create_table('accounts_site', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('account', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Account'])),
-            ('name', self.gf('django.db.models.fields.CharField')(default='Your Restaurant Name', max_length=200)),
-            ('subdomain', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('domain', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('enable_blog', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('blog_address', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-            ('street', self.gf('django.db.models.fields.CharField')(default='', max_length=255)),
-            ('city', self.gf('django.db.models.fields.CharField')(default='', max_length=255)),
-            ('state', self.gf('django.contrib.localflavor.us.models.USStateField')(default='', max_length=2)),
-            ('zip', self.gf('django.db.models.fields.CharField')(default='', max_length=10)),
-            ('phone', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(default='', max_length=20)),
-            ('fax_number', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(default='', max_length=20, blank=True)),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75, null=True, blank=True)),
-            ('timezone', self.gf('django.db.models.fields.CharField')(default='US/Eastern', max_length=100)),
-            ('custom_domain', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('enable_orders', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('hours', self.gf('django.db.models.fields.CharField')(max_length=255, null=True)),
-            ('lon', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=12, decimal_places=9)),
-            ('lat', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=12, decimal_places=9)),
-            ('walkthrough_complete', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-        ))
-        db.send_create_signal('accounts', ['Site'])
-
-        # Adding model 'TimeSlot'
-        db.create_table('accounts_timeslot', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('site', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Site'])),
-            ('dow', self.gf('django.db.models.fields.IntegerField')()),
-            ('start', self.gf('django.db.models.fields.TimeField')()),
-            ('stop', self.gf('django.db.models.fields.TimeField')()),
-        ))
-        db.send_create_signal('accounts', ['TimeSlot'])
-
-        # Adding model 'Invoice'
-        db.create_table('accounts_invoice', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('account', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Account'])),
-            ('date', self.gf('django.db.models.fields.DateField')()),
-        ))
-        db.send_create_signal('accounts', ['Invoice'])
-
-        # Adding model 'LineItem'
-        db.create_table('accounts_lineitem', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('invoice', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Invoice'])),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('price', self.gf('django.db.models.fields.DecimalField')(max_digits=5, decimal_places=2)),
-            ('qty', self.gf('django.db.models.fields.IntegerField')()),
-            ('total', self.gf('django.db.models.fields.DecimalField')(max_digits=9, decimal_places=2)),
-        ))
-        db.send_create_signal('accounts', ['LineItem'])
-
-        # Adding model 'FaxList'
-        db.create_table('accounts_faxlist', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('site', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Site'])),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-        ))
-        db.send_create_signal('accounts', ['FaxList'])
-
-        # Adding model 'Subscriber'
-        db.create_table('accounts_subscriber', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('fax_list', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.FaxList'])),
-            ('organization', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('fax', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(max_length=20)),
-        ))
-        db.send_create_signal('accounts', ['Subscriber'])
+        # Adding field 'TimeSlot.section'
+        db.add_column('accounts_timeslot', 'section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Section'], null=True), keep_default=False)
 
 
     def backwards(self, orm):
         
-        # Deleting model 'SalesRep'
-        db.delete_table('accounts_salesrep')
-
-        # Deleting model 'Account'
-        db.delete_table('accounts_account')
-
-        # Deleting model 'Site'
-        db.delete_table('accounts_site')
-
-        # Deleting model 'TimeSlot'
-        db.delete_table('accounts_timeslot')
-
-        # Deleting model 'Invoice'
-        db.delete_table('accounts_invoice')
-
-        # Deleting model 'LineItem'
-        db.delete_table('accounts_lineitem')
-
-        # Deleting model 'FaxList'
-        db.delete_table('accounts_faxlist')
-
-        # Deleting model 'Subscriber'
-        db.delete_table('accounts_subscriber')
+        # Deleting field 'TimeSlot.section'
+        db.delete_column('accounts_timeslot', 'section_id')
 
 
     models = {
@@ -223,6 +105,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'TimeSlot'},
             'dow': ('django.db.models.fields.IntegerField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['core.Section']", 'null': 'True'}),
             'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"}),
             'start': ('django.db.models.fields.TimeField', [], {}),
             'stop': ('django.db.models.fields.TimeField', [], {})
@@ -262,6 +145,16 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        'core.section': {
+            'Meta': {'object_name': 'Section'},
+            'description': ('django.db.models.fields.TextField', [], {}),
+            'hours': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'ordering': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
+            'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'})
         }
     }
 
