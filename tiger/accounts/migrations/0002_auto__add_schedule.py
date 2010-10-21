@@ -5,6 +5,10 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ("accounts", "0002_auto__add_field_timeslot_section"),
+    )
+
 
     def forwards(self, orm):
         
