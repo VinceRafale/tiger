@@ -41,8 +41,9 @@ class Cart(object):
         return item in self.contents
 
     def _save(self, contents):
-        self.session.session_data = Session.objects.encode(contents)
-        self.session.save()
+        if self.session is not None:
+            self.session.session_data = Session.objects.encode(contents)
+            self.session.save()
 
     def _pop(self, key):
         contents = self.contents

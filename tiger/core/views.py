@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.core.validators import email_re
 from django.forms.util import ErrorList
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 
 from greatape import MailChimp, MailChimpError
@@ -21,13 +21,27 @@ def section_list(request):
     return render_custom(request, 'core/section_list.html', 
         {'sections': sections})
 
-def section_detail(request, section):
-    s = get_object_or_404(Section, slug=section, site=request.site)
+def section_detail_abbr(request, section):
+    try:
+        s = Section.objects.filter(slug=section, site=request.site)[0]
+    except:
+        raise Http404
+    return HttpResponsePermanentRedirect(s.get_absolute_url())
+    
+def section_detail(request, section_id, section_slug):
+    s = get_object_or_404(Section, slug=section_slug, id=section_id, site=request.site)
     return render_custom(request, 'core/section_detail.html', 
         {'section': s})
     
-def item_detail(request, section, item):
-    i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
+def item_detail_abbr(request, section, item):
+    try:
+        i = Item.objects.filter(section__slug=section, slug=item, site=request.site)[0]
+    except:
+        raise Http404
+    return HttpResponsePermanentRedirect(i.get_absolute_url())
+
+def item_detail(request, section_id, section_slug, item_id, item_slug):
+    i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
         assert i.is_available
     except OrderingError, e:
@@ -40,8 +54,8 @@ def item_detail(request, section, item):
     return render_custom(request, 'core/item_detail.html', 
         {'item': i, 'sections': request.site.section_set.all()})
 
-def order_item(request, section, item):
-    i = get_object_or_404(Item, section__slug=section, slug=item, site=request.site)
+def order_item(request, section_id, section_slug, item_id, item_slug):
+    i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
         assert request.site.is_open and i.is_available
     except OrderingError, e:
@@ -90,6 +104,8 @@ def add_coupon(request):
     if code is None:
         raise Http404
     coupon = get_object_or_404(Coupon, id=code, site=request.site)
+    if not hasattr(request, 'cart'):
+        return HttpResponseRedirect('?'.join([reverse('add_coupon'), request.META['QUERY_STRING']]))
     if request.cart.has_coupon:
         messages.error(request, 'You already have a coupon in your cart.')   
     else:
@@ -108,8 +124,19 @@ def send_order(request):
     except OrderingError, e:
         messages.warning(request, e.msg)
         return HttpResponseRedirect(e.redirect_to)
+    # cart sanity checks:
+    # if cart is empty, redirect with message
+    if not len(request.cart):
+        messages.warning(request, "Your order is empty.  Please add your desired menu items and try again.")
+        return HttpResponseRedirect(reverse('menu_home'))
+    # if they have an incomplete order, fetch it
+    cart_key = request.cart.session.session_key
+    try:
+        instance = Order.objects.get(session_key=cart_key, status=Order.STATUS_INCOMPLETE)
+    except:
+        instance = None
     if request.method == 'POST':
-        form = OrderForm(request.POST, site=request.site)
+        form = OrderForm(request.POST, site=request.site, instance=instance)
         form.total = request.cart.total()
         if form.is_valid():
             order = form.save(commit=False)
@@ -117,6 +144,7 @@ def send_order(request):
             order.tax = request.cart.taxes()
             cart = request.cart.session.get_decoded()
             order.cart = cart
+            order.session_key = cart_key
             order.site = request.site
             try:
                 order.save()
@@ -135,7 +163,6 @@ def send_order(request):
                         )
                     )
                 DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
-                request.cart.clear()
                 return HttpResponseRedirect(reverse('order_success'))
     else:
         form = OrderForm(site=request.site)
@@ -149,7 +176,6 @@ def payment_paypal(request):
         order = Order.objects.get(id=request.session['order_id'])
     except (Order.DoesNotExist, KeyError):
         return HttpResponseRedirect(reverse('preview_order'))
-    request.cart.clear()
     site = request.site
     domain = str(site)
     paypal_dict = {
@@ -175,7 +201,6 @@ def payment_authnet(request):
         form = AuthNetForm(request.POST, order=order)
         if form.is_valid():
             order.notify_restaurant(Order.STATUS_PAID)
-            request.cart.clear()
             return HttpResponseRedirect(str(request.site) + reverse('order_success'))
     else:
         form = AuthNetForm(order=order)

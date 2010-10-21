@@ -105,7 +105,7 @@ class Release(models.Model):
     def save(self, *args, **kwargs):
         self.body_html = markdown(self.body)
         if not self.id:
-            self.slug = slugify(self.title)
+            self.slug = slugify(self.title)[:50]
             self.time_sent = datetime.now()
         super(Release, self).save(*args, **kwargs)
 

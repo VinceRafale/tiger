@@ -24,14 +24,14 @@
 {% for item in section.item_set.active %}
     <li{% cycle ' class="shaded"' '' %}>
         <div class="grid_4 alpha">
-            <h4><a href="{% url menu_item section=section.slug, item=item.slug %}">{{ item }}</a>{% if item.spicy %} <span class="pepper">❧</span>{% endif %}{% if item.vegetarian %} <span class="veg">veg</span>{% endif %}</h4>
+            <h4><a href="{% url menu_item section.id section.slug item.id item.slug %}">{{ item }}</a>{% if item.spicy %} <span class="pepper">❧</span>{% endif %}{% if item.vegetarian %} <span class="veg">veg</span>{% endif %}</h4>
             {% if item.description %}
             {{ item.description|linebreaks }}
             {% endif %}
         </div>
         <div>
             {% if site.enable_orders %}
-            <a class="add" href="{% url order_item section.slug item.slug %}">add to order</a>
+            <a class="add" href="{% url order_item section.id section.slug item.id item.slug %}">add to order</a>
             {% endif %}
             <ul> 
             {% for price in item.price_list %}

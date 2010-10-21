@@ -7,6 +7,7 @@ from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
 from django.contrib.localflavor.us.models import *
+from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
@@ -69,7 +70,7 @@ class Section(models.Model):
         super(Section, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('menu_section', kwargs={'section': self.slug})
+        return reverse('menu_section', kwargs={'section_id': self.id, 'section_slug': self.slug})
 
     def price_list(self):
         return get_price_list(self)
@@ -144,7 +145,12 @@ class Item(models.Model):
 
     def get_absolute_url(self):
         return reverse('menu_item', 
-            kwargs={'section': self.section.slug, 'item': self.slug})
+            kwargs={
+                'section_id': self.section.id, 
+                'section_slug': self.section.slug, 
+                'item_id': self.id,
+                'item_slug': self.slug
+        })
 
     def get_short_url(self):
         return reverse('short_code', kwargs={'item_id': int_to_base36(self.id)})
@@ -287,6 +293,7 @@ class Order(models.Model):
         (STATUS_REFUNDED, 'Refunded'),
     )
     site = models.ForeignKey('accounts.Site', null=True, editable=False)
+    session_key = models.CharField(max_length=40, null=True)
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
     street = models.CharField(max_length=255, blank=True, null=True)
@@ -302,6 +309,11 @@ class Order(models.Model):
     method = models.IntegerField('This order is for', default=1, choices=METHOD_CHOICES)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_INCOMPLETE)
     unread = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        super(Order, self).save(*args, **kwargs)
+        if self.status in (Order.STATUS_SENT, Order.STATUS_PAID):
+            self.get_cart().clear()
 
     @models.permalink
     def get_absolute_url(self):
@@ -341,7 +353,11 @@ class Order(models.Model):
 
     def get_cart(self):
         from tiger.core.middleware import Cart
-        return Cart(contents=self.cart)
+        try:
+            session = Session.objects.get(session_key=self.session_key)
+        except Session.DoesNotExist:
+            session = None
+        return Cart(session=session, contents=self.cart)
 
     def localized_timestamp(self):
         server_tz = timezone(settings.TIME_ZONE)
