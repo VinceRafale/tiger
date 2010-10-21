@@ -1,5 +1,5 @@
 import faker
-from poseur.fixtures import FakeModel
+from poseur.fixtures import FakeModel, FakeField
 
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -33,6 +33,11 @@ class FakeSite(FakeModel):
         model = Site
         count = 1
         requires = (FakeAccount, FakeUser,)
+
+
+class FakePolygonField(FakeField):
+    def get_random_value(self, lower=None, upper=None):
+        return None
 
 
 class FakeSection(FakeModel):

@@ -56,16 +56,7 @@
 {% endblock %}
 
 {% block contact %}
-<p>Hours: {{ site.hours|default:'[your restaurant hours]' }}</p>
-<address>
-{% if site.address %}
-{{ site.street }}<br>
-{{ site.city }}, {{ site.state }} {{ site.zip }}
-{% else %}
-[your restaurant address]
-{% endif %}
-</address>
-<p>T: {% if site.phone %}{{ site.phone }}{% else %}[your phone number ]{% endif %}{% if site.fax %} | Fax: {{ site.fax }}{% endif %}</p>
+{{ site.sidebar_locations }}
 {% endblock %}
 
 {% block pdf %}
@@ -101,6 +92,6 @@
 {% endblock %}
 
 {% block footer %}
-<address>{{ site.hours|default:'[your restaurant hours]' }} &bull; {% if site.address %}{{ site.address }}{% else %}[your restaurant address]{% endif %} &bull; {% if site.phone %}{{ site.phone }}{% else %}[your phone number]{% endif %}</address>
+{{ site.footer_locations }}
 <p><a class="lightlink" href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> &bull; powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
 {% endblock %}

@@ -211,7 +211,6 @@ class CouponCreationForm(BetterModelForm):
 class OrderSettingsForm(BetterModelForm):
     receive_via = forms.TypedChoiceField(
         widget=forms.RadioSelect, choices=OrderSettings.RECEIPT_CHOICES, coerce=int)
-    delivery_area = forms.CharField(required=False)
     email = forms.EmailField(label='E-mail address for receiving orders', required=False)
     fax = USPhoneNumberField(label='Fax number for receiving orders', required=False)
 
@@ -225,7 +224,6 @@ class OrderSettingsForm(BetterModelForm):
             'delivery_minimum', 
             'lead_time',
             'delivery_lead_time',
-            'delivery_area', 
             'receive_via',
         )
 

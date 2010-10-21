@@ -193,6 +193,7 @@ class CartTestCase(unittest.TestCase):
 class OrderPropertiesTest(TestCase):
     def setUp(self):
         if not Site.objects.count():
+            call_command('flush', verbosity=0)
             load_fixtures('tiger.fixtures')
 
     def test_display_hours(self):
@@ -201,7 +202,8 @@ class OrderPropertiesTest(TestCase):
         """
         site = Site.objects.all()[0]
         # site is using default timezone
-        self.assertEquals(settings.TIME_ZONE, site.timezone)
+        location = site.location_set.all()[0]
+        self.assertEquals(settings.TIME_ZONE, location.timezone)
         FakeOrder.generate(count=1)
         order = Order.objects.all()[0]
         server_tz = timezone(settings.TIME_ZONE)
@@ -209,8 +211,8 @@ class OrderPropertiesTest(TestCase):
         self.assertEquals(order.localized_timestamp(), server_timestamp)
         order.delete()
         # set site timezone to PST
-        site.timezone = 'US/Pacific'
-        site.save()
+        location.timezone = 'US/Pacific'
+        location.save()
         FakeOrder.generate(count=1)
         order = Order.objects.all()[0]
         server_tz = timezone(settings.TIME_ZONE)

@@ -7,12 +7,13 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
+from django.test.testcases import call_command
 
 from nose.tools import *
 from poseur.fixtures import load_fixtures
 from pytz import timezone
 
-from tiger.accounts.models import Site, TimeSlot, Schedule
+from tiger.accounts.models import Site, TimeSlot, Schedule, Location
 from tiger.core.exceptions import *
 from tiger.core.forms import OrderForm
 from tiger.core.messages import *
@@ -37,13 +38,17 @@ def setup_timeslots(dt):
         if not Site.objects.count():
             load_fixtures('tiger.fixtures')
         site = Site.objects.all()[0]
+        location = site.location_set.all()[0]
         site.enable_orders = True
         site.save()
         order_settings = site.ordersettings
         order_settings.eod_buffer = 15
         order_settings.tax_rate = '6.25'
         order_settings.save()
-        schedule, created = Schedule.objects.get_or_create(site=site, master=True)
+        schedule = location.schedule
+        if schedule is None:
+            schedule = location.schedule = Schedule.objects.create(site=site)
+            location.save()
         create_timeslots(schedule, dt, 30, 30)
     return _setup
 
@@ -83,6 +88,9 @@ def teardown_timeslots():
     for section in Section.objects.all():
         section.schedule = None
         section.save()
+    for location in Location.objects.all():
+        location.schedule = None
+        location.save()
     Schedule.objects.all().delete()
         
 
@@ -194,14 +202,14 @@ class PricePointNotAvailableTestCase(TestCase):
         self.item = Item.objects.order_by('?')[0]
 
     def test_scheduled_pricepoint_invalid(self):
-        order_url = reverse('order_item', kwargs={'section': self.item.section.slug, 'item': self.item.slug})
+        order_url = reverse('order_item', kwargs={'section_id': self.item.section.id, 'section_slug': self.item.section.slug, 'item_id': self.item.id, 'item_slug': self.item.slug})
         response = self.client.post(order_url, data_for_order_form(self.item, description='small'), follow=True)
         pricepoint = self.item.variant_set.filter(description='small')[0]
         pricepoint_error_msg = PRICEPOINT_NOT_AVAILABLE % (pricepoint.description, pricepoint.schedule.display)
         self.assertContains(response, pricepoint_error_msg)
         
     def test_nonscheduled_pricepoint_valid(self):
-        order_url = reverse('order_item', kwargs={'section': self.item.section.slug, 'item': self.item.slug})
+        order_url = reverse('order_item', kwargs={'section_id': self.item.section.id, 'section_slug': self.item.section.slug, 'item_id': self.item.id, 'item_slug': self.item.slug})
         response = self.client.post(order_url, data_for_order_form(self.item, description='large'), follow=True)
         pricepoint = self.item.variant_set.filter(description='large')[0]
         pricepoint_error_msg = PRICEPOINT_NOT_AVAILABLE % (pricepoint.description, '')
@@ -245,8 +253,9 @@ def setup_order_validation():
 
 def set_timezone(tz):
     site = Site.objects.all()[0]
-    site.timezone = tz
-    site.save()
+    location = site.location_set.all()[0]
+    location.timezone = tz
+    location.save()
 
 
 def get_order_form(ready_by, order_method):

@@ -60,7 +60,7 @@ class StepBundle(object):
 
 class StepOne(Step):
     conditions = (
-        lambda site: site.lon and site.lat,
+        lambda site: getattr(site.location_set.all()[0], 'lon'),
     )
     name = 'Add location'
     link = 'http://www.youtube.com/watch?v=vTk6TT7jdLs'
@@ -68,7 +68,7 @@ class StepOne(Step):
 
 class StepTwo(Step):
     conditions = (
-        lambda site: site.schedule_set.all()[0].timeslot_set.count(),
+        lambda site: sum([loc.schedule.timeslot_set.count() for loc in site.location_set.all() if loc.schedule]),
     )
     name = 'Add hours'
     link = 'http://www.youtube.com/watch?v=ORFoWj9YR9c'

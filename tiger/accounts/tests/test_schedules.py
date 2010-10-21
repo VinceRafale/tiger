@@ -7,6 +7,7 @@ from django.test import TestCase
 from django.test.client import Client
 
 from djangosanetesting.noseplugins import TestServerThread
+from lxml.html import parse
 from nose.tools import *
 from poseur.fixtures import load_fixtures
 from selenium import selenium

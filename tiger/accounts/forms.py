@@ -6,7 +6,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
 
-from tiger.accounts.models import Account, Subscriber, Site, TimeSlot, SalesRep, FaxList, Schedule
+from tiger.accounts.models import (Account, Subscriber, Site, TimeSlot, 
+    SalesRep, FaxList, Schedule, Location)
 from tiger.utils.chargify import Chargify, ChargifyError
 from tiger.utils.forms import BetterModelForm
 
@@ -56,8 +57,58 @@ class LocationForm(BetterModelForm):
     state = forms.ChoiceField(choices=[(abbr, abbr) for abbr, full in STATE_CHOICES])
 
     class Meta:
-        model = Site
-        fields = ['name', 'street', 'city', 'state', 'zip', 'phone', 'timezone']
+        model = Location
+        fields = ['name', 'street', 'city', 'state', 'zip_code', 'phone', 'timezone', 'schedule', 'delivery_area']
+
+    def __init__(self, data=None, instance=None, site=None, *args, **kwargs):
+        if instance is None:
+            lon, lat = 0, 0
+        else:
+            try:
+                lon, lat = float(instance.lon), float(instance.lat)
+            except TypeError:
+                raise GeocodeError
+        super(OrderSettingsForm, self).__init__(data, *args, **kwargs)
+        self.fields['delivery_area'].widget = EditableMap(options={
+            'geometry': 'polygon',
+            'isCollection': True,
+            'layers': ['google.streets'],
+            'default_lat': lat,
+            'default_lon': lon,
+            'defaultZoom': 13,
+            'map_options': {
+                'controls': ['Navigation', 'PanZoom']
+            }
+        })
+        self.site = site
+
+    def address_fields(self):
+        return [
+            field for field in self
+            if field.name in ('city', 'state', 'zip_code')
+        ]
+
+    def non_address_fields(self):
+        return [
+            field for field in self
+            if field.name not in ('city', 'state', 'zip_code')
+        ]
+
+    def _post_clean(self):
+        delivery_area = self.cleaned_data.get('delivery_area')
+        if delivery_area is not None:
+            try:
+                fromstr(delivery_area)
+            except GEOSException:
+                self._update_errors({'delivery_area': 'FAIL'})
+                return
+        super(OrderSettingsForm, self)._post_clean()
+
+    def clean_delivery_area(self):
+        area = self.cleaned_data.get('delivery_area')
+        if area == '':
+            return None
+        return area
 
 
 class TimeSlotForm(BetterModelForm):

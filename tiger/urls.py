@@ -45,16 +45,18 @@ urlpatterns += patterns('',
     url(r'^sitemap.xml$', 'tiger.sitemaps.sitemap'),
 )
 
+urlpatterns += patterns('',
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.MEDIA_ROOT}),
+)
+
 def qunit(request, path):
     return direct_to_template(request, template='qunit/%s.html' % path)
 
 if settings.DEBUG:
     urlpatterns += patterns('',
-        (r'^static/(?P<path>.*)$', 'django.views.static.serve',
-                {'document_root': settings.MEDIA_ROOT}),
         (r'^qunit/(?P<path>[\w-]+)/$', qunit),
     )
-
 
 urlpatterns += patterns('tiger.notify.views',
     url(r'^news/$', 'press_list', name='press_list'),

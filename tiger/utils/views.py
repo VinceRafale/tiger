@@ -81,15 +81,19 @@ def tiger500(request):
     return direct_to_template(request, 'tiger/500.html')
 
 
-def add_edit_site_object(request, model, form_class, template, reverse_on, object_id=None):
+def add_edit_site_object(request, model, form_class, template, reverse_on, object_id=None, pass_site_to_form=False):
     instance = None
     site = request.site
+    if pass_site_to_form:
+        kwds = {'site': site}
+    else:
+        kwds = {}
     if object_id is not None:
         instance = model.objects.get(id=object_id)
         if instance.site != site:
             raise Http404()
     if request.method == 'POST':
-        form = form_class(request.POST, request.FILES, instance=instance)
+        form = form_class(request.POST, request.FILES, instance=instance, **kwds)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.site = site
@@ -101,7 +105,7 @@ def add_edit_site_object(request, model, form_class, template, reverse_on, objec
             messages.success(request, msg)
             return HttpResponseRedirect(reverse(reverse_on))
     else:
-        form = form_class(instance=instance)
+        form = form_class(instance=instance, **kwds)
     return direct_to_template(request, template=template, extra_context={
         'form': form,
         'instance': instance

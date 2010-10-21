@@ -6,22 +6,34 @@ from django.views.generic.create_update import update_object
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import LocationForm, TimeSlotForm
-from tiger.accounts.models import TimeSlot, Schedule
+from tiger.accounts.models import TimeSlot, Schedule, Location
 from tiger.content.forms import ContentForm
 from tiger.content.models import Content
 from tiger.utils.hours import *
+from tiger.utils.views import add_edit_site_object
 
 
 @login_required
 def home(request):
-    return direct_to_template(request, template='dashboard/restaurant/home.html', extra_context={
-    })
-
+    return direct_to_template(request, template='dashboard/restaurant/home.html', extra_context={}) 
 
 @login_required
-def location(request):
-    return update_object(request, form_class=LocationForm, object_id=request.site.id, 
-        template_name='dashboard/restaurant/location_form.html', post_save_redirect='/dashboard/restaurant/location/')
+def location_list(request):
+    return direct_to_template(request, template='dashboard/restaurant/location_list.html', extra_context={})
+    
+
+@login_required
+def add_location(request):
+    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', pass_site_to_form=True)
+    
+
+@login_required
+def edit_location(request, location_id):
+    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', object_id=location_id, pass_site_to_form=True)
+
+@login_required
+def delete_location(request, location_id):
+    pass
         
 
 @login_required

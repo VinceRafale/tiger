@@ -6,10 +6,11 @@ from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.db import models
+from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.template import Template
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 
 import pytz
 from pytz import timezone
@@ -81,20 +82,9 @@ class Site(models.Model):
     name = models.CharField(max_length=200, default='Your Restaurant Name')
     subdomain = models.CharField(max_length=200, unique=True)
     domain = models.CharField(max_length=200, null=True, blank=True)
-    enable_blog = models.BooleanField(default=False)
-    blog_address = models.URLField(blank=True)
-    street = models.CharField(max_length=255, default='')
-    city = models.CharField(max_length=255, default='')
-    state = USStateField(max_length=255, default='')
-    zip = models.CharField(max_length=10, default='')
-    phone = PhoneNumberField(default='')
-    fax_number = PhoneNumberField(default='', blank=True)
     email = models.EmailField(blank=True, null=True)
-    timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
-    lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
-    lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
 
     def natural_key(self):
@@ -105,14 +95,6 @@ class Site(models.Model):
             return 'http://' + self.domain
         else:
             return self.tiger_domain()
-
-    def save(self, *args, **kwargs):
-        if self.address and not (self.lon and self.lat):
-            try:
-                self.lon, self.lat = [str(f) for f in geocode(self.address)]
-            except GeocodeError:
-                pass
-        super(Site, self).save(*args, **kwargs)
 
     def tiger_domain(self, secure=False):
         return 'http%s://%s.takeouttiger.com' % (
@@ -125,13 +107,6 @@ class Site(models.Model):
         """Returns a path where site-specific static files can be accessed.
         """
         return os.path.join(settings.CUSTOM_MEDIA_URL, self.tiger_domain().lstrip('http://'))        
-
-    @property
-    def address(self):
-        address_pieces = [self.street, self.city, self.state, self.zip]
-        if all(address_pieces):
-            return ' '.join(address_pieces)
-        return ''
 
     @cachedmethod(KeyChain.twitter)
     def twitter(self):
@@ -159,13 +134,13 @@ class Site(models.Model):
         if not self.enable_orders:
             # if they don't have online ordering, why proclaim it?
             raise NoOnlineOrders("Invalid data.  Please try again.", '/')
-        master_schedule = self.schedule_set.get(master=True)
-        availability = master_schedule.is_open(buff=self.ordersettings.eod_buffer)
+        schedule = self.location_set.all()[0].schedule
+        availability = schedule.is_open(buff=self.ordersettings.eod_buffer)
         if availability != TIME_OPEN:
             if availability == TIME_EOD:
                 raise ClosingTimeBufferError("Sorry!  Orders must be placed within %d minutes of closing." % self.ordersettings.eod_buffer, '/')
             raise RestaurantNotOpen("""%s is currently closed. Please try ordering during normal
-            restaurant hours, %s.""" % (self.name, self.hours), '/')
+            restaurant hours, %s.""" % (self.name, schedule.display), '/')
         return True
 
     @cachedmethod(KeyChain.pdf)
@@ -196,40 +171,61 @@ class Site(models.Model):
     def skin_url(self):
         return self.skin.url
 
-    def localize(self, dt):
-        site_tz = timezone(self.timezone)
+    def localize(self, dt, location=None):
+        if location is None:
+            location = self.location_set.all()[0]
+        site_tz = timezone(location.timezone)
         return site_tz.localize(dt)
 
+    @cachedmethod(KeyChain.footer_locations)
+    def footer_locations(self):
+        html = render_to_string('core/includes/footer_locations.html', {'site': 'self'}) 
+        return mark_safe(html)
 
-#class Location(models.Model):
-    #site = models.ForeignKey(Site)
-    #name = models.CharField(max_length=255, blank=True)
-    #street = models.CharField(max_length=255, default='')
-    #city = models.CharField(max_length=255, default='')
-    #state = USStateField(max_length=255, default='')
-    #zip_code = models.CharField(max_length=10, default='')
-    #phone = PhoneNumberField(default='')
-    #fax_number = PhoneNumberField(default='', blank=True)
-    #email = models.EmailField(blank=True, null=True)
-    #timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
-    #schedule = models.ForeignKey('Schedule')
-    #lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
-    #lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
+    @cachedmethod(KeyChain.sidebar_locations)
+    def footer_locations(self):
+        html = render_to_string('core/includes/sidebar_locations.html', {'site': 'self'}) 
+        return mark_safe(html)
 
-    #def save(self, *args, **kwargs):
-        #if self.address and not (self.lon and self.lat):
-            #try:
-                #self.lon, self.lat = [str(f) for f in geocode(self.address)]
-            #except GeocodeError:
-                #pass
-        #super(Location, self).save(*args, **kwargs)
 
-    #@property
-    #def address(self):
-        #address_pieces = [self.street, self.city, self.state, self.zip_code]
-        #if all(address_pieces):
-            #return ' '.join(address_pieces)
-        #return ''
+class Location(models.Model):
+    site = models.ForeignKey(Site)
+    name = models.CharField('Nickname', max_length=255, blank=True, help_text='If you have multiple locations, this is how this location will be displayed.  It is also how it will appear in your dashboard\'s list of locations.')
+    street = models.CharField(max_length=255, default='')
+    city = models.CharField(max_length=255, default='')
+    state = USStateField(max_length=255, default='')
+    zip_code = models.CharField(max_length=10, default='')
+    phone = PhoneNumberField(default='')
+    fax_number = PhoneNumberField(default='', blank=True)
+    email = models.EmailField(blank=True, null=True)
+    timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
+    schedule = models.ForeignKey('Schedule', null=True)
+    delivery_area = models.MultiPolygonField(null=True, blank=True) 
+    lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
+    lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        if not self.id and self.schedule is None:
+            self.schedule = self.site.schedule_set.get(master=True)
+        if self.address and not (self.lon and self.lat):
+            try:
+                self.lon, self.lat = [str(f) for f in geocode(self.address)]
+            except GeocodeError:
+                pass
+        super(Location, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return '/find-us/#%s' % self.id_attr()
+
+    def id_attr(self):
+        return '-'.join([slugify(self.name), str(self.id)])
+
+    @property
+    def address(self):
+        address_pieces = [self.street, self.city, self.state, self.zip_code]
+        if all(address_pieces):
+            return ' '.join(address_pieces)
+        return ''
 
 
 class Schedule(models.Model):
@@ -246,7 +242,7 @@ class Schedule(models.Model):
 
     def is_open(self, tz=None, buff=0):
         if tz is None:
-            tz = self.site.timezone
+            tz = self.site.location_set.all()[0].timezone
         return is_available(
             timeslots=self.timeslot_set.all(), 
             tz=tz,
@@ -325,7 +321,7 @@ def new_site_setup(sender, instance, created, **kwargs):
         Site = models.get_model('accounts', 'site')
         if isinstance(instance, Site):
             schedule = Schedule.objects.create(site=instance, master=True)
-            #location = Location.objects.create(site=instance, schedule=schedule)
+            location = Location.objects.create(site=instance, schedule=schedule)
 
 
 post_save.connect(new_site_setup)

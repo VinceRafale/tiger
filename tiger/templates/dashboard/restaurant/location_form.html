@@ -15,22 +15,19 @@
         {% if form.non_field_errors %}
          {{ form.non_field_errors }}
         {% endif %}
-    {% for field in form %}
-        {% if field.name in "city, state, zip" %}
-        {% if forloop.counter == 3 %}
-        <div class="csz clearfix">
-        {% endif %}
+    <div class="csz clearfix">
+    {% for field in form.address_fields %}
         <div class="location">
         <label>{{ field.label }} {{ field.errors }}</label>
         {{ field }}
         </div>
-        {% if forloop.counter == 5 %}
-        </div>
-        {% endif %}
-
-        {% else %}
+    {% endfor %}
+    </div>
+    {% for field in form.non_address_fields %}
         <label>{{ field.label }} {{ field.errors }}</label>
         {{ field }}
+        {% if field.help_text %}
+        <p class="help">{{ field.help_text }}</p> 
         {% endif %}
     {% endfor %}
 

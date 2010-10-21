@@ -36,7 +36,7 @@ class KeyChainError(Exception):
     pass
 
 
-key_re = re.compile(r'KEY_([A-Z]+)')
+key_re = re.compile(r'KEY_([A-Z_]+)')
 
 
 class KeyChainMetaclass(type):
