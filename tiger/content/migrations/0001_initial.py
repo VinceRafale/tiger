@@ -4,6 +4,10 @@ from django.db import models
 from tiger.content.models import *
 
 class Migration:
+    depends_on = (
+        ("accounts", "0001_initial"),
+        ("core", "0001_initial"),
+    )
     
     def forwards(self, orm):
         
