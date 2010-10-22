@@ -7,6 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
     depends_on = (
         ("accounts", "0001_initial"),
+        ("content", "0001_initial"),
     )
 
     def forwards(self, orm):
