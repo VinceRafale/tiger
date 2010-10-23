@@ -18,6 +18,7 @@ class Migration(DataMigration):
             location.lat = site.lat
             location.lon = site.lon
             location.timezone = site.timezone
+            location.schedule = site.schedule_set.all()[0]
             location.save()
 
     def backwards(self, orm):
