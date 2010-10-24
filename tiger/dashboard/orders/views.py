@@ -5,7 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.views.generic.simple import direct_to_template
 
-from tiger.core.forms import OrderSettingsForm, OrderPaymentForm, GeocodeError, OrderMessageForm
+from tiger.accounts.forms import OrderSettingsForm
+from tiger.core.forms import OrderPaymentForm, GeocodeError, OrderMessageForm
 from tiger.core.models import Order
 
 @login_required
@@ -41,24 +42,21 @@ def order_pdf(request, order_id):
 
 @login_required
 def order_options(request):
+    location = request.site.location_set.all()[0]
     if request.method == 'POST':
-        form = OrderSettingsForm(request.POST, site=request.site, instance=request.site.ordersettings)
+        form = OrderSettingsForm(request.POST, site=request.site, instance=location)
         if form.is_valid():
             form.save()
-            site = request.site
-            site.email = form.cleaned_data.get('email', '')
-            site.fax_number = form.cleaned_data.get('fax', '')
-            site.save()
             messages.success(request, 'Your order options have been updated.')
             return HttpResponseRedirect(reverse('dashboard_orders'))
         #TODO: olwidget doesn't handle malformed data very nicely.  This is a
         # hackish workaround for the time being.
         if 'delivery_area' in form._errors:
-            form = OrderSettingsForm(site=request.site, instance=request.site.ordersettings)
+            form = OrderSettingsForm(site=request.site, instance=location)
             messages.error(request, 'Some of your shape data was corrupted. Please redraw your area.')
     else:
         try:
-            form = OrderSettingsForm(site=request.site, instance=request.site.ordersettings)
+            form = OrderSettingsForm(site=request.site, instance=location)
         except GeocodeError:
             messages.error(request, "Please be sure you have a valid street address, city, state and zip.  We can't calculate your position on the map without it.")
             return HttpResponseRedirect(reverse('dashboard_location'))

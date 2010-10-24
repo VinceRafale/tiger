@@ -15,6 +15,16 @@
         {% if form.non_field_errors %}
          {{ form.non_field_errors }}
         {% endif %}
+    <label>{{ form.name.label }} {{ form.name.errors }}</label>
+    {{ form.name }}
+    {% if form.name.help_text %}
+    <p class="help">{{ form.name.help_text }}</p> 
+    {% endif %}
+    <label>{{ form.street.label }} {{ form.street.errors }}</label>
+    {{ form.street }}
+    {% if form.street.help_text %}
+    <p class="help">{{ form.street.help_text }}</p> 
+    {% endif %}
     <div class="csz clearfix">
     {% for field in form.address_fields %}
         <div class="location">

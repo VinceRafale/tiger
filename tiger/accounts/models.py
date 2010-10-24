@@ -189,8 +189,14 @@ class Site(models.Model):
 
 
 class Location(models.Model):
+    RECEIPT_EMAIL = 1
+    RECEIPT_FAX = 2
+    RECEIPT_CHOICES = (
+        (RECEIPT_EMAIL, 'E-mail'),
+        (RECEIPT_FAX, 'Fax'),
+    )
     site = models.ForeignKey(Site)
-    name = models.CharField('Nickname', max_length=255, blank=True, help_text='If you have multiple locations, this is how this location will be displayed.  It is also how it will appear in your dashboard\'s list of locations.')
+    name = models.CharField(max_length=255, blank=True)#, help_text='If you have multiple locations, this is how this location will be displayed.  It is also how it will appear in your dashboard\'s list of locations.')
     street = models.CharField(max_length=255, default='')
     city = models.CharField(max_length=255, default='')
     state = USStateField(max_length=255, default='')
@@ -200,9 +206,24 @@ class Location(models.Model):
     email = models.EmailField(blank=True, null=True)
     timezone = models.CharField(choices=TIMEZONE_CHOICES, default='US/Eastern', max_length=100)
     schedule = models.ForeignKey('Schedule', null=True)
-    delivery_area = models.MultiPolygonField(null=True, blank=True) 
     lon = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
     lat = models.DecimalField(max_digits=12, decimal_places=9, null=True, editable=False)
+    # migrated from core.OrderSettings
+    receive_via = models.IntegerField(default=1, choices=RECEIPT_CHOICES)
+    dine_in = models.BooleanField(default=True) 
+    takeout = models.BooleanField(default=True) 
+    order_fax = PhoneNumberField(default='', blank=True)
+    order_email = models.EmailField(blank=True, null=True)
+    delivery = models.BooleanField(default=True) 
+    delivery_minimum = models.DecimalField('minimum amount for delivery orders', max_digits=5, decimal_places=2, default='0.00') 
+    lead_time = models.PositiveIntegerField('how many minutes before must a pick-up order be placed in advance?', default=0) 
+    delivery_lead_time = models.PositiveIntegerField('how many minutes before must a delivery order be placed in advance?', default=0) 
+    delivery_area = models.MultiPolygonField(null=True, blank=True) 
+    tax_rate = models.DecimalField(decimal_places=3, max_digits=5, null=True)
+    eod_buffer = models.PositiveIntegerField(default=30)
+
+    def __unicode__(self):
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.id and self.schedule is None:

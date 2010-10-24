@@ -4,12 +4,17 @@ from datetime import time, date
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.gis.geos import Point, fromstr, GEOSException
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
+from django.contrib.localflavor.us.forms import *
+
+from olwidget.widgets import EditableMap
 
 from tiger.accounts.models import (Account, Subscriber, Site, TimeSlot, 
     SalesRep, FaxList, Schedule, Location)
 from tiger.utils.chargify import Chargify, ChargifyError
 from tiger.utils.forms import BetterModelForm
+from tiger.utils.geocode import geocode, GeocodeError
 
 
 class SubscriberForm(BetterModelForm):
@@ -51,64 +56,6 @@ class AmPmTimeField(forms.Field):
                 h = 0
             return time(h, m)
         return None
-
-
-class LocationForm(BetterModelForm):
-    state = forms.ChoiceField(choices=[(abbr, abbr) for abbr, full in STATE_CHOICES])
-
-    class Meta:
-        model = Location
-        fields = ['name', 'street', 'city', 'state', 'zip_code', 'phone', 'timezone', 'schedule', 'delivery_area']
-
-    def __init__(self, data=None, instance=None, site=None, *args, **kwargs):
-        if instance is None:
-            lon, lat = 0, 0
-        else:
-            try:
-                lon, lat = float(instance.lon), float(instance.lat)
-            except TypeError:
-                raise GeocodeError
-        super(OrderSettingsForm, self).__init__(data, *args, **kwargs)
-        self.fields['delivery_area'].widget = EditableMap(options={
-            'geometry': 'polygon',
-            'isCollection': True,
-            'layers': ['google.streets'],
-            'default_lat': lat,
-            'default_lon': lon,
-            'defaultZoom': 13,
-            'map_options': {
-                'controls': ['Navigation', 'PanZoom']
-            }
-        })
-        self.site = site
-
-    def address_fields(self):
-        return [
-            field for field in self
-            if field.name in ('city', 'state', 'zip_code')
-        ]
-
-    def non_address_fields(self):
-        return [
-            field for field in self
-            if field.name not in ('city', 'state', 'zip_code')
-        ]
-
-    def _post_clean(self):
-        delivery_area = self.cleaned_data.get('delivery_area')
-        if delivery_area is not None:
-            try:
-                fromstr(delivery_area)
-            except GEOSException:
-                self._update_errors({'delivery_area': 'FAIL'})
-                return
-        super(OrderSettingsForm, self)._post_clean()
-
-    def clean_delivery_area(self):
-        area = self.cleaned_data.get('delivery_area')
-        if area == '':
-            return None
-        return area
 
 
 class TimeSlotForm(BetterModelForm):
@@ -412,3 +359,119 @@ class ScheduleSelectForm(forms.Form):
     def __init__(self, data=None, site=None, *args, **kwargs):
         super(ScheduleSelectForm, self).__init__(data=data, *args, **kwargs)
         self.fields['schedule'].queryset = site.schedule_set.filter(master=False)
+
+
+class LocationForm(BetterModelForm):
+    class Meta:
+        model = Location
+        fields = (
+            'name',
+            'street',
+            'city',
+            'state',
+            'zip_code',
+            'phone',
+            'fax_number',
+            'email',
+            'timezone',
+            'schedule',
+        )
+
+    def address_fields(self):
+        return [
+            field for field in self
+            if field.name in ('city', 'state', 'zip_code')
+        ]
+    
+    def non_address_fields(self):
+        return [
+            field for field in self
+            if field.name not in ('name', 'street', 'city', 'state', 'zip_code')
+        ]
+
+
+class OrderSettingsForm(BetterModelForm):
+    receive_via = forms.TypedChoiceField(
+        widget=forms.RadioSelect, choices=Location.RECEIPT_CHOICES, coerce=int)
+    order_email = forms.EmailField(label='E-mail address for receiving orders', required=False)
+    order_fax = USPhoneNumberField(label='Fax number for receiving orders', required=False)
+
+    class Meta:
+        model = Location
+        fields = (
+            'dine_in', 
+            'eod_buffer',
+            'takeout', 
+            'delivery', 
+            'delivery_area',
+            'delivery_minimum', 
+            'lead_time',
+            'delivery_lead_time',
+            'receive_via',
+            'order_email',
+            'order_fax',
+        )
+
+    def __init__(self, data=None, site=None, *args, **kwargs):
+        location = kwargs['instance']
+        try:
+            lon, lat = float(location.lon), float(location.lat)
+        except TypeError:
+            raise GeocodeError
+        super(OrderSettingsForm, self).__init__(data, *args, **kwargs)
+        self.fields['delivery_area'].widget = EditableMap(options={
+            'geometry': 'polygon',
+            'isCollection': True,
+            'layers': ['google.streets'],
+            'default_lat': lat,
+            'default_lon': lon,
+            'defaultZoom': 13,
+            'map_options': {
+                'controls': ['Navigation', 'PanZoom']
+            }
+        })
+        self.fields['order_email'].initial = location.email
+        self.fields['order_fax'].initial = location.fax_number
+        self.site = site
+
+    def clean(self):
+        cleaned_data = super(OrderSettingsForm, self).clean()
+        if cleaned_data.get('delivery') and not cleaned_data.get('delivery_area'):
+            raise forms.ValidationError('You must map out your delivery area to offer delivery orders.')
+        return cleaned_data
+
+    def _post_clean(self):
+        delivery_area = self.cleaned_data.get('delivery_area')
+        if delivery_area is not None:
+            try:
+                fromstr(delivery_area)
+            except GEOSException:
+                self._update_errors({'delivery_area': 'FAIL'})
+                return
+        super(OrderSettingsForm, self)._post_clean()
+
+    def clean_delivery_area(self):
+        area = self.cleaned_data.get('delivery_area')
+        if area == '':
+            return None
+        return area
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        via_email = self.cleaned_data['receive_via'] == Location.RECEIPT_EMAIL
+        if via_email and not email:
+            raise forms.ValidationError('You must specify an e-mail address to receive orders via e-mail.')
+        return email
+
+    def clean_fax(self):
+        fax = self.cleaned_data.get('fax')
+        via_fax = self.cleaned_data['receive_via'] == Location.RECEIPT_FAX
+        if via_fax and not fax:
+            raise forms.ValidationError('You must specify a fax number to receive orders via fax.')
+        return fax
+
+
+class BasicInfoForm(BetterModelForm):
+    class Meta:
+        model = Site
+        fields = ('name',)

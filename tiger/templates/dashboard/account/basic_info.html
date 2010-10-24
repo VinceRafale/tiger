@@ -1,0 +1,38 @@
+{% extends 'dashboard/account/home.html' %}
+
+{% block body-class %}{{ block.super }}basic{% endblock %}
+
+{% block help %}
+This is where you update the essentials of your site.  If you need to change the name of your restaurant, do it here!
+{% endblock %}
+
+{% block content %}
+<div class="grid_5 alpha">
+<form method="POST" action=".">
+{% for field in form %}
+<label>{{ field.label }}  {% if field.errors  %}
+{{ field.errors }}
+{% endif %}
+</label>
+{{ field }}
+{% endfor %}
+</div>
+<div class="clear"></div>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_menu %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.submit").click(function () {
+        $("form").submit();
+    });
+});
+</script>
+{% endblock %}
+
+

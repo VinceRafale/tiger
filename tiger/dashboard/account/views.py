@@ -1,13 +1,15 @@
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
-from tiger.accounts.forms import CreditCardForm
-from tiger.accounts.models import Account
+from tiger.accounts.forms import CreditCardForm, BasicInfoForm
+from tiger.accounts.models import Account, Site
 from tiger.dashboard.account.forms import CancellationForm
 from tiger.utils.chargify import Chargify
+from tiger.utils.views import add_edit_site_object
 
 
 @login_required
@@ -28,6 +30,19 @@ def cancel(request):
     else:
         form = CancellationForm()
     return direct_to_template(request, template='dashboard/account/cancel.html',
+        extra_context={'form': form})
+
+@login_required
+def basic_info(request):
+    if request.method == 'POST':
+        form = BasicInfoForm(request.POST, instance=request.site)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Info updated successfully.')
+            return HttpResponseRedirect(reverse('dashboard_menu'))
+    else:
+        form = BasicInfoForm(instance=request.site)
+    return direct_to_template(request, template='dashboard/account/basic_info.html',
         extra_context={'form': form})
 
 @login_required

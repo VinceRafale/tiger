@@ -1,30 +1,69 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        for site in orm.Site.objects.all():
-            location = orm.Location(site=site)
-            location.name = site.name
-            location.street = site.street
-            location.city = site.city
-            location.state = site.state
-            location.phone = site.phone
-            location.email = site.email
-            location.fax_number = site.fax_number
-            location.lat = site.lat
-            location.lon = site.lon
-            location.timezone = site.timezone
-            location.schedule = site.schedule_set.all()[0]
-            location.save()
+        
+        # Adding field 'Location.receive_via'
+        db.add_column('accounts_location', 'receive_via', self.gf('django.db.models.fields.IntegerField')(default=1), keep_default=False)
+
+        # Adding field 'Location.dine_in'
+        db.add_column('accounts_location', 'dine_in', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True), keep_default=False)
+
+        # Adding field 'Location.takeout'
+        db.add_column('accounts_location', 'takeout', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True), keep_default=False)
+
+        # Adding field 'Location.delivery'
+        db.add_column('accounts_location', 'delivery', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True), keep_default=False)
+
+        # Adding field 'Location.delivery_minimum'
+        db.add_column('accounts_location', 'delivery_minimum', self.gf('django.db.models.fields.DecimalField')(default='0.00', max_digits=5, decimal_places=2), keep_default=False)
+
+        # Adding field 'Location.lead_time'
+        db.add_column('accounts_location', 'lead_time', self.gf('django.db.models.fields.PositiveIntegerField')(default=0), keep_default=False)
+
+        # Adding field 'Location.delivery_lead_time'
+        db.add_column('accounts_location', 'delivery_lead_time', self.gf('django.db.models.fields.PositiveIntegerField')(default=0), keep_default=False)
+
+        # Adding field 'Location.tax_rate'
+        db.add_column('accounts_location', 'tax_rate', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=5, decimal_places=3), keep_default=False)
+
+        # Adding field 'Location.eod_buffer'
+        db.add_column('accounts_location', 'eod_buffer', self.gf('django.db.models.fields.PositiveIntegerField')(default=30), keep_default=False)
+
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        
+        # Deleting field 'Location.receive_via'
+        db.delete_column('accounts_location', 'receive_via')
+
+        # Deleting field 'Location.dine_in'
+        db.delete_column('accounts_location', 'dine_in')
+
+        # Deleting field 'Location.takeout'
+        db.delete_column('accounts_location', 'takeout')
+
+        # Deleting field 'Location.delivery'
+        db.delete_column('accounts_location', 'delivery')
+
+        # Deleting field 'Location.delivery_minimum'
+        db.delete_column('accounts_location', 'delivery_minimum')
+
+        # Deleting field 'Location.lead_time'
+        db.delete_column('accounts_location', 'lead_time')
+
+        # Deleting field 'Location.delivery_lead_time'
+        db.delete_column('accounts_location', 'delivery_lead_time')
+
+        # Deleting field 'Location.tax_rate'
+        db.delete_column('accounts_location', 'tax_rate')
+
+        # Deleting field 'Location.eod_buffer'
+        db.delete_column('accounts_location', 'eod_buffer')
 
 
     models = {
@@ -57,17 +96,27 @@ class Migration(DataMigration):
         'accounts.location': {
             'Meta': {'object_name': 'Location'},
             'city': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
+            'delivery': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
+            'delivery_area': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {'null': 'True', 'blank': 'True'}),
+            'delivery_lead_time': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
+            'delivery_minimum': ('django.db.models.fields.DecimalField', [], {'default': "'0.00'", 'max_digits': '5', 'decimal_places': '2'}),
+            'dine_in': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True', 'blank': 'True'}),
+            'eod_buffer': ('django.db.models.fields.PositiveIntegerField', [], {'default': '30'}),
             'fax_number': ('django.contrib.localflavor.us.models.PhoneNumberField', [], {'default': "''", 'max_length': '20', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'lat': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '12', 'decimal_places': '9'}),
+            'lead_time': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'lon': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '12', 'decimal_places': '9'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'phone': ('django.contrib.localflavor.us.models.PhoneNumberField', [], {'default': "''", 'max_length': '20'}),
-            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Schedule']"}),
+            'receive_via': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Schedule']", 'null': 'True'}),
             'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"}),
             'state': ('django.contrib.localflavor.us.models.USStateField', [], {'default': "''", 'max_length': '2'}),
             'street': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
+            'takeout': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
+            'tax_rate': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '5', 'decimal_places': '3'}),
             'timezone': ('django.db.models.fields.CharField', [], {'default': "'US/Eastern'", 'max_length': '100'}),
             'zip_code': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '10'})
         },
@@ -88,25 +137,14 @@ class Migration(DataMigration):
         'accounts.site': {
             'Meta': {'object_name': 'Site'},
             'account': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Account']"}),
-            'blog_address': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
-            'city': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
             'custom_domain': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'domain': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True', 'blank': 'True'}),
-            'enable_blog': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'enable_orders': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'fax_number': ('django.contrib.localflavor.us.models.PhoneNumberField', [], {'default': "''", 'max_length': '20', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lat': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '12', 'decimal_places': '9'}),
-            'lon': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '12', 'decimal_places': '9'}),
             'name': ('django.db.models.fields.CharField', [], {'default': "'Your Restaurant Name'", 'max_length': '200'}),
-            'phone': ('django.contrib.localflavor.us.models.PhoneNumberField', [], {'default': "''", 'max_length': '20'}),
-            'state': ('django.contrib.localflavor.us.models.USStateField', [], {'default': "''", 'max_length': '2'}),
-            'street': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255'}),
             'subdomain': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
-            'timezone': ('django.db.models.fields.CharField', [], {'default': "'US/Eastern'", 'max_length': '100'}),
-            'walkthrough_complete': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'zip': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '10'})
+            'walkthrough_complete': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'})
         },
         'accounts.subscriber': {
             'Meta': {'object_name': 'Subscriber'},

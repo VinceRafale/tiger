@@ -101,7 +101,7 @@ def add_edit_site_object(request, model, form_class, template, reverse_on, objec
             form.save_m2m()
             verb = 'updated' if instance else 'created'
             msg = '%s "%s" has been %s successfully.' % (
-                model._meta.verbose_name, unicode(obj), verb)
+                model._meta.verbose_name.capitalize(), unicode(obj), verb)
             messages.success(request, msg)
             return HttpResponseRedirect(reverse(reverse_on))
     else:

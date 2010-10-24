@@ -4,12 +4,9 @@ import urllib
 import urllib2
 
 from django import forms
-from django.contrib.gis.geos import Point, fromstr, GEOSException
 from django.contrib.localflavor.us.forms import *
-from django.utils import simplejson
 
 from authorize.aim import Api
-from olwidget.widgets import EditableMap
 
 from tiger.core.exceptions import PricePointNotAvailable
 from tiger.accounts.forms import AmPmTimeField
@@ -207,82 +204,6 @@ class CouponCreationForm(BetterModelForm):
             raise forms.ValidationError('Please enter an expiration date in the future.')
         return exp_date
 
-
-class OrderSettingsForm(BetterModelForm):
-    receive_via = forms.TypedChoiceField(
-        widget=forms.RadioSelect, choices=OrderSettings.RECEIPT_CHOICES, coerce=int)
-    email = forms.EmailField(label='E-mail address for receiving orders', required=False)
-    fax = USPhoneNumberField(label='Fax number for receiving orders', required=False)
-
-    class Meta:
-        model = OrderSettings
-        fields = (
-            'dine_in', 
-            'eod_buffer',
-            'takeout', 
-            'delivery', 
-            'delivery_minimum', 
-            'lead_time',
-            'delivery_lead_time',
-            'receive_via',
-        )
-
-    def __init__(self, data=None, site=None, *args, **kwargs):
-        try:
-            lon, lat = float(site.lon), float(site.lat)
-        except TypeError:
-            raise GeocodeError
-        super(OrderSettingsForm, self).__init__(data, *args, **kwargs)
-        self.fields['delivery_area'].widget = EditableMap(options={
-            'geometry': 'polygon',
-            'isCollection': True,
-            'layers': ['google.streets'],
-            'default_lat': lat,
-            'default_lon': lon,
-            'defaultZoom': 13,
-            'map_options': {
-                'controls': ['Navigation', 'PanZoom']
-            }
-        })
-        self.fields['email'].initial = site.email
-        self.fields['fax'].initial = site.fax_number
-        self.site = site
-
-    def clean(self):
-        cleaned_data = super(OrderSettingsForm, self).clean()
-        if cleaned_data.get('delivery') and not cleaned_data.get('delivery_area'):
-            raise forms.ValidationError('You must map out your delivery area to offer delivery orders.')
-        return cleaned_data
-
-    def _post_clean(self):
-        delivery_area = self.cleaned_data.get('delivery_area')
-        if delivery_area is not None:
-            try:
-                fromstr(delivery_area)
-            except GEOSException:
-                self._update_errors({'delivery_area': 'FAIL'})
-                return
-        super(OrderSettingsForm, self)._post_clean()
-
-    def clean_delivery_area(self):
-        area = self.cleaned_data.get('delivery_area')
-        if area == '':
-            return None
-        return area
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        via_email = self.cleaned_data['receive_via'] == OrderSettings.RECEIPT_EMAIL
-        if via_email and not email:
-            raise forms.ValidationError('You must specify an e-mail address to receive orders via e-mail.')
-        return email
-
-    def clean_fax(self):
-        fax = self.cleaned_data.get('fax')
-        via_fax = self.cleaned_data['receive_via'] == OrderSettings.RECEIPT_FAX
-        if via_fax and not fax:
-            raise forms.ValidationError('You must specify a fax number to receive orders via fax.')
-        return fax
 
 
 class OrderMessageForm(forms.ModelForm):

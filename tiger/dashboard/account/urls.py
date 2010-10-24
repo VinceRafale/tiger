@@ -4,6 +4,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tiger.dashboard.account.views',
     url(r'^cancel/$', 'cancel', name='cancel'),
+    url(r'^general-info/$', 'basic_info', name='basic_info'),
 )
 
 if settings.DEBUG:

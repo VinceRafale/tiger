@@ -3,6 +3,7 @@
 {% block body-class %}account {% endblock %}
 
 {% block submenu %}
+<li><a class="basic" href="{% url basic_info %}">General info</a></li>
 <li><a class="update-cc" href="{% url update_cc %}">Update credit card</a></li>
 <li><a class="cancel" href="{% url cancel %}">Cancel your account</a></li>
 {% endblock %}

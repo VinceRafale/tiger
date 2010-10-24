@@ -51,8 +51,8 @@ Edit your online ordering options
 {{ form.receive_via.errors }}
 {% endif %}
 {{ form.receive_via }}
-<label id="delivery-email">{% if form.email.errors %} {{ form.email.errors }} {% endif %}<br />{{ form.email.label }} {{ form.email }} </label>
-<label id="delivery-fax">{% if form.fax.errors %} {{ form.fax.errors }} {% endif %}<br />{{ form.fax.label }} {{ form.fax }} </label>
+<label id="delivery-email">{% if form.order_email.errors %} {{ form.order_email.errors }} {% endif %}<br />{{ form.order_email.label }} {{ form.order_email }} </label>
+<label id="delivery-fax">{% if form.order_fax.errors %} {{ form.order_fax.errors }} {% endif %}<br />{{ form.order_fax.label }} {{ form.order_fax }} </label>
 <h3>Delivery area</h3>
 {{ form.delivery_area }}
 <div class="clear"></div>
