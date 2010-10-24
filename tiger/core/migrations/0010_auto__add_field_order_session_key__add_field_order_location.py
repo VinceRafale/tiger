@@ -5,6 +5,9 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ('accounts', '0014_auto__del_field_site_city__del_field_site_zip__del_field_site_lat__del'),
+    )
 
     def forwards(self, orm):
         
