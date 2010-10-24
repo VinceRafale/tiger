@@ -179,12 +179,12 @@ class Site(models.Model):
 
     @cachedmethod(KeyChain.footer_locations)
     def footer_locations(self):
-        html = render_to_string('core/includes/footer_locations.html', {'site': 'self'}) 
+        html = render_to_string('core/includes/footer_locations.html', {'site': self}) 
         return mark_safe(html)
 
     @cachedmethod(KeyChain.sidebar_locations)
-    def footer_locations(self):
-        html = render_to_string('core/includes/sidebar_locations.html', {'site': 'self'}) 
+    def sidebar_locations(self):
+        html = render_to_string('core/includes/sidebar_locations.html', {'site': self}) 
         return mark_safe(html)
 
 

@@ -1,0 +1,26 @@
+{% if site.location_set.count == 1 %}
+    {% with site.location_set.all.0 as location %}
+        <p>Hours: {{ location.schedule.display|default:'[your restaurant hours]' }}</p>
+        <address>
+        {% if location.address %}
+        {{ location.street }}<br>
+        {{ location.city }}, {{ location.state }} {{ location.zip_code }}
+        {% else %}
+        [your restaurant address]
+        {% endif %}
+        </address>
+        <p>T: {% if location.phone %}{{ location.phone }}{% else %}[your phone number ]{% endif %}{% if location.fax_number %} | Fax: {{ location.fax_number }}{% endif %}</p>
+    {% endwith %}
+{% else %}
+    <ul>
+    {% for location in site.location_set.all %}
+        <li>
+            <a href="{{ location.get_absolute_url }}">{{ location.name }}</a><br />
+            {{ location.schedule.display }}<br />
+            {{ location.phone }}
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+

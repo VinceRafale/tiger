@@ -1,0 +1,15 @@
+{% if site.location_set.count == 1 %}
+    {% with site.location_set.all.0 as location %}
+        <address>{{ location.schedule.display|default:'[your restaurant hours]' }} &bull; {% if location.address %}{{ location.address }}{% else %}[your restaurant address]{% endif %} &bull; {% if location.phone %}{{ location.phone }}{% else %}[your phone number]{% endif %}</address>
+    {% endwith %}
+{% else %}
+    <ul>
+    {% for location in site.location_set.all %}
+        <li>
+            <a href="{{ location.get_absolute_url }}">{{ location.name }}</a><br />
+            {{ location.schedule.display }}
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
