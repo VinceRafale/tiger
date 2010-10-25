@@ -2,14 +2,6 @@
 
 {% block body-class %}{{ block.super }}payment{% endblock %}
 
-{% block extrahead %}
-<style type="text/css">
-#id_tax_rate {width:40px;}
-#credit-cards li {margin-left:0; margin-right:10px; display:inline;}
-#credit-cards input, #credit-cards img {vertical-align:middle;}
-</style>
-{% endblock %}
-
 {% block h2 %}
 Online order payments
 {% endblock %}
@@ -25,7 +17,6 @@ Online order payments
 {{ form.non_field_errors }}
 {% endif %}
 <form method="POST">
-<label>{{ form.tax_rate.label }}: {{ form.tax_rate }}% {% if form.tax_rate.errors %} {{ form.tax_rate.errors }} {% endif %}</label>
 <label>{{ form.require_payment }} {{ form.require_payment.label }}</label>
 <label>{{ form.payment_type.label }} {% if form.payment_type.errors %} {{ form.payment_type.errors }} {% endif %}</label>
 {{ form.payment_type }}

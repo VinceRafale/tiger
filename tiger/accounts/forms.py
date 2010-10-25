@@ -375,6 +375,7 @@ class LocationForm(BetterModelForm):
             'email',
             'timezone',
             'schedule',
+            'tax_rate',
         )
 
     def address_fields(self):
@@ -386,7 +387,7 @@ class LocationForm(BetterModelForm):
     def non_address_fields(self):
         return [
             field for field in self
-            if field.name not in ('name', 'street', 'city', 'state', 'zip_code')
+            if field.name not in ('name', 'street', 'city', 'state', 'zip_code', 'tax_rate')
         ]
 
 

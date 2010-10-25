@@ -12,8 +12,6 @@ class Migration(DataMigration):
             location = site.location_set.all()[0]
             for attr in ('receive_via', 'dine_in', 'takeout', 'delivery', 'delivery_minimum', 'lead_time', 'delivery_lead_time', 'tax_rate', 'eod_buffer',):
                 setattr(location, attr, getattr(site.ordersettings, attr))
-            location.order_email = site.email
-            location.order_fax = site.fax_number
             location.save()
 
 

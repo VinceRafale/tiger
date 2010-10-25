@@ -58,3 +58,17 @@ class SSLRedirectMiddleware(object):
            Please structure your views so that redirects only occur during GETs."""
 
         return HttpResponsePermanentRedirect(newurl)
+
+
+class LocationMiddleware(object):
+    def process_request(self, request):
+        """Sets user-selected location as attribute on request object.
+        """
+        setattr(request, 'location', self.get_location(request))
+
+    def get_location(self, request):
+        try:
+            return request.site.location_set.all()[0]
+        except:
+            return None
+        

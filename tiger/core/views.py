@@ -146,6 +146,7 @@ def send_order(request):
             order.cart = cart
             order.session_key = cart_key
             order.site = request.site
+            order.location = request.location
             try:
                 order.save()
             except InvalidOperation:

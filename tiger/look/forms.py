@@ -10,10 +10,14 @@ from tiger.look.models import *
 from tiger.look.widgets import *
 
 def get_skin_choices():
-    return [(skin.url, skin.name) for skin in Skin.objects.all()]
+    return [(skin.url, skin.name) for skin in Skin.objects.filter(site__isnull=True)]
 
 class SkinSelectForm(forms.Form):
-    skin = forms.ChoiceField(label='Theme', choices=get_skin_choices())
+    skin = forms.ChoiceField(label='Theme', choices=())
+
+    def __init__(self, *args, **kwargs):
+        super(SkinSelectForm, self).__init__(*args, **kwargs)
+        self.fields['skin'].choices = get_skin_choices()
 
 
 class HeaderFontForm(forms.ModelForm):

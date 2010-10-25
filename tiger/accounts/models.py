@@ -134,11 +134,13 @@ class Site(models.Model):
         if not self.enable_orders:
             # if they don't have online ordering, why proclaim it?
             raise NoOnlineOrders("Invalid data.  Please try again.", '/')
-        schedule = self.location_set.all()[0].schedule
-        availability = schedule.is_open(buff=self.ordersettings.eod_buffer)
+        location = self.location_set.all()[0]
+        schedule = location.schedule
+        eod_buffer = location.eod_buffer
+        availability = schedule.is_open(buff=eod_buffer)
         if availability != TIME_OPEN:
             if availability == TIME_EOD:
-                raise ClosingTimeBufferError("Sorry!  Orders must be placed within %d minutes of closing." % self.ordersettings.eod_buffer, '/')
+                raise ClosingTimeBufferError("Sorry!  Orders must be placed within %d minutes of closing." % eod_buffer, '/')
             raise RestaurantNotOpen("""%s is currently closed. Please try ordering during normal
             restaurant hours, %s.""" % (self.name, schedule.display), '/')
         return True
@@ -247,6 +249,10 @@ class Location(models.Model):
         if all(address_pieces):
             return ' '.join(address_pieces)
         return ''
+
+    def can_receive_orders(self):
+        return (self.receive_via == Location.RECEIPT_EMAIL and self.order_email) \
+            or (self.receive_via == Location.RECEIPT_FAX and self.order_fax)
 
 
 class Schedule(models.Model):

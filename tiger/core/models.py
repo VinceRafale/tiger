@@ -301,7 +301,6 @@ class Order(models.Model):
     city = models.CharField(max_length=255, blank=True, null=True)
     state = models.CharField(max_length=2, blank=True, null=True)
     zip = models.CharField(max_length=10, blank=True, null=True)
-    pickup = models.CharField('Time you will pick up your order', max_length=20, editable=False, null=True)
     ready_by = models.DateTimeField('Have order ready by:', null=True)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
     tax = models.DecimalField(editable=False, max_digits=6, decimal_places=2, default='0.00')
@@ -398,14 +397,6 @@ class OrderSettings(models.Model):
         (RECEIPT_FAX, 'Fax'),
     )
     site = models.OneToOneField('accounts.Site')
-    receive_via = models.IntegerField(default=1, choices=RECEIPT_CHOICES)
-    dine_in = models.BooleanField(default=True) 
-    takeout = models.BooleanField(default=True) 
-    delivery = models.BooleanField(default=True) 
-    delivery_minimum = models.DecimalField('minimum amount for delivery orders', max_digits=5, decimal_places=2, default='0.00') 
-    lead_time = models.PositiveIntegerField('how many minutes before must a pick-up order be placed in advance?', default=0) 
-    delivery_lead_time = models.PositiveIntegerField('how many minutes before must a delivery order be placed in advance?', default=0) 
-    delivery_area = models.MultiPolygonField(null=True, blank=True) 
     # customer's authorize.net information for online orders
     payment_type = models.IntegerField('Collect payment via', null=True, choices=PAYMENT_TYPE_CHOICES, default=PAYMENT_NONE)
     auth_net_api_login = models.CharField('API Login ID', max_length=255, blank=True, null=True)
@@ -416,8 +407,6 @@ class OrderSettings(models.Model):
     takes_discover = models.BooleanField(default=False)
     takes_mc = models.BooleanField(default=False)
     takes_visa = models.BooleanField(default=False)
-    tax_rate = models.DecimalField(decimal_places=3, max_digits=5, null=True)
-    eod_buffer = models.PositiveIntegerField(default=30)
     review_page_text = models.TextField('Additional text for the "Review your order" page', blank=True, default='')
     send_page_text = models.TextField('Additional text for the "Contact Information" page', blank=True, default='')
 
@@ -427,11 +416,12 @@ class OrderSettings(models.Model):
         #TODO: make this list of options and the associated numbers
         # sit somewhere in one place in case more options are added 
         # in the future
+        location = self.site.location_set.all()[0]
         for i, choice in enumerate(('takeout', 'dine_in', 'delivery',)):
-            if getattr(self, choice, None):
+            if getattr(location, choice, None):
                 choice_list.append(i + 1)
-        min_order = ' (minimum order of %.2f)' % self.delivery_minimum \
-            if self.delivery_minimum else ''
+        min_order = ' (minimum order of %.2f)' % location.delivery_minimum \
+            if location.delivery_minimum else ''
         return [
             c if c[0] != Order.METHOD_DELIVERY else (c[0], c[1] + min_order)
             for c in Order.METHOD_CHOICES 
@@ -468,8 +458,12 @@ class OrderSettings(models.Model):
         assert False
 
     def can_receive_orders(self):
-        return (self.receive_via == OrderSettings.RECEIPT_EMAIL and self.site.email) \
-            or (self.receive_via == OrderSettings.RECEIPT_FAX and self.site.fax_number)
+        return all(loc.can_receive_orders() for loc in self.site.location_set.all())
+
+    @property
+    def tax_rate(self):
+        location = self.site.location_set.all()[0]
+        return location.tax_rate
     
 
 class Coupon(models.Model):
