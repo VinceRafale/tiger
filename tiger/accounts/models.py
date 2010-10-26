@@ -254,6 +254,9 @@ class Location(models.Model):
         return (self.receive_via == Location.RECEIPT_EMAIL and self.order_email) \
             or (self.receive_via == Location.RECEIPT_FAX and self.order_fax)
 
+    def get_timezone(self):
+        return timezone(self.timezone)
+
 
 class Schedule(models.Model):
     site = models.ForeignKey(Site)

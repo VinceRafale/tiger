@@ -8,6 +8,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.forms import *
 
 from authorize.aim import Api
+from pytz import timezone
 
 from tiger.core.exceptions import PricePointNotAvailable
 from tiger.accounts.forms import AmPmTimeField
@@ -101,7 +102,7 @@ class OrderForm(forms.ModelForm):
         exclude = ('status', 'unread', 'pickup', 'session_key',)
 
     def __init__(self, data=None, site=None, *args, **kwargs):
-        location = site.location_set.all()[0]
+        self.location = location = site.location_set.all()[0]
         super(OrderForm, self).__init__(data, *args, **kwargs)
         self.fields['method'] = forms.TypedChoiceField(
             label='This order is for:',
@@ -124,7 +125,9 @@ class OrderForm(forms.ModelForm):
         if not ready_by:
             raise forms.ValidationError('This field is required.')
         today = date.today()
-        return self.site.localize(datetime.combine(today, ready_by))
+        loc_zone = self.location.get_timezone()
+        today = timezone(settings.TIME_ZONE).localize(datetime.now()).astimezone(loc_zone).date()
+        return loc_zone.localize(datetime.combine(today, ready_by))
 
     def clean(self):
         cleaned_data = super(OrderForm, self).clean()

@@ -18,7 +18,7 @@ from poseur.fixtures import load_fixtures
 from pytz import timezone
 from selenium import selenium
 
-from tiger.accounts.models import Site, TimeSlot
+from tiger.accounts.models import Site, TimeSlot, Location
 from tiger.core.exceptions import *
 from tiger.core.forms import get_order_form
 from tiger.core.middleware import Cart
@@ -44,6 +44,9 @@ def random_order_form():
     while no_variants: 
         item = Item.objects.order_by('?')[0]
         if item.variant_set.count():
+            v = item.variant_set.all()[0]
+            v.schedule = None
+            v.save()
             break
     item.taxable = True
     item.save()
@@ -158,9 +161,9 @@ class CartTestCase(unittest.TestCase):
         FakeCoupon.generate(count=1)
         cls.coupon = Coupon.objects.all()[0]
         site = Site.objects.all()[0]
-        order_settings = site.ordersettings
-        order_settings.tax_rate = '6.25'
-        order_settings.save()
+        location = site.location_set.all()[0]
+        location.tax_rate = '6.25'
+        location.save()
 
     @classmethod
     def teardown_class(cls):
@@ -228,10 +231,10 @@ class PayPalOrderTest(TestCase):
         if not Site.objects.count():
             load_fixtures('tiger.fixtures')
         site = Site.objects.all()[0]
-        order_settings = site.ordersettings
-        order_settings.receive_via = OrderSettings.RECEIPT_EMAIL
-        order_settings.tax_rate = '6.25'
-        order_settings.save()
+        location = site.location_set.all()[0]
+        location.receive_via = Location.RECEIPT_EMAIL
+        location.tax_rate = '6.25'
+        location.save()
 
     @classmethod
     def setup_class(cls):
