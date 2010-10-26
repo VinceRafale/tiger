@@ -358,7 +358,7 @@ class ScheduleSelectForm(forms.Form):
 
     def __init__(self, data=None, site=None, *args, **kwargs):
         super(ScheduleSelectForm, self).__init__(data=data, *args, **kwargs)
-        self.fields['schedule'].queryset = site.schedule_set.filter(master=False)
+        self.fields['schedule'].queryset = site.schedule_set.all()
 
 
 class LocationForm(BetterModelForm):

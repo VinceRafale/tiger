@@ -110,6 +110,7 @@ class Item(models.Model):
     name = models.CharField(max_length=100)
     section = models.ForeignKey(Section)
     site = models.ForeignKey('accounts.Site', editable=False)
+    schedule = models.ForeignKey('accounts.Schedule', null=True, blank=True)
     image = models.ForeignKey('content.ItemImage', blank=True, null=True)
     description = models.TextField(blank=True)
     special = models.BooleanField('is this menu item currently a special?', default=False)
@@ -158,6 +159,9 @@ class Item(models.Model):
     @property
     def is_available(self):
         assert self.section.is_available
+        if self.schedule and self.schedule.is_open() != TIME_OPEN:
+            raise ItemNotAvailable(ITEM_NOT_AVAILABLE_SCHEDULE % (self.name, self.schedule.display), 
+                self.get_absolute_url())
         if self.archived or self.out_of_stock:
             raise ItemNotAvailable(ITEM_NOT_AVAILABLE % self.name, redirect_to=self.get_absolute_url())
         return True

@@ -65,6 +65,20 @@ def setup_section_timeslots(dt):
     return _setup
 
 
+def setup_item_timeslots(dt):
+    def _setup():
+        setup_timeslots(dt)()
+        site = Site.objects.all()[0]
+        item = Item.objects.all()[0]
+        schedule = item.schedule
+        if schedule is None:
+            schedule = Schedule.objects.create(site=site)
+        item.schedule = schedule
+        item.save()
+        create_timeslots(schedule, dt, 30, 0)
+    return _setup
+
+
 def setup_pricepoint_timeslots(dt):
     def _setup():
         setup_timeslots(dt)()
@@ -86,6 +100,9 @@ def teardown_timeslots():
     for section in Section.objects.all():
         section.schedule = None
         section.save()
+    for item in Item.objects.all():
+        item.schedule = None
+        item.save()
     for location in Location.objects.all():
         location.schedule = None
         location.save()
@@ -145,6 +162,13 @@ def test_section_closed():
 @with_setup(setup_section_timeslots(-10), teardown_timeslots)
 @raises(SectionNotAvailable)
 def test_item_with_section_closed():
+    item = Item.objects.all()[0]
+    assert item.is_available
+
+
+@with_setup(setup_item_timeslots(-10), teardown_timeslots)
+@raises(ItemNotAvailable)
+def test_item_schedule_closed():
     item = Item.objects.all()[0]
     assert item.is_available
 
