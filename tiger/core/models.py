@@ -118,7 +118,6 @@ class Item(models.Model):
     spicy = models.BooleanField(default=False)
     vegetarian = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
-    out_of_stock = models.BooleanField(default=False)
     taxable = models.BooleanField(default=True)
     price_list = PickledObjectField(null=True, editable=False)
     posting_stage = models.SmallIntegerField(default=0, choices=STAGE_CHOICES, editable=False)
@@ -136,12 +135,17 @@ class Item(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        new = False
         if not self.id:
+            new = True
             self.slug = slugify(self.name)[:50]
             self.price_list = []
         if len(self.price_list) and self.posting_stage != Item.STAGE_POST:
             self.posting_stage += 1
         super(Item, self).save(*args, **kwargs)
+        if new:
+            for loc in self.site.location_set.all():
+                LocationStockInfo.objects.create(location=loc, item=self)
 
     def get_absolute_url(self):
         return reverse('menu_item', 
@@ -160,9 +164,12 @@ class Item(models.Model):
         if self.schedule and self.schedule.is_open(location) != TIME_OPEN:
             raise ItemNotAvailable(ITEM_NOT_AVAILABLE_SCHEDULE % (self.name, self.schedule.display), 
                 self.get_absolute_url())
-        if self.archived or self.out_of_stock:
+        if self.archived or self.out_of_stock(location):
             raise ItemNotAvailable(ITEM_NOT_AVAILABLE % self.name, redirect_to=self.get_absolute_url())
         return True
+
+    def out_of_stock(self, location):
+        return self.locationstockinfo_set.get(location=location).out_of_stock
 
     def update_price(self):
         self.price_list = get_price_list(self)
@@ -171,6 +178,12 @@ class Item(models.Model):
     @property
     def incomplete(self):
         return self.price_list in (None, [])
+
+
+class LocationStockInfo(models.Model):
+    item = models.ForeignKey(Item)
+    location = models.ForeignKey('accounts.Location')
+    out_of_stock = models.BooleanField(default=False)
 
 
 class Variant(models.Model):

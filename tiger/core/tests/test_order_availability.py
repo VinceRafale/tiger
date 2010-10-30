@@ -88,8 +88,11 @@ def setup_pricepoint_timeslots(dt):
         for item in site.item_set.all():
             item.variant_set.all().delete()
             item.archived = False
-            item.out_of_stock = False
             item.save()
+            location = Location.objects.all()[0]
+            stockinfo = item.locationstockinfo_set.get(location=location)
+            stockinfo.out_of_stock = False
+            stockinfo.save()
             # no schedule for one price point
             Variant.objects.create(description='large', item=item, price=Decimal('5.00'))
             v = Variant.objects.create(description='small', item=item, price=Decimal('3.00'), schedule=schedule)
@@ -183,15 +186,21 @@ def test_item_archived():
 @raises(ItemNotAvailable)
 def test_item_out_of_stock():
     item = Item.objects.all()[0]
-    item.out_of_stock = True
+    location = Location.objects.all()[0]
+    stockinfo = item.locationstockinfo_set.get(location=location)
+    stockinfo.out_of_stock = True
+    stockinfo.save()
     assert item.is_available(Location.objects.all()[0])
 
 
 def test_item_available():
     item = Item.objects.all()[0]
-    item.out_of_stock = False
     item.archived = False
-    assert item.is_available(Location.objects.all()[0])
+    location = Location.objects.all()[0]
+    stockinfo = item.locationstockinfo_set.get(location=location)
+    stockinfo.out_of_stock = False
+    stockinfo.save()
+    assert item.is_available(location)
 
 
 @with_setup(setup_pricepoint_timeslots(10), teardown_timeslots)
@@ -245,10 +254,16 @@ class ItemDisplayTestCase(TestCase):
         self.client.get('/')
         self.item = Variant.objects.all()[0].item
         self.item.update_price()
+        location = Location.objects.all()[0]
+        stockinfo = self.item.locationstockinfo_set.get(location=location)
+        stockinfo.save()
+        self.stockinfo = stockinfo
 
     def test_available(self):
-        self.item.archived = self.item.out_of_stock = False
+        location = Location.objects.all()[0]
+        self.item.archived = self.stockinfo.out_of_stock = False
         self.item.save()
+        self.stockinfo.save()
         response = self.client.get(self.item.get_absolute_url())
         self.assertNotContains(response, ITEM_NOT_AVAILABLE % self.item.name)
 
@@ -259,8 +274,8 @@ class ItemDisplayTestCase(TestCase):
         self.assertContains(response, ITEM_NOT_AVAILABLE % self.item.name)
 
     def test_out_of_stock(self):
-        self.item.out_of_stock = True
-        self.item.save()
+        self.stockinfo.out_of_stock = True
+        self.stockinfo.save()
         response = self.client.get(self.item.get_absolute_url())
         self.assertContains(response, ITEM_NOT_AVAILABLE % self.item.name)
 

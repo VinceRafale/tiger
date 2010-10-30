@@ -225,7 +225,8 @@ class Location(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.id and self.schedule is None:
+        new = not self.id
+        if new and self.schedule is None:
             self.schedule = self.site.schedule_set.get(master=True)
         if self.address and not (self.lon and self.lat):
             try:
@@ -233,6 +234,10 @@ class Location(models.Model):
             except GeocodeError:
                 pass
         super(Location, self).save(*args, **kwargs)
+        if new:
+            from tiger.core.models import LocationStockInfo
+            for item in self.site.item_set.all():
+                LocationStockInfo.objects.create(location=self, item=item)
 
     def get_absolute_url(self):
         return '/find-us/#%s' % self.id_attr()

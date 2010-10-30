@@ -76,3 +76,9 @@ def test_no_items_allowed_without_location():
 
 def test_delivery_option_for_blank_delivery_area():
     assert False
+
+def test_items_create_stock_records_for_locations():
+    assert False
+
+def test_locations_create_stock_records_for_items():
+    assert False
