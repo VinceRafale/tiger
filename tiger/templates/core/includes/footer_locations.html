@@ -3,13 +3,15 @@
         <address>{{ location.schedule.display|default:'[your restaurant hours]' }} &bull; {% if location.address %}{{ location.address }}{% else %}[your restaurant address]{% endif %} &bull; {% if location.phone %}{{ location.phone }}{% else %}[your phone number]{% endif %}</address>
     {% endwith %}
 {% else %}
-    <ul>
+    <address>
     {% for location in site.location_set.all %}
-        <li>
-            <a href="{{ location.get_absolute_url }}">{{ location.name }}</a><br />
-            {{ location.schedule.display }}
-        </li>
+        {% if not forloop.first %}
+        &bull;
+        {% endif %}
+        <span>
+            <a href="{{ location.get_absolute_url }}">{{ location.name }}</a> {{ location.phone }}
+        </span>
     {% endfor %}
-    </ul>
+    </address>
 {% endif %}
 

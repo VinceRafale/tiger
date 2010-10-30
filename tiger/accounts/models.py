@@ -10,6 +10,7 @@ from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.template import Template
 from django.template.loader import render_to_string
+from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
 import pytz
