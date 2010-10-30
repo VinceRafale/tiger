@@ -91,12 +91,9 @@ def add_edit_menu_options(request, object_type, object_id):
     context = {
         'object': instance,
         'type': object_type,
-        'options': True
+        'options': True,
+        'schedule_form': ScheduleSelectForm(site=request.site, initial={'schedule': getattr(instance.schedule, 'id', '')})
     }
-    if object_type == 'section':
-        context.update({
-            'schedule_form': ScheduleSelectForm(site=request.site, initial={'schedule': getattr(instance.schedule, 'id', '')})
-        })
     return direct_to_template(request, template='dashboard/menu/%s_options.html' % object_type, extra_context=context)
 
 def add_related(request, object_type, object_id, form_class):
@@ -260,14 +257,15 @@ def flag_item(request):
     return HttpResponse('')
 
 @login_required
-def section_hours(request, section_id):
+def object_hours(request, object_type, object_id):
     if request.method != 'POST':
         raise Http404
     form = ScheduleSelectForm(request.POST, site=request.site)
     if not form.is_valid():
         raise Http404
-    section = Section.objects.get(id=section_id)
+    model = get_model('core', object_type)
+    obj = model.objects.get(id=object_id)
     schedule = form.cleaned_data['schedule']
-    section.schedule = schedule
-    section.save()
+    obj.schedule = schedule
+    obj.save()
     return HttpResponse('true')

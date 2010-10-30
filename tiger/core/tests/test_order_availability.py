@@ -39,16 +39,14 @@ def setup_timeslots(dt):
             load_fixtures('tiger.fixtures')
         site = Site.objects.all()[0]
         location = site.location_set.all()[0]
+        location.eod_buffer = 15
+        location.tax_rate = '6.25'
         site.enable_orders = True
         site.save()
-        order_settings = site.ordersettings
-        order_settings.eod_buffer = 15
-        order_settings.tax_rate = '6.25'
-        order_settings.save()
         schedule = location.schedule
         if schedule is None:
             schedule = location.schedule = Schedule.objects.create(site=site)
-            location.save()
+        location.save()
         create_timeslots(schedule, dt, 30, 30)
     return _setup
 
@@ -63,6 +61,20 @@ def setup_section_timeslots(dt):
             schedule = Schedule.objects.create(site=site)
         section.schedule = schedule
         section.save()
+        create_timeslots(schedule, dt, 30, 0)
+    return _setup
+
+
+def setup_item_timeslots(dt):
+    def _setup():
+        setup_timeslots(dt)()
+        site = Site.objects.all()[0]
+        item = Item.objects.all()[0]
+        schedule = item.schedule
+        if schedule is None:
+            schedule = Schedule.objects.create(site=site)
+        item.schedule = schedule
+        item.save()
         create_timeslots(schedule, dt, 30, 0)
     return _setup
 
@@ -88,6 +100,9 @@ def teardown_timeslots():
     for section in Section.objects.all():
         section.schedule = None
         section.save()
+    for item in Item.objects.all():
+        item.schedule = None
+        item.save()
     for location in Location.objects.all():
         location.schedule = None
         location.save()
@@ -147,6 +162,13 @@ def test_section_closed():
 @with_setup(setup_section_timeslots(-10), teardown_timeslots)
 @raises(SectionNotAvailable)
 def test_item_with_section_closed():
+    item = Item.objects.all()[0]
+    assert item.is_available
+
+
+@with_setup(setup_item_timeslots(-10), teardown_timeslots)
+@raises(ItemNotAvailable)
+def test_item_schedule_closed():
     item = Item.objects.all()[0]
     assert item.is_available
 
@@ -246,10 +268,10 @@ class ItemDisplayTestCase(TestCase):
 def setup_order_validation():
     setup_timeslots(0)()
     site = Site.objects.all()[0]
-    ordersettings = site.ordersettings
-    ordersettings.lead_time = 30
-    ordersettings.delivery_lead_time = 60
-    ordersettings.save()
+    location = site.location_set.all()[0]
+    location.lead_time = 30
+    location.delivery_lead_time = 60
+    location.save()
 
 def set_timezone(tz):
     site = Site.objects.all()[0]
@@ -271,18 +293,20 @@ def get_order_form(ready_by, order_method):
 
 def invalid_pickup_time(tz):
     site = Site.objects.all()[0]
+    location = site.location_set.all()[0]
     server_tz = timezone(settings.TIME_ZONE)
     site_tz = timezone(tz)
     form = get_order_form(server_tz.localize(datetime.now()).astimezone(site_tz), Order.METHOD_TAKEOUT)
     assert_false(form.is_valid())
-    assert_true('Takeout orders must be placed %d minutes in advance.' % site.ordersettings.lead_time in form.non_field_errors())
+    assert_true('Takeout orders must be placed %d minutes in advance.' % location.lead_time in form.non_field_errors())
 
 def valid_pickup_time(tz):
     # ready_by will not have resolution of seconds
     site = Site.objects.all()[0]
+    location = site.location_set.all()[0]
     server_tz = timezone(settings.TIME_ZONE)
     site_tz = timezone(tz)
-    ready_by = server_tz.localize((datetime.now() + timedelta(minutes=(site.ordersettings.lead_time + 5))).replace(second=0, microsecond=0)).astimezone(site_tz)
+    ready_by = server_tz.localize((datetime.now() + timedelta(minutes=(location.lead_time + 5))).replace(second=0, microsecond=0)).astimezone(site_tz)
     form = get_order_form(ready_by, Order.METHOD_TAKEOUT)
     assert_true(form.is_valid())
     order = form.save(commit=False)

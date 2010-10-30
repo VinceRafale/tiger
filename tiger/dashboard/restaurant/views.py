@@ -110,7 +110,7 @@ def toggle_order_status(request):
         return HttpResponseRedirect(reverse('order_options'))
     if not site.ordersettings.tax_rate:
         messages.error(request, "You must enter a sales tax rate to receive online orders.") 
-        return HttpResponseRedirect(reverse('order_payment'))
+        return HttpResponseRedirect(reverse('dashboard_location'))
     if site.enable_orders:
         site.enable_orders = False
     else:

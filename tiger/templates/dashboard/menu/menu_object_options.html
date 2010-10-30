@@ -13,7 +13,11 @@ FIXME
 {% block content %}
 
 {% block defaults %}
-{% endblock %}
+    {% if object %}
+        <h3>Hours of availability</h3>
+        {{ schedule_form.schedule }}
+        <p class="help">You can control when items from this specific category are ordered, like lunch specials or breakfast items.</p>
+    {% endif %} {% endblock %}
 <div>
     {% block pricepoints %}
         <h3>Price points 
@@ -91,4 +95,14 @@ FIXME
 
 {% block js %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/formset.js"></script>
+<script type="text/javascript">
+$(function () {
+    $("#id_schedule").change(function () {
+        data = $(this).serialize();
+        $.post("{% url dashboard_edit_menu_hours type, object.id %}", data, function (data) {
+
+        }, "json");
+    });
+});
+</script>
 {% endblock %}

@@ -4,9 +4,11 @@ import urllib
 import urllib2
 
 from django import forms
+from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.forms import *
 
 from authorize.aim import Api
+from pytz import timezone
 
 from tiger.core.exceptions import PricePointNotAvailable
 from tiger.accounts.forms import AmPmTimeField
@@ -69,6 +71,7 @@ def get_order_form(instance):
             ) 
     return type('OrderForm', (BaseOrderForm,), attrs) 
 
+
 class SectionForm(BetterModelForm):
     class Meta:
         model = Section
@@ -99,6 +102,7 @@ class OrderForm(forms.ModelForm):
         exclude = ('status', 'unread', 'pickup', 'session_key',)
 
     def __init__(self, data=None, site=None, *args, **kwargs):
+        self.location = location = site.location_set.all()[0]
         super(OrderForm, self).__init__(data, *args, **kwargs)
         self.fields['method'] = forms.TypedChoiceField(
             label='This order is for:',
@@ -106,7 +110,7 @@ class OrderForm(forms.ModelForm):
             choices=site.ordersettings.choices,
             widget=forms.RadioSelect
         )
-        self.delivery_minimum = site.ordersettings.delivery_minimum
+        self.delivery_minimum = location.delivery_minimum
         self.site = site
 
     def clean_method(self):
@@ -121,11 +125,14 @@ class OrderForm(forms.ModelForm):
         if not ready_by:
             raise forms.ValidationError('This field is required.')
         today = date.today()
-        return self.site.localize(datetime.combine(today, ready_by))
+        loc_zone = self.location.get_timezone()
+        today = timezone(settings.TIME_ZONE).localize(datetime.now()).astimezone(loc_zone).date()
+        return loc_zone.localize(datetime.combine(today, ready_by))
 
     def clean(self):
         cleaned_data = super(OrderForm, self).clean()
         method = self.cleaned_data.get('method')
+        location = self.site.location_set.all()[0]
         if method == Order.METHOD_DELIVERY:
             address_fields = ['street', 'city', 'state', 'zip']
             if not all(cleaned_data.get(field) for field in address_fields):
@@ -133,18 +140,18 @@ class OrderForm(forms.ModelForm):
                 raise forms.ValidationError(msg)
             address = ' '.join(cleaned_data.get(field) for field in address_fields)
             msg = """We apologize, but it appears you are outside of our delivery area.
-            Please choose one of the other options or call us at %s.""" % self.site.phone
+            Please choose one of the other options or call us at %s.""" % location.phone
             try:
                 lon, lat = geocode(address)
             except:
                 raise forms.ValidationError(msg)
             point = Point(lon, lat)
-            area = self.site.ordersettings.delivery_area
+            area = location.delivery_area
             if not area.contains(point):
                 raise forms.ValidationError(msg)
-            lead_time = self.site.ordersettings.delivery_lead_time
+            lead_time = location.delivery_lead_time
         else:
-            lead_time = self.site.ordersettings.lead_time
+            lead_time = location.lead_time
         ready_by = self.cleaned_data.get('ready_by')
         method_display = dict(Order.METHOD_CHOICES).get(method)
         if ready_by and method_display:
@@ -225,7 +232,6 @@ class OrderPaymentForm(BetterModelForm):
     class Meta:
         model = OrderSettings
         fields = (
-            'tax_rate',
             'require_payment',
             'auth_net_api_login',
             'auth_net_api_key',

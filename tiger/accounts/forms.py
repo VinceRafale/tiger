@@ -358,7 +358,7 @@ class ScheduleSelectForm(forms.Form):
 
     def __init__(self, data=None, site=None, *args, **kwargs):
         super(ScheduleSelectForm, self).__init__(data=data, *args, **kwargs)
-        self.fields['schedule'].queryset = site.schedule_set.filter(master=False)
+        self.fields['schedule'].queryset = site.schedule_set.all()
 
 
 class LocationForm(BetterModelForm):
@@ -375,6 +375,7 @@ class LocationForm(BetterModelForm):
             'email',
             'timezone',
             'schedule',
+            'tax_rate',
         )
 
     def address_fields(self):
@@ -386,7 +387,7 @@ class LocationForm(BetterModelForm):
     def non_address_fields(self):
         return [
             field for field in self
-            if field.name not in ('name', 'street', 'city', 'state', 'zip_code')
+            if field.name not in ('name', 'street', 'city', 'state', 'zip_code', 'tax_rate')
         ]
 
 

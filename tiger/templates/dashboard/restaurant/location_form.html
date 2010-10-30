@@ -2,6 +2,12 @@
 
 {% block body-class %}{{ block.super }}location{% endblock %}
 
+{% block extrahead %}
+<style type="text/css">
+#id_tax_rate {width:40px;}
+</style>
+{% endblock %}
+
 {% block help %}
 <p>We'll use the address that you enter here just about everywhere. It's listed on the homepage and footer of your website and is the location shown on the map on the "Find Us" page. We'll also include it in the footers of PDF menus.</p>
 <p>Your timezone is important for making sure that online orders aren't placed outside of business hours.</p>
@@ -40,6 +46,7 @@
         <p class="help">{{ field.help_text }}</p> 
         {% endif %}
     {% endfor %}
+    <label>{{ form.tax_rate.label }}: {{ form.tax_rate }}% {% if form.tax_rate.errors %} {{ form.tax_rate.errors }} {% endif %}</label>
 
 <div class="clear"></div>
 <div class="save-row clearfix">

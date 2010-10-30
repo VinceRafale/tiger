@@ -1,22 +1,53 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        "Write your forwards methods here."
-        for site in orm.Site.objects.all():
-            location = site.location_set.all()[0]
-            for attr in ('receive_via', 'dine_in', 'takeout', 'delivery', 'delivery_minimum', 'lead_time', 'delivery_lead_time', 'tax_rate', 'eod_buffer',):
-                setattr(location, attr, getattr(site.ordersettings, attr))
-            location.save()
+        # Adding field 'Item.schedule'
+        db.add_column('core_item', 'schedule', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Schedule'], null=True, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
-        "Write your backwards methods here."
+        
+        # Adding field 'OrderSettings.dine_in'
+        db.add_column('core_ordersettings', 'dine_in', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True), keep_default=False)
+
+        # Adding field 'OrderSettings.receive_via'
+        db.add_column('core_ordersettings', 'receive_via', self.gf('django.db.models.fields.IntegerField')(default=1), keep_default=False)
+
+        # Adding field 'OrderSettings.delivery_minimum'
+        db.add_column('core_ordersettings', 'delivery_minimum', self.gf('django.db.models.fields.DecimalField')(default='0.00', max_digits=5, decimal_places=2), keep_default=False)
+
+        # Adding field 'OrderSettings.lead_time'
+        db.add_column('core_ordersettings', 'lead_time', self.gf('django.db.models.fields.PositiveIntegerField')(default=0), keep_default=False)
+
+        # Adding field 'OrderSettings.delivery_lead_time'
+        db.add_column('core_ordersettings', 'delivery_lead_time', self.gf('django.db.models.fields.PositiveIntegerField')(default=0), keep_default=False)
+
+        # Adding field 'OrderSettings.delivery'
+        db.add_column('core_ordersettings', 'delivery', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True), keep_default=False)
+
+        # Adding field 'OrderSettings.tax_rate'
+        db.add_column('core_ordersettings', 'tax_rate', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=5, decimal_places=3), keep_default=False)
+
+        # Adding field 'OrderSettings.delivery_area'
+        db.add_column('core_ordersettings', 'delivery_area', self.gf('django.contrib.gis.db.models.fields.MultiPolygonField')(null=True, blank=True), keep_default=False)
+
+        # Adding field 'OrderSettings.takeout'
+        db.add_column('core_ordersettings', 'takeout', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True), keep_default=False)
+
+        # Adding field 'OrderSettings.eod_buffer'
+        db.add_column('core_ordersettings', 'eod_buffer', self.gf('django.db.models.fields.PositiveIntegerField')(default=30), keep_default=False)
+
+        # Deleting field 'Item.schedule'
+        db.delete_column('core_item', 'schedule_id')
+
+        # Adding field 'Order.pickup'
+        db.add_column('core_order', 'pickup', self.gf('django.db.models.fields.CharField')(max_length=20, null=True), keep_default=False)
 
 
     models = {
@@ -39,12 +70,6 @@ class Migration(DataMigration):
             'subscription_id': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '200'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'zip': ('django.db.models.fields.CharField', [], {'max_length': '10'})
-        },
-        'accounts.faxlist': {
-            'Meta': {'object_name': 'FaxList'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"})
         },
         'accounts.location': {
             'Meta': {'object_name': 'Location'},
@@ -100,22 +125,6 @@ class Migration(DataMigration):
             'name': ('django.db.models.fields.CharField', [], {'default': "'Your Restaurant Name'", 'max_length': '200'}),
             'subdomain': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
             'walkthrough_complete': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'})
-        },
-        'accounts.subscriber': {
-            'Meta': {'object_name': 'Subscriber'},
-            'fax': ('django.contrib.localflavor.us.models.PhoneNumberField', [], {'max_length': '20'}),
-            'fax_list': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.FaxList']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'organization': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        },
-        'accounts.timeslot': {
-            'Meta': {'object_name': 'TimeSlot'},
-            'dow': ('django.db.models.fields.IntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Schedule']"}),
-            'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['core.Section']", 'null': 'True'}),
-            'start': ('django.db.models.fields.TimeField', [], {}),
-            'stop': ('django.db.models.fields.TimeField', [], {})
         },
         'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -193,6 +202,7 @@ class Migration(DataMigration):
             'out_of_stock': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'posting_stage': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
             'price_list': ('tiger.utils.fields.PickledObjectField', [], {'null': 'True'}),
+            'schedule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Schedule']", 'null': 'True', 'blank': 'True'}),
             'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['core.Section']"}),
             'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
@@ -210,7 +220,6 @@ class Migration(DataMigration):
             'method': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'pickup': ('django.db.models.fields.CharField', [], {'max_length': '20', 'null': 'True'}),
             'ready_by': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'session_key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True'}),
             'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']", 'null': 'True'}),
@@ -227,27 +236,17 @@ class Migration(DataMigration):
             'Meta': {'object_name': 'OrderSettings'},
             'auth_net_api_key': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'auth_net_api_login': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'delivery': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'delivery_area': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {'null': 'True', 'blank': 'True'}),
-            'delivery_lead_time': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
-            'delivery_minimum': ('django.db.models.fields.DecimalField', [], {'default': "'0.00'", 'max_digits': '5', 'decimal_places': '2'}),
-            'dine_in': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'eod_buffer': ('django.db.models.fields.PositiveIntegerField', [], {'default': '30'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lead_time': ('django.db.models.fields.PositiveIntegerField', [], {'default': '0'}),
             'payment_type': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True'}),
             'paypal_email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'null': 'True', 'blank': 'True'}),
-            'receive_via': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'require_payment': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'review_page_text': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
             'send_page_text': ('django.db.models.fields.TextField', [], {'default': "''", 'blank': 'True'}),
             'site': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['accounts.Site']", 'unique': 'True'}),
-            'takeout': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
             'takes_amex': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'takes_discover': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'takes_mc': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'takes_visa': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
-            'tax_rate': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '5', 'decimal_places': '3'})
+            'takes_visa': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'})
         },
         'core.section': {
             'Meta': {'object_name': 'Section'},
@@ -291,4 +290,4 @@ class Migration(DataMigration):
         }
     }
 
-    complete_apps = ['core', 'accounts']
+    complete_apps = ['core']

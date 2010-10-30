@@ -16,6 +16,7 @@ class Migration(DataMigration):
             location.state = site.state
             location.phone = site.phone
             location.email = site.email
+            location.zip_code = site.zip_code
             location.fax_number = site.fax_number
             location.lat = site.lat
             location.lon = site.lon

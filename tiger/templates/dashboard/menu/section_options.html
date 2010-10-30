@@ -5,25 +5,3 @@
         If you have a common set of prices, extras or groups of available sidedishes for this menu section, you can define defaults here that will be created automatically for ever new item in the section.  If they don't apply to 100% of the items that might be in this section, don't worry -- you can just delete unneeded prices, etc. or edit them to your liking.
         </p>
 {% endblock %}
-
-{% block defaults %}
-    {% if object %}
-        <h3>Hours of availability</h3>
-        {{ schedule_form.schedule }}
-        <p class="help">You can control when items from this specific category are ordered, like lunch specials or breakfast items.</p>
-    {% endif %}
-{% endblock %}
-
-{% block js %}
-{{ block.super }}
-<script type="text/javascript">
-$(function () {
-    $("#id_schedule").change(function () {
-        data = $(this).serialize();
-        $.post("{% url dashboard_edit_section_hours object.id %}", data, function (data) {
-
-        }, "json");
-    });
-});
-</script>
-{% endblock %}
