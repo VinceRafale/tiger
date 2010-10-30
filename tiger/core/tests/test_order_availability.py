@@ -114,7 +114,7 @@ def teardown_timeslots():
 def test_online_ordering_disabled():
     site = Site.objects.all()[0]
     site.enable_orders = False
-    assert site.is_open
+    assert site.is_open(site.location_set.all()[0])
 
 
 @with_setup(setup_timeslots(0), teardown_timeslots)
@@ -122,89 +122,89 @@ def test_online_ordering_enabled():
     site = Site.objects.all()[0]
     site.enable_orders = True
     site.save()
-    assert site.is_open
+    assert site.is_open(site.location_set.all()[0])
 
 
 @with_setup(setup_timeslots(90), teardown_timeslots)
 @raises(RestaurantNotOpen)
 def test_restaurant_is_closed_early():
     site = Site.objects.all()[0]
-    assert site.is_open
+    assert site.is_open(site.location_set.all()[0])
 
 
 @with_setup(setup_timeslots(-90), teardown_timeslots)
 @raises(RestaurantNotOpen)
 def test_restaurant_is_closed_late():
     site = Site.objects.all()[0]
-    assert site.is_open
+    assert site.is_open(site.location_set.all()[0])
 
 
 @with_setup(setup_timeslots(-20), teardown_timeslots)
 @raises(ClosingTimeBufferError)
 def test_within_closing_buffer():
     site = Site.objects.all()[0]
-    assert site.is_open
+    assert site.is_open(site.location_set.all()[0])
 
 
 @with_setup(setup_section_timeslots(10), teardown_timeslots)
 def test_section_open():
     section = Section.objects.all()[0]
-    assert section.is_available
+    assert section.is_available(Location.objects.all()[0])
 
 
 @with_setup(setup_section_timeslots(-10), teardown_timeslots)
 @raises(SectionNotAvailable)
 def test_section_closed():
     section = Section.objects.all()[0]
-    assert section.is_available
+    assert section.is_available(Location.objects.all()[0])
 
 
 @with_setup(setup_section_timeslots(-10), teardown_timeslots)
 @raises(SectionNotAvailable)
 def test_item_with_section_closed():
     item = Item.objects.all()[0]
-    assert item.is_available
+    assert item.is_available(Location.objects.all()[0])
 
 
 @with_setup(setup_item_timeslots(-10), teardown_timeslots)
 @raises(ItemNotAvailable)
 def test_item_schedule_closed():
     item = Item.objects.all()[0]
-    assert item.is_available
+    assert item.is_available(Location.objects.all()[0])
 
 
 @raises(ItemNotAvailable)
 def test_item_archived():
     item = Item.objects.all()[0]
     item.archived = True
-    assert item.is_available
+    assert item.is_available(Location.objects.all()[0])
 
 
 @raises(ItemNotAvailable)
 def test_item_out_of_stock():
     item = Item.objects.all()[0]
     item.out_of_stock = True
-    assert item.is_available
+    assert item.is_available(Location.objects.all()[0])
 
 
 def test_item_available():
     item = Item.objects.all()[0]
     item.out_of_stock = False
     item.archived = False
-    assert item.is_available
+    assert item.is_available(Location.objects.all()[0])
 
 
 @with_setup(setup_pricepoint_timeslots(10), teardown_timeslots)
 def test_pricepoint_open():
     item = Item.objects.all()[0]
-    assert item.variant_set.filter(description='small')[0].is_available
+    assert item.variant_set.filter(description='small')[0].is_available(Location.objects.all()[0])
 
 
 @with_setup(setup_pricepoint_timeslots(-10), teardown_timeslots)
 @raises(PricePointNotAvailable)
 def test_pricepoint_closed():
     item = Item.objects.all()[0]
-    assert item.variant_set.filter(description='small')[0].is_available
+    assert item.variant_set.filter(description='small')[0].is_available(Location.objects.all()[0])
 
 
 def data_for_order_form(item, **variant_kwds):
@@ -282,12 +282,13 @@ def set_timezone(tz):
 
 def get_order_form(ready_by, order_method):
     site = Site.objects.all()[0]
+    location = site.location_set.all()[0]
     form = OrderForm({
         'name': 'John Smith',
         'phone': '12345',
         'ready_by': ready_by if isinstance(ready_by, basestring) else ready_by.strftime('%I:%M %p'),
         'method': order_method,
-    }, site=site)
+    }, site=site, location=location)
     form.total = '40.00'
     return form
 

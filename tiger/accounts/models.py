@@ -130,15 +130,13 @@ class Site(models.Model):
             return True
         return False
 
-    @property
-    def is_open(self):
+    def is_open(self, location):
         if not self.enable_orders:
             # if they don't have online ordering, why proclaim it?
             raise NoOnlineOrders("Invalid data.  Please try again.", '/')
-        location = self.location_set.all()[0]
         schedule = location.schedule
         eod_buffer = location.eod_buffer
-        availability = schedule.is_open(buff=eod_buffer)
+        availability = schedule.is_open(buff=location.eod_buffer, location=location)
         if availability != TIME_OPEN:
             if availability == TIME_EOD:
                 raise ClosingTimeBufferError("Sorry!  Orders must be placed within %d minutes of closing." % eod_buffer, '/')
@@ -174,9 +172,7 @@ class Site(models.Model):
     def skin_url(self):
         return self.skin.url
 
-    def localize(self, dt, location=None):
-        if location is None:
-            location = self.location_set.all()[0]
+    def localize(self, dt, location):
         site_tz = timezone(location.timezone)
         return site_tz.localize(dt)
 
@@ -271,12 +267,10 @@ class Schedule(models.Model):
     def get_absolute_url(self):
         return 'edit_schedule', (), {'schedule_id': self.id}
 
-    def is_open(self, tz=None, buff=0):
-        if tz is None:
-            tz = self.site.location_set.all()[0].timezone
+    def is_open(self, location, buff=0):
         return is_available(
             timeslots=self.timeslot_set.all(), 
-            tz=tz,
+            location=location,
             buff=buff
         )
 
@@ -302,19 +296,19 @@ class TimeSlot(models.Model):
     def pretty_stop(self):
         return self._pretty_time(self.stop)
 
-    def prepped_start(self):
-        return self.site.localize(datetime.combine(date.today(), self.start))
+    def prepped_start(self, location):
+        return self.site.localize(datetime.combine(date.today(), self.start), location)
 
-    def prepped_stop(self):
-        stop = self.site.localize(datetime.combine(date.today(), self.stop))
+    def prepped_stop(self, location):
+        stop = self.site.localize(datetime.combine(date.today(), self.stop), location)
         if self.stop < self.start:
             stop += timedelta(days=1)
         return stop
 
-    def get_availability(self, buff=0):
+    def get_availability(self, location, buff=0):
         now = self.now()
-        start_dt = self.prepped_start()
-        stop_dt = self.prepped_stop()
+        start_dt = self.prepped_start(location)
+        stop_dt = self.prepped_stop(location)
         server_tz = timezone(settings.TIME_ZONE)
         server_now = server_tz.localize(now)
         if start_dt < server_now < stop_dt:

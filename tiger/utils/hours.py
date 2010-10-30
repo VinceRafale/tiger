@@ -24,15 +24,15 @@ TIME_OPEN = 'open'
 TIME_EOD = 'eod'
 TIME_CLOSED = 'closed'
 
-def is_available(timeslots, tz, buff=0):
+def is_available(timeslots, location, buff=0):
     server_tz = timezone(settings.TIME_ZONE)
-    site_tz = timezone(tz)
+    site_tz = timezone(location.timezone)
     now = server_tz.localize(datetime.now())
     timeslots = timeslots.filter(dow=now.weekday())
     if not timeslots.count():
         return TIME_CLOSED
     for timeslot in timeslots:
-        availability = timeslot.get_availability(buff)
+        availability = timeslot.get_availability(location, buff)
         if availability is not None:
             return availability
     return TIME_CLOSED

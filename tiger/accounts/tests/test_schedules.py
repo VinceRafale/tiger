@@ -13,7 +13,7 @@ from poseur.fixtures import load_fixtures
 from selenium import selenium
 
 from tiger.accounts.forms import TimeSlotForm
-from tiger.accounts.models import Site, Schedule, TimeSlot
+from tiger.accounts.models import Site, Schedule, TimeSlot, Location
 from tiger.accounts.tests.dtstub import set_datetime
 from tiger.utils.hours import *
 from tiger.core.models import Section, Item
@@ -133,16 +133,17 @@ def test_within_timeslot_spanning_midnight():
     # need to test both sides of date divide
     # before open
     timeslot.now = lambda: now.replace(hour=22)
-    assert_equal(timeslot.get_availability(), None)
+    location = Location.objects.all()[0]
+    assert_equal(timeslot.get_availability(location), None)
     # while open, before midnight
     timeslot.now = lambda: now.replace(hour=23, minute=30)
-    assert_equal(timeslot.get_availability(), TIME_OPEN)
+    assert_equal(timeslot.get_availability(location), TIME_OPEN)
     # while open, after midnight
     timeslot.now = lambda: now.replace(hour=0, minute=30) + timedelta(days=1)
-    assert_equal(timeslot.get_availability(), TIME_OPEN)
+    assert_equal(timeslot.get_availability(location), TIME_OPEN)
     # after close
     timeslot.now = lambda: now.replace(hour=2, minute=30) + timedelta(days=1)
-    assert_equal(timeslot.get_availability(), None)
+    assert_equal(timeslot.get_availability(location), None)
 
 
 def test_timeslot_form_validation():

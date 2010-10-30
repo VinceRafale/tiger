@@ -52,7 +52,7 @@ def random_order_form():
     item.save()
     form_class = get_order_form(item)
     data = data_for_order_form(item)
-    bound_form = form_class(data)
+    bound_form = form_class(data, location=Location.objects.all()[0])
     bound_form.full_clean()
     return item, bound_form
 

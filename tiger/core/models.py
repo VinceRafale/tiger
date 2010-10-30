@@ -75,11 +75,10 @@ class Section(models.Model):
     def price_list(self):
         return get_price_list(self)
 
-    @property
-    def is_available(self):
+    def is_available(self, location):
         if self.schedule is None:
             return True
-        if self.schedule.is_open() != TIME_OPEN:
+        if self.schedule.is_open(location) != TIME_OPEN:
             raise SectionNotAvailable(SECTION_NOT_AVAILABLE % (
                 self.name, self.schedule.display), self.get_absolute_url())
         return True
@@ -156,10 +155,9 @@ class Item(models.Model):
     def get_short_url(self):
         return reverse('short_code', kwargs={'item_id': int_to_base36(self.id)})
 
-    @property
-    def is_available(self):
-        assert self.section.is_available
-        if self.schedule and self.schedule.is_open() != TIME_OPEN:
+    def is_available(self, location):
+        assert self.section.is_available(location)
+        if self.schedule and self.schedule.is_open(location) != TIME_OPEN:
             raise ItemNotAvailable(ITEM_NOT_AVAILABLE_SCHEDULE % (self.name, self.schedule.display), 
                 self.get_absolute_url())
         if self.archived or self.out_of_stock:
@@ -212,11 +210,10 @@ class Variant(models.Model):
         super(Variant, self).delete(*args, **kwargs)
         item.update_price()
 
-    @property
-    def is_available(self):
+    def is_available(self, location):
         if self.schedule is None:
             return True
-        if self.schedule.is_open() != TIME_OPEN:
+        if self.schedule.is_open(location) != TIME_OPEN:
             raise PricePointNotAvailable(PRICEPOINT_NOT_AVAILABLE % (
                 self.description, self.schedule.display), self.item.get_absolute_url())
         return True

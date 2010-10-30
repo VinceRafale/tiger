@@ -20,11 +20,15 @@ from tiger.utils.geocode import geocode, GeocodeError
 
 
 class BaseOrderForm(forms.Form):
+    def __init__(self, data=None, location=None, *args, **kwargs):
+        super(BaseOrderForm, self).__init__(data, *args, **kwargs)
+        self.location = location
+
     def clean_variant(self):
         variant = self.cleaned_data.get('variant')
         if variant is not None:
             try:
-                variant.is_available
+                variant.is_available(self.location)
             except PricePointNotAvailable, e:
                 raise forms.ValidationError(e.msg)
         return variant
@@ -34,6 +38,7 @@ class BaseOrderForm(forms.Form):
             field for field in self
             if field.name.startswith('side_')
         ]
+
 
 def get_order_form(instance):
     """For a given ``instance`` of ``core.models.Item``, returns a form 
@@ -101,8 +106,7 @@ class OrderForm(forms.ModelForm):
         model = Order
         exclude = ('status', 'unread', 'pickup', 'session_key',)
 
-    def __init__(self, data=None, site=None, *args, **kwargs):
-        self.location = location = site.location_set.all()[0]
+    def __init__(self, data=None, site=None, location=None, *args, **kwargs):
         super(OrderForm, self).__init__(data, *args, **kwargs)
         self.fields['method'] = forms.TypedChoiceField(
             label='This order is for:',
@@ -112,6 +116,7 @@ class OrderForm(forms.ModelForm):
         )
         self.delivery_minimum = location.delivery_minimum
         self.site = site
+        self.location = location
 
     def clean_method(self):
         method = self.cleaned_data.get('method')
@@ -124,6 +129,7 @@ class OrderForm(forms.ModelForm):
         ready_by = self.cleaned_data.get('ready_by')
         if not ready_by:
             raise forms.ValidationError('This field is required.')
+        # check that there is not a date discrepancy across time zones
         today = date.today()
         loc_zone = self.location.get_timezone()
         today = timezone(settings.TIME_ZONE).localize(datetime.now()).astimezone(loc_zone).date()

@@ -43,7 +43,7 @@ def item_detail_abbr(request, section, item):
 def item_detail(request, section_id, section_slug, item_id, item_slug):
     i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
-        assert i.is_available
+        assert i.is_available(request.location)
     except OrderingError, e:
         messages.warning(request, e.msg) 
     if i.price_list in (None, []):
@@ -57,14 +57,14 @@ def item_detail(request, section_id, section_slug, item_id, item_slug):
 def order_item(request, section_id, section_slug, item_id, item_slug):
     i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
-        assert request.site.is_open and i.is_available
+        assert request.site.is_open(request.location) and i.is_available(request.location)
     except OrderingError, e:
         messages.warning(request, e.msg) 
         return HttpResponseRedirect(e.redirect_to)
     OrderForm = get_order_form(i)
     total = i.variant_set.order_by('-price')[0].price
     if request.method == 'POST':
-        form = OrderForm(request.POST)
+        form = OrderForm(request.POST, location=request.location)
         if form.is_valid():
             request.cart.add(i, form)
             msg = """%s added to your order. You can 
@@ -73,7 +73,7 @@ def order_item(request, section_id, section_slug, item_id, item_slug):
             messages.success(request, msg) 
             return HttpResponseRedirect(i.section.get_absolute_url())
     else:
-        form = OrderForm()
+        form = OrderForm(location=request.location)
     return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': '%.2f' % total, 'sections': request.site.section_set.all()})
 
 def preview_order(request):
@@ -120,7 +120,7 @@ def clear_coupon(request):
 
 def send_order(request):
     try:
-        assert request.site.is_open
+        assert request.site.is_open(request.location)
     except OrderingError, e:
         messages.warning(request, e.msg)
         return HttpResponseRedirect(e.redirect_to)
@@ -136,7 +136,7 @@ def send_order(request):
     except:
         instance = None
     if request.method == 'POST':
-        form = OrderForm(request.POST, site=request.site, instance=instance)
+        form = OrderForm(request.POST, site=request.site, location=location, instance=instance)
         form.total = request.cart.total()
         if form.is_valid():
             order = form.save(commit=False)
@@ -166,7 +166,7 @@ def send_order(request):
                 DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
                 return HttpResponseRedirect(reverse('order_success'))
     else:
-        form = OrderForm(site=request.site)
+        form = OrderForm(site=request.site, location=location)
     context = {
         'form': form
     }
