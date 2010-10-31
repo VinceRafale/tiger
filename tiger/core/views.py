@@ -136,7 +136,7 @@ def send_order(request):
     except:
         instance = None
     if request.method == 'POST':
-        form = OrderForm(request.POST, site=request.site, location=location, instance=instance)
+        form = OrderForm(request.POST, site=request.site, location=request.location, instance=instance)
         form.total = request.cart.total()
         if form.is_valid():
             order = form.save(commit=False)
@@ -166,7 +166,7 @@ def send_order(request):
                 DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
                 return HttpResponseRedirect(reverse('order_success'))
     else:
-        form = OrderForm(site=request.site, location=location)
+        form = OrderForm(site=request.site, location=request.location)
     context = {
         'form': form
     }

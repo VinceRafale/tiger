@@ -89,6 +89,9 @@
                     {% endif %}
                     </ul>
                 {% endif %}
+                {% if item.label %}
+                <p><strong>Label for:</strong> {{ item.label }}</p>
+                {% endif %}
                 </td>
                 <td>${{ item.variant.price|floatformat:"-2" }}</td>
                 <td>{{ item.quantity }}</td>

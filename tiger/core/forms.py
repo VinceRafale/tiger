@@ -20,6 +20,8 @@ from tiger.utils.geocode import geocode, GeocodeError
 
 
 class BaseOrderForm(forms.Form):
+    label = forms.CharField(required=False, label='Enter a name here and we\'ll label this item for that person.')
+
     def __init__(self, data=None, location=None, *args, **kwargs):
         super(BaseOrderForm, self).__init__(data, *args, **kwargs)
         self.location = location
@@ -51,7 +53,7 @@ def get_order_form(instance):
     sidegroups = instance.sidedishgroup_set.all()
     attrs = {
         'quantity': forms.IntegerField(min_value=1, initial=1),
-        'notes': forms.CharField(required=False)
+        'notes': forms.CharField(required=False, label='Special instructions ("No MSG", "Extra lettuce")')
     }
     if variants.count() > 1:
         max = variants.order_by('-price')[0].id

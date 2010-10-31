@@ -48,6 +48,10 @@ FIXME
                     {% endif %}
                     </ul>
                 {% endif %}
+                {% if item.label %}
+                <br />
+                <strong>Label for:</strong> {{ item.label }}
+                {% endif %}
                 </td>
                 <td class="total">${{ item.variant.price|floatformat:"-2" }}</td>
                 <td class="qty">{{ item.quantity }}</td>

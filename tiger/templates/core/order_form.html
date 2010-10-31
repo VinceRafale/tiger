@@ -38,10 +38,14 @@
     {{ form.upgrades }}
     </div>
 {% endif %}
-<label>
-Special instructions ("No MSG", "Extra lettuce")
+<div class="clear"></div>
+{{ form.notes.label_tag }}
 {{ form.notes }}
-</label>
+<a href="#" id="toggle-name">Ordering for multiple people?</a>
+<div id="add-name" style="display:none;">
+{{ form.label.label_tag }}
+{{ form.label }}
+</div>
 <input id="submit" type="submit" value="Add to order" />
 <div class="clear"></div>
 </form>
@@ -74,6 +78,11 @@ $(function () {
     $("#orderForm :text,#orderForm :radio,#orderForm :checkbox").change(function () {
         $("span.totalPrice").text("$" + calculate());
     });
+    $("#toggle-name").click(function () {
+        $("#add-name").slideDown("fast");
+        return false;
+    });
+
 });
 </script>
 {% endblock %}
