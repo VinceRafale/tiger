@@ -238,6 +238,8 @@ class Location(models.Model):
             from tiger.core.models import LocationStockInfo
             for item in self.site.item_set.all():
                 LocationStockInfo.objects.create(location=self, item=item)
+        KeyChain.footer_locations.invalidate(self.site.id)
+        KeyChain.sidebar_locations.invalidate(self.site.id)
 
     def get_absolute_url(self):
         return '/find-us/#%s' % self.id_attr()
@@ -258,6 +260,16 @@ class Location(models.Model):
 
     def get_timezone(self):
         return timezone(self.timezone)
+
+    def email_display(self):
+        email = self.email.replace('@', ' <span>@</span> ').replace('.', ' <span>.</span> ')
+        escaped = [] 
+        for s in email.split():
+            if s not in ('<span>@</span>', '<span>.</span>'):
+                escaped.append('%s' % ''.join('&#%s;' % ord(c) for c in s))
+            else:
+                escaped.append(s)
+        return mark_safe(''.join(escaped))
 
 
 class Schedule(models.Model):

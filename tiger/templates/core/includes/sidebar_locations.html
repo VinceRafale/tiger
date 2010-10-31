@@ -10,6 +10,9 @@
         {% endif %}
         </address>
         <p>T: {% if location.phone %}{{ location.phone }}{% else %}[your phone number ]{% endif %}{% if location.fax_number %} | Fax: {{ location.fax_number }}{% endif %}</p>
+        {% if location.email %}
+        <p>{{ location.email_display }}</p>
+        {% endif %}
     {% endwith %}
 {% else %}
     <ul>
