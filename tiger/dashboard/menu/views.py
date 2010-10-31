@@ -252,8 +252,14 @@ def flag_item(request):
     lookup, val = request.POST.items()[0]
     attr, pk = lookup.split('-')
     item = Item.objects.get(id=pk)
-    setattr(item, attr, True if val == 'true' else False)
-    item.save()
+    val = True if val == 'true' else False
+    if attr == 'archived':
+        item.archived = val
+        item.save()
+    else:
+        stockinfo = item.locationstockinfo_set.get(location=request.location)
+        stockinfo.out_of_stock = val
+        stockinfo.save()
     return HttpResponse('')
 
 @login_required

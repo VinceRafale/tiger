@@ -25,5 +25,3 @@ urlpatterns = patterns('tiger.dashboard.menu.views',
     url(r'^delete/(\d+)/sidegroup/$', 'delete_sidegroup', name='delete_sidegroup'),
     url(r'^delete/(\d+)/side/$', 'delete_side', name='delete_side'),
 )
-
-

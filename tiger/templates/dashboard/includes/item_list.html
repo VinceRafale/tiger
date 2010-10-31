@@ -1,3 +1,4 @@
+{% load dashboard_tags %}
 {% for item in section.item_set.all %}
     <li class="{% cycle '' 'shaded' %} {% if item.incomplete %}incomplete{% endif %}" id="{{ item.id }}">
         <div class="controls">
@@ -10,8 +11,10 @@
                 <span{% if item.archived %} class="archived"{% endif %}>Archived</span>
             </label>
             <label class="out">
-                <input type="checkbox" name="out_of_stock-{{ item.id }}" {% if item.out_of_stock %}checked{% endif %} />
-                <span{% if item.out_of_stock %} class="out"{% endif %}>Out of stock</span>
+                {% with item|out_of_stock_at:location as out_of_stock %}
+                <input type="checkbox" name="out_of_stock-{{ item.id }}" {% if out_of_stock %}checked{% endif %} />
+                <span{% if out_of_stock %} class="out"{% endif %}>Out of stock</span>
+                {% endwith %}
             </label>
         </div>
         <span>{{ item }}</span>

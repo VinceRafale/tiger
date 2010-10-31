@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.cache import cache
 from django.http import HttpResponseNotFound, HttpResponsePermanentRedirect, HttpResponseRedirect, get_host
 from django.utils.cache import patch_vary_headers
 
@@ -67,8 +68,10 @@ class LocationMiddleware(object):
         setattr(request, 'location', self.get_location(request))
 
     def get_location(self, request):
-        try:
-            return request.site.location_set.all()[0]
-        except:
-            return None
-        
+        location = cache.get('location')
+        if location is None:
+            try:
+                location = request.site.location_set.all()[0]
+            except:
+                pass
+        return location
