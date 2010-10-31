@@ -19,7 +19,9 @@ def home(request):
 
 @login_required
 def location_list(request):
-    return direct_to_template(request, template='dashboard/restaurant/location_list.html', extra_context={})
+    #return direct_to_template(request, template='dashboard/restaurant/location_list.html', extra_context={})
+    location = request.location
+    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', object_id=location.id)
 
 @login_required
 def add_location(request):
@@ -27,12 +29,14 @@ def add_location(request):
     
 @login_required
 def edit_location(request, location_id):
-    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', object_id=location_id, pass_site_to_form=True)
+    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', object_id=location_id)
 
 @login_required
 def delete_location(request, location_id):
-    pass
-        
+    location = Location.objects.get(id=location_id)
+    location.delete()
+    messages.success(request, 'Location deleted successfully.')
+    return HttpResponseRedirect(reverse('dashboard_location'))
 
 @login_required
 def edit_content(request, slug):
@@ -51,15 +55,12 @@ def edit_content(request, slug):
         'form': form
     })
 
-
 @login_required
 def schedule_list(request):
     schedules = request.site.schedule_set.all()
     return direct_to_template(request, template='dashboard/restaurant/schedule_list.html', extra_context={
         'schedules': schedules
     })
-
-        
 
 @login_required
 def add_edit_schedule(request, schedule_id=None):
@@ -100,6 +101,19 @@ def add_edit_schedule(request, schedule_id=None):
     form_list = zip([label for dow, label in DOW_CHOICES], forms)
     extra_context = {'form_list': form_list, 'schedule': schedule}
     return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context=extra_context)
+
+@login_required
+def delete_schedule(request, schedule_id):
+    schedule = Schedule.objects.get(id=schedule_id)
+    if any([
+        getattr(schedule, '%s_set' % related).count()
+        for related in ('location', 'section', 'item', 'variant',)
+    ]):
+        messages.error(request, 'You cannot delete a schedule when it is in use.  Please first remove it from all locations, menu sections and items, and pricepoints.')
+    else:
+        schedule.delete()
+        messages.success(request, 'Schedule deleted successfully.')
+    return HttpResponseRedirect(reverse('edit_hours'))
 
 
 @login_required
