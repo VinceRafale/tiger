@@ -1,0 +1,44 @@
+<html xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+<script src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="http://platform.twitter.com/anywhere.js?id={{ TWITTER_API_KEY }}&v=1"></script>
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+</head>
+<body>
+<h1>{{ coupon.discount }} off your online order at {{coupon.site.name}}</h1>
+<p>Share on Twitter or Facebook to redeem</p>
+<div id="twitter-share"></div>
+<div id="fb-root">
+    <fb:like href="{{ coupon.tiger_url }}" action="recommend"></fb:like>
+</div>
+<script>
+function registerShare(type) {
+    $.post("./",  $.param({via: type}), function(data) {
+        $("h1").after(data);    
+    });
+}
+
+window.fbAsyncInit = function() {
+    FB.init({appId: 'your app id', status: true, cookie: true,
+    xfbml: true});
+    FB.Event.subscribe('edge.create', function(response) {
+        registerShare('facebook');
+    });
+    twttr.anywhere(function (T) {
+        T("#twitter-share").tweetBox({
+            defaultContent: "Get {{ coupon.discount }} off your online order at {% with coupon.site.social as social %}{% if social.twitter_screen_name  %}@{{ social.twitter_screen_name }}{% else %}{{coupon.site.name}}{% endif %}{% endwith %}! {{ coupon.tiger_url }}",
+            onTweet: function () {
+                registerShare('twitter'); 
+            }
+        });
+    });
+
+};
+(function() {
+    var e = document.createElement('script'); e.async = true;
+    e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+    document.getElementById('fb-root').appendChild(e);
+}());
+</script>
+</body>
+</html>
