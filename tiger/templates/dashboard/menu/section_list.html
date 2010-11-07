@@ -23,12 +23,12 @@
     {% for section in sections %}
     <ul class="section" id="{{ section.id }}">
         <li class="section-header">
+            <span class="section-name">{{ section.name }}</span>
             <div class="controls section-controls">
                 <a id="newItem" href="{% url dashboard_add_menu 'item' %}?pk={{ section.id }}">+Add menu item</a>
                 <a class="delete" href="{% url dashboard_delete_section section.id %}">Delete</a>
                 <a href="{% url dashboard_edit_menu 'section', section.id %}">Edit</a>
             </div>
-            {{ section.name }}
         </li>
         <li class="menu-items">
             <ul>
