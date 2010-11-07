@@ -33,7 +33,7 @@ from tiger.utils.hours import DOW_CHOICES
 def data_for_order_form(item):
     data = {'quantity': random.randint(1, 5)}
     if item.variant_set.count():
-        data['variant'] = item.variant_set.order_by('?')[0].id
+        data['variant'] = item.variant_set.all()[0].id
     for sidegroup in item.sidedishgroup_set.all():
         if sidegroup.sidedish_set.count() > 1:
             data['side_%d' % sidegroup.id] = sidegroup.sidedish_set.order_by('?')[0].id 
