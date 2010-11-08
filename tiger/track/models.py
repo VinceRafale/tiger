@@ -8,6 +8,7 @@ class Session(models.Model):
     site = models.ForeignKey('accounts.Site')
     session = models.CharField(max_length=32)
     is_closed = models.BooleanField(default=False)
+    user_agent = models.TextField(default='')
 
 
 class HitManager(models.Manager):
@@ -23,9 +24,11 @@ class HitManager(models.Manager):
         - it's been more than 10 minutes since the session was hit 
         """
         created = False
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
         try:
             session = Session.objects.filter(
-                site=site, session=session_id, is_closed=False).order_by('-id')[0]
+                site=site, session=session_id, is_closed=False, user_agent=user_agent
+            ).order_by('-id')[0]
         except IndexError:
             session = Session.objects.create(site=site, session=session_id)
             created = True
@@ -44,7 +47,8 @@ class HitManager(models.Manager):
         if session_is_stale or (not created and not referrer.startswith(unicode(site))):
             session.is_closed = True
             session.save()
-            session = Session.objects.create(site=site, session=session_id)
+            session = Session.objects.create(
+                site=site, session=session_id, user_agent=user_agent)
         hit = self.model.objects.create(
             location=location,
             session=session,
