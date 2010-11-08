@@ -17,6 +17,7 @@ class TrackingTestCase(TestCase):
         if not Site.objects.count():
             load_fixtures('tiger.fixtures')
         self.client = Client(HTTP_HOST='foo.takeouttiger.com')
+        self.site = Site.objects.all()[0]
 
     def test_no_dashboard_hits(self):
         self.client.get('/dashboard/menu/')
@@ -54,14 +55,14 @@ class TrackingTestCase(TestCase):
 
     def test_current_session(self):
         self.client.get('/')
-        self.client.get('/')
+        self.client.get('/', HTTP_REFERER=self.site.__unicode__() + '/')
         session = Session.objects.order_by('-id')[0]
         self.assertEquals(2, session.hit_set.count())
 
     def test_hit_numbering(self):
         paths = ('/', '/menu/', '/find-us/')
         for path in paths:
-            self.client.get(path)
+            self.client.get(path, HTTP_REFERER=self.site.__unicode__() + '/')
         session = Session.objects.order_by('-id')[0]
         for i, p in enumerate(paths):
             hit = session.hit_set.get(path=p)
