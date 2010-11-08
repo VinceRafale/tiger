@@ -39,7 +39,9 @@ class HitManager(models.Manager):
             else:
                 hit_number = latest_hit.hit_number + 1
         referrer = request.META.get('HTTP_REFERER', '')
-        if session_is_stale or (created and not referrer.startswith(unicode(site))):
+        # if it's been a while since the last page hit, or if the session is open but
+        # the referrer is from off-site, close the session and create a new one
+        if session_is_stale or (not created and not referrer.startswith(unicode(site))):
             session.is_closed = True
             session.save()
             session = Session.objects.create(site=site, session=session_id)
