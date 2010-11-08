@@ -30,7 +30,7 @@ class HitManager(models.Manager):
                 site=site, session=session_id, is_closed=False, user_agent=user_agent
             ).order_by('-id')[0]
         except IndexError:
-            session = Session.objects.create(site=site, session=session_id)
+            session = Session.objects.create(site=site, session=session_id, user_agent=user_agent)
             created = True
         hit_number = 0
         session_is_stale = False

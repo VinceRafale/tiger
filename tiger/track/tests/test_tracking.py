@@ -30,6 +30,7 @@ class TrackingTestCase(TestCase):
             session = Session.objects.order_by('-id')[0]
         except Session.DoesNotExist:
             self.fail()
+        self.assertEquals(1, Session.objects.count())
         self.assertEquals(1, session.hit_set.count())
 
     def test_new_session_offsite_referrer(self):
