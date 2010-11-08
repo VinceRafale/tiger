@@ -21,6 +21,10 @@ urlpatterns += patterns('tiger.accounts.views',
     url(r'^terms/$', 'terms', name='terms'),
 )
 
+urlpatterns += patterns('tiger.core.views',
+    url(r'^(?P<coupon_id>\w+)$', 'share_coupon', name='share_coupon'),
+)
+
 def qunit(request, path):
     return direct_to_template(request, template='qunit/%s.html' % path)
 

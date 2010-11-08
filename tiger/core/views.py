@@ -1,11 +1,14 @@
 from decimal import InvalidOperation
 
 from django.contrib import messages
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.validators import email_re
 from django.forms.util import ErrorList
-from django.http import HttpResponsePermanentRedirect, HttpResponseRedirect, Http404
+from django.http import (HttpResponsePermanentRedirect, 
+    HttpResponseRedirect, Http404, HttpResponse)
 from django.shortcuts import get_object_or_404
+from django.views.generic.simple import direct_to_template
 
 from greatape import MailChimp, MailChimpError
 from paypal.standard.forms import PayPalPaymentsForm
@@ -98,6 +101,30 @@ def preview_order(request):
 def remove_item(request):
     request.cart.remove(request.GET.get('id'))
     return HttpResponseRedirect(reverse('preview_order'))
+
+def share_coupon(request, coupon_id):
+    try:
+        coupon = Coupon.objects.get_by_coupon_id(coupon_id)
+    except Coupon.DoesNotExist:
+        raise Http404
+    if request.method == 'POST':
+        shared_via = request.POST.get('via')
+        if shared_via == 'twitter':
+            coupon.twitter_share_count += 1
+        elif shared_via == 'facebook':
+            coupon.fb_share_count += 1
+        else:
+            raise Http404
+        coupon.save()
+        return HttpResponse('<a href="%s">Redeem</a>' % (
+            coupon.add_coupon_url(), unicode(coupon)))
+    else:
+        coupon.view_count += 1
+        coupon.save()
+    return direct_to_template(request, template='tiger/share_coupon.html', extra_context={
+        'TWITTER_API_KEY': settings.TWITTER_CONSUMER_KEY,
+        'coupon': coupon
+    })
 
 def add_coupon(request):
     code = request.GET.get('cc')

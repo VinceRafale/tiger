@@ -11,7 +11,7 @@ from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.utils.http import int_to_base36
+from django.utils.http import int_to_base36, base36_to_int
 from django.utils.safestring import mark_safe
 
 from paypal.standard.ipn.models import PayPalIPN
@@ -479,6 +479,15 @@ class OrderSettings(models.Model):
     def tax_rate(self):
         location = self.site.location_set.all()[0]
         return location.tax_rate
+
+COUPON_ID_PADDING = 100
+
+class CouponManager(models.Manager):
+    def get_by_coupon_id(self, b36):
+        """Retrieves a coupon via the base 36 representation of its primary key + a 
+        padding value to keep the coupons created from looking too sparse.
+        """
+        return self.get(id=(base36_to_int(b36)-COUPON_ID_PADDING))
     
 
 class Coupon(models.Model):
@@ -496,6 +505,11 @@ class Coupon(models.Model):
     discount_type = models.PositiveIntegerField(choices=DISCOUNT_CHOICES)
     dollars_off = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     percent_off = models.PositiveIntegerField(null=True, blank=True)
+    require_sharing = models.BooleanField(default=False)
+    view_count = models.PositiveIntegerField(default=0)
+    twitter_share_count = models.PositiveIntegerField(default=0)
+    fb_share_count = models.PositiveIntegerField(default=0)
+    objects = CouponManager()
 
     class Meta:
         unique_together = ('site', 'short_code',)
@@ -509,7 +523,19 @@ class Coupon(models.Model):
         super(Coupon, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return '%s?cc=%d' % (reverse('add_coupon'), self.id)
+        if self.require_sharing:
+            return self.tiger_url()
+        return self.add_coupon_url()
+
+    def add_coupon_url(self):
+        return '%s?cc=%d' % (reverse('add_coupon', urlconf='tiger.urls'), self.id)
+
+    def tiger_url(self):
+        return 'http://tkti.gr' + reverse(
+            'share_coupon', 
+            kwargs={'coupon_id': int_to_base36(self.id + COUPON_ID_PADDING)},
+            urlconf='tiger.tiger_urls'
+        )
 
     def log_use(self, order, amount):
         if self.max_clicks:
