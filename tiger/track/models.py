@@ -58,7 +58,7 @@ class HitManager(models.Manager):
             referrer=referrer,
             verb=request.method,
             response_code=response_code,
-            ip_address=request.META.get('REMOTE_ADDR'),
+            ip_address=ip_address,
             hit_number=hit_number
         )
 
