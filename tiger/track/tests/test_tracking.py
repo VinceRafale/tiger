@@ -24,6 +24,11 @@ class TrackingTestCase(TestCase):
         self.assertEquals(0, Hit.objects.count())
         self.assertEquals(0, Session.objects.count())
 
+    def test_no_googlebot(self):
+        self.client.get('/menu/', HTTP_USER_AGENT='Googlebot')
+        self.assertEquals(0, Hit.objects.count())
+        self.assertEquals(0, Session.objects.count())
+
     def test_new_session_no_referrer(self):
         self.client.get('/')
         try:

@@ -1,15 +1,28 @@
 from tiger.track.models import Hit
 
-IGNORE_HITS = (
+IGNORED_PATHS = (
     '/dashboard', 
     '/static', 
     '/__debug__',
     '/favicon.ico',
 )
 
+IGNORED_AGENTS = (
+    'bingbot',
+    'Slurp',
+    'baidu',
+    'Googlebot',
+    'Yandex',
+)
+
 class TrackingMiddleware(object):
     def process_response(self, request, response):
-        if hasattr(request, 'site') and not request.path.startswith(IGNORE_HITS):
+        if request.path.startswith(IGNORED_PATHS):
+            return response
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        if any(bot in user_agent for bot in IGNORED_AGENTS):
+            return response
+        if hasattr(request, 'site'):
             # If it's their first request, they won't have a cookie set yet,
             # and it'll be returned in the response, so we have to check the 
             # response and the request.
