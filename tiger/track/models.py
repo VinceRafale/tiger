@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.gis.utils import GeoIP
 
@@ -49,6 +50,7 @@ class HitManager(models.Manager):
             session.save()
             session = Session.objects.create(
                 site=site, session=session_id, user_agent=user_agent)
+        ip_address = request.META.get('HTTP_X_REAL_IP', request.META.get('REMOTE_ADDR'))
         hit = self.model.objects.create(
             location=location,
             session=session,

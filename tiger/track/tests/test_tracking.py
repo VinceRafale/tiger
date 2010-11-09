@@ -64,6 +64,7 @@ class TrackingTestCase(TestCase):
         self.client.get('/', HTTP_REFERER=self.site.__unicode__() + '/')
         session = Session.objects.order_by('-id')[0]
         self.assertEquals(2, session.hit_set.count())
+        self.assertEquals(1, Session.objects.count())
 
     def test_hit_numbering(self):
         paths = ('/', '/menu/', '/find-us/')
