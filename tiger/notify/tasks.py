@@ -13,6 +13,7 @@ from facebook import Facebook, FacebookError
 
 from oauth import oauth
 
+from tiger.accounts.models import FaxList
 from tiger.notify.fax import FaxServiceError
 from tiger.notify.models import Release
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
@@ -52,10 +53,10 @@ class TweetNewItemTask(Task):
             results = update_status(CONSUMER, CONNECTION, access_token, msg)
             if release_id is not None:
                 results = json.loads(results)
-                release = Release.objects.get(id=release_id)
                 msg_id = results['id']
-                release.twitter = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
-                release.save()
+                Release.objects.filter(id=release_id).update(
+                    twitter = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
+                )
         except urllib2.HTTPError, e:
             self.retry([msg, token, secret], kwargs,
                 countdown=60 * 5, exc=e)
@@ -70,10 +71,11 @@ class PublishToFacebookTask(Task):
         try:
             result = fb.stream.publish(**kwds)
             if release_id is not None:
-                msg_id = result.split('_')[1]
                 release = Release.objects.get(id=release_id)
-                release.facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
-                release.save()
+                msg_id = result.split('_')[1]
+                Release.objects.filter(id=release_id).update(
+                    facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
+                )
         except FacebookError, e:
             self.retry([uid, msg, link_title, href], kwargs,
                 countdown=60 * 5, exc=e)

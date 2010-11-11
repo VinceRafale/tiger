@@ -140,8 +140,9 @@ class Release(models.Model):
             if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
                 mailchimp.campaignSendNow(cid=campaign_id)
             data_center = social.mailchimp_api_key.split('-')[1]
-            self.mailchimp = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
-            self.save()
+            Release.objects.filter(id=self.id).update(
+                mailchimp = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
+            )
                 
     def send_fax(self, fax_list):
         site = self.site
@@ -162,8 +163,9 @@ class Release(models.Model):
             content = cover_page + attachment
         fax_numbers = [s.fax for s in fax_list.subscriber_set.all()]
         transaction = fax_machine.send(fax_numbers, content, **kwargs)
-        self.fax_transaction = transaction
-        self.save()
+        Release.objects.filter(id=self.id).update(
+            fax_transaction = transaction
+        )
         Fax.objects.create(parent_transaction=transaction, 
             transaction=transaction, site=site)
 
