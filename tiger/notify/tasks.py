@@ -54,6 +54,7 @@ class TweetNewItemTask(Task):
             if release_id is not None:
                 results = json.loads(results)
                 msg_id = results['id']
+                release = Release.objects.get(id=release_id)
                 Release.objects.filter(id=release_id).update(
                     twitter = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
                 )
