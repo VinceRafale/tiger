@@ -51,9 +51,22 @@ td {vertical-align:top; padding:0.5em;}
             <td id="h1"><h1>{{ title }}</h1></td>
             <td>
                 <address>
-                    {{ site.hours }}<br />
-                    {{ site.street }} &bull; {{ site.city }}, {{ site.state }} {{ site.zip }} &bull; {{ site.phone }}<br />
-                    {% if site.enable_orders %}Order online{% else %}On the web{% endif %} at {{ site }}
+                {% if site.location_set.count == 1 %}
+                    {% with site.location_set.all.0 as location %}
+                        {{ location.schedule.display|default:'[your restaurant hours]' }}<br /> 
+                        {{ location.address }} &bull; {{ location.phone }}<br />
+                        {% if site.enable_orders %}Order online{% else %}On the web{% endif %} at {{ site }}
+                    {% endwith %}
+                {% else %}
+                    <address>
+                    {% for location in site.location_set.all %}
+                        {% if not forloop.first %}
+                        &bull;
+                        {% endif %}
+                            {{ location.name }}: {{ location.schedule.display }}
+                    {% endfor %}
+                    </address>
+                {% endif %}
                 </address>
             </td>
         </tr>
