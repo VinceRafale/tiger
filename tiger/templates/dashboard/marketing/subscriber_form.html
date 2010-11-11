@@ -11,15 +11,19 @@
 {% endblock %}
 
 {% block content %}
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
 <form method="POST" action=".">
 <label>{{ form.organization.label }} {% if form.organization.errors %} {{ form.organization.errors }} {% endif %}</label>
 {{ form.organization }}
 <label>{{ form.fax.label }} {% if form.fax.errors %} {{ form.fax.errors }} {% endif %}</label>
 {{ form.fax }}
+<div class="save-row clearfix">
+<a class="cancel" href="{% url dashboard_content %}">Cancel</a>
+<input type="submit" value="Save" class="submit" />
+</div>
 </form>
-<div class="clear"></div>
-<a class="buttonTop last" href="{% url dashboard_marketing %}">Cancel</a>
-<a class="buttonTop submit" href="#">Save</a>
 {% endblock %}
 
 {% block js %}
