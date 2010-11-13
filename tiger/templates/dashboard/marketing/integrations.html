@@ -31,10 +31,14 @@ Social media integrations
         <h3>Facebook</h3>
         <p id="facebook">
         {% if not site.facebook %}
-		<a id="facebook-button" href="#">Connect</a>
+            <a id="facebook-button" href="#">Connect</a>
         {% else %}
-        {% include 'dashboard/marketing/includes/facebook.html' %}
+            <a href="#">Deauthorize</a>
         {% endif %}
+
+        {% with site.social as social %}
+        {% include social.facebook_fragment %}
+        {% endwith %}
         </p>
         <h3>Mailchimp</h3>
         <div id="mailchimp-settings">
@@ -78,37 +82,37 @@ Social media integrations
 <div id="fb-root"></div>
 <script src="http://connect.facebook.net/en_US/all.js"></script>
 <script>
-	FB.init({appId: '314120522290', status: true, cookie: true, xfbml: true});
-	$("#facebook-button").click(function () {
-		FB.login(function (response) {
-            if (response.session) {
-                if (response.perms) {
-                    uid = response.session.uid;
-                    var query = FB.Data.query('SELECT uid, publish_stream FROM permissions WHERE publish_stream=1 AND uid IN (SELECT page_id FROM page_admin where uid=me())');
-                    query.wait(function(rows) {
-                        console.log(rows);
-                        page_id = rows[0]['uid'];
-                        q2 = FB.Data.query('SELECT page_id, page_url FROM page WHERE page_id={0}', page_id);
-                        q2.wait(function (rows) {
-                             $.post("{% url register_id %}", $.param({id: page_id, url: rows[0]['page_url']}), function (data) {
-                                $("#facebook").html(data);
-                             });
-                        });
-                    });
-                }
+FB.init({appId: '314120522290', status: true, cookie: true, xfbml: true});
+$("#facebook-button").click(function () {
+    FB.login(function (response) {
+        if (response.session) {
+            if (response.perms) {
+                $.post("{% url register_id %}", {}, function (data) {
+                    $("#facebook").html(data);
+                });
+            } else {
             }
-		}, {perms: 'publish_stream,offline_access', enable_profile_selector: true});
-	});
-    $(function () {
-        $("label.ajax-checkbox input").click(function () {
-            params = {};
-            params[$(this).attr("name")] = $(this).attr("checked");
-            postData = $.param({'data': JSON.stringify(params)});
-            $.post("{% url integration_settings %}", postData, function (data) {
+        }
+    }, {perms: 'manage_pages,publish_stream,offline_access'});
+});
+$(function () {
+    $("label.ajax-checkbox input").live("click", function () {
+        params = {};
+        params[$(this).attr("name")] = $(this).attr("checked");
+        postData = $.param({'data': JSON.stringify(params)});
+        $.post("{% url integration_settings %}", postData, function (data) {
 
-            }, "json");
+        }, "json");
+    });
+    $("#change-fb-page").live("click", function () {
+        $("#facebook").load("{% url change_fb_page %}");
+    });
+    $("ul.fb-page-list :radio").live("click", function () {
+        $.post("{% url change_fb_page %}", $(this).serialize(), function (data) {
+            $("#facebook").html(data);
         });
     });
+});
 </script>
 {% endblock %}
 

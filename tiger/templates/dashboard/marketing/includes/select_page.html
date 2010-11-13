@@ -1,0 +1,7 @@
+<ul class="fb-page-list">
+{% for page in pages %}
+    <li>
+        <label><input type="radio" name="page" value="{{ page.id }}" /> {{ page.name }}</label> <a href="{{ page.link }}">View on Facebook</a>
+    </li>
+{% endfor %}
+</ul>

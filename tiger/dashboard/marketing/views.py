@@ -181,6 +181,19 @@ def delete_subscriber(request, fax_list_id, subscriber_id):
     return HttpResponseRedirect(reverse('fax_list_detail', args=[fax_list.id]))
 
 @login_required
+def fetch_coupon(request):
+    coupon_id = request.GET.get('coupon')
+    coupon = Coupon.objects.get(id=coupon_id)
+    return HttpResponse(json.dumps({
+        'boilerplate': coupon.boilerplate(),
+        'short_url': unicode(request.site) + reverse('coupon_short_code', kwargs={'item_id': coupon_id})
+    }))
+
+###############################################################################
+# TWITTER INTEGRATION VIEWS
+###############################################################################
+
+@login_required
 def add_twitter(request):
     social = request.site.social
     if request.method == 'POST':
@@ -202,6 +215,36 @@ def remove_twitter(request):
     social.save()
     return HttpResponseRedirect(reverse('dashboard_marketing'))
 
+
+###############################################################################
+# FACEBOOK INTEGRATION VIEWS
+###############################################################################
+
+@login_required
+def get_facebook_pages_form(request):
+    social = request.site.social
+    pages = social.facebook_pages
+    if len(accounts) == 1:
+        return HttpResponse(render_to_string(social.facebook_fragment, {
+            'social': social,
+            'errors': """Can\'t change pages - you currently only have 
+                      one associated with your Facebook account."""
+        }))
+    if request.method == 'POST':
+        page_id = request.POST.get('page')
+        page = dict([
+            (page['id'], page)
+            for page in pages
+        ])[page_id]
+        social.facebook_url = page['link']
+        social.facebook_page_token = page['access_token']
+        social.facebook_page_name = page['name']
+        social.save()
+    return HttpResponse(render_to_string(social.facebook_fragment, {
+        'social': social 
+    }))
+    
+
 @login_required
 def remove_facebook(request):
     social = request.site.social
@@ -215,13 +258,27 @@ def remove_facebook(request):
 def register_id(request):
     cookie = facebook.get_user_from_cookie(
         request.COOKIES, settings.FB_API_KEY, settings.FB_API_SECRET)
+    access_token = cookie['access_token']
     social = request.site.social
-    social.facebook_token = cookie['access_token']   
-    social.facebook_id = request.POST.get('id')
-    social.facebook_url = request.POST.get('url')
+    social.facebook_token = access_token
     social.save()
-    snippet = render_to_string('dashboard/marketing/includes/facebook.html', {'site': request.site})
-    return HttpResponse(snippet)
+    pages = social.facebook_pages
+    if pages is None:
+        return HttpResponse(render_to_string(social.facebook_fragment))
+    if len(pages) == 1:
+        page = pages[0] 
+        social.facebook_url = page['link']
+        social.facebook_page_token = page['access_token']
+        social.facebook_page_name = page['name']
+        social.save()
+        return HttpResponse(render_to_string(social.facebook_fragment, {
+            'social': social 
+        }))
+    return get_facebook_pages_form(request)
+
+###############################################################################
+# MAILCHIMP INTEGRATION VIEWS
+###############################################################################
 
 @login_required
 def add_mailchimp_key(request):
@@ -253,12 +310,3 @@ def edit_mailchimp_settings(request):
     form.save()
     messages.success(request, 'MailChimp settings saved successfully.')
     return HttpResponseRedirect(reverse('dashboard_marketing'))
-
-@login_required
-def fetch_coupon(request):
-    coupon_id = request.GET.get('coupon')
-    coupon = Coupon.objects.get(id=coupon_id)
-    return HttpResponse(json.dumps({
-        'boilerplate': coupon.boilerplate(),
-        'short_url': unicode(request.site) + reverse('coupon_short_code', kwargs={'item_id': coupon_id})
-    }))

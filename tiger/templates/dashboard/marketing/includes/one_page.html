@@ -1,0 +1,7 @@
+Your Facebook page: <a href="{{ social.facebook_url }}">{{ site.facebook_page_name }}</a> / <a id="change-fb-page" href="#">(change)</a>
+{% if errors %}
+<span class="errorlist">You currently only have one page associated with your account.</span>
+{% endif %}
+<label class="ajax-checkbox"><input name="facebook_auto_items" type="checkbox"{% if site.social.facebook_auto_items %} checked{% endif %} /> Automatically post new menu items to your Facebook page</label>
+
+

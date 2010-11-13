@@ -10,12 +10,14 @@ class Migration(SchemaMigration):
         
         # Adding field 'Order.session_key'
         db.add_column('core_order', 'session_key', self.gf('django.db.models.fields.CharField')(max_length=40, null=True), keep_default=False)
+        db.add_column('core_order', 'ready_by', self.gf('django.db.models.fields.DateTimeField')(null=True), keep_default=False)
 
 
     def backwards(self, orm):
         
         # Deleting field 'Order.session_key'
         db.delete_column('core_order', 'session_key')
+        db.delete_column('core_order', 'ready_by')
 
 
     models = {
