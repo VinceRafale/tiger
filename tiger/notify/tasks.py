@@ -8,9 +8,8 @@ from django.core.urlresolvers import reverse
 from django.db.models import get_model
 from django.utils.http import int_to_base36
 
+import facebook
 from celery.task import Task
-from facebook import Facebook, FacebookError
-
 from oauth import oauth
 
 from tiger.accounts.models import FaxList

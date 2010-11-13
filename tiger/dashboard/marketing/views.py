@@ -13,6 +13,7 @@ from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 from django.utils.safestring import mark_safe
 
+import facebook
 from markdown import markdown
 
 from tiger.accounts.forms import *
@@ -212,7 +213,10 @@ def remove_facebook(request):
 
 @login_required
 def register_id(request):
+    cookie = facebook.get_user_from_cookie(
+        request.COOKIES, settings.FB_API_KEY, settings.FB_API_SECRET)
     social = request.site.social
+    social.facebook_token = cookie['access_token']   
     social.facebook_id = request.POST.get('id')
     social.facebook_url = request.POST.get('url')
     social.save()
