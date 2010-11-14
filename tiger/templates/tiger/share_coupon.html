@@ -1,16 +1,39 @@
 <html xmlns:fb="http://www.facebook.com/2008/fbml">
 <head>
 <script src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="http://platform.twitter.com/anywhere.js?id={{ TWITTER_API_KEY }}&v=1"></script>
+<script type="text/javascript" src="http://platform.twitter.com/anywhere.js?id={{ TWITTER_CONSUMER_KEY }}&v=1"></script>
 <script src="http://connect.facebook.net/en_US/all.js"></script>
+<link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/style.css">
+<link rel="stylesheet" href="{{ MEDIA_URL }}css/coupon.css">
 </head>
-<body>
-<h1>{{ coupon.discount }} off your online order at {{coupon.site.name}}</h1>
-<p>Share on Twitter or Facebook to redeem</p>
-<div id="twitter-share"></div>
-<div id="fb-root">
-    <fb:like href="{{ coupon.tiger_url }}" action="recommend"></fb:like>
-</div>
+<body id="blog">
+
+    <div class="coupon-wrap">
+    <header>
+    <h1><a href="/"></a></h1>
+    </header>
+        <div class="coupon-holder">
+            <span class="arrow"></span>
+            <h2 id="redeem">To Redeem this coupon</h2>
+            <p class="coupon">{{ coupon.discount }} off your online order at {{ coupon.site.name }}</p>
+        </div>
+        <div class="social">
+            <h2 id="share">Share it with your friends!</h2>
+            <div class="twitter left">
+                <h3>On Twitter</h3>
+                <div id="twitter-share"></div>
+            </div>
+            <p class="or left">OR</p>
+            <div class="facebook left">
+                <h3>On Facebook</h3>
+            <div id="fb-root">
+                <fb:like href="{{ coupon.tiger_url }}" action="recommend"></fb:like>
+
+            </div>
+        </div>
+        </div>
+    </div>
 <script>
 function registerShare(type) {
     $.post("./",  $.param({via: type}), function(data) {
@@ -19,17 +42,21 @@ function registerShare(type) {
 }
 
 window.fbAsyncInit = function() {
-    FB.init({appId: 'your app id', status: true, cookie: true,
+    FB.init({appId: '{{ FB_API_KEY }}', status: true, cookie: true,
     xfbml: true});
     FB.Event.subscribe('edge.create', function(response) {
         registerShare('facebook');
     });
     twttr.anywhere(function (T) {
         T("#twitter-share").tweetBox({
-            defaultContent: "Get {{ coupon.discount }} off your online order at {% with coupon.site.social as social %}{% if social.twitter_screen_name  %}@{{ social.twitter_screen_name }}{% else %}{{coupon.site.name}}{% endif %}{% endwith %}! {{ coupon.tiger_url }}",
+            defaultContent: "Get {{ coupon.discount }} off your online order at {{ coupon.site.name }}! {{ coupon.tiger_url }}",
             onTweet: function () {
                 registerShare('twitter'); 
-            }
+            },
+            height: 100,
+            width: 350,
+            label: "",
+            counter: false
         });
     });
 

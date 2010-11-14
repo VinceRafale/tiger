@@ -1,0 +1,16 @@
+body, html{ position: relative; margin: 0 auto; width: 960px;}
+.left{float: left;}
+#blog p.coupon{text-align: center;background: #C76218; width: 600px; margin: 70px auto 20px; border: 4px dashed black; padding: 20px; font: normal 24px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif;}
+h2, #blog h3, #blog p.or{font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 20px; margin: 3px 45px 5px 0px; font-weight: normal; color: #E4E4BF;}
+#blog h3{font-size: 16px;}
+h1,header{background: none; height: auto;}
+.coupon-holder, .social{padding: 20px; overflow: auto; position: relative;}
+#fb-root{}
+body{background: none;}
+header{background:none;}
+ header h1 a{background: url(../img/header_blog.png);display: block;height: 63px;width: 480px;}
+#blog p.or{margin: 50px;}
+.facebook, .twitter{width: 350px;}
+#share{text-indent: -9999px; background:url(../img/share.png) top left no-repeat; height: 31px; width: 421px;}
+#redeem{text-indent: -9999px; background:url(../img/redeem.png) top left no-repeat; height: 30px; width: 430px;}
+.arrow{position: absolute; display: block; top:30px; left:0;background: url(../img/arrow-left.png) top left no-repeat; height:144px ; width:72px ;}

@@ -122,7 +122,8 @@ def share_coupon(request, coupon_id):
         coupon.view_count += 1
         coupon.save()
     return direct_to_template(request, template='tiger/share_coupon.html', extra_context={
-        'TWITTER_API_KEY': settings.TWITTER_CONSUMER_KEY,
+        'TWITTER_CONSUMER_KEY': settings.TWITTER_CONSUMER_KEY,
+        'FB_API_KEY': settings.FB_API_KEY,
         'coupon': coupon
     })
 
