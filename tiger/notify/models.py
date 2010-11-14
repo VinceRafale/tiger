@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 
+import facebook
 from greatape import MailChimp
 from markdown import markdown
 
@@ -41,12 +42,17 @@ class Social(models.Model):
         (CAMPAIGN_CREATE, 'Create campaigns for blasts that can be sent from MailChimp'),
         (CAMPAIGN_SEND, 'Create and automatically send campaigns for blasts'),
     )
+    MAILCHIMP_CACHE_KEY = 'mailchimp_choices-%d' 
+    FACEBOOK_CACHE_KEY = 'facebook_pages-%d' 
     site = models.OneToOneField('accounts.Site')
     twitter_screen_name = models.CharField(max_length=20, blank=True)
     twitter_token = models.CharField(max_length=255, blank=True)
     twitter_secret = models.CharField(max_length=255, blank=True)
     twitter_auto_items = models.BooleanField(default=True)
-    facebook_id = models.CharField(max_length=20, blank=True, null=True)
+    facebook_token = models.CharField(max_length=255, blank=True, null=True)
+    facebook_page_token = models.CharField(max_length=255, blank=True, null=True)
+    facebook_page_name = models.CharField(max_length=255, blank=True, null=True)
+    facebook_id = models.CharField(max_length=255, blank=True, null=True)
     facebook_url = models.TextField(blank=True, null=True)
     facebook_auto_items = models.BooleanField(default=True)
     mailchimp_api_key = models.CharField(max_length=100, null=True, blank=True)
@@ -65,7 +71,7 @@ class Social(models.Model):
 
     @property
     def mailchimp_lists(self):
-        CACHE_KEY = 'mailchimp_choices-%d' % self.id
+        CACHE_KEY = Social.MAILCHIMP_CACHE_KEY % self.id
         mailchimp_choices = cache.get(CACHE_KEY)
         if mailchimp_choices is None:
             mailchimp = MailChimp(self.mailchimp_api_key)
@@ -75,6 +81,40 @@ class Social(models.Model):
             ]
             cache.set(CACHE_KEY, mailchimp_choices, 3600)
         return mailchimp_choices
+
+    @property
+    def facebook_pages(self):
+        CACHE_KEY = Social.FACEBOOK_CACHE_KEY  % self.id
+        pages = cache.get(CACHE_KEY)
+        if pages is None:
+            graph = facebook.GraphAPI(self.facebook_token)
+            accounts = graph.get_connections('me', 'accounts')['data']
+            if len(accounts) == 0:
+                pages = None
+            elif len(accounts) == 1:
+                pages = [graph.get_object(accounts[0]['id'])]
+                page = pages[0] 
+                self.facebook_url = page['link']
+                self.facebook_page_token = accounts[0]['access_token']
+                self.facebook_page_name = page['name']
+                self.save()
+            else:
+                pages = [
+                    dict(access_token=account['access_token'], **graph.get_object(account['id']))
+                    for account in accounts
+                ]
+            cache.set(CACHE_KEY, pages, 3600)
+        return pages
+
+    @property
+    def facebook_fragment(self):
+        pages = self.facebook_pages
+        if pages is None:
+            return 'dashboard/marketing/includes/no_pages.html'
+        if len(pages) == 1 or (self.facebook_page_token and self.facebook_page_name):
+            return 'dashboard/marketing/includes/one_page.html'
+        return 'dashboard/marketing/includes/select_page.html'
+
 
 class ReleaseManager(models.Manager):
     use_for_related_fields = True
@@ -140,8 +180,9 @@ class Release(models.Model):
             if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
                 mailchimp.campaignSendNow(cid=campaign_id)
             data_center = social.mailchimp_api_key.split('-')[1]
-            self.mailchimp = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
-            self.save()
+            Release.objects.filter(id=self.id).update(
+                mailchimp = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
+            )
                 
     def send_fax(self, fax_list):
         site = self.site
@@ -162,8 +203,9 @@ class Release(models.Model):
             content = cover_page + attachment
         fax_numbers = [s.fax for s in fax_list.subscriber_set.all()]
         transaction = fax_machine.send(fax_numbers, content, **kwargs)
-        self.fax_transaction = transaction
-        self.save()
+        Release.objects.filter(id=self.id).update(
+            fax_transaction = transaction
+        )
         Fax.objects.create(parent_transaction=transaction, 
             transaction=transaction, site=site)
 

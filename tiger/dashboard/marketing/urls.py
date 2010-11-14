@@ -28,5 +28,6 @@ urlpatterns = patterns('tiger.dashboard.marketing.views',
     url(r'^twitter/$', 'add_twitter', name='dashboard_add_twitter'),
     url(r'^twitter/rm/$', 'remove_twitter', name='dashboard_remove_twitter'),
     url(r'^fb/rm/$', 'remove_facebook', name='dashboard_remove_facebook'),
+    url(r'^fb/change-page/$', 'get_facebook_pages_form', name='change_fb_page'),
     url(r'^register-id/$', 'register_id', name='register_id'),
 )

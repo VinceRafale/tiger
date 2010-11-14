@@ -8,11 +8,11 @@ from django.core.urlresolvers import reverse
 from django.db.models import get_model
 from django.utils.http import int_to_base36
 
+import facebook
 from celery.task import Task
-from facebook import Facebook, FacebookError
-
 from oauth import oauth
 
+from tiger.accounts.models import FaxList
 from tiger.notify.fax import FaxServiceError
 from tiger.notify.models import Release
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
@@ -52,35 +52,40 @@ class TweetNewItemTask(Task):
             results = update_status(CONSUMER, CONNECTION, access_token, msg)
             if release_id is not None:
                 results = json.loads(results)
-                release = Release.objects.get(id=release_id)
                 msg_id = results['id']
-                release.twitter = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
-                release.save()
+                release = Release.objects.get(id=release_id)
+                Release.objects.filter(id=release_id).update(
+                    twitter = 'http://twitter.com/%s/status/%s' % (release.site.social.twitter_screen_name, msg_id)
+                )
         except urllib2.HTTPError, e:
             self.retry([msg, token, secret], kwargs,
                 countdown=60 * 5, exc=e)
 
 
 class PublishToFacebookTask(Task):
-    def run(self, uid, msg, link_title=None, href=None, release_id=None, **kwargs):
-        fb = Facebook(settings.FB_API_KEY, settings.FB_API_SECRET)
-        kwds = dict(uid=uid, message=msg)
-        if href is not None:
-            kwds.update({'action_links': [{'text': 'View on our site', 'href': href}]})
+    def run(self, uid, msg, link=None, name=None, release_id=None, **kwargs):
+        graph = facebook.GraphAPI(uid)
+        kwds = {'message': msg}
+        if link is not None:
+            kwds.update({
+                'link': link,
+                'name': name
+            })
         try:
-            result = fb.stream.publish(**kwds)
+            post = graph.put_object("me", "feed", **kwds)
             if release_id is not None:
-                msg_id = result.split('_')[1]
                 release = Release.objects.get(id=release_id)
-                release.facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
-                release.save()
+                msg_id = post['id'].split('_')[1]
+                Release.objects.filter(id=release_id).update(
+                    facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
+                )
         except FacebookError, e:
             self.retry([uid, msg, link_title, href], kwargs,
                 countdown=60 * 5, exc=e)
 
 
 class PublishTask(Task):
-    def run(self, release_id, twitter=False, facebook=False, mailchimp=False,
+    def run(self, release_id, twitter=False, fb=False, mailchimp=False,
             fax_list=None, **kwargs):
         release = Release.objects.get(id=release_id)
         site = release.site
@@ -97,11 +102,11 @@ class PublishTask(Task):
             if release.visible:
                 msg = ' '.join([msg, short_url]) 
             TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret, release_id=release_id)
-        if site.facebook() and facebook:
+        if site.facebook() and fb:
             kwds = {}
             if release.visible:
-                kwds.update(dict(link_title=link_title, href=short_url)) 
-            PublishToFacebookTask.delay(social.facebook_id, msg, release_id=release_id, **kwds)
+                kwds.update(dict(name=link_title, link=short_url)) 
+            PublishToFacebookTask.delay(social.facebook_page_token, msg, release_id=release_id, **kwds)
         if mailchimp:
             SendMailChimpTask.delay(release_id=release.id)
         if fax_list:

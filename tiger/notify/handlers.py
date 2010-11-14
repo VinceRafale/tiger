@@ -9,9 +9,9 @@ def item_social_handler(sender, instance, created, **kwargs):
         if all([social.twitter_token, social.twitter_secret, social.twitter_auto_items]):
             msg += url
             TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret)
-        if social.facebook_id and social.facebook_auto_items:
+        if social.facebook_page_token and social.facebook_auto_items:
             PublishToFacebookTask.delay(
-                social.facebook_id, 
+                social.facebook_page_token, 
                 msg, 
-                link_title='View on our site', 
-                href=url)
+                name='View on our site', 
+                link=url)

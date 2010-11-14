@@ -114,8 +114,6 @@ def add_edit_site_object(request, model, form_class, template, reverse_on, objec
 
 def delete_site_object(request, model, object_id, reverse_on):
     site = request.site
-    if site.account.user != request.user:
-        raise Http404()
     instance = model.objects.get(id=object_id)
     if instance.site != site:
         raise Http404()
