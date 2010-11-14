@@ -29,12 +29,14 @@ Social media integrations
         {% endif %}
         </p>
         <h3>Facebook</h3>
+        <div>
+            {% if not site.social.facebook_token %}
+                <a id="facebook-button" href="#">Connect</a>
+            {% else %}
+                <a href="#">Deauthorize</a>
+            {% endif %}
+        </div>
         <p id="facebook">
-        {% if not site.facebook %}
-            <a id="facebook-button" href="#">Connect</a>
-        {% else %}
-            <a href="#">Deauthorize</a>
-        {% endif %}
 
         {% with site.social as social %}
         {% include social.facebook_fragment %}
@@ -106,11 +108,13 @@ $(function () {
     });
     $("#change-fb-page").live("click", function () {
         $("#facebook").load("{% url change_fb_page %}");
+        return false;
     });
     $("ul.fb-page-list :radio").live("click", function () {
         $.post("{% url change_fb_page %}", $(this).serialize(), function (data) {
             $("#facebook").html(data);
         });
+        return false;
     });
 });
 </script>

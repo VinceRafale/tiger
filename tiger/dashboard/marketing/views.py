@@ -223,11 +223,14 @@ def remove_twitter(request):
 @login_required
 def get_facebook_pages_form(request):
     social = request.site.social
+    social.facebook_url = social.facebook_page_token = ''
+    social.facebook_page_name = ''
+    social.save()
     pages = social.facebook_pages
-    if len(accounts) == 1:
+    if len(pages) == 1:
         return HttpResponse(render_to_string(social.facebook_fragment, {
             'social': social,
-            'errors': """Can\'t change pages - you currently only have 
+            'errors': """Can't change pages - you currently only have 
                       one associated with your Facebook account."""
         }))
     if request.method == 'POST':
@@ -266,11 +269,6 @@ def register_id(request):
     if pages is None:
         return HttpResponse(render_to_string(social.facebook_fragment))
     if len(pages) == 1:
-        page = pages[0] 
-        social.facebook_url = page['link']
-        social.facebook_page_token = page['access_token']
-        social.facebook_page_name = page['name']
-        social.save()
         return HttpResponse(render_to_string(social.facebook_fragment, {
             'social': social 
         }))

@@ -63,13 +63,16 @@ class TweetNewItemTask(Task):
 
 
 class PublishToFacebookTask(Task):
-    def run(self, uid, msg, link_title=None, href=None, release_id=None, **kwargs):
-        fb = Facebook(settings.FB_API_KEY, settings.FB_API_SECRET)
-        kwds = dict(uid=uid, message=msg)
-        if href is not None:
-            kwds.update({'action_links': [{'text': 'View on our site', 'href': href}]})
+    def run(self, uid, msg, link=None, name=None, release_id=None, **kwargs):
+        graph = facebook.GraphAPI(uid)
+        kwds = {'message': msg}
+        if link is not None:
+            kwds.update({
+                'link': link,
+                'name': name
+            })
         try:
-            result = fb.stream.publish(**kwds)
+            post = graph.put_object("me", "feed", **kwds)
             if release_id is not None:
                 release = Release.objects.get(id=release_id)
                 msg_id = result.split('_')[1]
@@ -82,7 +85,7 @@ class PublishToFacebookTask(Task):
 
 
 class PublishTask(Task):
-    def run(self, release_id, twitter=False, facebook=False, mailchimp=False,
+    def run(self, release_id, twitter=False, fb=False, mailchimp=False,
             fax_list=None, **kwargs):
         release = Release.objects.get(id=release_id)
         site = release.site
@@ -99,11 +102,11 @@ class PublishTask(Task):
             if release.visible:
                 msg = ' '.join([msg, short_url]) 
             TweetNewItemTask.delay(msg, social.twitter_token, social.twitter_secret, release_id=release_id)
-        if site.facebook() and facebook:
+        if site.facebook() and fb:
             kwds = {}
             if release.visible:
-                kwds.update(dict(link_title=link_title, href=short_url)) 
-            PublishToFacebookTask.delay(social.facebook_id, msg, release_id=release_id, **kwds)
+                kwds.update(dict(link=link_title, name=short_url)) 
+            PublishToFacebookTask.delay(social.facebook_page_token, msg, release_id=release_id, **kwds)
         if mailchimp:
             SendMailChimpTask.delay(release_id=release.id)
         if fax_list:

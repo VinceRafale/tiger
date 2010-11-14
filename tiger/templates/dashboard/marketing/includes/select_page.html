@@ -1,5 +1,6 @@
+Which Page do you want to connect to Takeout Tiger?
 <ul class="fb-page-list">
-{% for page in pages %}
+{% for page in social.facebook_pages %}
     <li>
         <label><input type="radio" name="page" value="{{ page.id }}" /> {{ page.name }}</label> <a href="{{ page.link }}">View on Facebook</a>
     </li>

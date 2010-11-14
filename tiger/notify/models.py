@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 
+import facebook
 from greatape import MailChimp
 from markdown import markdown
 
@@ -83,19 +84,25 @@ class Social(models.Model):
 
     @property
     def facebook_pages(self):
-        CACHE_KEY = FACEBOOK_CACHE_KEY  % self.id
+        CACHE_KEY = Social.FACEBOOK_CACHE_KEY  % self.id
         pages = cache.get(CACHE_KEY)
         if pages is None:
-            graph = facebook.GraphAPI(self.access_token)
+            graph = facebook.GraphAPI(self.facebook_token)
             accounts = graph.get_connections('me', 'accounts')['data']
             if len(accounts) == 0:
                 pages = None
-            if len(accounts) == 1:
-                pages = graph.get_object(accounts[0]['id'])
-            pages = [
-                graph.get_object(account['id'])
-                for account in accounts
-            ]
+            elif len(accounts) == 1:
+                pages = [graph.get_object(accounts[0]['id'])]
+                page = pages[0] 
+                self.facebook_url = page['link']
+                self.facebook_page_token = accounts[0]['access_token']
+                self.facebook_page_name = page['name']
+                self.save()
+            else:
+                pages = [
+                    dict(access_token=account['access_token'], **graph.get_object(account['id']))
+                    for account in accounts
+                ]
             cache.set(CACHE_KEY, pages, 3600)
         return pages
 
