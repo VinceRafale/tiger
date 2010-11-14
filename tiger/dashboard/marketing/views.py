@@ -76,7 +76,7 @@ def publish(request, release_id=None):
             cleaned_data = form.cleaned_data
             PublishTask.delay(release.id, 
                 twitter=cleaned_data.get('twitter'),
-                facebook=cleaned_data.get('facebook'),
+                fb=cleaned_data.get('facebook'),
                 mailchimp=cleaned_data.get('mailchimp'),
                 fax_list = cleaned_data.get('fax_list')
             )

@@ -75,7 +75,7 @@ class PublishToFacebookTask(Task):
             post = graph.put_object("me", "feed", **kwds)
             if release_id is not None:
                 release = Release.objects.get(id=release_id)
-                msg_id = result.split('_')[1]
+                msg_id = post['id'].split('_')[1]
                 Release.objects.filter(id=release_id).update(
                     facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
                 )
@@ -105,7 +105,7 @@ class PublishTask(Task):
         if site.facebook() and fb:
             kwds = {}
             if release.visible:
-                kwds.update(dict(link=link_title, name=short_url)) 
+                kwds.update(dict(name=link_title, link=short_url)) 
             PublishToFacebookTask.delay(social.facebook_page_token, msg, release_id=release_id, **kwds)
         if mailchimp:
             SendMailChimpTask.delay(release_id=release.id)
