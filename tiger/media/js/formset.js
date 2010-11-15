@@ -189,7 +189,7 @@ $(function () {
         return false;
     });
 
-    $('ul.item-container').bind('changeLength', function () {
+    $('ul.group-wrap ul.item-container').live('changeLength', function () {
         upOne = $(this).parent();
         if ($(this).children("li").not(".empty").length == 1) {
             if (!$(this).find("span.errorlist").length) {
