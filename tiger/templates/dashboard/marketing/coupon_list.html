@@ -7,38 +7,94 @@ Your coupons
 {% endblock %}
 
 {% block help %}
-<p>This is a list of all your existing coupons.  Users can visit the link for each coupon to add it to their order.</p>
+<p>This page provides you with a list of all of your coupons, along with some important information about them.</p>
+<p>There are three ways that a customer might add a coupon to their order.</p>
+<ul>
+   <li>The first is entering the coupon code directly, part of the last step before sending in an order.  To copy a coupon code to the clipboard, click the Clipboard icon in the coupon's title bar.</li>
+   <li>The second is to provide users with a link that will instantly add the coupon to their order. Click the Clipboard icon next to the "Instant URL" to copy this link to the clipboard.</li>
+   <li>Finally, you can send users to a page where they have to tweet a link to the coupon or recommend the coupon on Facebook in order to get the Instant URL. This has the added benefit of exposing your coupon to the extended network of your own followers and fans.  Takeout Tiger will track how many visits each coupon page gets, as well as how many Facebook Recommendations (which is the same as a "Like") and tweets are made from the coupon page.</li>
+</ul>
 {% endblock %}
 
 {% block content %}
 <span class="buttons">
 <a href="{% url dashboard_add_coupon %}">+ Add a coupon</a>
 </span>
-<table>
-    <thead>
-        <tr>
-            <th>Coupon code</th>
-            <th>Discount</th>
-            <th>Expiration date</th>
-            <th>Total uses remaining</th>
-            <th>Link</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="clear"></div>
+<ul id="coupons">
     {% for coupon in coupons %}
-    <tr>
-        <td>{{ coupon.short_code }}</td>
-        <td>{{ coupon.discount }}</td>
-        <td>{{ coupon.exp_date|date|default:"no exp. date" }}</td>
-        <td>{{ coupon.remaining_clicks|default_if_none:"no limit" }}</td>
-        <th><input type="text" readonly value="{{ site }}{{ coupon.get_absolute_url }}" /></th>
-    </tr>
+    <li>
+        <h3>    
+            {{ coupon.short_code }}: {{ coupon.discount }} off
+            <span class="buttons">
+            <a class="delete" href="{% url dashboard_delete_coupon coupon.id %}">delete</a>
+            <a href="{% url dashboard_edit_coupon coupon.id %}">edit</a>
+        </span>
+        </h3>
+            <h4>Basic info</h4>
+            <div>
+                <strong>Expiration date:</strong> {{ coupon.exp_date|date|default:"no exp. date" }} &bull;
+                <strong>Uses remaining:</strong> {{ coupon.remaining_clicks|default_if_none:"no limit" }}<br/>
+                <strong>Instant URL:</strong> <input type="text" readyonly value="{{ site }}{{ coupon.get_absolute_url }}" />
+                <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+                        width="110"
+                        height="14"
+                        id="clippy" >
+                <param name="movie" value="{{ MEDIA_URL }}clippy.swf"/>
+                <param name="allowScriptAccess" value="always" />
+                <param name="quality" value="high" />
+                <param name="scale" value="noscale" />
+                <param NAME="FlashVars" value="text={{ site }}{{ coupon.get_absolute_url }}
+            <">
+                <param name="bgcolor" value="#fff">
+                <embed src="{{ MEDIA_URL }}clippy.swf"
+                       width="110"
+                       height="14"
+                       name="clippy"
+                       quality="high"
+                       allowScriptAccess="always"
+                       type="application/x-shockwave-flash"
+                       pluginspage="http://www.macromedia.com/go/getflashplayer"
+                       FlashVars="text={{ site }}{{ coupon.get_absolute_url }}"
+                       bgcolor="#fff"
+                />
+                </object>
+            </div>
+            <h4>Social marketing</h4>
+            <div>
+                <span class="count">{{ coupon.view_count }}</span> page view{{ coupon.view_count|pluralize }} &bull;
+                <span class="count">{{ coupon.twitter_share_count }}</span> tweet{{ coupon.twitter_share_count|pluralize }} &bull;
+                <span class="count">{{ coupon.fb_share_count }}</span> Facebook recommendation{{ coupon.fb_share_count|pluralize }}<br/>
+                <strong>Social sharing URL:</strong>  <input type="text" readyonly value="{{ coupon.tiger_url }}" />
+                <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+                        width="110"
+                        height="14"
+                        id="clippy" >
+                <param name="movie" value="{{ MEDIA_URL }}clippy.swf"/>
+                <param name="allowScriptAccess" value="always" />
+                <param name="quality" value="high" />
+                <param name="scale" value="noscale" />
+                <param NAME="FlashVars" value="text={{ site }}{{ coupon.get_absolute_url }}
+            <">
+                <param name="bgcolor" value="#fff">
+                <embed src="{{ MEDIA_URL }}clippy.swf"
+                       width="110"
+                       height="14"
+                       name="clippy"
+                       quality="high"
+                       allowScriptAccess="always"
+                       type="application/x-shockwave-flash"
+                       pluginspage="http://www.macromedia.com/go/getflashplayer"
+                       FlashVars="text={{ site }}{{ coupon.get_absolute_url }}"
+                       bgcolor="#fff"
+                />
+                </object>
+            </div>
+        <div class="clear"></div>
+    </li>
     {% empty %}
-    <tr>
-        <td colspan="5">You have not created any coupons yet.</td>
-    </tr>
+    <li>You have not created any coupons yet.</li>
     {% endfor %}
-    </tbody>
-</table>
+</ul>
 <div class="clear"></div>
 {% endblock %}

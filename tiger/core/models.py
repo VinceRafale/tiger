@@ -506,9 +506,9 @@ class Coupon(models.Model):
     dollars_off = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     percent_off = models.PositiveIntegerField(null=True, blank=True)
     require_sharing = models.BooleanField(default=False)
-    view_count = models.PositiveIntegerField(default=0)
-    twitter_share_count = models.PositiveIntegerField(default=0)
-    fb_share_count = models.PositiveIntegerField(default=0)
+    view_count = models.PositiveIntegerField(default=0, editable=False)
+    twitter_share_count = models.PositiveIntegerField(default=0, editable=False)
+    fb_share_count = models.PositiveIntegerField(default=0, editable=False)
     objects = CouponManager()
 
     class Meta:
