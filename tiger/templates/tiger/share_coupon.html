@@ -47,18 +47,6 @@ window.fbAsyncInit = function() {
     FB.Event.subscribe('edge.create', function(response) {
         registerShare('facebook');
     });
-    twttr.anywhere(function (T) {
-        T("#twitter-share").tweetBox({
-            defaultContent: "Get {{ coupon.discount }} off your online order at {{ coupon.site.name }}! {{ coupon.tiger_url }}",
-            onTweet: function () {
-                registerShare('twitter'); 
-            },
-            height: 100,
-            width: 350,
-            label: "",
-            counter: false
-        });
-    });
 
 };
 (function() {
@@ -66,6 +54,18 @@ window.fbAsyncInit = function() {
     e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
     document.getElementById('fb-root').appendChild(e);
 }());
+twttr.anywhere(function (T) {
+    T("#twitter-share").tweetBox({
+        defaultContent: "Get {{ coupon.discount }} off your online order at {{ coupon.site.name }}! {{ coupon.tiger_url }}",
+        onTweet: function () {
+            registerShare('twitter'); 
+        },
+        height: 100,
+        width: 350,
+        label: "",
+        counter: false
+    });
+});
 </script>
 </body>
 </html>
