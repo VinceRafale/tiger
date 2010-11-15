@@ -104,7 +104,7 @@ $(function () {
                     containingList = $(selector).parent().parent();
                     $(selector).parent().remove();
                     if (!$(containingList).children().length) {
-                        $(containingList).append('<li class="empty">No ' + $(containingList).closest("div").find("h3").text().toLowerCase() + ' defined.</li>');
+                        $(containingList).append('<li class="empty">No choice groups defined.</li>');
                     }
                 } else {
                     $(selector).insertAfter('<span class="fail">An error occurred.</span>');
@@ -167,17 +167,22 @@ $(function () {
     });
 
     $("a.delete").live("click", function () {
-        c = confirm('Are you sure you want to delete this item?  This action cannot be undone.');
+        trgt = this;
+        action = $(this).attr("rel");
+        selector = '[rel="' + action + '"]';
+        containingList = $(selector).parent().parent().parent();
+        sectionNamePlural = $(containingList).closest("div").find("h3")[0] 
+                            .childNodes[0].textContent // can't use .text() because of anchor
+                            .replace(/\s+$/, '') // strip trailing whitespace
+                            .toLowerCase();
+        sectionNameSingular = sectionNamePlural.substring(0, sectionNamePlural.length - 1);
+        c = confirm('Are you sure you want to delete this ' + sectionNameSingular + '?  This action cannot be undone.');
         if (c) {
-            trgt = this;
-            action = $(this).attr("rel");
             $.post(action, $.param({'delete': true}), function (data) {
-                selector = '[rel="' + action + '"]';
                 if (data['deleted']) {
-                    containingList = $(selector).parent().parent().parent();
                     $(selector).parent().parent().remove();
                     if (!$(containingList).children().length) {
-                        $(containingList).append('<li class="empty">No ' + $(containingList).closest("div").find("h3").text().toLowerCase() + ' defined.</li>');
+                        $(containingList).append('<li class="empty">No ' + sectionNamePlural + ' defined.</li>');
                     }
                     $(containingList).trigger('changeLength');
                 } else {
