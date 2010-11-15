@@ -26,6 +26,28 @@ Your coupons
     <li>
         <h3>    
             {{ coupon.short_code }}: {{ coupon.discount }} off
+            <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+                    width="110"
+                    height="14"
+                    id="clippy" >
+            <param name="movie" value="{{ MEDIA_URL }}clippy.swf"/>
+            <param name="allowScriptAccess" value="always" />
+            <param name="quality" value="high" />
+            <param name="scale" value="noscale" />
+            <param NAME="FlashVars" value="text={{ coupon.short_code }}">
+            <param name="bgcolor" value="#fff">
+            <embed src="{{ MEDIA_URL }}clippy.swf"
+                   width="110"
+                   height="14"
+                   name="clippy"
+                   quality="high"
+                   allowScriptAccess="always"
+                   type="application/x-shockwave-flash"
+                   pluginspage="http://www.macromedia.com/go/getflashplayer"
+                   FlashVars="text={{ coupon.short_code }}"
+                   bgcolor="#fff"
+            />
+            </object>
             <span class="buttons">
             <a class="delete" href="{% url dashboard_delete_coupon coupon.id %}">delete</a>
             <a href="{% url dashboard_edit_coupon coupon.id %}">edit</a>
@@ -44,8 +66,7 @@ Your coupons
                 <param name="allowScriptAccess" value="always" />
                 <param name="quality" value="high" />
                 <param name="scale" value="noscale" />
-                <param NAME="FlashVars" value="text={{ site }}{{ coupon.get_absolute_url }}
-            <">
+                <param NAME="FlashVars" value="text={{ site }}{{ coupon.get_absolute_url }}">
                 <param name="bgcolor" value="#fff">
                 <embed src="{{ MEDIA_URL }}clippy.swf"
                        width="110"
@@ -74,8 +95,7 @@ Your coupons
                 <param name="allowScriptAccess" value="always" />
                 <param name="quality" value="high" />
                 <param name="scale" value="noscale" />
-                <param NAME="FlashVars" value="text={{ site }}{{ coupon.get_absolute_url }}
-            <">
+                <param NAME="FlashVars" value="text={{ site }}{{ coupon.tiger_url }}">
                 <param name="bgcolor" value="#fff">
                 <embed src="{{ MEDIA_URL }}clippy.swf"
                        width="110"
@@ -85,7 +105,7 @@ Your coupons
                        allowScriptAccess="always"
                        type="application/x-shockwave-flash"
                        pluginspage="http://www.macromedia.com/go/getflashplayer"
-                       FlashVars="text={{ site }}{{ coupon.get_absolute_url }}"
+                       FlashVars="text={{ site }}{{ coupon.tiger_url }}"
                        bgcolor="#fff"
                 />
                 </object>
