@@ -21,7 +21,7 @@ def home(request):
 def location_list(request):
     #return direct_to_template(request, template='dashboard/restaurant/location_list.html', extra_context={})
     location = request.location
-    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', object_id=location.id)
+    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', object_id=location.id, pass_site_to_form=True)
 
 @login_required
 def add_location(request):
