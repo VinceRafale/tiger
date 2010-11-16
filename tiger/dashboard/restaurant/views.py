@@ -25,11 +25,11 @@ def location_list(request):
 
 @login_required
 def add_location(request):
-    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location')
+    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', pass_site_to_form=True)
     
 @login_required
 def edit_location(request, location_id):
-    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', object_id=location_id)
+    return add_edit_site_object(request, Location, LocationForm, 'dashboard/restaurant/location_form.html', 'dashboard_location', object_id=location_id, pass_site_to_form=True)
 
 @login_required
 def delete_location(request, location_id):

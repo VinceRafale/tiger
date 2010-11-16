@@ -274,7 +274,7 @@ class Location(models.Model):
 
 class Schedule(models.Model):
     site = models.ForeignKey(Site)
-    display = models.TextField(null=True)
+    display = models.TextField(null=True, default='default schedule')
     master = models.BooleanField(default=False)
 
     def __unicode__(self):

@@ -229,12 +229,14 @@
             $("#id_password2").blur(function () {
                 pw1 = $("#id_password1").val();
                 pw2 = $("#id_password2").val();
-                if (pw1 == pw2) {
-                    $("span.matches").css("display", "block"); 
-                    $("span.no-match").hide(); 
-                } else {
-                    $("span.no-match").css("display", "block"); 
-                    $("span.matches").hide(); 
+                if (pw1.length) {
+                    if (pw1 == pw2) {
+                        $("span.matches").css("display", "block"); 
+                        $("span.no-match").hide(); 
+                    } else {
+                        $("span.no-match").css("display", "block"); 
+                        $("span.matches").hide(); 
+                    }
                 }
             });
             $("a.promo").toggle(function() {
