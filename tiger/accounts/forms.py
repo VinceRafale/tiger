@@ -93,6 +93,7 @@ class SignupForm(forms.ModelForm):
     subdomain = forms.CharField()
     first_name = forms.CharField()
     last_name = forms.CharField()
+    site_name = forms.CharField(label='Restaurant name')
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
     cc_number = forms.CharField(label='Card number')
@@ -227,7 +228,7 @@ class SignupForm(forms.ModelForm):
         instance.user = user
         instance.referrer = referrer
         instance.save()
-        site = Site()
+        site = Site(name=cleaned_data['site_name'])
         site.subdomain = cleaned_data['subdomain']
         site.account = instance
         site.save()

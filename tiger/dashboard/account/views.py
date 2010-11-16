@@ -24,9 +24,9 @@ def cancel(request):
                 'cancellation_message': form.cleaned_data.get('comments', '') 
             }
         })
+        request.site.location_set.all().delete()
         request.user.delete()
-        #TODO: finish cancelled template
-        return HttpResponseRedirect('http://www.takeouttiger.com' + reverse('cancelled', urlconf='tiger.tiger_urls'))
+        return HttpResponseRedirect('http://www.takeouttiger.com')
     else:
         form = CancellationForm()
     return direct_to_template(request, template='dashboard/account/cancel.html',

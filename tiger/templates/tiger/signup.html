@@ -39,6 +39,14 @@
                             {{ form.email.errors }}
                         {% endif %}
 					    <br /><span>{{ form.email }}</span></label>
+
+					<label>
+					    {{ form.site_name.label }}:
+					    {% if form.site_name.errors %}
+                            {{ form.site_name.errors }}
+                        {% endif %}
+                        <br /><span>{{ form.site_name }}</span></label>
+
 				</fieldset>
 			</div>
 			<div id="price" class="grid_4 push_1">
