@@ -381,7 +381,7 @@ class LocationForm(BetterModelForm):
             'tax_rate',
         )
 
-    def __init__(self, data=None, site=None, *args, **kwargs):
+    def __init__(self, data=None, files=None, site=None, *args, **kwargs):
         super(LocationForm, self).__init__(data=data, *args, **kwargs)
         self.fields['schedule'].queryset = site.schedule_set.all()
 
