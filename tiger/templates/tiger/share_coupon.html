@@ -36,8 +36,9 @@
     </div>
 <script>
 function registerShare(type) {
-    $.post("./",  $.param({via: type}), function(data) {
-        $("h1").after(data);    
+    $.post(location.href,  $.param({via: type}), function(data) {
+        $("p.coupon").append(data);    
+        $("p.coupon a").slideDown(function () { $(this).css("display", "block"); });
     });
 }
 

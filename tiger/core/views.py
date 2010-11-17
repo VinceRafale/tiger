@@ -116,8 +116,8 @@ def share_coupon(request, coupon_id):
         else:
             raise Http404
         coupon.save()
-        return HttpResponse('<a href="%s">Redeem</a>' % (
-            coupon.add_coupon_url(), unicode(coupon)))
+        return HttpResponse('<a href="%s%s">Redeem now!</a>' % (
+            unicode(coupon.site), coupon.add_coupon_url()))
     else:
         coupon.view_count += 1
         coupon.save()

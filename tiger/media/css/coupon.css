@@ -14,3 +14,4 @@ header{background:none;}
 #share{text-indent: -9999px; background:url(../img/share.png) top left no-repeat; height: 31px; width: 421px;}
 #redeem{text-indent: -9999px; background:url(../img/redeem.png) top left no-repeat; height: 30px; width: 430px;}
 .arrow{position: absolute; display: block; top:30px; left:0;background: url(../img/arrow-left.png) top left no-repeat; height:144px ; width:72px ;}
+#blog p.coupon a {color:#fff; display:none; font-size:28px; text-decoration:underline;}
