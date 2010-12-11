@@ -19,5 +19,5 @@ class Command(NoArgsCommand):
                 quantity=page_count,
                 memo='Fax charges for %s' % date.today().strftime('%x')
             )
-            print response
+            unlogged_faxes.update(logged=True)
         
