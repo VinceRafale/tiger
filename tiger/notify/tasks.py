@@ -12,7 +12,6 @@ import facebook
 from celery.task import Task
 from oauth import oauth
 
-from tiger.accounts.models import FaxList
 from tiger.notify.fax import FaxServiceError
 from tiger.notify.models import Release
 from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
@@ -27,6 +26,7 @@ class DeliverOrderTask(Task):
 
 class SendFaxTask(Task):
     def run(self, release_id, fax_list_id, **kwargs):
+        from tiger.accounts.models import FaxList
         release = Release.objects.get(id=release_id)
         fax_list = FaxList.objects.get(id=fax_list_id)
         try:

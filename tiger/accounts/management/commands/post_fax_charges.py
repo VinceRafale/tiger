@@ -21,4 +21,5 @@ class Command(NoArgsCommand):
                         data=dict(usage={
 		    	    'quantity': page_count,
 		    	    'memo': 'Fax charges for %s' % date.today().strftime('%x')
-		    }))
+                }))
+                unlogged_faxes.update(logged=True)
