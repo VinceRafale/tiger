@@ -17,7 +17,7 @@ $(function () {
     });
     $("a.chooser-remove").live("click", function () {
         $("input.chooser-input").val('');
-        $("div.img-chooser-wrap img").src('/static/img/blank.jpg');
+        $("div.img-chooser-wrap img").attr('src', '/static/img/blank.jpg');
         $(this).prev().text("Add");
         $(this).remove();
         return false;
