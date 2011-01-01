@@ -1,0 +1,10 @@
+- panel: 
+    name: Foo
+    groups:
+      - components:
+          - name: Baz
+            type: swatch
+            order: 1
+            properties:
+              - selector: #foo
+              - css_property: background-color

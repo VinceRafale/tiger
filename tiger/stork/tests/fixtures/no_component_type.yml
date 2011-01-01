@@ -1,0 +1,12 @@
+- panel: 
+    name: Foo
+    groups:
+      - components:
+          - name: Baz
+- panel: 
+    name: Bar
+    groups:
+      - components:
+          - name: Quux
+            type: font
+

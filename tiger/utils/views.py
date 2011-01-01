@@ -10,6 +10,7 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.look.forms import *
 from tiger.utils.template import load_custom
+from tiger.stork import Stork
 
 
 def render_custom(request, template, context=None):
@@ -19,35 +20,12 @@ def render_custom(request, template, context=None):
     if request.session.get('customizing'):
         if template == 'base.html':
             template = 'dashboard/look/preview.html'
-        skin = request.site.skin
-        font_form = HeaderFontForm(initial={
-            'header_font': skin.header_font.id,
-            'header_color': skin.header_color
-        })
-        body_font_form = BodyFontForm(initial={
-            'body_font': skin.body_font,
-            'body_color': skin.body_color
-        })
-        bg_form = BackgroundForm()
-        bg_color_form = BackgroundColorForm(initial={'background_color': skin.background.color})
-        bg_img_form = BackgroundImageForm()
-        custom_bg_form = CustomBackgroundForm(instance=skin.background)
-        color_form = ColorForm(instance=skin)
-        logo_form = LogoForm()
+        panels = Stork('panels.yaml', request.site)
         context.update({
+            'styles': panels.style_tags(),
+            'toolbar': panels.toolbar(),
             'base': 'dashboard/look/preview.html',
             'pre_base': request.site.staged_template(),
-            'header_font_form': font_form,
-            'body_font_form': body_font_form,
-            'bg_form': bg_form,
-            'custom_bg_form': custom_bg_form,
-            'bg_color_form': bg_color_form,
-            'bg_img_form': bg_img_form,
-            'color_form': color_form,
-            'logo_form': logo_form,
-            'css': skin.css,
-            'html_errors': request.session.pop('html_errors', None),
-            'html': request.session.pop('invalid_html', skin.prepped_html())
         })
     else:
         context.update({

@@ -1,0 +1,8 @@
+- panel: 
+    name: Foo
+    groups:
+      - components:
+          - name: Baz
+            type: swatch
+            default: 000
+            order: 1

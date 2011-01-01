@@ -1,0 +1,183 @@
+- panel: 
+    name: Fonts
+    groups:
+      - components:
+          - name: Header font
+            type: font
+            order: 3
+            selector: h1, h2, h4
+            default: ARIAL
+            fontface: true
+          - name: Header font color
+            type: swatch
+            order: 4
+            default: "301613"
+            properties:
+              - selector: h1, h2, h4
+                css_property: color
+      - components:
+          - name: Body font
+            type: font
+            order: 1
+            selector: body
+            default: ARIAL
+            fontface: true
+          - name: Body font color
+            type: swatch
+            default: "000000"
+            order: 2
+            properties:
+              - selector: body
+                css_property: color
+- panel: 
+    name: Logo
+    groups:
+      - components:
+          - name: Logo image
+            type: image
+            order: 11
+            selector: "#masthead h2"
+- panel: 
+    name: Colors
+    groups:
+      - make_list: true
+        components:
+          - name: Masthead color
+            type: swatch
+            default: "121012"
+            order: 5
+            properties:
+              - selector: "#masthead"
+                css_property: background-color
+          - name: Masthead font
+            type: swatch
+            default: E3E3BE 
+            order: 6
+            properties:
+              - selector: "#masthead h2, #masthead h4, #masthead label"
+                css_property: color
+          - name: Menu color
+            type: swatch
+            default: 2B292B 
+            order: 6
+            properties:
+              - selector: "#menuWrap, .footer"
+                css_property: background-color
+          - name: Center color
+            type: swatch
+            default: f5f5f5 
+            order: 7
+            properties:
+              - selector: "#mainWrap, #sidebarWrap"
+                css_property: background-color
+          - name: Button text
+            type: swatch
+            default: f7f7f7 
+            order: 10
+            properties:
+              - selector: "a.lightlink, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit"
+                css_property: color
+          - name: Accent color
+            type: swatch
+            default: bfccd1 
+            order: 8
+            properties:
+              - selector: "#orderForm, .shaded"
+                css_property: background-color
+          - name: Button color
+            type: swatch
+            default: C76218 
+            order: 9
+            properties:
+              - selector: a
+                css_property: color
+              - selector: "#menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit"
+                css_property: background-color
+- panel: 
+    name: Background
+    groups: 
+      - components:
+          - name: Background image
+            type: image
+            order: 12
+            selector: body
+            allow_tiling: true
+          - name: Background color
+            type: swatch
+            default: f5f5f5 
+            order: 13
+            properties:
+              - selector: body
+                css_property: background-color
+- panel: 
+    name: CSS
+    type: css
+    order: 14
+    default: |
+      #masthead h2 {
+          font-size:37px;
+          margin:23px 0;
+      }
+      
+      #menuWrap {
+          border-top:3px solid #301613;
+          border-bottom:4px solid #301613;
+          margin-bottom:20px;
+          height:34px;
+      }
+      
+      #mainWrap, #sidebarWrap {
+          border:1px solid rgba(0,0,0,0.25);
+          -moz-border-radius:5px;
+          -webkit-border-radius:5px;
+          border-radius:5px;
+      }
+      
+      #main, #sidebar {
+          margin:12px;
+      }
+      
+      #menuitems li{
+          -moz-border-radius:5px;
+          -webkit-border-radius:5px;
+          border-radius:5px;
+      }
+      
+      #menu a, #menuitems li a {font-size:14px; font-weight:bold; text-transform:uppercase; text-decoration:none; }
+      a.lightlink:hover {color:#fff;}
+      
+      a#viewCart {margin-right:12px;}
+      a.add.top {font-weight:bold; text-transform:uppercase; text-decoration:none; margin-bottom:10px;}
+      #orderForm {
+          border:none;
+          padding:20px;
+          margin-bottom:15px;
+      }
+      #orderForm h3 {
+          margin-bottom:5px;
+      }
+      form input {
+          border: 1px grey solid;
+      }
+      
+      #orderPreview td {border-top:1px grey solid;}
+      #orderPreview td ul {margin-bottom:0;}
+      #orderPreview td.remove, #orderPreview tr.total td.remove {border-top:none;}
+      a.button:hover {text-decoration:underline;}
+      form.send label {display:block;}
+      .footer {background-color:black; color:white;}
+      #orderPreview tr.total td {border-top:4px solid;}
+      #submit, #pay {
+          border:none;
+          float:right;
+          margin-left:14px;
+      }
+      a.add, #submit, #pay {
+          -moz-border-radius:4px;
+          -webkit-border-radius:4px;
+          padding:4px 8px;
+      }
+      a.button {font-size:16px; padding:4px; text-decoration:none;
+      -moz-border-radius:5px;
+      -webkit-border-radius:5px;
+      }

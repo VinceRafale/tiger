@@ -1,0 +1,10 @@
+- panel: 
+    name: Fonts
+    groups:
+      - components:
+          - name: Foo
+- panel: 
+    name: Colors
+    groups:
+      - components:
+          - name: Foo

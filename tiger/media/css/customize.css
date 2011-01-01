@@ -88,7 +88,7 @@ ul.tabs li a {
     display:block;
 }
 
-ul.tabs li a, ul.tabs li button,button.preview {
+ul.tabs li a, ul.tabs li button,button.preview, div.remove a.remove {
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
     border-radius:5px;   
@@ -108,7 +108,7 @@ ul.tabs li button {
     padding: 5px 9px;
 }
 
-button.preview{
+button.preview, div.remove a.remove {
     background-color:#6c8fa0;
     border:none;
     color:#ffffff;
@@ -147,7 +147,7 @@ a#bg-toggle{color:#4d4d4d;float:right;font-size:12px;margin-top:20px;}
 
 #toolbar textarea {
     border:0;
-    width: 400px;
+    width: 408px;
     height: 300px;
     border:1px solid rgba(75,75,75,0.15);
 }
@@ -186,14 +186,43 @@ div.picker-widget div {
 }
 .customizing .wrapper{margin-top:49px;}
 
-#color-form {
+div.bg ul {
     width:285px;
 }
 
-#color-form li {
+div.bg ul li {
     width:140px;
     margin-left:0;
 }
 
+#toolbar form.image-upload {
+    padding:0;
+}
+
+label.checkbox {
+    margin:4px 0;
+}
+
+label.checkbox * {
+    vertical-align:middle;
+    display:inline;
+}
+
+label.checkbox input {
+    margin-left:0;
+}
+
 div.upload{height:16px;}
-p#spinner{margin-bottom:5px;}
+p.spinner{margin-bottom:5px;}
+p.spinner *{display:inline; vertical-align:middle;}
+
+div.remove a.view {
+    font-size:12px;
+    float:left;
+    margin-top:5px;
+    padding-top:3px;
+}
+
+div.remove a.remove {
+    text-decoration:none;
+}

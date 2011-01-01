@@ -1,0 +1,2 @@
+class StorkConfigurationError(Exception):
+    pass

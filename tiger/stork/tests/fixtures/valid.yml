@@ -1,0 +1,20 @@
+- panel: 
+    name: Foo
+    groups:
+      - components:
+          - name: Baz
+            type: swatch
+            default: "000"
+            order: 1
+            properties:
+              - selector: "#header"
+                css_property: background-color
+- panel: 
+    name: Bar
+    groups:
+      - components:
+          - name: Quux
+            type: font
+            order: 2
+            selector: h1
+            default: ARIAL

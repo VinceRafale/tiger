@@ -17,6 +17,7 @@ urlpatterns += patterns('',
     (r'^content/', include('tiger.dashboard.content.urls')),
     (r'^look/', include('tiger.dashboard.look.urls')),
     (r'^account/', include('tiger.dashboard.account.urls')),
+    (r'^stork/', include('tiger.stork.urls')),
 )
 
 urlpatterns += patterns('django.contrib.auth.views',

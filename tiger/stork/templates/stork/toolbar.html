@@ -1,0 +1,113 @@
+{% load stork_tags %}
+<div id="toolbar">
+    <div class="toolbar-inner">
+        <ul class="tabs"> 
+            {% for panel in panels %}
+            <li><a href="#tab{{ forloop.counter }}">{{ panel.name }}</a></li> 
+            {% endfor %}
+            <li class="back"><a class="back" href="#">Back to dashboard</a></li>
+            <li class="button"><button id="save">Save</button></li>
+        </ul> 
+        <div class="tab_container"> 
+            {% for panel in panels %}
+            <div id="tab{{ forloop.counter }}" class="tab_content {{ panel.component_type }}">
+                {% if panel.admonition %}
+                <p>{{ panel.admonition|safe }}</p>
+                {% endif %}
+                {% if panel.component %}
+                <div id="{{ panel.component.key }}" rel="#{{ panel.component.style_tag_id }}">
+                    {% if panel.component_type == 'css' %} 
+                        {{ panel.component.form_instance.css }}
+                        <div class="clear"></div>
+                        <button class="preview">Preview</button>
+                    {% endif %}
+                </div>
+                {% else %}
+                    {% for group in panel %}
+                    <div class="bg">
+                        {% if group.make_list %}
+                        <ul>
+                            {% for component in group %}
+                            {% for field in component.form_instance %}
+                            <li>
+                                {{ field.label_tag }}
+                                {{ field }}
+                            </li>
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
+                        <div class="clear"></div>
+                        {% else %}
+                            {% for component in group %}
+                                {% for field in component.form_instance %}
+                                    {% if field|is_checkbox %}
+                                    <label class="checkbox">{{ field }} <span>{{ field.label }}</span></label>
+                                    {% else %}
+                                        {% if field|is_filefield %}
+                                            <form class="image-upload {{ component.key }}" method="post" target="imgjson" enctype="multipart/form-data" action="{% url stage_image component.key %}">
+                                            {% with component.instance as instance %}
+                                            <div class="form"{% if instance.image %} style="display:none;"{% endif %}>
+                                                {{ field.label_tag }}
+                                                {{ field }}
+                                            </div>
+                                            <div class="remove"{% if not instance.image %} style="display:none;"{% endif %}>
+                                                <a class="remove" href="{% url remove_image component.key %}">Remove</a>
+                                                <a class="view" target="_blank" href="{% if instance.image %}{{ instance.image.url }}{% else %}#{% endif %}">View current image</a> 
+                                                <div class="clear"></div>
+                                            </div>
+                                            {% if component.instance.staged_image %}
+                                                <input type="hidden" name="{{ component.key }}-stale" value="1" />
+                                            {% endif %}
+                                            {% endwith %}
+                                            <div class="upload">
+                                                <p style="display:none;" class="spinner">
+                                                    <img src="{{ MEDIA_URL }}img/ajax-loader.gif" />
+                                                    <span>Uploading, please be patient...</span>
+                                                </p>
+                                            </div>
+                                            </form>
+                                        {% else %}
+                                            {{ field.label_tag }}
+                                            {{ field }}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div> 
+            {% endfor %}
+        </div> 
+    </div>
+</div>
+<iframe name="imgjson" style="display:none;"></iframe>
+<script type="text/javascript">
+$(".tab_content").hide(); 
+// set up current tab from cookie
+currentTabId = $.readCookie("activeTab");
+if (!currentTabId) {
+    $("ul.tabs li:first").addClass("active").show(); 
+    $(".tab_content:first").show(); 
+} else {
+    $("ul.tabs li").removeClass("active");
+    $("a[href='" + currentTabId + "']").parent().addClass("active");
+    $(currentTabId).show();
+}
+
+$("ul.tabs li").click(function() {
+    $("ul.tabs li").removeClass("active"); 
+    $(this).addClass("active"); 
+    $(".tab_content").hide(); 
+    var activeTab = $(this).find("a").attr("href"); 
+    $(activeTab).fadeIn(); 
+    // set cookie for active tab
+    activeId = $(this).find("a").attr("href");
+    $.setCookie('activeTab', activeId, {duration: 1});
+    return false;
+});
+
+var spinner = new Image(16,16);
+spinner.src = '/static/img/ajax-loader.gif';
+</script>
