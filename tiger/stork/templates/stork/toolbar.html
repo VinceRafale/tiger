@@ -12,7 +12,7 @@
             {% for panel in panels %}
             <div id="tab{{ forloop.counter }}" class="tab_content {{ panel.component_type }}">
                 {% if panel.admonition %}
-                <p>{{ panel.admonition|safe }}</p>
+                <p class="admonition">{{ panel.admonition|safe }}</p>
                 {% endif %}
                 {% if panel.component %}
                 <div id="{{ panel.component.key }}" rel="#{{ panel.component.style_tag_id }}">
@@ -20,6 +20,18 @@
                         {{ panel.component.form_instance.css }}
                         <div class="clear"></div>
                         <button class="preview">Preview</button>
+                    {% else %}
+                        {% with panel.component.cleaned_form as form %}
+                        {% if form.staged_html.errors %}
+                        {{ form.staged_html.errors }}
+                        {% endif %}
+                        <form method="POST" action="{% url preview_html panel.component.key %}">
+                            {{ form.staged_html }}
+                            <div class="clear"></div>
+                            <button class="preview html">Preview</button>
+                            <button rel="{% url revert_html panel.component.key %}" class="preview revert">Revert</button>
+                        </form>
+                        {% endwith %}
                     {% endif %}
                 </div>
                 {% else %}

@@ -104,6 +104,16 @@ $(function () {
         modified = true;
     });
 
+    $("div.tab_content.html button.html").click(function () {
+        $(this).closest('form').submit();
+    });
+
+    $("div.tab_content.html button.revert").click(function () {
+        htmlForm = $(this).closest('form');
+        $(htmlForm).attr("action", $(this).attr("rel"));
+        htmlForm.submit();
+    });
+
     $("#save").click(function () {
         postData = $("#toolbar :input").not("[type='file']").serialize();
         $.post("/dashboard/stork/save/", postData, function (data) {

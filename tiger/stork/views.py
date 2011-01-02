@@ -73,3 +73,14 @@ def save(request, redirect_to, callback=None):
         callback(request)
     return HttpResponseRedirect(reverse(redirect_to))
 
+
+def preview_html(request, key):
+    stork = Stork('panels.yaml', request.site)
+    form = stork[key].save(request.POST)
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+def revert_html(request, key):
+    stork = Stork('panels.yaml', request.site)
+    form = stork[key].revert()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])

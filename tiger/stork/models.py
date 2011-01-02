@@ -1,5 +1,4 @@
 from django.db import models
-from tiger.stork.constants import FONT_CHOICES, TEMPLATE_TAG_ESCAPES
 
 
 class Component(models.Model):
@@ -37,13 +36,9 @@ class Image(Component):
 
 
 class Html(Component):
+    invalid_html = models.TextField(null=True, blank=True)
     staged_html = models.TextField()
     html = models.TextField()
-
-    def prep_html(self, html):
-        for bit, tag in TEMPLATE_TAG_ESCAPES:
-            html = html.replace(tag, bit)
-        return block_re.sub(r'{{\1}}', html)
 
 
 class CSS(Component):

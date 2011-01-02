@@ -65,7 +65,7 @@
                 css_property: background-color
           - name: Center color
             type: swatch
-            default: f5f5f5 
+            default: fff
             order: 7
             properties:
               - selector: "#mainWrap, #sidebarWrap"
@@ -181,3 +181,58 @@
       -moz-border-radius:5px;
       -webkit-border-radius:5px;
       }
+- panel:
+    name: HTML
+    type: html
+    admonition: |
+        <strong>Warning: HTML editing is for advanced users!</strong>
+        For a complete overview of what you can do here, see the <a href="/dashboard/content/look/docs/">layout customization documentation</a>.
+
+    blocks: ['logo', 'search', 'menu', 'content', 'messages', 'cart', 'sections', 'contact', 'pdf', 'social', 'mail', 'footer']
+    default: |
+      <div class="wrapper">
+          <div id="masthead">
+              <div class="container_12">
+                  <div id="menu" class="grid_8">
+                  {% block logo %}{% endblock %}
+                  </div>
+                  <div id="search" class="grid_4">
+                  <h4>Menu search</h4>
+                  {% block search %}{% endblock %}
+                  </div>
+              </div> 
+          </div>
+          <div id="menuWrap">
+              <div class="container_12">
+                  <div id="menu" class="grid_8">
+                  {% block menu %}{% endblock %}
+                  </div>
+                  <div class="grid_4">
+                  </div>
+              </div> 
+          </div>
+          <div id="content" class="container_12">
+              <div id="mainWrap" class="grid_8 alpha">
+              <div id="main">
+              {% block messages %}{% endblock %}
+              {% block content %}{% endblock %}
+              </div>
+              </div>
+              <div id="sidebarWrap" class="grid_4 omega">
+              <div id="sidebar">
+                  {% block cart %}{% endblock %}
+                  {% block sections %}{% endblock %}
+                  {% block contact %}{% endblock %}
+                  {% block pdf %}{% endblock %}
+                  {% block social %}{% endblock %}
+                  {% block mail %}{% endblock %}
+              </div>
+              </div>
+          </div>
+      <div class="shim"></div>
+      </div>
+      <div class="footer">
+          <div class="container_12">
+              {% block footer %}{% endblock %}
+          </div> 
+      </div>

@@ -8,7 +8,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
-from django.template import Template
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
@@ -157,16 +156,9 @@ class Site(models.Model):
 
     @cachedmethod(KeyChain.template)
     def template(self):
-        return self._template(self.skin.pre_base)
-
-    def staged_template(self):
-        return self._template(self.skin.staged_pre_base)
-
-    def _template(self, html):
-        pre_base_shell = """
-            {%% extends 'head.html' %%}
-            {%% block main %%}%s{%% endblock %%}""" % html
-        return Template(pre_base_shell)
+        from tiger.stork import Stork
+        stork = Stork('panels.yaml', self)
+        return stork['html-html'].as_template()
 
     @cachedmethod(KeyChain.skin)
     def skin_url(self):
