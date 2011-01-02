@@ -86,6 +86,7 @@ class Site(models.Model):
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
+    theme = models.ForeignKey('stork.Theme', null=True)
 
     def natural_key(self):
         return (self.subdomain,)
@@ -162,7 +163,7 @@ class Site(models.Model):
 
     @cachedmethod(KeyChain.skin)
     def skin_url(self):
-        return self.skin.url
+        return self.theme.bundled_css.url
 
     def localize(self, dt, location):
         site_tz = timezone(location.timezone)
@@ -356,6 +357,13 @@ def new_site_setup(sender, instance, created, **kwargs):
         if isinstance(instance, Site):
             schedule = Schedule.objects.create(site=instance, master=True)
             location = Location.objects.create(site=instance, schedule=schedule)
+
+
+def refresh_theme(sender, instance, created, **kwargs):
+    if instance._meta.__class__.__name__ == 'Theme':
+        site = Site.objects.get(theme=instance)
+        KeyChain.template.invalidate(site.id)
+        KeyChain.skin.invalidate(site.id)
 
 
 post_save.connect(new_site_setup)

@@ -78,7 +78,7 @@ class BaseComponent(object):
         class ComponentForm(forms.ModelForm):
             class Meta:
                 model = Model
-                exclude = ['site', 'component'] + self.formfield_excludes()
+                exclude = ['theme', 'component'] + self.formfield_excludes()
         overrides = self.get_formfield_overrides()
         if len(overrides):
             return type('CustomcomponentForm', (ComponentForm,), overrides)
@@ -114,7 +114,7 @@ class BaseComponent(object):
         form = self.form_instance(data, files)
         form.full_clean()
         instance = form.save(commit=False)
-        instance.site = self.stork.site
+        instance.theme = self.stork.theme
         instance.component = self.key
         instance.save()
         return instance
@@ -123,7 +123,7 @@ class BaseComponent(object):
     def instance(self):
         try:
             return self.model.objects.get(
-                site=self.stork.site,
+                theme=self.stork.theme,
                 component=self.key
             )
         except self.model.DoesNotExist:

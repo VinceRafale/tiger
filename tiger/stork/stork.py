@@ -15,14 +15,14 @@ from record import Record
 class Stork(object):
     """DOCS
     """
-    def __init__(self, config_path, site=None):
+    def __init__(self, config_path, theme=None):
         self.component_cache = []
         config = yaml.load(open(config_path).read())
         panel_names = [p['panel']['name'] for p in config]
         if len(panel_names) != len(set(panel_names)):
             raise StorkConfigurationError('Panel names must be unique')
         self.panels = [Panel(self, **p['panel']) for p in config]
-        self.site = site
+        self.theme = theme
 
     def __len__(self):
         return len(self.panels)
@@ -51,6 +51,7 @@ class Stork(object):
     def save(self, data=None, files=None):
         for name, component in self.component_cache:
             component.save(data, files)
+        self.theme.update(self.compressed_css())
 
     def css(self):
         css_ordered_components = sorted([

@@ -1,8 +1,25 @@
+import time
+from datetime import datetime
+from django.core.files.base import ContentFile
 from django.db import models
+
+from tiger.stork.constants import FONT_CHOICES
+
+
+class Theme(models.Model):
+    name = models.CharField(max_length=100)
+    saved_at = models.DateTimeField(auto_now=True)
+    bundled_css = models.FileField(upload_to='stork/css', null=True)
+    private = models.BooleanField(default=True)
+
+    def update(self, css):
+        filename = '%d-%d.css' % (self.id, int(time.mktime(datetime.now().timetuple())))
+        self.bundled_css.save(filename, ContentFile(css.encode('utf-8')))
+        print self.bundled_css.read()
 
 
 class Component(models.Model):
-    site = models.ForeignKey('accounts.Site')
+    theme = models.ForeignKey(Theme)
     component = models.CharField(max_length=50)
 
     class Meta:

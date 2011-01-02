@@ -35,6 +35,9 @@ class HtmlComponent(BaseComponent):
     def style_tag(self):
         return ''
 
+    def get_css(self):
+        return ''
+
     def get_defaults(self):
         return {
             'staged_html': self.prep_html(self.default),
@@ -102,7 +105,7 @@ class HtmlComponent(BaseComponent):
         else:
             instance = self.instance
             instance.invalid_html = data['%s-staged_html' % self.key]
-        instance.site = self.stork.site
+        instance.theme = self.stork.theme
         instance.component = self.key
         instance.save()
 
