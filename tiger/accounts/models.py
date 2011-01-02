@@ -20,6 +20,7 @@ from tiger.look.models import Skin
 from tiger.utils.cache import cachedmethod, KeyChain
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
+from tiger.stork.models import Theme
 
 TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replace('_', ' ') for tz in pytz.country_timezones('us')])
 
@@ -155,14 +156,13 @@ class Site(models.Model):
     def has_news(self):
         return self.release_set.count()
 
-    @cachedmethod(KeyChain.template)
     def template(self):
         from tiger.stork import Stork
-        stork = Stork('panels.yaml', self)
+        stork = Stork('panels.yaml', self.theme)
         return stork['html-html'].as_template()
 
-    @cachedmethod(KeyChain.skin)
     def skin_url(self):
+        print self.theme.bundled_css.url
         return self.theme.bundled_css.url
 
     def localize(self, dt, location):
@@ -360,10 +360,14 @@ def new_site_setup(sender, instance, created, **kwargs):
 
 
 def refresh_theme(sender, instance, created, **kwargs):
-    if instance._meta.__class__.__name__ == 'Theme':
-        site = Site.objects.get(theme=instance)
+    if not created:
+        try:
+            site = Site.objects.get(theme=instance)
+        except Site.DoesNotExist:
+            return
         KeyChain.template.invalidate(site.id)
         KeyChain.skin.invalidate(site.id)
 
 
 post_save.connect(new_site_setup)
+post_save.connect(refresh_theme, sender=Theme)

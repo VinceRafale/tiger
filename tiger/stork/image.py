@@ -2,6 +2,7 @@ from component import BaseComponent
 from errors import StorkConfigurationError
 
 from django import forms
+from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 
 from tiger.stork.models import Image
@@ -55,10 +56,11 @@ class ImageComponent(BaseComponent):
             elif bool(instance.staged_image):
                 instance.image.save(
                     instance.staged_image.name.split('/')[-1], 
-                    instance.staged_image.file)
+                    ContentFile(instance.staged_image.file.file.read()))
                 instance.staged_image.delete()
             if data.has_key('%s-delete' % self.key):
                 instance.image.delete()
+            instance.tiling = data.get('%s-tiling' % self.key) == 'on'
             instance.save()
         else:
             super(ImageComponent, self).save(data, files)

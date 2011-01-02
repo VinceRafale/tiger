@@ -9,8 +9,8 @@ from lxml.html import parse
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 
-from tiger.look.models import FontFace
-from tiger.look.constants import FONT_CHOICES
+from tiger.stork.models import FontStack
+from tiger.stork.constants import FONT_CHOICES
 
 
 def save_fontkit(file_obj, name=None):
@@ -29,7 +29,7 @@ def save_fontkit(file_obj, name=None):
     svg = open(get_path('.svg'))
     ttf = open(get_path('.ttf'))
     woff = open(get_path('.woff'))
-    fontface = FontFace()
+    fontface = FontStack()
     if name is None:
         name = raw_input('Name from fontkit %s:' % file_obj.name)
     fontface.name = name

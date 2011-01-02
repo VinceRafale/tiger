@@ -104,7 +104,7 @@
             allow_tiling: true
           - name: Background color
             type: swatch
-            default: f5f5f5 
+            default: D9D4D9
             order: 13
             properties:
               - selector: body
