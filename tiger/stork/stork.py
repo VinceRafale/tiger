@@ -10,7 +10,6 @@ from errors import StorkConfigurationError
 from panel import Panel
 from font import FontComponent
 from swatch import SwatchComponent
-from record import Record
 
 class Stork(object):
     """DOCS
