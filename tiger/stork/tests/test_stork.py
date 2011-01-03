@@ -1,6 +1,5 @@
 from tiger.accounts.models import Site
 from tiger.stork import Stork, StorkConfigurationError
-from tiger.stork.record import Record
 
 import cssutils
 from lxml.html import fromstring
