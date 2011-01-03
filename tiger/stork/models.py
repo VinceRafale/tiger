@@ -13,7 +13,7 @@ cloudfiles_storage = CloudFilesStorage()
 class Theme(models.Model):
     name = models.CharField(max_length=100)
     saved_at = models.DateTimeField(auto_now=True)
-    bundled_css = models.FileField(upload_to='stork/css', null=True, storage=cloudfiles_storage)
+    bundled_css = models.FileField(upload_to='stork/css', null=True)
     private = models.BooleanField(default=True)
 
     def update(self, css):
