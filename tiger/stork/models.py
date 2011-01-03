@@ -35,10 +35,10 @@ class Swatch(Component):
 
 class FontStack(models.Model):
     name = models.CharField(max_length=20)
-    ttf = models.FileField(upload_to='fonts/ttf', null=True, storage=cloudfiles_storage)
-    eot = models.FileField(upload_to='fonts/eot', null=True, storage=cloudfiles_storage)
-    woff = models.FileField(upload_to='fonts/woff', null=True, storage=cloudfiles_storage)
-    svg = models.FileField(upload_to='fonts/svg', null=True, storage=cloudfiles_storage)
+    ttf = models.FileField(upload_to='fonts/ttf', null=True)
+    eot = models.FileField(upload_to='fonts/eot', null=True)
+    woff = models.FileField(upload_to='fonts/woff', null=True)
+    svg = models.FileField(upload_to='fonts/svg', null=True)
     stack = models.TextField(max_length=255, choices=FONT_CHOICES)
 
     def __unicode__(self):
