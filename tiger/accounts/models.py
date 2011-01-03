@@ -162,7 +162,6 @@ class Site(models.Model):
         return stork['html-html'].as_template()
 
     def skin_url(self):
-        print self.theme.bundled_css.url
         return self.theme.bundled_css.url
 
     def localize(self, dt, location):
