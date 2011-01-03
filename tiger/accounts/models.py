@@ -158,7 +158,7 @@ class Site(models.Model):
 
     def template(self):
         from tiger.stork import Stork
-        stork = Stork('panels.yaml', self.theme)
+        stork = Stork(self.theme)
         return stork['html-html'].as_template()
 
     def skin_url(self):

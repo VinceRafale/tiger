@@ -10,14 +10,14 @@ from tiger.stork.models import FontStack
 
     
 def script_tag(request):
-    stork = Stork('panels.yaml', request.site.theme)
+    stork = Stork(request.site.theme)
     return direct_to_template(request, template='stork/main.js', extra_context={
         'swatch_json': stork.swatch_json(),
         'font_json': stork.font_json()
     })
 
 def font_css(request, selection_key, selected=None):
-    stork = Stork('panels.yaml', request.site.theme)
+    stork = Stork(request.site.theme)
     component = stork[selection_key]
     if selected is not None:
         css = component.get_css(FontStack.objects.get(id=selected))
@@ -28,7 +28,7 @@ def font_css(request, selection_key, selected=None):
     return response
 
 def stage_image(request, key):
-    stork = Stork('panels.yaml', request.site.theme)
+    stork = Stork(request.site.theme)
     component = stork[key]
     form = component.form_instance(request.POST, request.FILES)
     form.save()
@@ -40,7 +40,7 @@ def stage_image(request, key):
     }))
 
 def remove_image(request, key):
-    stork = Stork('panels.yaml', request.site.theme)
+    stork = Stork(request.site.theme)
     component = stork[key]
     instance = component.instance
     real_delete = False
@@ -56,7 +56,7 @@ def remove_image(request, key):
     }))
 
 def image_css(request, key):
-    stork = Stork('panels.yaml', request.site.theme)
+    stork = Stork(request.site.theme)
     component = stork[key]
     css = component.get_css(request.POST.get('tiling'))
     return HttpResponse(json.dumps({
@@ -66,18 +66,18 @@ def image_css(request, key):
 
 
 def save(request, redirect_to, callback=None):
-    stork = Stork('panels.yaml', request.site.theme)
+    stork = Stork(request.site.theme)
     stork.save(request.POST, request.FILES)
     return HttpResponseRedirect(reverse(redirect_to))
 
 
 def preview_html(request, key):
-    stork = Stork('panels.yaml', request.site.theme)
+    stork = Stork(request.site.theme)
     form = stork[key].save(request.POST)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
 def revert_html(request, key):
-    stork = Stork('panels.yaml', request.site.theme)
+    stork = Stork(request.site.theme)
     form = stork[key].revert()
     return HttpResponseRedirect(request.META['HTTP_REFERER'])

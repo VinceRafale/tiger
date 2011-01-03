@@ -20,7 +20,7 @@ def render_custom(request, template, context=None):
     if request.session.get('customizing'):
         if template == 'base.html':
             template = 'dashboard/look/preview.html'
-        panels = Stork('panels.yaml', request.site.theme)
+        panels = Stork(request.site.theme)
         context.update({
             'styles': panels.style_tags(),
             'toolbar': panels.toolbar(),

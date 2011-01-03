@@ -15,9 +15,9 @@ from record import Record
 class Stork(object):
     """DOCS
     """
-    def __init__(self, config_path, theme=None):
+    def __init__(self, theme=None):
         self.component_cache = []
-        config = yaml.load(open(config_path).read())
+        config = yaml.load(open(settings.STORK_CONFIG_FILE).read())
         panel_names = [p['panel']['name'] for p in config]
         if len(panel_names) != len(set(panel_names)):
             raise StorkConfigurationError('Panel names must be unique')
