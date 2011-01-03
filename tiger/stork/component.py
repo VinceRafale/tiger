@@ -1,7 +1,6 @@
 import re
 import importlib
 from errors import StorkConfigurationError
-from record import Record
 
 from django import forms
 
