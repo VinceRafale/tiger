@@ -20,6 +20,7 @@ from tiger.look.models import Skin
 from tiger.utils.cache import cachedmethod, KeyChain
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
+from tiger.stork import Stork
 from tiger.stork.models import Theme
 
 TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replace('_', ' ') for tz in pytz.country_timezones('us')])
@@ -352,10 +353,13 @@ class Subscriber(models.Model):
 
 def new_site_setup(sender, instance, created, **kwargs):
     if created:
-        Site = models.get_model('accounts', 'site')
-        if isinstance(instance, Site):
-            schedule = Schedule.objects.create(site=instance, master=True)
-            location = Location.objects.create(site=instance, schedule=schedule)
+        schedule = Schedule.objects.create(site=instance, master=True)
+        location = Location.objects.create(site=instance, schedule=schedule)
+        theme = Theme.objects.create(name=instance.name)
+        stork = Stork(theme)
+        stork.save()
+        instance.theme = theme
+        instance.save()
 
 
 def refresh_theme(sender, instance, created, **kwargs):
@@ -368,5 +372,5 @@ def refresh_theme(sender, instance, created, **kwargs):
         KeyChain.skin.invalidate(site.id)
 
 
-post_save.connect(new_site_setup)
+post_save.connect(new_site_setup, sender=Site)
 post_save.connect(refresh_theme, sender=Theme)
