@@ -17,30 +17,16 @@ mobile_ua_hints=['SymbianOS', 'Opera Mini', 'iPhone', 'Android', 'Opera Mobi', '
 def is_mobile_browser(request):
     full_ua = request.META.get('HTTP_USER_AGENT', '')
     ua = full_ua.lower()[0:4]
- 
     if ua in mobile_uas:
         return True
-
     for hint in mobile_ua_hints:
         if full_ua.find(hint) >= 0:
             return True
- 
     return False
 
-class MobileTiger(object):
+class MobileDetectionMiddleware(object):
     """Middleware to detect if a useragent is mobile and set a session accordingly"""
     def process_request(self, request):
-        state = request.session.get('state')
-        if state is None:
-            mobile = is_mobile_browser(request)
-            if mobile:
-                request.session['state'] = 'mobile'
-            else:
-                request.session['state'] = 'full'
-        else:
-            if state == 'mobile':
-                # do stuff for mobile here
-            else:
-                # do stuff for not mobile here
+        mobile = is_mobile_browser(request)
         request.is_mobile = mobile
 
