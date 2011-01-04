@@ -8,7 +8,6 @@ from django.template import loader, RequestContext, Template
 from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
-from tiger.look.forms import *
 from tiger.utils.template import load_custom
 from tiger.stork import Stork
 
