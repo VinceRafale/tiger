@@ -1,8 +1,12 @@
 *.pyc
+*.un~
+*.DS_Store
+*/.DS_Store
 *.pyo
 *.swp
 *.db
 .installed.cfg
+.DS_Store
 .mr.developer.cfg
 bin
 develop-eggs
@@ -13,6 +17,7 @@ parts
 src
 tiger/media/cache
 tiger/media/skins
+tiger/media/stork
 tiger/media/pdfmenus
 tiger/media/fonts
 tiger/media/img/backgrounds/custom
