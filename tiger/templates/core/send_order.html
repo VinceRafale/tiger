@@ -34,9 +34,9 @@ form li {margin-left:0;}
         {% if form.ready_by.errors %}
         {{ form.ready_by.errors }}
         {% endif %}
-        <label>{{ form.ready_by.label }}<br />
+        <div>{{ form.ready_by.label }}<br />
         {{ form.ready_by }}
-        </label>
+        </div>
         {% if form.method.errors %}
         {{ form.method.errors }}
         {% endif %}
