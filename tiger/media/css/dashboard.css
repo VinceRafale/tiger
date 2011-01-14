@@ -123,7 +123,7 @@ a.buttonTop.last {
     margin-right:0;
 }
 
-input, select, textarea {border:1px solid grey; font-family:Arial; font-size:16px; background-color:white;padding: 2px 4px;border: solid 3px #6c8fa0;}
+input, select, textarea {font-family:Arial; font-size:16px; background-color:white;padding: 2px 4px;border: solid 3px #6c8fa0;}
 input:focus, select:focus, textarea:focus {background-color:#cde0e8; border-color:#c76218; -webkit-box-shadow: 0 0 5px #c76218; -moz-box-shadow: 0 0 5px #c76218;}
 input[type="submit"]{}
 
@@ -158,10 +158,23 @@ table thead, table th{color:white; background-color:#34484f;}
 table tr.shaded {background-color:#cde0e8;}
 table tr.total {border-top:1px solid #02405a;}
 table td {padding:1px 4px;}
+table#subscribers td, table#subscribers td * {vertical-align:middle;}
+table#subscribers tr.disabled {color:grey;background-color:#ddd;}
 table td.qty {text-align:center;}
 table {margin-bottom:0;}
 table th a {color:white;text-decoration:none;}
 td.total {text-align:right;}
+
+p.charcount {
+    float:left;
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:0;
+}
+
+p.charcount.critical {float:left; color:red;}
+form.sms-form textarea {margin-bottom:12px; width:450px; height:80px;}
+form.sms-form input:focus, form.sms-form textarea:focus {-moz-box-shadow:none; -webkit-box-shadow:none;}
 
 div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
 
@@ -210,6 +223,7 @@ body.integrations a.integrations,
 body.coupons a.coupons,
 body.publish a.publish,
 body.subscribers a.subscribers,
+body.sms a.sms,
 body.history a.history,
 body.checkout-messages a.checkout-messages,
 body.payment a.payment,
@@ -515,6 +529,46 @@ div.location{float: left; margin-right: 10px;}
 #faxlists li a{/*margin-right:10px;*/}
 #faxlists li a:first-child{font-weight:bold;display:block;font-size:16px;}
 #faxlists li a:last-child{font-size:12px;}
+
+
+/* SMS */
+
+#sms-numbers {
+    margin:14px 0 0 0;
+    background-color:white;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    padding:6px 8px;
+}
+
+#sms-numbers li {
+    width: 127px;
+    float:left;
+    margin-left:0;
+}
+
+#area-code-form {
+    margin-bottom:50px;
+}
+
+#area-code-form label {
+    float:left;
+}
+
+#area-code-form label input {
+    width:35px;
+}
+
+#area-code-form input.submit.go {
+    float:left;
+    font-size: 14px;
+    margin: 12px 0 0 10px;
+}
+
+ul.messages.unenrolled {
+    margin-bottom:4px;
+}
 
 /* PROGRESS */
 #progress{color:#ffffff;margin:10px 0 20px;list-style:none;line-height:1em;overflow:auto;}

@@ -112,9 +112,3 @@ class PublishTask(Task):
             SendMailChimpTask.delay(release_id=release.id)
         if fax_list:
             SendFaxTask.delay(release_id=release.id, fax_list_id=fax_list.id)
-
-
-class SendSmsTask(Task):
-    def run(self, phone_number, message):
-        account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
-        account.request('/2010-04-01/Accounts/%s/SMS/Messages/' % settings.TWILIO_ACCOUNT_SID, 'POST', dict(From=settings.OUTBOUND_PHONE_NUMBER, To=phone_number, Body=message))

@@ -1,0 +1,45 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}sms{% endblock %}
+
+{% block h2 %}
+SMS Marketing
+{% endblock %}
+
+{% block help %}
+FIXME
+{% endblock %}
+
+{% block content %}
+<ul class="messages unenrolled">
+    <li class="warning">
+        You aren't currently enrolled in SMS marketing.  Choose a number below and hit submit to enroll.
+    </li>
+</ul>
+<form id="area-code-form" method="GET">
+    <label>Results displayed below for area code <strong>{{ area_code }}</strong>. Browse a different area code: <input type="text" name="area_code" /></label>
+    <input type="submit" value="Go" class="submit go" />
+</form>
+<div class="clear"></div>
+<form method="POST">
+<ul id="sms-numbers">
+{% for number, display in available_numbers %}
+    <li>
+        <input type="radio" name="number" value="{{ number }}" /> {{ display }}
+    </li>
+{% empty %}
+    <li>No phone numbers available for area code <strong>{{ area_code }}</strong>.</li>
+{% endfor %}
+    <div class="clear"></div>
+</ul>
+<div class="save-row clearfix">
+<input class="submit buttonTop" type="submit" value="Submit" />
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+</script>
+{% endblock %}
+
+

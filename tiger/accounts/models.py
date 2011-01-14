@@ -88,6 +88,7 @@ class Site(models.Model):
     enable_orders = models.BooleanField(default=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
     theme = models.ForeignKey('stork.Theme', null=True)
+    sms = models.ForeignKey('sms.SmsSettings', null=True)
 
     def natural_key(self):
         return (self.subdomain,)
