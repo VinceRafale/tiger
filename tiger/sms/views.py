@@ -9,13 +9,14 @@ from django.views.generic.simple import direct_to_template
 
 import twilio
 
+from tiger.sms.forms import CampaignForm, SettingsForm
 from tiger.sms.models import SmsSubscriber, SMS
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 
 def respond_to_sms(request):
     utils = twilio.Utils(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
-    if not utils.validateRequest(request.site.tiger_domain + reverse('respond_to_sms'), request.POST, request.META['X_HTTP_TWILIO_SIGNATURE']):
+    if not utils.validateRequest(request.site.tiger_domain() + reverse('respond_to_sms'), request.POST, request.META['HTTP_X_TWILIO_SIGNATURE']):
         return HttpResponseForbidden()
     sms_settings = request.site.sms
     body = request.POST.get('Body', '')
@@ -32,13 +33,13 @@ def respond_to_sms(request):
     SMS.objects.create(
         settings=sms_settings, 
         subscriber=subscriber, 
-        direction=SMS.DIRECTION_INBOUND,
+        destination=SMS.DIRECTION_INBOUND,
         body=body
     )
     if normalized_body == 'in' and created:
         # add subscription
         if sms_settings.send_intro:
-            subscriber.send_message(sms_settings.intro_text)
+            subscriber.send_message(sms_settings.intro_sms)
     elif normalized_body == 'out':
         subscriber.unsubscribed_at = datetime.now()
         subscriber.save()
@@ -46,9 +47,26 @@ def respond_to_sms(request):
 
 
 def sms_home(request):
-    if not request.site.sms.enabled:
+    sms = request.site.sms
+    if not sms.enabled:
         return sms_signup(request)
+    try:
+        in_progress = sms.campaign_set.filter(completed=False)[0]
+    except IndexError:
+        in_progress = None
+    num = sms.sms_number
+    sms_number = '(%s) %s-%s' % (num[2:5], num[5:8], num[8:])
+    count_dict = {
+        'total': sms.smssubscriber_set.all().count(),
+        'active': sms.smssubscriber_set.active().count(),
+        'inactive': sms.smssubscriber_set.inactive().count()
+    }
+    campaigns = sms.campaign_set.order_by('-timestamp')[:3]
     return direct_to_template(request, template='dashboard/marketing/sms_home.html', extra_context={
+        'in_progress': in_progress,
+        'count': count_dict,
+        'sms': sms,
+        'campaigns': campaigns
     })
 
 
@@ -70,6 +88,7 @@ def sms_signup(request):
         sms_settings.sid = data['sid']
         sms_settings.sms_number = data['phone_number']
         sms_settings.save()
+        request.site.account.set_sms_subscription(True)
         return HttpResponseRedirect(reverse('sms_home'))
     else:
         area_code = request.GET.get('area_code') or request.site.location_set.all()[0].phone[:3]
@@ -79,20 +98,26 @@ def sms_signup(request):
             (number['phone_number'], number['friendly_name'])
             for number in data['available_phone_numbers']
         ]
-    return direct_to_template(request, template='dashboard/marketing/sms_signup.html', extra_context={
-        'available_numbers': available_numbers,
+    return direct_to_template(request, template='dashboard/marketing/sms_signup.html', extra_context={ 'available_numbers': available_numbers,
         'area_code': area_code
     })
 
 
 def sms_disable(request):
-    if not request.POST.get('disable'):
-        raise Http404
-    sms = request.site.sms
-    sms.sms_number = sms.sid = None
-    sms.save()
-    messages.success(request, "Your SMS number has been disabled.")
-    return HttpResponseRedirect(reverse('sms_home'))
+    account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
+    if request.method == 'POST':
+        sms = request.site.sms
+        response = account.request(
+            '/2010-04-01/Accounts/%s/IncomingPhoneNumbers/%s' % (settings.TWILIO_ACCOUNT_SID, sms.sid), 
+            'DELETE' 
+        )
+        sms.sms_number = sms.sid = None
+        sms.save()
+        request.site.account.set_sms_subscription(False)
+        messages.success(request, "Your SMS number has been disabled.")
+        return HttpResponseRedirect(reverse('sms_home'))
+    else:
+        return direct_to_template(request, template='dashboard/marketing/disable_sms.html')
 
 
 def remove_subscriber(request, subscriber_id):
@@ -122,8 +147,32 @@ def toggle_star(request, subscriber_id):
     return HttpResponse('Favourite_24x24' if subscriber.starred else 'unstarred')
 
 
-def send_sms(request):
-    pass
+def create_campaign(request):
+    if request.method == 'POST':
+        form = CampaignForm(request.POST)
+        if form.is_valid():
+            campaign = form.save(commit=False)
+            campaign.settings = request.site.sms
+            campaign.save()
+            campaign.set_subscribers()
+            campaign.queue()
+            messages.success(request, """
+<span>Campaign "%s" currently in progress. (<span class="sent-count">%d</span> / %d sent)</span>
+            """ % (campaign.title, campaign.sent_count, campaign.count))
+            return HttpResponseRedirect(reverse('sms_home'))
+        print form._errors
+    else:
+        form = CampaignForm()
+    return direct_to_template(request, template='dashboard/marketing/sms_campaign_form.html', extra_context={
+        'form': form
+    })
+
+
+def get_options(request):
+    attr_to_query = request.GET.get('attr')
+    if not attr_to_query or attr_to_query not in ('city', 'state', 'zip_code'):
+        raise Http404
+    return HttpResponse(request.site.sms.get_options_for(attr_to_query))
 
 
 def send_single_sms(request, subscriber_id):
@@ -139,3 +188,34 @@ def send_single_sms(request, subscriber_id):
         return direct_to_template(request, template='dashboard/marketing/includes/single_sms_form.html', extra_context={
             'subscriber_id': subscriber_id
         })
+
+def campaign_progress(request, campaign_id):
+    try:
+        campaign = request.site.sms.campaign_set.get(id=campaign_id)
+    except Campaign.DoesNotExist:
+        raise Http404
+    return HttpResponse(json.dumps({
+        'completed': campaign.completed,
+        'count': campaign.sent_count
+    }))
+
+def edit_settings(request):
+    sms = request.site.sms
+    if request.method == 'POST':
+        form = SettingsForm(request.POST, instance=sms)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Settings updated successfully.")
+            return HttpResponseRedirect(reverse('sms_home'))
+    else:
+        form = SettingsForm(instance=sms)
+    return direct_to_template(request, template='dashboard/marketing/sms_settings.html', extra_context={
+        'form': form
+    })
+
+def campaign_list(request):
+    sms = request.site.sms
+    campaigns = sms.campaign_set.order_by('-timestamp')
+    return direct_to_template(request, template='dashboard/marketing/sms_campaign_list.html', extra_context={
+        'campaigns': campaigns
+    })

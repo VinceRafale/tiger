@@ -23,3 +23,15 @@ class Command(NoArgsCommand):
 		    	    'memo': 'Fax charges for %s' % date.today().strftime('%x')
                 }))
                 unlogged_faxes.update(logged=True)
+
+                unlogged_texts = s.sms.sms_set.filter(logged=False)
+                count = unlogged_texts.count()
+                if count:
+                    response = chargify.subscriptions.components.usages.create(
+                        subscription_id=s.account.subscription_id,
+                        component_id=2888,
+                        data=dict(usage={
+		    	    'quantity': count,
+		    	    'memo': 'SMS charges for %s' % date.today().strftime('%x')
+                }))
+                unlogged_texts.update(logged=True)

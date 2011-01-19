@@ -1,0 +1,68 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}sms{% endblock %}
+
+{% block h2 %}
+SMS settings
+{% endblock %}
+
+{% block help %}
+FIXME
+{% endblock %}
+
+{% block content %}
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+<form class="sms-form" method="POST" action=".">
+    <label>{{ form.send_intro }} {{ form.send_intro.label }} {% if form.send_intro.errors %} {{ form.send_intro.errors }} {% endif %}<br />
+    </label>
+    <div id="intro">
+        <label>
+            Text messages can be a maximum of 160 characters.  Any characters beyond the first 160 will be truncated.
+            {% if form.intro_sms.errors %} {{ form.intro_sms.errors }} {% endif %}
+        </label>
+        <div class="sms-wrap">
+        {{ form.intro_sms }}
+        <p class="charcount">160</p>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="save-row clearfix">
+    <a class="cancel" href="{% url sms_home %}">Cancel</a>
+    <input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    if ($("#id_send_intro").attr("checked")) {
+        $("#intro").show();
+    } else {
+        $("#intro").hide();
+    }
+    $("#id_send_intro").click(function () {
+        if ($("#id_send_intro").attr("checked")) {
+            $("#intro").show();
+        } else {
+            $("#intro").hide();
+        }
+    });
+    $("form.sms-form textarea").keyup(function () {
+        remaining = 160 - $(this).val().length;
+        counter = $(this).closest("form").find("p.charcount");
+        counter.text(remaining);
+        if (remaining > 10) {
+            $(counter).removeClass("critical");
+        } else {
+            $(counter).addClass("critical");
+        }
+    });
+});
+</script>
+{% endblock %}
+
+
+

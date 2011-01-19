@@ -3,7 +3,7 @@
 {% block body-class %}{{ block.super }}sms{% endblock %}
 
 {% block h2 %}
-SMS Marketing
+SMS Marketing 
 {% endblock %}
 
 {% block help %}
@@ -11,43 +11,70 @@ FIXME
 {% endblock %}
 
 {% block content %}
+<h3>SMS Marketing is currented enabled
 <span class="buttons">
-    <a href="{% url dashboard_publish_new %}">+ Create New Campaign</a>
+    <a href="{% url sms_disable %}">Disable</a>
+    <a href="{% url edit_settings %}">Edit settings</a>
 </span>
+</h3>
+<h2>Your SMS number: {{ sms.sms_number }}</h2>
+{% if sms.send_intro %}
+<h4>Automated response when someone subscribes:</h4>
+<p>{{ sms.intro_sms }}</p>
+{% endif %}
+
+<h3>Most recent campaigns
+<span class="buttons">
+    <a href="{% url campaign_list %}">View all</a>
+    <a href="{% url create_campaign %}">+ Create New Campaign</a>
+</span>
+</h3>
+<ul id="campaign-list">
+{% for campaign in campaigns %}
+    <li class="{% cycle '' 'white' %}">
+        <span class="data">
+            <strong>SMSes sent:</strong> {{ campaign.sent_count }}
+            <strong>Recipients:</strong>
+            <img src="{{ MEDIA_URL }}img/{{ campaign.img_url }}" />
+            {% if campaign.filter_value %}
+            {{ campaign.filter_on }}: {{ campaign.filter_value }}
+            {% endif %}
+        </span>
+        <h4>{{ campaign.title }} ({{ campaign.timestamp|date }})</h4>
+    </li>
+{% empty %}
+    <li>You have not sent any campaigns.</li>    
+{% endfor %}
+</ul>
 <div class="clear"></div>
-<ul>
-    <li>
-        <form method="POST" action="{% url sms_disable %}">
-            <input type="submit" class="submit" name="disable" value="Disable your SMS service" />
-        </form>
+<h3>Subscribers
+<span class="buttons">
+    <a href="{% url sms_subscriber_list %}" >View subscriber list</a>
+</span>
+</h3>
+<p>
+<strong>Total subscribers:</strong> {{ count.total }}
+<strong>Active subscribers:</strong> {{ count.active }}
+<strong>Unsubscribed:</strong> {{ count.inactive }}
+</p>
     </li>
-    <li>
-        <h4>Subscriber count: {{ site.sms.subscriber_count }}</h4>
-        <a href="{% url sms_subscriber_list %}" >View subscriber list</a>
-    </li>
-    <li># sent of / # available</li>
-    <li>This month's campaigns
-        <ul>
-            <li>Date</li>
-            <li>Text, abbrev</li>
-            <li>% delivered</li>
-            <li># sent</li>
-        </ul>
-    </li>
-    <li>Incoming -- most recent five</li>
 </ul>
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
-$(function () {
-    $("input[name='disable']").click(function () {
-        c = confirm("Are you sure you want to disable your SMS service?  It is unlikely that you will be able to get the same SMS number back.");
-        if (!c) {
-            return false;
+function updateSentCount () {
+{% if in_progress %}
+    $.get("{% url campaign_progress in_progress.id %}", {}, function (data) {
+        if (!data.completed) {
+            $("span.sent-count").text(data.count);
+            setTimeout("updateSentCount()", 1000);
+        } else {
+            $("span.sent-count").parent().text('Campaign "{{ in_progress.title }}" broadcast is complete.');
         }
-    });
-});
+    }, "json");
+{% endif %}
+}
 </script>
 {% endblock %}
 

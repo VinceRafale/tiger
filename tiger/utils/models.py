@@ -2,8 +2,8 @@ from django.db import models
 
 
 class Message(models.Model):
-    DIRECTION_INBOUND = 1
-    DIRECTION_OUTBOUND = 2
+    DIRECTION_INBOUND = 'inbound'
+    DIRECTION_OUTBOUND = 'outbound'
     DIRECTION_CHOICES = (
         (DIRECTION_INBOUND, 'Inbound'),
         (DIRECTION_OUTBOUND, 'Outbound'),

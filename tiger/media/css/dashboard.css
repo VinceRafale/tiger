@@ -175,6 +175,16 @@ p.charcount {
 p.charcount.critical {float:left; color:red;}
 form.sms-form textarea {margin-bottom:12px; width:450px; height:80px;}
 form.sms-form input:focus, form.sms-form textarea:focus {-moz-box-shadow:none; -webkit-box-shadow:none;}
+form.sms-form div.sms-wrap {position:relative; margin-bottom:12px; width:455px; height:90px;}
+form.sms-form div.sms-wrap textarea {margin-bottom:0;}
+form.sms-form p.charcount {position:absolute; bottom:0; right:0;}
+form.sms-form div.sms-wrap p.charcount {opacity:0.8;}
+
+#star-status {margin-top:16px;} 
+#star-status li {float:left; margin:0 10px 16px 0;}
+#star-status li * {display:inline; vertical-align:middle;}
+
+form.sms-form #id_count {width:48px;}
 
 div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
 
@@ -349,6 +359,7 @@ th, td{padding: 0 2px;}
 h1,h2,h3,h4,h5,h6{font-family: Georgia, serif;}
 h3{font-size: 18px; background: #34484f; color: white; font-weight: normal; padding: 5px;}
 h3 a{display: inline-block; margin-left: 5px; color: white;font-size: 12px;}
+h3 span.buttons a {font-family: "Trebuchet MS",Trebuchet,Tahoma,Verdana,sans-serif;}
 h4{font-size: 16px; margin:10px 0 5px 2px;}
 
 th.total, td.total{text-align: right;}
@@ -569,6 +580,35 @@ div.location{float: left; margin-right: 10px;}
 ul.messages.unenrolled {
     margin-bottom:4px;
 }
+
+#unread-conversations li, #campaign-list li {
+    margin-left:0;
+    padding: 3px 6px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+}
+
+#unread-conversations li, #campaign-list li.white {
+    background-color: white;
+}
+
+#campaign-list h4 {
+    margin:0;
+}
+
+#campaign-list span.data {
+    float:right;
+}
+#campaign-list span.data * {
+    display:inline;
+    vertical-align:middle;
+}
+
+#campaign-list span.data strong {
+    padding-left:8px;
+}
+
 
 /* PROGRESS */
 #progress{color:#ffffff;margin:10px 0 20px;list-style:none;line-height:1em;overflow:auto;}
