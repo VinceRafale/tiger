@@ -8,6 +8,10 @@
 SMS Subscribers
 {% endblock %}
 
+{% block help %}
+This screen is where you manage your subscribers.  Inactive subscribers (those who've unsubscribed, but you still have a record for) will appear in grey.  You can star subscribers by clicking the star icon and can then filter on those subscribers when you send SMS campaigns.  You can also send SMSes directly to individual subscribers from this page by clicking the word bubble icon for that subscriber.
+{% endblock %}
+
 {% block content %}
 
 {% autosort subscribers %}
