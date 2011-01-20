@@ -17,6 +17,7 @@ from pytz import timezone
 
 from tiger.core.exceptions import NoOnlineOrders, ClosingTimeBufferError, RestaurantNotOpen
 from tiger.utils.cache import cachedmethod, KeyChain
+from tiger.utils.chargify import Chargify
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
 from tiger.stork import Stork
