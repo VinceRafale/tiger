@@ -1,0 +1,33 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}sms{% endblock %}
+
+{% block h2 %}
+Are you sure you want to your SMS marketing service?
+{% endblock %}
+
+{% block help %}
+We will archive your subscriber list for 3 months and reactivate it if you choose to obtain another SMS number.
+{% endblock %}
+
+{% block content %}
+<p>If you disable SMS Marketing, your SMS number will be lost and you will not be able to get the same number back in the future. Are you sure you want to continue?</p>
+<form method="POST" action="{% url sms_disable %}">
+    <input type="submit" class="submit" name="disable" value="Disable your SMS service" />
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("input[name='disable']").click(function () {
+        c = confirm("Are you sure you want to disable your SMS service?  It is unlikely that you will be able to get the same SMS number back.");
+        if (!c) {
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,86 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}sms{% endblock %}
+
+{% block help %}
+When choosing to filter by zip code or city, please bear in mind that Takeout Tiger's data is only as good as the phone company's.  With mobile phones, the address for the phone will not necessarily be associated with the billing address on the account, but rather is most likely an approximation based on area code and 3-digit exchange number.
+{% endblock %}
+
+{% block h2 %}Create a new SMS campaign{% endblock %}
+
+{% block content %}
+
+<form class="sms-form" method="POST" action=".">
+    <label>{{ form.title.label }} {% if form.title.errors %} {{ form.title.errors }} {% endif %}<br />
+    {{ form.title }}
+    </label>
+    <label>
+        Text messages can be a maximum of 160 characters.  Any characters beyond the first 160 will be truncated.
+        {% if form.body.errors %} {{ form.body.errors }} {% endif %}
+        <div class="sms-wrap">
+        {{ form.body }}
+        <p class="charcount">160</p>
+        </div>
+    </label>
+    <div class="clear"></div>
+    <h3>Select your recipients</h3>
+    <p class="help">
+        Filter your subscriber list with the options below.  If the filter list has more members than the number of SMSes you specify, Takeout Tiger will take a random sample from the list match that number of SMSes.
+    </p>
+    <label>
+        {{ form.count.label }} {{ form.count }} 
+        {% if form.count.errors %}{{ form.count.errors }}{% endif %}
+    </label>
+    <ul id="star-status">
+        <li>
+            <input type="radio" name="starred" value="1" checked />
+            <img src="{{ MEDIA_URL }}img/both_stars.png" alt="" />
+            <span>Starred and unstarred subscribers</span>
+        </li>
+        <li>
+            <input type="radio" name="starred" value="2" />
+            <img src="{{ MEDIA_URL }}img/Favourite_24x24.png" alt="" />
+            <span>Starred subscribers only</span>
+        </li>
+        <li>
+            <input type="radio" name="starred" value="3" />
+            <img src="{{ MEDIA_URL }}img/unstarred.png" alt="" />
+            <span>Unstarred subscribers only</span>
+        </li>
+    </ul>
+    <div class="clear"></div>
+    <div>Only subscribers with a {{ form.filter_on }} of <select name="filter_value"></select></div>
+    <div class="clear"></div>
+    <div class="save-row clearfix">
+    <a class="cancel" href="{% url sms_home %}">Cancel</a>
+    <input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("form.sms-form textarea").keyup(function () {
+        remaining = 160 - $(this).val().length;
+        counter = $(this).closest("form").find("p.charcount");
+        counter.text(remaining);
+        if (remaining > 10) {
+            $(counter).removeClass("critical");
+        } else {
+            $(counter).addClass("critical");
+        }
+    });
+    $("#id_filter_on").change(function () {
+        val = $(this).val();
+        $.get("{% url get_options %}", $.param({attr: val}), function (data) {
+            $("select[name='filter_value']").children().remove();
+            $.each(data, function (i, opt) {
+                $("select[name='filter_value']").append("<option value='" + opt + "'>" + opt + "</option>")
+            });
+        }, "json");
+    });
+});
+</script>
+{% endblock %}
+

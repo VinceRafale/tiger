@@ -9,6 +9,7 @@ from django.db.models import get_model
 from django.utils.http import int_to_base36
 
 import facebook
+import twilio
 from celery.task import Task
 from oauth import oauth
 

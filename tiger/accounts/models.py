@@ -74,6 +74,14 @@ class Account(models.Model):
         body = render_to_string('accounts/confirmation.txt', {'account': self})
         send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
 
+    def set_sms_subscription(self, subscribed):
+        chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
+        chargify.subscriptions.components.update(
+            subscription_id=self.subscription_id, component_id=2889, 
+            data={'component': {'enabled': int(subscribed)}}
+        )
+
+
 
 class Site(models.Model):
     """Encapsulates data for the domain and other information relevant to
@@ -88,6 +96,7 @@ class Site(models.Model):
     enable_orders = models.BooleanField(default=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
     theme = models.ForeignKey('stork.Theme', null=True)
+    sms = models.ForeignKey('sms.SmsSettings', null=True)
 
     def natural_key(self):
         return (self.subdomain,)

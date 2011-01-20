@@ -1,0 +1,40 @@
+{% extends 'dashboard/marketing/home.html' %}
+{% load pagination_tags %}
+
+{% block body-class %}{{ block.super }}sms{% endblock %}
+
+{% block h2 %}
+SMS campaign history
+{% endblock %}
+
+{% block help %}
+SMS is a great tool - the only problem with it is that we can't track it's success once the messages have left Takeout Tiger!  We recommend keeping a pencil and paper tally of how many customers redeem coupons from each campaign.
+{% endblock %}
+
+{% block content %}
+<span class="buttons">
+    <a href="{% url create_campaign %}">+ Create New Campaign</a>
+</span>
+<div class="clear"></div>
+{% autopaginate campaigns %}
+{% paginate %}
+<ul id="campaign-list">
+{% for campaign in campaigns %}
+    <li class="{% cycle '' 'white' %}">
+        <span class="data">
+            <strong>SMSes sent:</strong> {{ campaign.sent_count }}
+            <strong>Recipients:</strong>
+            <img src="{{ MEDIA_URL }}img/{{ campaign.img_url }}" />
+            {% if campaign.filter_value %}
+            {{ campaign.filter_on }}: {{ campaign.filter_value }}
+            {% endif %}
+        </span>
+        <h4>{{ campaign.title }} ({{ campaign.timestamp|date }})</h4>
+    </li>
+{% empty %}
+    <li>You have not sent any campaigns.</li>    
+{% endfor %}
+</ul>
+{% paginate %}
+<div class="clear"></div>
+{% endblock %}

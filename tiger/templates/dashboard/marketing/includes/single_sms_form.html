@@ -1,0 +1,19 @@
+<p style="width:450px;">Text messages can be a maximum of 160 characters.  Any characters beyond the first 160 will be truncated.</p>
+<form action="{% url send_single_sms subscriber_id %}" method="post" class="sms-form">
+    <textarea name="text" maxlength="160"></textarea>
+    <div class="clear"></div>
+    <p class="charcount">160</p>
+    <input class="submit" type="submit" name="" value="Send" />
+</form>
+<script type="text/javascript">
+$("form.sms-form textarea").keyup(function () {
+    remaining = 160 - $(this).val().length;
+    counter = $(this).closest("form").find("p.charcount");
+    counter.text(remaining);
+    if (remaining > 10) {
+        $(counter).removeClass("critical");
+    } else {
+        $(counter).addClass("critical");
+    }
+});
+</script>
