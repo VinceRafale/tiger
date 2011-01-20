@@ -6,8 +6,9 @@ from django.http import HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import CreditCardForm, BasicInfoForm
-from tiger.accounts.models import Account, Site
+from tiger.accounts.models import Site
 from tiger.dashboard.account.forms import CancellationForm
+from tiger.sales.models import Account
 from tiger.utils.chargify import Chargify
 from tiger.utils.views import add_edit_site_object
 
