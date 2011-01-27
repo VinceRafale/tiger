@@ -1,5 +1,6 @@
 from tiger.accounts.models import Site
 from tiger.stork import Stork, StorkConfigurationError
+from tiger.stork.models import Theme
 
 import cssutils
 from lxml.html import fromstring
@@ -20,7 +21,9 @@ def run_fixtures():
 
 @with_setup(run_fixtures)
 def test_outputs_swatch_json():
-    panels = Stork('stork/tests/fixtures/valid.yml', site=Site.objects.all()[0])
+    theme = Theme.objects.create(name='test')
+    panels = Stork(theme, config_path='stork/tests/fixtures/valid.yml')
+    panels.save()
     swatch_json_as_list = json.loads(panels.swatch_json())
     assert swatch_json_as_list == [
         s.for_json()
@@ -29,7 +32,8 @@ def test_outputs_swatch_json():
 
 @with_setup(run_fixtures)
 def test_outputs_valid_css():
-    panels = Stork('stork/tests/fixtures/valid.yml', site=Site.objects.all()[0])
+    theme = Theme.objects.create(name='test')
+    panels = Stork(theme, config_path='stork/tests/fixtures/valid.yml')
     panels.save()
     css = panels.css()
     parsed = cssutils.parseString(css)
@@ -43,7 +47,8 @@ def test_outputs_valid_css():
 
 @with_setup(run_fixtures)
 def test_compresses_css():
-    panels = Stork('stork/tests/fixtures/valid.yml', site=Site.objects.all()[0])
+    theme = Theme.objects.create(name='test')
+    panels = Stork(theme, config_path='stork/tests/fixtures/valid.yml')
     panels.save()
     css = panels.css()
     compressed = panels.compressed_css()
