@@ -1,0 +1,13 @@
+{% extends 'dashboard/account/home.html' %}
+
+{% block body-class %}{{ block.super }}billing-history{% endblock %}
+
+{% block help %}
+You can browse your past invoices here.  This is for reference purposes only.
+{% endblock %}
+
+{% block content %}
+{% for invoice in invoices %}
+{{ invoice }}
+{% endfor %}
+{% endblock %}
