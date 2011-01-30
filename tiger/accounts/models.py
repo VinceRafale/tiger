@@ -12,6 +12,8 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
+from dateutil.relativedelta import *
+
 import pytz
 from pytz import timezone
 
@@ -19,7 +21,8 @@ from tiger.core.exceptions import NoOnlineOrders, ClosingTimeBufferError, Restau
 from tiger.utils.cache import cachedmethod, KeyChain
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
-from tiger.sales.models import SalesRep, Account
+from tiger.sales.models import SalesRep, Account, Invoice, Charge
+from tiger.sms.models import SmsSettings
 from tiger.stork import Stork
 from tiger.stork.models import Theme
 
@@ -31,6 +34,7 @@ class Site(models.Model):
     displaying a specific site.
     """
     account = models.ForeignKey(Account)
+    user = models.ForeignKey('auth.User')
     name = models.CharField(max_length=200)
     subdomain = models.CharField(max_length=200, unique=True)
     domain = models.CharField(max_length=200, null=True, blank=True)
@@ -38,8 +42,11 @@ class Site(models.Model):
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
-    theme = models.ForeignKey('stork.Theme', null=True)
-    sms = models.ForeignKey('sms.SmsSettings', null=True)
+    theme = models.ForeignKey(Theme, null=True)
+    sms = models.ForeignKey(SmsSettings, null=True)
+    plan = models.ForeignKey('sales.Plan', null=True)
+    signup_date = models.DateField(auto_now_add=True)
+    managed = models.BooleanField(default=False)
 
     def natural_key(self):
         return (self.subdomain,)
@@ -129,6 +136,16 @@ class Site(models.Model):
     def sidebar_locations(self):
         html = render_to_string('core/includes/sidebar_locations.html', {'site': self}) 
         return mark_safe(html)
+
+    def create_invoice(self):
+        return Invoice.objects.create(
+            account=self.account,
+            site=self
+        )
+
+    @property
+    def is_suspended(self):
+        return bool(self.account.invoice_set.filter(status=Invoice.STATUS_FAILED).count())
 
 
 class Location(models.Model):
@@ -307,6 +324,8 @@ def new_site_setup(sender, instance, created, **kwargs):
         schedule = Schedule.objects.create(site=instance, master=True)
         location = Location.objects.create(site=instance, schedule=schedule)
         theme = Theme.objects.create(name=instance.name)
+        sms = SmsSettings.objects.create()
+        instance.sms = sms
         stork = Stork(theme)
         stork.save()
         instance.theme = theme

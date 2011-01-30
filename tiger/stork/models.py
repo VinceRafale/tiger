@@ -3,7 +3,7 @@ from datetime import datetime
 from django.core.files.base import ContentFile
 from django.db import models
 
-from tiger.stork.constants import FONT_CHOICES
+from tiger.stork.font_choices import WebFonts
 
 from cumulus.storage import CloudFilesStorage
 
@@ -39,7 +39,7 @@ class FontStack(models.Model):
     eot = models.FileField(upload_to='fonts/eot', null=True)
     woff = models.FileField(upload_to='fonts/woff', null=True)
     svg = models.FileField(upload_to='fonts/svg', null=True)
-    stack = models.TextField(max_length=255, choices=FONT_CHOICES)
+    stack = models.TextField(max_length=255, choices=WebFonts.FONT_CHOICES)
 
     def __unicode__(self):
         return self.name

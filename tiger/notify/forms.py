@@ -82,8 +82,8 @@ class PublishForm(BetterModelForm):
 
     def clean_fax(self):
         fax = self.cleaned_data.get('fax')
-        if fax and self.site.account.status != 1:
-            raise forms.ValidationError('Faxing charges are 10 cents per page delivered.  You do not have a valid credit card on file.  Please update your payment information under the "Account" tab.')
+        if fax and self.site.is_suspended:
+            raise forms.ValidationError('Faxing charges are 10 cents per page delivered.  You do not have a valid credit card on file.  Please update your payment information.')
         return fax
 
 

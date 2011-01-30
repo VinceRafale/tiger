@@ -308,7 +308,7 @@ class Order(models.Model):
     )
     site = models.ForeignKey('accounts.Site', null=True, editable=False)
     session_key = models.CharField(max_length=40, null=True)
-    location = models.ForeignKey('accounts.Location', null=True, editable=False)
+    location = models.ForeignKey('accounts.Location', editable=False)
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
     street = models.CharField(max_length=255, blank=True, null=True)

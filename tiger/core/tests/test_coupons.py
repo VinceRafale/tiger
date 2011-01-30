@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.test import TestCase
+from tiger.utils.test import TestCase
 from django.test.client import Client
 
 from nose.tools import *
@@ -11,9 +11,10 @@ from tiger.core.models import Coupon
 
 
 class CouponFeaturesTestCase(TestCase):
+    poseur_fixtures = 'tiger.fixtures'
+    urls = 'tiger.tiger_urls'
+
     def setUp(self):
-        if not Site.objects.count():
-            load_fixtures('tiger.fixtures')
         self.site = Site.objects.all()[0]
         self.coupon = Coupon.objects.create(
             site=self.site,
@@ -21,11 +22,6 @@ class CouponFeaturesTestCase(TestCase):
             dollars_off='1.00',
         )
         self.client = Client(HTTP_HOST='www.takeouttiger.com')
-        self.urls = 'tiger.tiger_urls'
-        self._urlconf_setup()
-
-    def tearDown(self):
-        self._urlconf_teardown()
 
     def test_absolute_url_conditions(self):
         coupon = self.coupon
@@ -39,12 +35,16 @@ class CouponFeaturesTestCase(TestCase):
         response = self.client.get(coupon.get_absolute_url())
         self.assertEquals(1, Coupon.objects.get(id=coupon.id).view_count)
 
-    def test_reveal_code(self):
+    def test_reveal_code_twitter(self):
         coupon = self.coupon
         coupon.require_sharing = True
         response = self.client.post(coupon.get_absolute_url(), {'via': 'twitter'})
         self.assertEquals(1, Coupon.objects.get(id=coupon.id).twitter_share_count)
-        self.assertEquals('<a href="%s">Redeem</a>' % coupon.add_coupon_url(), response.content)
+        self.assertEquals('<a href="%s%s">Redeem now!</a>' % (coupon.site.__unicode__(), coupon.add_coupon_url()), response.content)
+
+    def test_reveal_code_facebook(self):
+        coupon = self.coupon
+        coupon.require_sharing = True
         response = self.client.post(coupon.get_absolute_url(), {'via': 'facebook'})
-        self.assertEquals('<a href="%s">Redeem</a>' % coupon.add_coupon_url(), response.content)
+        self.assertEquals('<a href="%s%s">Redeem now!</a>' % (coupon.site.__unicode__(), coupon.add_coupon_url()), response.content)
         self.assertEquals(1, Coupon.objects.get(id=coupon.id).fb_share_count)

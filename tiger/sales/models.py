@@ -1,9 +1,16 @@
+import calendar
 from datetime import date, datetime
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
+from django.core.mail import send_mail
 from django.db import models
+
+from dateutil.relativedelta import *
+
+from tiger.sales.exceptions import PaymentGatewayError, SiteManagementError
 
 
 class SalesRep(models.Model):
@@ -40,8 +47,8 @@ class Account(models.Model):
     subscription_id = models.CharField(max_length=200, default='')
     card_number = models.CharField('credit card number', max_length=30, null=True)
     card_type = models.CharField(max_length=50, null=True)
-    referrer = models.ForeignKey(SalesRep, null=True, editable=False)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_COMPONENT_SUSPENSION)
+    manager = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'accounts_account'
@@ -64,3 +71,196 @@ class Account(models.Model):
             subscription_id=self.subscription_id, component_id=2889, 
             data={'component': {'enabled': int(subscribed)}}
         )
+
+    def create_invoice(self):
+        sites = self.site_set.all()
+        if sites.filter(managed=True).count():
+            invoice = Invoice.objects.create(account=self)
+            for site in sites:
+                Invoice.objects.create(
+                    invoice=invoice,
+                    site=site,
+                    account=self
+                )
+            return invoice
+        else:
+            return sites[0].create_invoice()
+
+
+class Plan(models.Model):
+    CAP_SOFT = 1
+    CAP_HARD = 2
+    CAP_TYPE_CHOICES = (
+        (CAP_SOFT, 'Soft cap'),
+        (CAP_HARD, 'Hard cap'),
+    )
+    account = models.ForeignKey(Account, null=True)
+    name = models.CharField(max_length=20)
+    multiple_locations = models.BooleanField(default=False)
+    has_sms = models.BooleanField(default=False)
+    sms_cap = models.IntegerField(default=0)
+    sms_cap_type = models.IntegerField(choices=CAP_TYPE_CHOICES, default=0)
+    fax_cap = models.IntegerField(default=0)
+    fax_cap_type = models.IntegerField(choices=CAP_TYPE_CHOICES, default=0)
+
+    @property
+    def monthly_cost(self):
+        return Decimal('75.00')
+
+    @property
+    def fax_page_cost(self):
+        return Decimal('0.10')
+
+    @property
+    def sms_number_cost(self):
+        return Decimal('5.00')
+
+    @property
+    def sms_cost(self):
+        return Decimal('0.05')
+
+
+class Invoice(models.Model):
+    STATUS_UNBILLED = 1
+    STATUS_SUCCESS = 2
+    STATUS_FAILED = 3
+    STATUS_CHOICES = (
+        (STATUS_UNBILLED, 'Unbilled',),
+        (STATUS_SUCCESS, 'Success',),
+        (STATUS_FAILED, 'Failed',),
+    )
+    account = models.ForeignKey(Account)
+    site = models.ForeignKey('accounts.Site', null=True)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_UNBILLED)
+    invoice = models.ForeignKey('self', related_name='subinvoice_set', null=True)
+
+    def save(self, *args, **kwargs):
+        managed_site = self.site and self.site.managed
+        if managed_site and not self.invoice:
+            raise SiteManagementError
+        super(Invoice, self).save(*args, **kwargs)
+        if self.site:
+            self.create_charges()
+
+    def create_charges(self):
+        Charge.objects.create(
+            invoice=self,
+            charge_type=Charge.CHARGE_BASE,
+            amount=self.main_billing_amount()
+        )
+        Charge.objects.create(
+            invoice=self,
+            charge_type=Charge.CHARGE_FAX_USAGE,
+            amount=self.get_fax_charge_amount()
+        )
+        Charge.objects.create(
+            invoice=self,
+            charge_type=Charge.CHARGE_SMS_NUMBER,
+            amount=self.get_sms_number_amount()
+        )
+        Charge.objects.create(
+            invoice=self,
+            charge_type=Charge.CHARGE_SMS_USAGE,
+            amount=self.get_sms_usage_amount()
+        )
+
+    def main_billing_amount(self):
+        today = date.today()
+        site = self.site
+        plan = site.plan
+        one_month_ago = today + relativedelta(months=-1)
+        monthly_cost = plan.monthly_cost
+        if one_month_ago.month > site.signup_date.month:
+            return monthly_cost
+        weekday, days = calendar.monthrange(one_month_ago.year, one_month_ago.month)
+        days_in_service = days - site.signup_date.day
+        return monthly_cost * (days_in_service / days)
+
+    def get_fax_charge_amount(self):
+        unlogged_faxes = self.site.fax_set.filter(logged=False)
+        page_count = sum(fax.page_count or 0 for fax in unlogged_faxes)
+        unlogged_faxes.update(logged=True)
+        return page_count * self.site.plan.fax_page_cost
+
+    def get_sms_number_amount(self):
+        return self.site.plan.sms_number_cost
+
+    def get_sms_usage_amount(self):
+        unlogged_texts = self.site.sms.sms_set.filter(logged=False)
+        sms_count = unlogged_texts.count()
+        unlogged_texts.update(logged=True)
+        return sms_count * self.site.plan.sms_cost
+
+    @property
+    def monthly_fee(self):
+        return self._charge_for_type(Charge.CHARGE_BASE)
+
+    @property
+    def fax_charges(self):
+        return self._charge_for_type(Charge.CHARGE_FAX_USAGE)
+
+    @property
+    def sms_number_charges(self):
+        if self.site.sms.enabled:
+            return self._charge_for_type(Charge.CHARGE_SMS_NUMBER)
+        return 0
+
+    @property
+    def sms_usage_charges(self):
+        return self._charge_for_type(Charge.CHARGE_SMS_USAGE)
+
+    @property
+    def total(self):
+        return sum(
+            getattr(self, attr) 
+            for attr in (
+                'monthly_fee', 
+                'fax_charges', 
+                'sms_number_charges', 
+                'sms_usage_charges'
+            )
+        )
+
+    def _charge_for_type(self, charge_type):
+        try:
+            monthly_charge = self.charge_set.get(charge_type=charge_type)
+        except Charge.DoesNotExist:
+            return 0
+        return monthly_charge.amount
+
+    def charge(self):
+        try:
+            self.send_to_gateway()
+        except PaymentGatewayError:
+            self.status = Invoice.STATUS_FAILED
+            subject = ''
+            body = ''
+        else:
+            self.status = Invoice.STATUS_SUCCESS
+            subject = ''
+            body = ''
+        self.save()
+        send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [self.account.email])
+
+    def send_to_gateway():
+        pass
+
+
+class Charge(models.Model):
+    CHARGE_BASE = 1
+    CHARGE_SMS_NUMBER = 2
+    CHARGE_SMS_USAGE = 3
+    CHARGE_FAX_USAGE = 4
+    CHARGE_CHOICES = (
+        (CHARGE_BASE, 'Base monthly fee'),
+        (CHARGE_SMS_NUMBER, 'Monthly fee for SMS number'),
+        (CHARGE_SMS_USAGE, 'SMS usage fees'),
+        (CHARGE_FAX_USAGE, 'Fax usage fees'),
+    )
+    invoice = models.ForeignKey(Invoice)
+    charge_type = models.IntegerField()
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+
+
+class Payment(models.Model):
+    pass

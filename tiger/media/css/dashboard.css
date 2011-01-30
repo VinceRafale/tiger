@@ -241,6 +241,7 @@ body.order-settings a.order-settings,
 body.update-contact a.update-contact,
 body.basic a.basic,
 body.update-cc a.update-cc,
+body.billing-history a.billing-history,
 body.cancel a.cancel
 {
     color:white !important;

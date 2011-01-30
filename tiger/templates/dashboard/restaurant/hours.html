@@ -48,7 +48,7 @@ label {display:inline;}
 {% endfor %}
 <div class="clear"></div>
 <label id="hours-display-label">
-How your hours will be displayed: <input type="text" id="hours-display" name="hours_display" value="{% if schedule %}{{ schedule }}{% endif %}" />
+How your hours will be displayed: <input type="text" id="hours-display" name="hours_display" value="{% if schedule.display != "default schedule" %}{{ schedule.display }}{% endif %}" />
 <p class="help">If the display version that is automatically generated isn't what you want, simply edit it.</p>
 </label>
 <div class="save-row clearfix">

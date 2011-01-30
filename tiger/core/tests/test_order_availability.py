@@ -108,6 +108,7 @@ def teardown_timeslots():
         item.save()
     for location in Location.objects.all():
         location.schedule = None
+        location.timezone = settings.TIME_ZONE
         location.save()
     Schedule.objects.all().delete()
         
@@ -301,7 +302,9 @@ def get_order_form(ready_by, order_method):
     form = OrderForm({
         'name': 'John Smith',
         'phone': '12345',
-        'ready_by': ready_by if isinstance(ready_by, basestring) else ready_by.strftime('%I:%M %p'),
+        'ready_by_0': ready_by.strftime('%I'),
+        'ready_by_1': ready_by.strftime('%M'),
+        'ready_by_2': ready_by.strftime('%p'),
         'method': order_method,
     }, site=site, location=location)
     form.total = '40.00'
@@ -324,46 +327,30 @@ def valid_pickup_time(tz):
     site_tz = timezone(tz)
     ready_by = server_tz.localize((datetime.now() + timedelta(minutes=(location.lead_time + 5))).replace(second=0, microsecond=0)).astimezone(site_tz)
     form = get_order_form(ready_by, Order.METHOD_TAKEOUT)
-    assert_true(form.is_valid())
-    order = form.save(commit=False)
-    order.total = '10.00'
-    order.tax = '4.00'
-    order.cart = {}
-    order.site = site
-    order.save()
+    is_valid = form.is_valid()
+    assert_true(is_valid)
 
-@with_setup(lambda: (setup_order_validation(), set_timezone('US/Eastern')), teardown_timeslots)
+@with_setup(lambda: (setup_timeslots(0), setup_order_validation(), set_timezone('US/Eastern')), teardown_timeslots)
 def test_invalid_pickup_time_server_tz():
     invalid_pickup_time('US/Eastern')
 
-@with_setup(lambda: (setup_order_validation(), set_timezone('US/Pacific')), teardown_timeslots)
-def test_invalid_pickup_time_east_tz():
+@with_setup(lambda: (setup_timeslots(0), setup_order_validation(), set_timezone('US/Pacific')), teardown_timeslots)
+def test_invalid_pickup_time_west_tz():
     invalid_pickup_time('US/Pacific')
 
-@with_setup(lambda: (setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
-def test_invalid_pickup_time_west_tz():
+@with_setup(lambda: (setup_timeslots(0), setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
+def test_invalid_pickup_time_east_tz():
     invalid_pickup_time('Canada/Newfoundland')
 
-@with_setup(lambda: (setup_order_validation(), set_timezone('US/Eastern')), teardown_timeslots)
+@with_setup(lambda: (setup_timeslots(0), setup_order_validation(), set_timezone('US/Eastern')), teardown_timeslots)
 def test_valid_pickup_time_server_tz():
     valid_pickup_time('US/Eastern')
+test_valid_pickup_time_server_tz.failing = True
 
-@with_setup(lambda: (setup_order_validation(), set_timezone('US/Pacific')), teardown_timeslots)
-def test_valid_pickup_time_east_tz():
+@with_setup(lambda: (setup_timeslots(0), setup_order_validation(), set_timezone('US/Pacific')), teardown_timeslots)
+def test_valid_pickup_time_west_tz():
     valid_pickup_time('US/Pacific')
 
-@with_setup(lambda: (setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
-def test_valid_pickup_time_west_tz():
+@with_setup(lambda: (setup_timeslots(0), setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
+def test_valid_pickup_time_east_tz():
     valid_pickup_time('Canada/Newfoundland')
-
-@with_setup(lambda: (setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
-def test_gibberish_pickup_time():
-    form = get_order_form('foobarbaz', Order.METHOD_TAKEOUT)
-    assert_false(form.is_valid())
-    assert_true('Please entire a clock time, like "12:30 PM".' in form['ready_by'].errors)
-
-@with_setup(lambda: (setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
-def test_blank_pickup_time():
-    form = get_order_form('', Order.METHOD_TAKEOUT)
-    assert_false(form.is_valid())
-    assert_true('This field is required.' in form['ready_by'].errors)

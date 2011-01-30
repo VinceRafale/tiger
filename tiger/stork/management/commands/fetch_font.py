@@ -10,7 +10,7 @@ from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 
 from tiger.stork.models import FontStack
-from tiger.stork.constants import FONT_CHOICES
+from tiger.stork.font_choices import WebFonts
 
 
 def save_fontkit(file_obj, name=None):
@@ -34,9 +34,9 @@ def save_fontkit(file_obj, name=None):
         name = raw_input('Name from fontkit %s:' % file_obj.name)
     fontface.name = name
     stack = -1
-    while int(stack) not in range(len(FONT_CHOICES)):
-        stack = raw_input('Choose the alternate font stack for %s:\n%s\n' % (name, '\n'.join(' [%s] %s' % (i, choice[1]) for i, choice in enumerate(FONT_CHOICES))))
-    fontface.stack = FONT_CHOICES[int(stack)][0]
+    while int(stack) not in range(len(WebFonts.FONT_CHOICES)):
+        stack = raw_input('Choose the alternate font stack for %s:\n%s\n' % (name, '\n'.join(' [%s] %s' % (i, choice[1]) for i, choice in enumerate(WebFonts.FONT_CHOICES))))
+    fontface.stack = WebFonts.FONT_CHOICES[int(stack)][0]
     fontface.save()
     fontface.eot.save(eot.name.split('/')[-1], ContentFile(eot.read()))
     fontface.svg.save(svg.name.split('/')[-1], ContentFile(svg.read()))
