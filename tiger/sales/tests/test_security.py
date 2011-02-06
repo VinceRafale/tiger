@@ -44,6 +44,13 @@ class ManagedAccountSecurityTestCase(TestCase):
 class ManagedAccountSecurityTestCase(TestCase):
     urls = 'tiger.reseller_urls'
     poseur_fixtures = 'tiger.sales.fixtures.accounts'
+    patch_settings = {
+        'tiger.reseller_settings': (
+            'AUTHENTICATION_BACKENDS',
+            'MIDDLEWARE_CLASSES',
+            'INSTALLED_APPS',
+        )
+    }
 
     def setUp(self):
         self.site = Site.objects.all()[0]
@@ -53,18 +60,6 @@ class ManagedAccountSecurityTestCase(TestCase):
         account.manager = True
         account.save()
         self.client = Client()
-        self.old_backends = settings.AUTHENTICATION_BACKENDS
-        self.middleware = settings.MIDDLEWARE_CLASSES
-        self.apps = settings.INSTALLED_APPS
-        settings.AUTHENTICATION_BACKENDS = reseller_settings.AUTHENTICATION_BACKENDS
-        settings.MIDDLEWARE_CLASSES = reseller_settings.MIDDLEWARE_CLASSES
-        settings.MIDDLEWARE_CLASSES = reseller_settings.MIDDLEWARE_CLASSES
-        settings.INSTALLED_APPS = reseller_settings.INSTALLED_APPS
-
-    def tearDown(self):
-        settings.AUTHENTICATION_BACKENDS = self.old_backends
-        settings.MIDDLEWARE_CLASSES = self.middleware
-        settings.INSTALLED_APPS = self.apps
 
     def test_nonexistent_user(self):
         self.assertFalse(self.client.login(email='fakey.mcfakerson@phishfood.com', password='password'))

@@ -44,6 +44,9 @@ def respond_to_sms(request):
     elif normalized_body == 'out':
         subscriber.unsubscribed_at = datetime.now()
         subscriber.save()
+    elif created:
+        subscriber.unsubscribed_at = datetime.now()
+        subscriber.save()
     return HttpResponse('<Response></Response>', mimetype='text/xml')
 
 

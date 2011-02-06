@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
 from django.core.mail import send_mail
 from django.db import models
+from django.template.loader import render_to_string
 
 from dateutil.relativedelta import *
 
@@ -57,20 +58,22 @@ class Account(models.Model):
         return self.company_name
 
     def save(self, *args, **kwargs):
+        new = False
         if not self.id:
             self.signup_date = date.today()
+            new = True
         super(Account, self).save(*args, **kwargs)
+        if new:
+            body = render_to_string('sales/reseller_welcome.txt', {'account': self})
+            send_mail('Welcome to the Takeout Tiger reseller program', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
+
 
     def send_confirmation_email(self):
         body = render_to_string('accounts/confirmation.txt', {'account': self})
         send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
 
     def set_sms_subscription(self, subscribed):
-        chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
-        chargify.subscriptions.components.update(
-            subscription_id=self.subscription_id, component_id=2889, 
-            data={'component': {'enabled': int(subscribed)}}
-        )
+        raise NotImplementedError
 
     def create_invoice(self):
         sites = self.site_set.all()

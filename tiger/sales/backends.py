@@ -2,6 +2,10 @@ from django.contrib.auth.models import User
 from tiger.sales.models import Account
 
 class ResellerBackend(object):
+    supports_object_permissions = False
+    supports_anonymous_user = False
+    supports_inactive_user = False
+
     def authenticate(self, email=None, password=None):
         try:
             user = User.objects.get(email=email)
