@@ -100,6 +100,7 @@ class Plan(models.Model):
     account = models.ForeignKey(Account, null=True)
     name = models.CharField(max_length=20)
     multiple_locations = models.BooleanField(default=False)
+    has_online_ordering = models.BooleanField(default=False)
     has_sms = models.BooleanField(default=False)
     sms_cap = models.IntegerField(default=0)
     sms_cap_type = models.IntegerField(choices=CAP_TYPE_CHOICES, default=0)
@@ -108,19 +109,35 @@ class Plan(models.Model):
 
     @property
     def monthly_cost(self):
-        return Decimal('75.00')
+        if not self.account:
+            if not self.has_online_ordering:
+                return Decimal('50.00')
+            if not self.multiple_locations:
+                return Decimal('75.00')
+            return Decimal('95.00')
+        if not self.has_online_ordering:
+            return Decimal('40.00')
+        if not self.multiple_locations:
+            return Decimal('67.50')
+        return Decimal('85.50')
 
     @property
     def fax_page_cost(self):
-        return Decimal('0.10')
+        if not self.account:
+            return Decimal('0.10')
+        return Decimal('0.07')
 
     @property
     def sms_number_cost(self):
-        return Decimal('5.00')
+        if not self.account:
+            return Decimal('5.00')
+        return Decimal('2.00')
 
     @property
     def sms_cost(self):
-        return Decimal('0.05')
+        if not self.account:
+            return Decimal('0.05')
+        return Decimal('0.02')
 
 
 class Invoice(models.Model):
@@ -173,7 +190,7 @@ class Invoice(models.Model):
         plan = site.plan
         one_month_ago = today + relativedelta(months=-1)
         monthly_cost = plan.monthly_cost
-        if one_month_ago.month > site.signup_date.month:
+        if one_month_ago.replace(day=1) > site.signup_date.replace(day=1):
             return monthly_cost
         weekday, days = calendar.monthrange(one_month_ago.year, one_month_ago.month)
         days_in_service = days - site.signup_date.day

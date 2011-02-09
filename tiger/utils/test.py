@@ -1,15 +1,37 @@
-from django.test import TransactionTestCase as BaseTestCase
-from django.db import transaction
-
+from django.conf import settings
 from django.core.management import call_command
+from django.db import transaction, IntegrityError
+from django.test import TestCase as BaseTestCase
+from django.utils.importlib import import_module
+
 from poseur.fixtures import load_fixtures
 
 
 class TestCase(BaseTestCase):
-    def _fixture_setup(self):
-        super(TestCase, self)._fixture_setup()
-        if hasattr(self, 'poseur_fixtures'):
+    @classmethod
+    def setup_class(cls):
+        if hasattr(cls, 'poseur_fixtures'):
             try:
-                load_fixtures(self.poseur_fixtures)
+                load_fixtures(cls.poseur_fixtures)
             except IntegrityError:
                 transaction.rollback()
+
+    @classmethod
+    def teardown_class(cls):
+        call_command('flush', verbosity=0, interactive=False, database='default')
+
+    def _pre_setup(self):
+        super(TestCase, self)._pre_setup()
+        if hasattr(self, 'patch_settings'):
+            for settings_module, patchables in self.patch_settings.items():
+                mod = import_module(settings_module)
+                for patchable in patchables:
+                    setattr(self, patchable, getattr(settings, patchable))
+                    setattr(settings, patchable, getattr(mod, patchable))
+
+    def _post_teardown(self):
+        super(TestCase, self)._post_teardown()
+        if hasattr(self, 'patch_settings'):
+            for settings_module, patchables in self.patch_settings.items():
+                for patchable in patchables:
+                    setattr(settings, patchable, getattr(self, patchable))

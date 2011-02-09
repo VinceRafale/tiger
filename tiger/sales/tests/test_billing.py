@@ -93,6 +93,9 @@ class BillingTestCase(TestCase):
         sms = site.sms
         sms.sms_number = '14135334095'
         sms.save()
+        current_month = date.today().replace(day=1)
+        last_day_of_previous_month = current_month - timedelta(days=1)
+        site.signup_date = last_day_of_previous_month - timedelta(days=40)
         invoice = site.create_invoice()
         sms_number_cost = site.plan.sms_number_cost
         self.assertEqual(sms_number_cost, invoice.sms_number_charges)
@@ -243,8 +246,24 @@ class ManagedCustomerTestCase(TestCase):
 
     def test_managed_site_has_no_invoice_tab(self):
         self.client.login(email='test@test.com', password='password', site=Site.objects.all()[0])
-        from django.conf import settings
-        settings.DEBUG = True
         for url in ('update_cc', 'billing_history', 'cancel',):
             response = self.client.get(reverse(url), follow=True, SERVER_NAME='foo.takeouttiger.com')
             self.assertEqual(404, response.status_code)
+
+    def test_no_online_ordering_plan(self):
+        """Plans without online ordering cannot access Orders tab screens"""
+        self.site.plan = Plan.objects.create(name='no orders', has_online_ordering=False)
+        self.site.save()
+        self.client.login(email='test@test.com', password='password', site=Site.objects.all()[0])
+        for url in ('dashboard_orders', 'order_options', 'order_payment', 'order_messages', 'get_new_orders',):
+            response = self.client.get(reverse(url), follow=True, SERVER_NAME='foo.takeouttiger.com')
+            self.assertEqual(404, response.status_code)
+
+    def test_online_ordering_plan(self):
+        """Plans with online ordering can access Orders tab screens"""
+        self.site.plan = Plan.objects.create(name='no orders', has_online_ordering=True)
+        self.site.save()
+        self.client.login(email='test@test.com', password='password', site=Site.objects.all()[0])
+        for url in ('dashboard_orders', 'order_options', 'order_payment', 'order_messages', 'get_new_orders',):
+            response = self.client.get(reverse(url), follow=True, SERVER_NAME='foo.takeouttiger.com')
+            self.assertEqual(200, response.status_code)

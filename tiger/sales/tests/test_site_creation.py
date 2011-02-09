@@ -62,6 +62,9 @@ class NewSiteFormTestCase(TestCase):
         self.valid_plan = one
         self.invalid_plan = three
 
+    def tearDown(self):
+        Invoice.objects.all().delete()
+
     def test_plan_choices_restricted_to_account(self):
         data = self.data.copy()
         data['plan'] = self.invalid_plan.id
