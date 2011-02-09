@@ -1,0 +1,14 @@
+{% extends 'sales/login_base.html' %}
+
+{% block title %}Reseller Login{% endblock %}
+
+{% block content %}
+<h2>Reseller login</h2>
+<form method="post" action="{% url auth_login %}">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="login" />
+    <input type="hidden" name="next" value="{{ next }}" />
+</form>
+<a style="float:right;" href="{% url password_reset %}">Forgot your password?</a>
+<div class="clear"></div>
+{% endblock %}

@@ -9,6 +9,15 @@ handler404 = 'tiger.utils.views.tiger404'
 handler500 = 'tiger.utils.views.tiger500'
 
 urlpatterns = patterns('tiger.sales.views',
+    url(r'^$', 'home', name='sales_home'),
+    url(r'^plans/$', 'plan_list', name='plan_list'),
+    url(r'^plans/(\d+)/$', 'plan_detail', name='plan_detail'),
+    url(r'^restaurants/$', 'restaurant_list', name='restaurant_list'),
+    url(r'^restaurants/(\d+)/$', 'restaurant_detail', name='restaurant_detail'),
+    url(r'^billing/$', 'billing_home', name='billing_home'),
+)
+
+urlpatterns += patterns('tiger.sales.views',
     url(r'^login/$', 'login', name='auth_login'),
 )
 
@@ -18,4 +27,9 @@ urlpatterns += patterns('django.contrib.auth.views',
     (r'^reset-password/done/$', 'password_reset_done', {'template_name': 'accounts/password_reset_done.html'}, 'password_reset_done'),
     (r'^reset-password/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'password_reset_confirm', {'template_name': 'accounts/password_reset_confirm.html'}, 'password_reset_confirm'),
     (r'^reset-password/complete/$', 'password_reset_complete', {'template_name': 'accounts/password_reset_complete.html'}, 'password_reset_complete'),
+)
+
+urlpatterns += patterns('',
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.MEDIA_ROOT}),
 )

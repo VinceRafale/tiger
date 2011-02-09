@@ -1,0 +1,24 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}restaurant{% endblock %}
+
+{% block h2 %}
+Your reseller account at a glance
+{% endblock %}
+
+{% block content %}
+<h3>Restaurants by plan</h3>
+<ul>
+    {% for plan in plans %}
+    <li><strong>>{{ plan.name }}</strong>: {% with plan.site_set.count as site_count %}{{ site_count }} restaurant{{ site_count|pluralize }}{% endwith %}</li>
+    {% empty %}
+    <li>You have no plans. <a href="#">Create one now</a></li>
+    {% endfor %}
+</ul>
+<h3>Service usage for {% now "N Y" %}</h3>
+<ul>
+    <li><strong>SMS</strong>: 100 inbound, 100 outbound</li>
+    <li><strong>Fax pages</strong>: 100 inbound, 100 outbound</li>
+</ul>
+
+{% endblock %}
