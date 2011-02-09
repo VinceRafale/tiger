@@ -86,6 +86,7 @@ def check_unsubscribe(keyword):
     subscriber = SmsSubscriber.objects.get(phone_number=data['From'])
     assert_false(subscriber.is_active)
 
+@raises(SmsSubscriber.DoesNotExist)
 def test_non_keyword_does_not_subscribe():
     data = get_data_for_request(faker.lorem.sentence())
     site = Site.objects.all()[0]
@@ -93,7 +94,6 @@ def test_non_keyword_does_not_subscribe():
     response = client.post('/sms/respond-to-sms/', data, 
         HTTP_X_TWILIO_SIGNATURE=twilio_header)
     subscriber = SmsSubscriber.objects.get(phone_number=data['From'])
-    assert_false(subscriber.is_active)
 
 def test_non_keyword_does_not_unsubscribe():
     data = get_data_for_request(faker.lorem.sentence())

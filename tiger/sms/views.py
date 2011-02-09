@@ -23,30 +23,25 @@ def respond_to_sms(request):
     body = request.POST.get('Body', '')
     normalized_body = body.strip().lower()
     phone_number = request.POST.get('From')
-    subscriber, created = SmsSubscriber.objects.get_or_create(
-        settings=sms_settings,
-        phone_number=phone_number, defaults=dict(
-            city=request.POST.get('FromCity', ''),
-            state=request.POST.get('FromState', ''),
-            zip_code=request.POST.get('FromZip', ''),
-        )
-    )
+    try:
+        subscriber = SmsSubscriber.objects.get(settings=sms_settings, phone_number=phone_number)
+    except SmsSubscriber.DoesNotExist:
+        if normalized_body == 'in':
+            subscriber = SmsSubscriber.objects.create(
+                settings=sms_settings,
+                phone_number=phone_number,
+                city=request.POST.get('FromCity', ''),
+                state=request.POST.get('FromState', ''),
+                zip_code=request.POST.get('FromZip', '')
+            )
+        else:
+            subscriber = None
     SMS.objects.create(
         settings=sms_settings, 
         subscriber=subscriber, 
         destination=SMS.DIRECTION_INBOUND,
         body=body
     )
-    if normalized_body == 'in' and created:
-        # add subscription
-        if sms_settings.send_intro:
-            subscriber.send_message(sms_settings.intro_sms)
-    elif normalized_body == 'out':
-        subscriber.unsubscribed_at = datetime.now()
-        subscriber.save()
-    elif created:
-        subscriber.unsubscribed_at = datetime.now()
-        subscriber.save()
     return HttpResponse('<Response></Response>', mimetype='text/xml')
 
 
