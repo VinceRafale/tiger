@@ -1,0 +1,40 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}site{% endblock %}
+
+{% block h2 %}
+Your plans
+{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>Name</th>
+        <th>SMS</th>
+        <th>Fax</th>
+        <th>Online ordering</th>
+        <th>Multiple locations</th>
+        <th></th>
+    </tr>
+    {% for plan in plans %}
+    <tr>
+        <td><a href="#">{{ plan.name }}</a></td>
+        <td>{% if plan.has_sms %}
+            <span class="check">&#10003;</span> ({{ plan.get_sms_cap_type_display }} of {{ plan.sms_cap }})
+            {% endif %} 
+        </td>
+        <td>{% if plan.has_fax %}
+            <span class="check">&#10003;</span> ({{ plan.get_fax_cap_type_display }} of {{ plan.fax_cap }})
+            {% endif %}
+        </td>
+        <td>{% if plan.has_online_ordering %}<span class="check">&#10003;</span>{% endif %}</td>
+        <td>{% if plan.multiple_locations %}<span class="check">&#10003;</span>{% endif %}</td>
+        <td><a href="#">[X]</a></td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">You haven't created any plans yet. <a href="{% url create_plan %}">Create one now</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

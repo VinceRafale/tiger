@@ -7,7 +7,8 @@ from django.contrib.auth.models import User
 
 from tiger.accounts.models import Site
 from tiger.sales.exceptions import PaymentGatewayError
-from tiger.sales.models import Account, Invoice
+from tiger.sales.models import Account, Invoice, Plan
+from tiger.utils.forms import BetterModelForm
 
 
 class AuthenticationForm(forms.Form):
@@ -40,7 +41,7 @@ class AuthenticationForm(forms.Form):
         return self.user_cache
 
 
-class CreateResellerAccountForm(forms.ModelForm):
+class CreateResellerAccountForm(BetterModelForm):
     first_name = forms.CharField()
     last_name = forms.CharField()
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
@@ -134,7 +135,7 @@ class CreateResellerAccountForm(forms.ModelForm):
         return account
 
 
-class CreateSiteForm(forms.ModelForm):
+class CreateSiteForm(BetterModelForm):
     subdomain = forms.CharField()
 
     class Meta:
@@ -175,3 +176,9 @@ class CreateSiteForm(forms.ModelForm):
         if commit:
             site.save()
         return site
+
+
+class CreatePlanForm(BetterModelForm):
+    class Meta:
+        model = Plan
+        exclude = ('account',)

@@ -11,8 +11,9 @@ handler500 = 'tiger.utils.views.tiger500'
 urlpatterns = patterns('tiger.sales.views',
     url(r'^$', 'home', name='sales_home'),
     url(r'^plans/$', 'plan_list', name='plan_list'),
-    url(r'^plans/(\d+)/$', 'plan_detail', name='plan_detail'),
+    url(r'^plans/new/$', 'create_plan', name='create_plan'),
     url(r'^restaurants/$', 'restaurant_list', name='restaurant_list'),
+    url(r'^restaurants/new/$', 'create_restaurant', name='create_restaurant'),
     url(r'^restaurants/(\d+)/$', 'restaurant_detail', name='restaurant_detail'),
     url(r'^billing/$', 'billing_home', name='billing_home'),
 )

@@ -5,6 +5,9 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ("sales", "0003_auto__add_field_invoice_site__add_field_invoice_invoice__add_field_pla"),
+    )
 
     def forwards(self, orm):
         # Adding field 'Site.plan'
