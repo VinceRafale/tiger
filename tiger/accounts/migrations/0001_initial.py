@@ -5,40 +5,12 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ('sales', '0001_initial'),
+    )
 
     def forwards(self, orm):
         
-        # Adding model 'SalesRep'
-        db.create_table('accounts_salesrep', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('code', self.gf('django.db.models.fields.CharField')(max_length=8)),
-            ('plan', self.gf('django.db.models.fields.CharField')(default='chomp3', max_length=12)),
-        ))
-        db.send_create_signal('accounts', ['SalesRep'])
-
-        # Adding model 'Account'
-        db.create_table('accounts_account', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('company_name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-            ('phone', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(max_length=20, null=True, blank=True)),
-            ('fax', self.gf('django.contrib.localflavor.us.models.PhoneNumberField')(max_length=20, null=True, blank=True)),
-            ('street', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('state', self.gf('django.contrib.localflavor.us.models.USStateField')(max_length=2, null=True, blank=True)),
-            ('zip', self.gf('django.db.models.fields.CharField')(max_length=10)),
-            ('signup_date', self.gf('django.db.models.fields.DateField')(default=datetime.datetime.now)),
-            ('customer_id', self.gf('django.db.models.fields.CharField')(default='', max_length=200)),
-            ('subscription_id', self.gf('django.db.models.fields.CharField')(default='', max_length=200)),
-            ('card_number', self.gf('django.db.models.fields.CharField')(max_length=30, null=True)),
-            ('card_type', self.gf('django.db.models.fields.CharField')(max_length=50, null=True)),
-            ('referrer', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.SalesRep'], null=True)),
-            ('status', self.gf('django.db.models.fields.IntegerField')(default=2)),
-        ))
-        db.send_create_signal('accounts', ['Account'])
-
         # Adding model 'Site'
         db.create_table('accounts_site', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),

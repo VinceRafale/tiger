@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'tiger.accounts',
     'tiger.core',
     'tiger.sales',
+    'tiger.stork',
     'django_nose',
     'poseur',
 )
