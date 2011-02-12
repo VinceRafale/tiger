@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 
 
@@ -14,3 +15,8 @@ class Message(models.Model):
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.timestamp = datetime.now()
+        super(Message, self).save(*args, **kwargs)

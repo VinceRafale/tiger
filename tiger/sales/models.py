@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
 from django.core.mail import send_mail
-from django.db import models
+from django.db import models, connection
 from django.template.loader import render_to_string
 
 from dateutil.relativedelta import *
@@ -88,6 +88,25 @@ class Account(models.Model):
             return invoice
         else:
             return sites[0].create_invoice()
+
+    def fax_pages_for_month(self):
+        first_of_month = datetime.now().replace(day=1, hour=0, minute=0)
+        cursor = connection.cursor()
+        cursor.execute("""select sum(f.page_count) from notify_fax f
+        join accounts_site s on f.site_id = s.id
+        join accounts_account a on a.id = s.account_id
+        where a.id = %s and f.timestamp >= %s""", [self.id, first_of_month])
+        return cursor.fetchall()[0][0]
+
+    def text_messages_for_month(self):
+        first_of_month = datetime.now().replace(day=1, hour=0, minute=0)
+        cursor = connection.cursor()
+        cursor.execute("""select count(*) from sms_sms sms
+        join sms_smssettings settings on sms.settings_id = settings.id
+        join accounts_site site on settings.id = site.sms_id
+        join accounts_account acct on acct.id = site.account_id
+        where acct.id = %s and sms.timestamp >= %s""", [self.id, first_of_month])
+        return cursor.fetchall()[0][0]
 
 
 class Plan(models.Model):

@@ -9,16 +9,16 @@ Your reseller account at a glance
 {% block content %}
 <h3>Restaurants by plan</h3>
 <ul>
-    {% for plan in plans %}
-    <li><strong>>{{ plan.name }}</strong>: {% with plan.site_set.count as site_count %}{{ site_count }} restaurant{{ site_count|pluralize }}{% endwith %}</li>
+    {% for plan in account.plan_set.all %}
+    <li><strong>{{ plan.name }}</strong>: {% with plan.site_set.count as site_count %}{{ site_count }} restaurant{{ site_count|pluralize }}{% endwith %}</li>
     {% empty %}
     <li>You have no plans. <a href="#">Create one now</a></li>
     {% endfor %}
 </ul>
 <h3>Service usage for {% now "N Y" %}</h3>
 <ul>
-    <li><strong>SMS</strong>: 100 inbound, 100 outbound</li>
-    <li><strong>Fax pages</strong>: 100 inbound, 100 outbound</li>
+    <li><strong>Text messages</strong>: {{ account.text_messages_for_month }}</li>
+    <li><strong>Fax pages</strong>: {{ account.fax_pages_for_month }}</li>
 </ul>
 
 {% endblock %}
