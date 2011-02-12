@@ -16,8 +16,8 @@ Your restaurants
     </tr>
     {% for restaurant in restaurants %}
     <tr>
-        <td><a href="#">{{ restaurant.name }}</a></td>
-        <td>{{ restaurant.plan }}</td>
+        <td><a href="{% url restaurant_detail restaurant.id %}">{{ restaurant.name }}</a></td>
+        <td>{{ restaurant.plan }} <a href="{% url edit_restaurant restaurant.id %}"><img src="{{ MEDIA_URL }}img/Edit_16x16.png" /></a></td>
         <td>
         {% with restaurant.location_set.all.0 as loc %}
             {% if loc.city and loc.state %}

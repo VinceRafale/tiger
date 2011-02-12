@@ -3,7 +3,7 @@
 {% block body-class %}marketing{% endblock %}
 
 {% block h2 %}
-New restaurant
+{% if instance %}Editing {{ instance.name }}{% else %}New restaurant{% endif %}
 {% endblock %}
 
 {% block content %}

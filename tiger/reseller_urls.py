@@ -13,8 +13,10 @@ urlpatterns = patterns('tiger.sales.views',
     url(r'^plans/$', 'plan_list', name='plan_list'),
     url(r'^plans/new/$', 'create_plan', name='create_plan'),
     url(r'^restaurants/$', 'restaurant_list', name='restaurant_list'),
-    url(r'^restaurants/new/$', 'create_restaurant', name='create_restaurant'),
+    url(r'^restaurants/new/$', 'create_edit_restaurant', name='create_restaurant'),
     url(r'^restaurants/(\d+)/$', 'restaurant_detail', name='restaurant_detail'),
+    url(r'^restaurants/(\d+)/edit/$', 'create_edit_restaurant', name='edit_restaurant'),
+    url(r'^restaurants/(\d+)/delete/$', 'delete_restaurant', name='delete_restaurant'),
     url(r'^billing/$', 'billing_home', name='billing_home'),
 )
 

@@ -135,6 +135,15 @@ class CreateResellerAccountForm(BetterModelForm):
         return account
 
 
+class EditSiteForm(BetterModelForm):
+    class Meta:
+        model = Site
+        fields = ('plan',)
+
+    def __init__(self, data=None, account=None, *args, **kwargs):
+        super(EditSiteForm, self).__init__(data, *args, **kwargs)
+
+
 class CreateSiteForm(BetterModelForm):
     subdomain = forms.CharField()
 

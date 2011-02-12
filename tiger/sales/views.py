@@ -9,7 +9,9 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.simple import direct_to_template
 
-from tiger.sales.forms import AuthenticationForm, CreateSiteForm, CreatePlanForm
+from tiger.accounts.models import Site
+from tiger.sales.forms import (AuthenticationForm, CreateSiteForm, 
+    CreatePlanForm, EditSiteForm)
 
 
 @csrf_protect
@@ -37,20 +39,24 @@ def login(request, redirect_field_name='next'):
         form = AuthenticationForm(request=request)
     request.session.set_test_cookie()
     return direct_to_template(request, template='sales/login.html', extra_context={
-        'form': form,
-        redirect_field_name: redirect_to,
+        'form': form, redirect_field_name: redirect_to,
     })
 
+@login_required
 def home(request):
+    account = request.user.get_profile()
     return direct_to_template(request, template='sales/home.html', extra_context={
+        'account': account
     })
 
+@login_required
 def plan_list(request):
     plans = request.user.get_profile().plan_set.all()
     return direct_to_template(request, template='sales/plan_list.html', extra_context={
         'plans': plans
     })
 
+@login_required
 def create_plan(request):
     account = request.user.get_profile()
     if request.method == 'POST':
@@ -67,24 +73,60 @@ def create_plan(request):
         'form': form
     })
 
+@login_required
 def restaurant_list(request):
     restaurants = request.user.get_profile().site_set.all()
     return direct_to_template(request, template='sales/restaurant_list.html', extra_context={
         'restaurants': restaurants
     })
 
-def create_restaurant(request):
+@login_required
+def create_edit_restaurant(request, restaurant_id=None):
     account = request.user.get_profile()
+    instance = None
+    RestaurantForm = CreateSiteForm
+    if restaurant_id is not None:
+        instance = Site.objects.get(id=restaurant_id)
+        RestaurantForm = EditSiteForm
     if request.method == 'POST':
-        form = CreateSiteForm(request.POST, account=account)
+        form = RestaurantForm(request.POST, account=account, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Restaurant created successfully.')
+            return HttpResponseRedirect(reverse('restaurant_list'))
     else:
-        form = CreateSiteForm(account=account)
+        form = RestaurantForm(account=account, instance=instance)
     return direct_to_template(request, template='sales/restaurant_form.html', extra_context={
-        'form': form
+        'form': form,
+        'instance' : instance
     })
 
+@login_required
 def restaurant_detail(request, site_id):
-    pass
+    account = request.user.get_profile()
+    try:
+        restaurant = account.site_set.get(id=site_id)
+    except Site.DoesNotExist:
+        raise Http404
+    return direct_to_template(request, template='sales/restaurant_detail.html', extra_context={
+        'restaurant': restaurant
+    })
 
+@login_required
+def delete_restaurant(request, site_id):
+    account = request.user.get_profile()
+    try:
+        restaurant = account.site_set.get(id=site_id)
+    except Site.DoesNotExist:
+        raise Http404
+    if request.method == 'POST':
+        restaurant.delete()
+        messages.success(request, 'Restaurant deleted successfully.')
+        return HttpResponseRedirect(reverse('restaurant_list'))
+    return direct_to_template(request, template='sales/delete_restaurant.html', extra_context={
+        'restaurant': restaurant
+    })
+
+@login_required
 def billing_home(request):
     pass

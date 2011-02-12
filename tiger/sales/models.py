@@ -126,6 +126,9 @@ class Plan(models.Model):
     fax_cap = models.IntegerField(default=0)
     fax_cap_type = models.IntegerField(choices=CAP_TYPE_CHOICES, default=0)
 
+    def __unicode__(self):
+        return self.name
+
     @property
     def monthly_cost(self):
         if not self.account:
