@@ -3,10 +3,13 @@
 {% block body-class %}site{% endblock %}
 
 {% block h2 %}
-New plan
+{% if instance %}Editing "{{ instance }}" plan{% else %}New plan{% endif %}
 {% endblock %}
 
 {% block content %}
+{% if instance %}
+<a href="{% url delete_plan instance.id %}">Delete this plan</a>
+{% endif %}
 {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
 <form method="POST">
 <label>{{ form.name.label }}<br /> {{ form.name }} {% if form.name.errors %}{{ form.name.errors }}{% endif %}</label>

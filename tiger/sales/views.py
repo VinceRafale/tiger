@@ -57,20 +57,44 @@ def plan_list(request):
     })
 
 @login_required
-def create_plan(request):
+def create_plan(request, plan_id):
     account = request.user.get_profile()
+    instance = None
+    try:
+        instance = account.plan_set.get(id=plan_id)
+    except Site.DoesNotExist:
+        raise Http404
     if request.method == 'POST':
-        form = CreatePlanForm(request.POST)
+        form = CreatePlanForm(request.POST, instance=instance)
         if form.is_valid():
             plan = form.save(commit=False)
             plan.account = account
             plan.save()
-            messages.success(request, 'Plan created successfully.')
+            messages.success(request, 'Plan %s successfully.' % 'edited' if instance else 'created')
             return HttpResponseRedirect(reverse('plan_list'))
     else:
-        form = CreatePlanForm()
+        form = CreatePlanForm(instance=instance)
     return direct_to_template(request, template='sales/plan_form.html', extra_context={
-        'form': form
+        'form': form,
+        'instance': instance
+    })
+
+@login_required
+def delete_plan(request, plan_id):
+    account = request.user.get_profile()
+    try:
+        plan = account.plan_set.get(id=plan_id)
+    except Site.DoesNotExist:
+        raise Http404
+    if request.method == 'POST':
+        if plan.site_set.count() > 0:
+            messages.error(request, 'You still have restaurants on this plan.  Please change the plans for all restaurants before deleting this plan: <ul>%s</ul>' % ''.join('<li><a href="%s">%s</a></li>' % (reverse('edit_restaurant', args=[site.id]), site.name) for site in plan.site_set.all()))
+        else:
+            plan.delete()
+            messages.success(request, 'Plan deleted successfully.')
+            return HttpResponseRedirect(reverse('plan_list'))
+    return direct_to_template(request, template='sales/delete_plan.html', extra_context={
+        'plan': plan
     })
 
 @login_required
@@ -92,7 +116,7 @@ def create_edit_restaurant(request, restaurant_id=None):
         form = RestaurantForm(request.POST, account=account, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Restaurant created successfully.')
+            messages.success(request, 'Restaurant %s successfully.' % 'edited' if instance else 'created')
             return HttpResponseRedirect(reverse('restaurant_list'))
     else:
         form = RestaurantForm(account=account, instance=instance)

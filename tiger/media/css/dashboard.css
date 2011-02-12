@@ -636,3 +636,12 @@ ul.messages.unenrolled {
     li.incomplete .prog-5{background-position: -232px bottom;}
 
     li.complete div{background:url(../img/checkmark.png) center center no-repeat;}
+
+/* RESELLER STUFF */
+
+span.ballot {color:#dd0000;}
+span.check {color:#007700;}
+span.ballout, span.check {font-size:18px;}
+.messages li.error li {border:none;}
+.messages li.error li a {color:#AE0001;}
+.messages li.error ul {margin-bottom:0;}
