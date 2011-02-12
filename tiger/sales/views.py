@@ -153,4 +153,7 @@ def delete_restaurant(request, site_id):
 
 @login_required
 def billing_home(request):
-    pass
+    account = request.user.get_profile()
+    return direct_to_template(request, template='sales/billing_home.html', extra_context={
+        'account': account
+    })
