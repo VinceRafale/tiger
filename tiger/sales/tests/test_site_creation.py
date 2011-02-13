@@ -109,7 +109,7 @@ class ResellerSignupFormTestCase(TestCase):
             'email': 'new@new.com',
             'password1': 'password',
             'password2': 'password',
-            'cc_number': '1',
+            'cc_number': '12345678',
             'first_name': 'First',
             'last_name': 'Last',
             'zip': '11111',
@@ -134,6 +134,7 @@ class ResellerSignupFormTestCase(TestCase):
             account = form.save()
             self.assertEquals(account.customer_id, 'foo')
             self.assertEquals(account.subscription_id, 'bar')
+            self.assertEquals(account.card_number, '5678')
             self.assertTrue(account.manager)
             self.assertEquals(len(mail.outbox), 1)
             self.assertTrue(self.client.login(email=account.user.email, password='password'))

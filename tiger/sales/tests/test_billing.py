@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from dateutil.relativedelta import *
 
 from django.core import mail
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
@@ -10,7 +11,7 @@ from poseur.fixtures import load_fixtures
 
 from tiger.accounts.models import Site
 from tiger.notify.forms import PublishForm
-from tiger.notify.models import Fax
+from tiger.notify.models import Fax, Social
 from tiger.sales.exceptions import PaymentGatewayError, SiteManagementError
 from tiger.sales.models import Invoice, Plan
 from tiger.sms.models import SMS, SmsSubscriber
@@ -44,7 +45,7 @@ class BillingTestCase(TestCase):
         site = self.site
         current_month = date.today().replace(day=1)
         last_day_of_previous_month = current_month - timedelta(days=1)
-        site.signup_date = last_day_of_previous_month - timedelta(days=13)
+        site.signup_date = date.today()
         site.save()
         invoice = site.create_invoice()
         self.assertTrue(invoice.monthly_fee < site.plan.monthly_cost / 2)
@@ -239,6 +240,9 @@ class ManagedCustomerTestCase(TestCase):
             raise PaymentGatewayError
         invoice.send_to_gateway = kill_payment
         invoice.charge()
+        # instrument cache for facebook fragment
+        CACHE_KEY = Social.FACEBOOK_CACHE_KEY  % site.social.id
+        cache.set(CACHE_KEY, '')
         self.client.login(email='test@test.com', password='password', site=Site.objects.all()[0])
         response = self.client.get(reverse('sms_home'), follow=True, SERVER_NAME='foo.takeouttiger.com')
         self.assertRedirects(response, 'http://foo.takeouttiger.com' + reverse('dashboard_marketing'))

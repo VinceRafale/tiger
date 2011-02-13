@@ -1,4 +1,3 @@
-import calendar
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -9,9 +8,8 @@ from django.core.mail import send_mail
 from django.db import models, connection
 from django.template.loader import render_to_string
 
-from dateutil.relativedelta import *
-
 from tiger.sales.exceptions import PaymentGatewayError, SiteManagementError
+from tiger.utils.billing import prorate
 
 
 class SalesRep(models.Model):
@@ -49,6 +47,12 @@ class Account(models.Model):
     card_number = models.CharField('credit card number', max_length=30, null=True)
     card_type = models.CharField(max_length=50, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_COMPONENT_SUSPENSION)
+    basic_price = models.DecimalField(max_digits=5, decimal_places=2, default='40.00')
+    ecomm_price = models.DecimalField(max_digits=5, decimal_places=2, default='67.50')
+    multi_price = models.DecimalField(max_digits=5, decimal_places=2, default='85.50')
+    sms_line_price = models.DecimalField(max_digits=5, decimal_places=2, default='2.00')
+    sms_price = models.DecimalField(max_digits=5, decimal_places=2, default='0.02')
+    fax_price = models.DecimalField(max_digits=5, decimal_places=2, default='0.07')
     manager = models.BooleanField(default=False)
 
     class Meta:
@@ -107,6 +111,16 @@ class Account(models.Model):
         where acct.id = %s and sms.timestamp >= %s""", [self.id, first_of_month])
         return cursor.fetchall()[0][0]
 
+    def running_total(self):
+        fax_total = self.fax_pages_for_month() * self.fax_price
+        sms_total = self.text_messages_for_month() * self.sms_price
+        base_plan_total = sum([
+            prorate(s.signup_date, s.plan.total)
+            for s in self.site_set.all()
+        ])
+        return base_plan_total + fax_total + sms_total
+
+
 
 class Plan(models.Model):
     CAP_SOFT = 1
@@ -128,37 +142,35 @@ class Plan(models.Model):
     def __unicode__(self):
         return self.name
 
+    def _from_account_or_default(self, attr_name, dec):
+        account = self.account
+        return getattr(account, attr_name, None) or Decimal(dec)
+
     @property
     def monthly_cost(self):
-        if not self.account:
-            if not self.has_online_ordering:
-                return Decimal('50.00')
-            if not self.multiple_locations:
-                return Decimal('75.00')
-            return Decimal('95.00')
+        account = self.account
         if not self.has_online_ordering:
-            return Decimal('40.00')
+            return self._from_account_or_default('basic_price', '50.00')
         if not self.multiple_locations:
-            return Decimal('67.50')
-        return Decimal('85.50')
+            return self._from_account_or_default('ecomm_price', '75.00')
+        return self._from_account_or_default('multi_price', '95.00')
 
     @property
     def fax_page_cost(self):
-        if not self.account:
-            return Decimal('0.10')
-        return Decimal('0.07')
+        return self._from_account_or_default('fax_price', '0.10')
 
     @property
     def sms_number_cost(self):
-        if not self.account:
-            return Decimal('5.00')
-        return Decimal('2.00')
+        return self._from_account_or_default('sms_line_price', '5.00')
 
     @property
     def sms_cost(self):
-        if not self.account:
-            return Decimal('0.05')
-        return Decimal('0.02')
+        return self._from_account_or_default('sms_price', '0.05')
+
+    @property
+    def total(self):
+        print self.monthly_cost + self.sms_number_cost
+        return self.monthly_cost + self.sms_number_cost
 
 
 class Invoice(models.Model):
@@ -206,16 +218,10 @@ class Invoice(models.Model):
         )
 
     def main_billing_amount(self):
-        today = date.today()
         site = self.site
         plan = site.plan
-        one_month_ago = today + relativedelta(months=-1)
         monthly_cost = plan.monthly_cost
-        if one_month_ago.replace(day=1) > site.signup_date.replace(day=1):
-            return monthly_cost
-        weekday, days = calendar.monthrange(one_month_ago.year, one_month_ago.month)
-        days_in_service = days - site.signup_date.day
-        return monthly_cost * (days_in_service / days)
+        return site.prorate(monthly_cost)
 
     def get_fax_charge_amount(self):
         unlogged_faxes = self.site.fax_set.filter(logged=False)

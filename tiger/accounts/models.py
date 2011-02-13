@@ -19,6 +19,7 @@ from pytz import timezone
 
 from tiger.core.exceptions import NoOnlineOrders, ClosingTimeBufferError, RestaurantNotOpen
 from tiger.utils.cache import cachedmethod, KeyChain
+from tiger.utils.billing import prorate
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
 from tiger.sales.models import SalesRep, Account, Invoice, Charge
@@ -142,6 +143,9 @@ class Site(models.Model):
             account=self.account,
             site=self
         )
+
+    def prorate(self, amt):
+        return prorate(self.signup_date, amt)
 
     @property
     def is_suspended(self):

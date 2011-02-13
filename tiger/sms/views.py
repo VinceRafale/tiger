@@ -107,12 +107,16 @@ def sms_signup(request):
         return HttpResponseRedirect(reverse('sms_home'))
     else:
         area_code = request.GET.get('area_code') or request.site.location_set.all()[0].phone[:3]
-        response = account.request('/2010-04-01/Accounts/%s/AvailablePhoneNumbers/us/Local.json' % settings.TWILIO_ACCOUNT_SID, 'GET', dict(AreaCode=area_code))
-        data = json.loads(response)
-        available_numbers = [
-            (number['phone_number'], number['friendly_name'])
-            for number in data['available_phone_numbers']
-        ]
+        try:
+            response = account.request('/2010-04-01/Accounts/%s/AvailablePhoneNumbers/us/Local.json' % settings.TWILIO_ACCOUNT_SID, 'GET', dict(AreaCode=area_code))
+        except:
+            available_numbers = []
+        else:
+            data = json.loads(response)
+            available_numbers = [
+                (number['phone_number'], number['friendly_name'])
+                for number in data['available_phone_numbers']
+            ]
     return direct_to_template(request, template='dashboard/marketing/sms_signup.html', extra_context={ 'available_numbers': available_numbers,
         'area_code': area_code
     })

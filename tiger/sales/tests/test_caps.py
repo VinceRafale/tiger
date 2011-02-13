@@ -17,7 +17,12 @@ class ManagedPlanPricingTestCase(unittest.TestCase):
         self.plan = Plan()
 
     def test_prices_for_managed_service(self):
-        self.plan.account = Mock(Account())
+        account = Mock(Account())
+        account.basic_price = Decimal('40.00')
+        account.sms_line_price = Decimal('2.00')
+        account.sms_price = Decimal('0.02')
+        account.fax_price = Decimal('0.07')
+        self.plan.account = account
         self.assertEquals(self.plan.monthly_cost, Decimal('40.00'))
         self.assertEquals(self.plan.fax_page_cost, Decimal('0.07'))
         self.assertEquals(self.plan.sms_number_cost, Decimal('2.00'))
@@ -34,7 +39,14 @@ class ManagedPlanPricingTestCase(unittest.TestCase):
 class MonthlyCostPricingTestCase(unittest.TestCase):
     def setUp(self):
         self.plan = Plan()
-        self.plan.account = Mock(Account())
+        account = Mock(Account())
+        account.basic_price = Decimal('40.00')
+        account.ecomm_price = Decimal('67.50')
+        account.multi_price = Decimal('85.50')
+        account.sms_line_price = Decimal('2.00')
+        account.sms_price = Decimal('0.02')
+        account.fax_price = Decimal('0.07')
+        self.plan.account = account
 
     def test_monthly_price_for_basic_plan(self):
         self.assertEquals(self.plan.monthly_cost, Decimal('40.00'))

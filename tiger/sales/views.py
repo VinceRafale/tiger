@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db import connection
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.simple import direct_to_template

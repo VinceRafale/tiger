@@ -119,6 +119,7 @@ class CreateResellerAccountForm(BetterModelForm):
         account = super(CreateResellerAccountForm, self).save(commit=False)
         account.customer_id = self.customer_prof_id
         account.subscription_id = self.payment_prof_id
+        account.card_number = self.cleaned_data.get('cc_number')[-4:]
         account.manager = True
         email = self.cleaned_data.get('email')
         user = User(
