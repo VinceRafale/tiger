@@ -7,7 +7,6 @@ from django.utils import simplejson as json
 
 import twilio
 
-from tiger.utils.fields import PickledObjectField
 from tiger.utils.models import Message
 
 # Create your models here.

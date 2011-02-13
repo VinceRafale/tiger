@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 
 from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged
+from picklefield.fields import PickledObjectField
 from pytz import timezone
 
 from tiger.content.handlers import pdf_caching_handler
@@ -23,7 +24,6 @@ from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable, PricePo
 from tiger.core.messages import *
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler
-from tiger.utils.fields import PickledObjectField
 from tiger.utils.hours import *
 from tiger.utils.pdf import render_to_pdf
 
