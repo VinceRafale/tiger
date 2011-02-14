@@ -55,7 +55,7 @@ class NewSiteFormTestCase(TestCase):
             'name': 'Restaurant',
             'subdomain': 'bar'
         }
-        one, two, three = Plan.objects.all()
+        one, two, three, four = Plan.objects.all()
         one.account = two.account = self.account
         one.save()
         two.save()

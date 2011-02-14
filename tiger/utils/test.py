@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.core.management import call_command
-from django.db import transaction, IntegrityError
 from django.test import TestCase as BaseTestCase
 from django.utils.importlib import import_module
 
@@ -11,14 +10,8 @@ class TestCase(BaseTestCase):
     @classmethod
     def setup_class(cls):
         if hasattr(cls, 'poseur_fixtures'):
-            try:
-                load_fixtures(cls.poseur_fixtures)
-            except IntegrityError:
-                transaction.rollback()
-
-    @classmethod
-    def teardown_class(cls):
-        call_command('flush', verbosity=0, interactive=False, database='default')
+            call_command('flush', verbosity=0, interactive=False, database='default')
+            load_fixtures(cls.poseur_fixtures)
 
     def _pre_setup(self):
         super(TestCase, self)._pre_setup()

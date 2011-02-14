@@ -1,3 +1,4 @@
 [{"pk": 2, "model": "sales.plan", "fields": {"account": null, "fax_cap": 0, "name": "no caps", "sms_cap": 0, "fax_cap_type": 0, "has_sms": false, "multiple_locations": false, "sms_cap_type": 0}}, 
     {"pk": 3, "model": "sales.plan", "fields": {"account": null, "fax_cap": 100, "name": "soft caps", "sms_cap": 100, "fax_cap_type": 1, "has_sms": false, "multiple_locations": false, "sms_cap_type": 1}}, 
-    {"pk": 4, "model": "sales.plan", "fields": {"account": null, "fax_cap": 100, "name": "hard caps", "sms_cap": 100, "fax_cap_type": 2, "has_sms": false, "multiple_locations": false, "sms_cap_type": 2}}]
+    {"pk": 4, "model": "sales.plan", "fields": {"account": null, "fax_cap": 100, "name": "soft caps", "sms_cap": 100, "fax_cap_type": 1, "has_sms": false, "multiple_locations": false, "sms_cap_type": 1, "has_online_ordering": true}}, 
+    {"pk": 5, "model": "sales.plan", "fields": {"account": null, "fax_cap": 100, "name": "hard caps", "sms_cap": 100, "fax_cap_type": 2, "has_sms": false, "multiple_locations": false, "sms_cap_type": 2}}]

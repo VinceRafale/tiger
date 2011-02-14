@@ -1,10 +1,7 @@
-from django.core.urlresolvers import reverse
-from django.conf import settings
 from tiger.utils.test import TestCase
 from django.test.client import Client
 
 from nose.tools import *
-from poseur.fixtures import load_fixtures
 
 from tiger.accounts.models import Site
 from tiger.core.models import Coupon
@@ -32,7 +29,7 @@ class CouponFeaturesTestCase(TestCase):
     def test_view_count(self):
         coupon = self.coupon
         coupon.require_sharing = True
-        response = self.client.get(coupon.get_absolute_url())
+        self.client.get(coupon.get_absolute_url())
         self.assertEquals(1, Coupon.objects.get(id=coupon.id).view_count)
 
     def test_reveal_code_twitter(self):

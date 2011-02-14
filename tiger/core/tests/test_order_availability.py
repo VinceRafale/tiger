@@ -1,4 +1,3 @@
-import math
 from datetime import datetime, timedelta
 from decimal import Decimal
 import random
@@ -7,17 +6,17 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
-from django.test.testcases import call_command
 
 from nose.tools import *
 from poseur.fixtures import load_fixtures
 from pytz import timezone
 
 from tiger.accounts.models import Site, TimeSlot, Schedule, Location
-from tiger.core.exceptions import *
 from tiger.core.forms import OrderForm
 from tiger.core.messages import *
+from tiger.core.exceptions import *
 from tiger.core.models import Section, Item, Variant, Order
+from tiger.sales.models import Plan
 from tiger.utils.hours import DOW_CHOICES
 
 
@@ -38,6 +37,8 @@ def setup_timeslots(dt):
         if not Site.objects.count():
             load_fixtures('tiger.fixtures')
         site = Site.objects.all()[0]
+        site.plan, created = Plan.objects.get_or_create(has_online_ordering=True)
+        site.save()
         location = site.location_set.all()[0]
         location.eod_buffer = 15
         location.tax_rate = '6.25'
@@ -95,7 +96,7 @@ def setup_pricepoint_timeslots(dt):
             stockinfo.save()
             # no schedule for one price point
             Variant.objects.create(description='large', item=item, price=Decimal('5.00'))
-            v = Variant.objects.create(description='small', item=item, price=Decimal('3.00'), schedule=schedule)
+            Variant.objects.create(description='small', item=item, price=Decimal('3.00'), schedule=schedule)
     return _setup
             
 
@@ -261,7 +262,6 @@ class ItemDisplayTestCase(TestCase):
         self.stockinfo = stockinfo
 
     def test_available(self):
-        location = Location.objects.all()[0]
         self.item.archived = self.stockinfo.out_of_stock = False
         self.item.save()
         self.stockinfo.save()
