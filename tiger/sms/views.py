@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
 from django.utils import simplejson as json
@@ -22,30 +23,42 @@ def respond_to_sms(request):
     body = request.POST.get('Body', '')
     normalized_body = body.strip().lower()
     phone_number = request.POST.get('From')
-    subscriber, created = SmsSubscriber.objects.get_or_create(
-        settings=sms_settings,
-        phone_number=phone_number, defaults=dict(
-            city=request.POST.get('FromCity', ''),
-            state=request.POST.get('FromState', ''),
-            zip_code=request.POST.get('FromZip', ''),
-        )
-    )
+    try:
+        subscriber = SmsSubscriber.objects.get(settings=sms_settings, phone_number=phone_number)
+    except SmsSubscriber.DoesNotExist:
+        if normalized_body == 'in':
+            subscriber = SmsSubscriber.objects.create(
+                settings=sms_settings,
+                phone_number=phone_number,
+                city=request.POST.get('FromCity', ''),
+                state=request.POST.get('FromState', ''),
+                zip_code=request.POST.get('FromZip', '')
+            )
+        else:
+            subscriber = None
     SMS.objects.create(
         settings=sms_settings, 
         subscriber=subscriber, 
         destination=SMS.DIRECTION_INBOUND,
         body=body
     )
-    if normalized_body == 'in' and created:
-        # add subscription
-        if sms_settings.send_intro:
-            subscriber.send_message(sms_settings.intro_sms)
-    elif normalized_body == 'out':
-        subscriber.unsubscribed_at = datetime.now()
-        subscriber.save()
     return HttpResponse('<Response></Response>', mimetype='text/xml')
 
 
+def not_suspended(func):
+    def wrapped(request, *args, **kwargs):
+        if request.site.is_suspended:
+            messages.error(request, 'Your account has been suspended because we were unable to process your credit card.  Currently, only fax and SMS functionality have been disabled.  You must update your billing information by first of the coming month or you will also lose the ability to update the site.')
+            if request.site.managed:
+                redirect_to = reverse('dashboard_marketing')
+            else:
+                redirect_to = reverse('update_cc')
+            return HttpResponseRedirect(redirect_to)
+        return func(request, *args, **kwargs)
+    return wrapped
+
+@login_required
+@not_suspended
 def sms_home(request):
     sms = request.site.sms
     if not sms.enabled:
@@ -70,6 +83,8 @@ def sms_home(request):
     })
 
 
+@login_required
+@not_suspended
 def sms_signup(request):
     account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
     site = request.site
@@ -92,17 +107,23 @@ def sms_signup(request):
         return HttpResponseRedirect(reverse('sms_home'))
     else:
         area_code = request.GET.get('area_code') or request.site.location_set.all()[0].phone[:3]
-        response = account.request('/2010-04-01/Accounts/%s/AvailablePhoneNumbers/us/Local.json' % settings.TWILIO_ACCOUNT_SID, 'GET', dict(AreaCode=area_code))
-        data = json.loads(response)
-        available_numbers = [
-            (number['phone_number'], number['friendly_name'])
-            for number in data['available_phone_numbers']
-        ]
+        try:
+            response = account.request('/2010-04-01/Accounts/%s/AvailablePhoneNumbers/us/Local.json' % settings.TWILIO_ACCOUNT_SID, 'GET', dict(AreaCode=area_code))
+        except:
+            available_numbers = []
+        else:
+            data = json.loads(response)
+            available_numbers = [
+                (number['phone_number'], number['friendly_name'])
+                for number in data['available_phone_numbers']
+            ]
     return direct_to_template(request, template='dashboard/marketing/sms_signup.html', extra_context={ 'available_numbers': available_numbers,
         'area_code': area_code
     })
 
 
+@login_required
+@not_suspended
 def sms_disable(request):
     account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
     if request.method == 'POST':
@@ -120,6 +141,8 @@ def sms_disable(request):
         return direct_to_template(request, template='dashboard/marketing/disable_sms.html')
 
 
+@login_required
+@not_suspended
 def remove_subscriber(request, subscriber_id):
     try:
         assert request.POST['delete']
@@ -130,6 +153,8 @@ def remove_subscriber(request, subscriber_id):
     return HttpResponse("deleted");
 
 
+@login_required
+@not_suspended
 def sms_subscriber_list(request):
     subscribers = request.site.sms.smssubscriber_set.active()
     return direct_to_template(request, template='dashboard/marketing/sms_subscriber_list.html', extra_context={
@@ -137,6 +162,8 @@ def sms_subscriber_list(request):
     })
 
 
+@login_required
+@not_suspended
 def toggle_star(request, subscriber_id):
     try:
         subscriber = request.site.sms.smssubscriber_set.get(id=subscriber_id)
@@ -147,6 +174,8 @@ def toggle_star(request, subscriber_id):
     return HttpResponse('Favourite_24x24' if subscriber.starred else 'unstarred')
 
 
+@login_required
+@not_suspended
 def create_campaign(request):
     if request.method == 'POST':
         form = CampaignForm(request.POST)
@@ -160,7 +189,6 @@ def create_campaign(request):
 <span>Campaign "%s" currently in progress. (<span class="sent-count">%d</span> / %d sent)</span>
             """ % (campaign.title, campaign.sent_count, campaign.count))
             return HttpResponseRedirect(reverse('sms_home'))
-        print form._errors
     else:
         form = CampaignForm()
     return direct_to_template(request, template='dashboard/marketing/sms_campaign_form.html', extra_context={
@@ -168,6 +196,8 @@ def create_campaign(request):
     })
 
 
+@login_required
+@not_suspended
 def get_options(request):
     attr_to_query = request.GET.get('attr')
     if not attr_to_query or attr_to_query not in ('city', 'state', 'zip_code'):
@@ -175,6 +205,8 @@ def get_options(request):
     return HttpResponse(request.site.sms.get_options_for(attr_to_query))
 
 
+@login_required
+@not_suspended
 def send_single_sms(request, subscriber_id):
     if request.method == 'POST':
         try:
@@ -189,6 +221,8 @@ def send_single_sms(request, subscriber_id):
             'subscriber_id': subscriber_id
         })
 
+@login_required
+@not_suspended
 def campaign_progress(request, campaign_id):
     try:
         campaign = request.site.sms.campaign_set.get(id=campaign_id)
@@ -199,6 +233,8 @@ def campaign_progress(request, campaign_id):
         'count': campaign.sent_count
     }))
 
+@login_required
+@not_suspended
 def edit_settings(request):
     sms = request.site.sms
     if request.method == 'POST':
@@ -213,6 +249,8 @@ def edit_settings(request):
         'form': form
     })
 
+@login_required
+@not_suspended
 def campaign_list(request):
     sms = request.site.sms
     campaigns = sms.campaign_set.order_by('-timestamp')

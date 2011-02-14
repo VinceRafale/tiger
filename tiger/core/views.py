@@ -19,6 +19,15 @@ from tiger.core.models import Section, Item, Coupon, Order
 from tiger.notify.tasks import DeliverOrderTask
 from tiger.utils.views import render_custom
 
+
+def requires_online_ordering(func):
+    def wrapper(request, *args, **kwargs):
+        if not request.site.plan.has_online_ordering:
+            raise Http404
+        return func(request, *args, **kwargs)
+    return wrapper
+
+
 def section_list(request):
     sections = Section.objects.filter(site=request.site)
     return render_custom(request, 'core/section_list.html', 
@@ -57,6 +66,7 @@ def item_detail(request, section_id, section_slug, item_id, item_slug):
     return render_custom(request, 'core/item_detail.html', 
         {'item': i, 'sections': request.site.section_set.all()})
 
+@requires_online_ordering
 def order_item(request, section_id, section_slug, item_id, item_slug):
     i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
@@ -79,6 +89,7 @@ def order_item(request, section_id, section_slug, item_id, item_slug):
         form = OrderForm(location=request.location)
     return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': '%.2f' % total, 'sections': request.site.section_set.all()})
 
+@requires_online_ordering
 def preview_order(request):
     if not hasattr(request, 'cart'):
         return HttpResponseRedirect('/menu/')
@@ -98,6 +109,7 @@ def preview_order(request):
     return render_custom(request, 'core/preview_order.html', 
         {'form': form})
 
+@requires_online_ordering
 def remove_item(request):
     request.cart.remove(request.GET.get('id'))
     return HttpResponseRedirect(reverse('preview_order'))
@@ -127,6 +139,7 @@ def share_coupon(request, coupon_id):
         'coupon': coupon
     })
 
+@requires_online_ordering
 def add_coupon(request):
     code = request.GET.get('cc')
     if code is None:
@@ -141,11 +154,13 @@ def add_coupon(request):
         messages.success(request, 'Coupon added to your cart successfully.')   
     return HttpResponseRedirect(reverse('menu_home'))
 
+@requires_online_ordering
 def clear_coupon(request):
     request.cart.remove_coupon()
     messages.success(request, 'Your coupon has been removed.')   
     return HttpResponseRedirect(reverse('preview_order'))
 
+@requires_online_ordering
 def send_order(request):
     try:
         assert request.site.is_open(request.location)
@@ -200,6 +215,7 @@ def send_order(request):
     }
     return render_custom(request, 'core/send_order.html', context)
 
+@requires_online_ordering
 def payment_paypal(request):
     try:
         order = Order.objects.get(id=request.session['order_id'])
@@ -220,6 +236,7 @@ def payment_paypal(request):
     context = {'form': form}
     return render_custom(request, 'core/payment_paypal.html', context)
 
+@requires_online_ordering
 def payment_authnet(request):
     order_id = request.REQUEST.get('o')
     try:
@@ -236,7 +253,7 @@ def payment_authnet(request):
     context = {'form': form, 'order_id': order_id, 'order_settings': request.site.ordersettings}
     return render_custom(request, 'core/payment_authnet.html', context)
             
-
+@requires_online_ordering
 def order_success(request):
     return render_custom(request, 'core/order_success.html')
 

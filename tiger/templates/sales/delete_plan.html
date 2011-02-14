@@ -1,0 +1,14 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}site{% endblock %}
+
+{% block h2 %}
+You are about to delete plan "{{ plan }}"
+{% endblock %}
+
+{% block content %}
+<p>Are you sure that you want to delete this plan?</p>
+<form method="POST">
+<input class="submit" type="submit" value="Permanently delete this plan"> <a href="{% url plan_list %}">I've changed my mind</a>
+</form>
+{% endblock %}

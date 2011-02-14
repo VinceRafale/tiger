@@ -6,7 +6,7 @@ from nose.tools import raises
 
 
 def test_component_groups_contain_components():
-    panels = Stork('stork/tests/fixtures/valid.yml')
+    panels = Stork(config_path='stork/tests/fixtures/valid.yml')
     for panel in panels:
         for group in panel:
             for component in group:
@@ -14,7 +14,7 @@ def test_component_groups_contain_components():
 
 
 def test_components_have_unique_keys():
-    panels = Stork('stork/tests/fixtures/valid.yml')
+    panels = Stork(config_path='stork/tests/fixtures/valid.yml')
     for panel in panels:
         for group in panel:
             for component in group:
@@ -23,16 +23,16 @@ def test_components_have_unique_keys():
 
 @raises(StorkConfigurationError)
 def test_no_component_type_fails():
-    panels = Stork('stork/tests/fixtures/no_component_type.yml')
+    panels = Stork(config_path='stork/tests/fixtures/no_component_type.yml')
 
 
 @raises(StorkConfigurationError)
 def test_invalid_component_type_fails():
-    panels = Stork('stork/tests/fixtures/invalid_component_type.yml')
+    panels = Stork(config_path='stork/tests/fixtures/invalid_component_type.yml')
 
 
 def test_all_components_are_in_cache():
-    panels = Stork('stork/tests/fixtures/valid.yml')
+    panels = Stork(config_path='stork/tests/fixtures/valid.yml')
     for panel in panels:
         for group in panel:
             for component in group:
@@ -41,6 +41,6 @@ def test_all_components_are_in_cache():
 
 
 def test_correct_subclass_is_assigned():
-    panels = Stork('stork/tests/fixtures/valid.yml')
+    panels = Stork(config_path='stork/tests/fixtures/valid.yml')
     assert isinstance(panels['foo-baz'], SwatchComponent)
     assert isinstance(panels['bar-quux'], FontComponent)

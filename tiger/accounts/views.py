@@ -26,7 +26,7 @@ def signup(request):
 
 def domain_check(request):
     if not request.is_ajax() or request.method != 'POST':
-        return Http404
+        raise Http404
     subdomain = request.POST.get('subdomain', '')
     data = {}
     try:
@@ -40,7 +40,7 @@ def domain_check(request):
 
 def validate_coupon(request):
     if not request.is_ajax() or request.method != 'POST':
-        return Http404
+        raise Http404
     code = request.POST.get('coupon', '')
     data = {}
     try:

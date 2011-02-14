@@ -30,7 +30,7 @@ class SelectableTimeField(forms.MultiValueField):
     def compress(self, data_list):
         if data_list:
             hours, minutes, meridian = data_list
-            if meridian == 'pm' and hours != 12:
+            if meridian.lower() == 'pm' and hours != 12:
                 hours += 12  
             return time(hours, minutes)
         return None

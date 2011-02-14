@@ -14,7 +14,6 @@ from tiger.core.forms import *
 from tiger.core.models import *
 from tiger.accounts.forms import TimeSlotForm, ScheduleSelectForm
 from tiger.accounts.models import TimeSlot
-from tiger.utils.forms import RequireOneFormSet
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 def _reorder_objects(model, id_list):

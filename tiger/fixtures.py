@@ -29,6 +29,7 @@ class FakeSite(FakeModel):
     subdomain = 'foo'
     custom_domain = False
     timezone = settings.TIME_ZONE
+    managed = False
 
     class Meta:
         model = Site

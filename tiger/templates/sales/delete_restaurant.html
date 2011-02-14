@@ -1,0 +1,16 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}marketing{% endblock %}
+
+{% block h2 %}
+You are about to delete {{ restaurant.name }}'s web site!
+{% endblock %}
+
+{% block content %}
+<p>If you choose to delete this restaurant's web site, all their Takeout Tiger data will be permanently destroyed.  It cannot be restored.  Furthermore, their Takeout Tiger subdomain will become available for other restaurants.</p>
+<form method="POST">
+<input class="submit" type="submit" value="Permanently delete this restaurant's site"> <a href="{% url restaurant_list %}">I've changed my mind</a>
+</form>
+{% endblock %}
+
+

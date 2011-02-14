@@ -2,18 +2,20 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import CreditCardForm, BasicInfoForm
-from tiger.accounts.models import Account, Site
+from tiger.accounts.models import Site
 from tiger.dashboard.account.forms import CancellationForm
-from tiger.utils.chargify import Chargify
+from tiger.sales.models import Account
 from tiger.utils.views import add_edit_site_object
 
 
 @login_required
 def cancel(request):
+    if request.site.managed:
+        raise Http404
     if request.method == 'POST':
         form = CancellationForm(request.POST)
         form.full_clean()
@@ -46,7 +48,15 @@ def basic_info(request):
         extra_context={'form': form})
 
 @login_required
+def billing_history(request):
+    if request.site.managed:
+        raise Http404
+    return direct_to_template(request, template='dashboard/account/billing_history.html')
+
+@login_required
 def update_cc(request):
+    if request.site.managed:
+        raise Http404
     if request.method == 'POST':
         form = CreditCardForm(request.POST, instance=request.site.account)
         if form.is_valid():
