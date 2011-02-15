@@ -134,7 +134,9 @@ class Campaign(models.Model):
         }
         return urls[self.starred]
             
-
+class SmsManager(models.Manager):
+    def inbox(self):
+        return self.all()
 
 class SMS(Message):
     DELIVERY_PENDING = 0
@@ -147,6 +149,9 @@ class SMS(Message):
     body = models.CharField(max_length=160)
     status = models.IntegerField(default=DELIVERY_PENDING)
     read = models.BooleanField()
+    conversation = models.BooleanField(default=False)
+    phone_number = models.CharField(max_length=20)
+    objects = SmsManager()
 
     def save(self, *args, **kwargs):
         super(SMS, self).save(*args, **kwargs)

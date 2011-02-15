@@ -40,7 +40,9 @@ def respond_to_sms(request):
         settings=sms_settings, 
         subscriber=subscriber, 
         destination=SMS.DIRECTION_INBOUND,
-        body=body
+        body=body,
+        phone_number=phone_number,
+        conversation=body not in ('in', 'out',)
     )
     return HttpResponse('<Response></Response>', mimetype='text/xml')
 
