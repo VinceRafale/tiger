@@ -12,75 +12,22 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
+from dateutil.relativedelta import *
+
 import pytz
 from pytz import timezone
 
 from tiger.core.exceptions import NoOnlineOrders, ClosingTimeBufferError, RestaurantNotOpen
 from tiger.utils.cache import cachedmethod, KeyChain
+from tiger.utils.billing import prorate
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
+from tiger.sales.models import SalesRep, Account, Invoice, Charge
+from tiger.sms.models import SmsSettings
 from tiger.stork import Stork
 from tiger.stork.models import Theme
 
 TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replace('_', ' ') for tz in pytz.country_timezones('us')])
-
-
-class SalesRep(models.Model):
-    user = models.ForeignKey(User)
-    code = models.CharField(max_length=8)
-    plan = models.CharField(max_length=12, default=settings.DEFAULT_BONUS_PRODUCT_HANDLE)
-
-
-class Account(models.Model):
-    """Stores data for customer billing and contact.
-    """
-    STATUS_ACTIVE = 1
-    STATUS_COMPONENT_SUSPENSION = 2
-    STATUS_FULL_SUSPENSION = 3
-    STATUS_CHOICES = (
-        (STATUS_ACTIVE, 'Active'),
-        (STATUS_COMPONENT_SUSPENSION, 'Components suspended'),
-        (STATUS_FULL_SUSPENSION, 'All service suspended'),
-    )
-    user = models.ForeignKey(User)
-    company_name = models.CharField(max_length=200)
-    email = models.EmailField('billing e-mail address')
-    phone = PhoneNumberField(null=True, blank=True)
-    fax = PhoneNumberField(null=True, blank=True)
-    street = models.CharField(max_length=255, null=True, blank=True)
-    city = models.CharField(max_length=255, null=True, blank=True)
-    state = USStateField(null=True, blank=True)
-    zip = models.CharField(max_length=10)
-    signup_date = models.DateField(editable=False, default=datetime.now)
-    customer_id = models.CharField(max_length=200, default='')
-    subscription_id = models.CharField(max_length=200, default='')
-    card_number = models.CharField('credit card number', max_length=30, null=True)
-    card_type = models.CharField(max_length=50, null=True)
-    referrer = models.ForeignKey(SalesRep, null=True, editable=False)
-    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_COMPONENT_SUSPENSION)
-
-    def natural_key(self):
-        return (self.user.username,)
-
-    def __unicode__(self):
-        return self.company_name
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.signup_date = date.today()
-        super(Account, self).save(*args, **kwargs)
-
-    def send_confirmation_email(self):
-        body = render_to_string('accounts/confirmation.txt', {'account': self})
-        send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
-
-    def set_sms_subscription(self, subscribed):
-        chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
-        chargify.subscriptions.components.update(
-            subscription_id=self.subscription_id, component_id=2889, 
-            data={'component': {'enabled': int(subscribed)}}
-        )
-
 
 
 class Site(models.Model):
@@ -88,6 +35,7 @@ class Site(models.Model):
     displaying a specific site.
     """
     account = models.ForeignKey(Account)
+    user = models.ForeignKey('auth.User')
     name = models.CharField(max_length=200)
     subdomain = models.CharField(max_length=200, unique=True)
     domain = models.CharField(max_length=200, null=True, blank=True)
@@ -95,8 +43,11 @@ class Site(models.Model):
     custom_domain = models.BooleanField(default=False)
     enable_orders = models.BooleanField(default=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
-    theme = models.ForeignKey('stork.Theme', null=True)
-    sms = models.ForeignKey('sms.SmsSettings', null=True)
+    theme = models.ForeignKey(Theme, null=True)
+    sms = models.ForeignKey(SmsSettings, null=True)
+    plan = models.ForeignKey('sales.Plan', null=True)
+    signup_date = models.DateField(auto_now_add=True)
+    managed = models.BooleanField(default=False)
 
     def natural_key(self):
         return (self.subdomain,)
@@ -186,6 +137,19 @@ class Site(models.Model):
     def sidebar_locations(self):
         html = render_to_string('core/includes/sidebar_locations.html', {'site': self}) 
         return mark_safe(html)
+
+    def create_invoice(self):
+        return Invoice.objects.create(
+            account=self.account,
+            site=self
+        )
+
+    def prorate(self, amt):
+        return prorate(self.signup_date, amt)
+
+    @property
+    def is_suspended(self):
+        return bool(self.account.invoice_set.filter(status=Invoice.STATUS_FAILED).count())
 
 
 class Location(models.Model):
@@ -364,6 +328,8 @@ def new_site_setup(sender, instance, created, **kwargs):
         schedule = Schedule.objects.create(site=instance, master=True)
         location = Location.objects.create(site=instance, schedule=schedule)
         theme = Theme.objects.create(name=instance.name)
+        sms = SmsSettings.objects.create()
+        instance.sms = sms
         stork = Stork(theme)
         stork.save()
         instance.theme = theme

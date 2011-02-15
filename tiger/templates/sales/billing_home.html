@@ -1,0 +1,20 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}account{% endblock %}
+
+{% block h2 %}
+Your account
+{% endblock %}
+
+{% block content %}
+<h3>Payment details</h3>
+<p>Currently configured to bill your credit card ending in {{ account.card_number }}.  Your balance for this month is currently ${{ account.running_total }}.</p>
+<h3>Invoices</h3>
+<ul>
+{% for invoice in account.invoice_set.all %}
+    <li>{{ invoice }}</li>
+{% empty %}
+    <li>You have not yet been billed.</li>
+{% endfor %}
+<ul>
+{% endblock %}

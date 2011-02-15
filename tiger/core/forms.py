@@ -11,7 +11,7 @@ from authorize.aim import Api
 from pytz import timezone
 
 from tiger.core.exceptions import PricePointNotAvailable
-from tiger.accounts.forms import AmPmTimeField
+from tiger.core.fields import SelectableTimeField
 from tiger.core.models import *
 from tiger.dashboard.widgets import ImageChooserWidget
 from tiger.utils.forms import BetterModelForm
@@ -102,7 +102,7 @@ def get_item_form(site):
 
 
 class OrderForm(forms.ModelForm):
-    ready_by = AmPmTimeField(required=True)
+    ready_by = SelectableTimeField(required=True)
 
     class Meta:
         model = Order

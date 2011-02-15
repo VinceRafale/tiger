@@ -7,7 +7,6 @@ from django.utils import simplejson as json
 
 import twilio
 
-from tiger.utils.fields import PickledObjectField
 from tiger.utils.models import Message
 
 # Create your models here.
@@ -54,20 +53,21 @@ class SmsSubscriber(models.Model):
     objects = SmsSubscriberManager()
 
     def save(self, *args, **kwargs):
-        if not self.id:
+        new = not self.id
+        if new:
             self.signed_up_at = datetime.now()
         super(SmsSubscriber, self).save(*args, **kwargs)
+        if new and self.settings.send_intro:
+            self.send_message(self.settings.intro_sms)
 
     @property
     def is_active(self):
         return not self.unsubscribed_at
 
     def send_message(self, body, sms_number=None, campaign=None):
-        account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
         if sms_number is None:
             sms_number = self.settings.sms_number
-        response = account.request('/2010-04-01/Accounts/%s/SMS/Messages.json' % settings.TWILIO_ACCOUNT_SID, 'POST', dict(From=sms_number, To=self.phone_number, Body=body))
-        data = json.loads(response)
+        data = self.get_sms_response(body, sms_number)
         #TODO: learn more about failures
         SMS.objects.create(
             settings=self.settings,
@@ -76,6 +76,11 @@ class SmsSubscriber(models.Model):
             body=body,
             destination=SMS.DIRECTION_OUTBOUND
         )
+
+    def get_sms_response(self, body, sms_number): 
+        account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
+        response = account.request('/2010-04-01/Accounts/%s/SMS/Messages.json' % settings.TWILIO_ACCOUNT_SID, 'POST', dict(From=sms_number, To=self.phone_number, Body=body))
+        return json.loads(response)
 
 
 class Campaign(models.Model):
@@ -137,8 +142,15 @@ class SMS(Message):
     DELIVERY_FAILURE = 2
     settings = models.ForeignKey(SmsSettings)
     campaign = models.ForeignKey(Campaign, null=True)
-    subscriber = models.ForeignKey(SmsSubscriber)
+    subscriber = models.ForeignKey(SmsSubscriber, null=True)
     sid = models.CharField(max_length=34)
     body = models.CharField(max_length=160)
     status = models.IntegerField(default=DELIVERY_PENDING)
     read = models.BooleanField()
+
+    def save(self, *args, **kwargs):
+        super(SMS, self).save(*args, **kwargs)
+        if self.body.strip().lower() == 'out':
+            subscriber = self.subscriber
+            subscriber.unsubscribed_at = datetime.now()
+            subscriber.save()

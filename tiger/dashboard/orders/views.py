@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template.loader import render_to_string
 from django.views.generic.simple import direct_to_template
 
@@ -9,13 +9,24 @@ from tiger.accounts.forms import OrderSettingsForm
 from tiger.core.forms import OrderPaymentForm, GeocodeError, OrderMessageForm
 from tiger.core.models import Order
 
+
+def online_ordering_required(func):
+    def wrapped(request, *args, **kwargs):
+        if not request.site.plan.has_online_ordering:
+            raise Http404
+        return func(request, *args, **kwargs)
+    return wrapped
+
+
 @login_required
+@online_ordering_required
 def home(request):
     return direct_to_template(request, template='dashboard/orders/order_history.html', extra_context={
         'orders': Order.objects.filter(site=request.site).order_by('-timestamp')[:10] 
     })
 
 @login_required
+@online_ordering_required
 def get_new_orders(request):
     new_orders = Order.objects.filter(site=request.site).order_by('-timestamp')
     rows = render_to_string('dashboard/orders/new_order.html', {'orders': new_orders})
@@ -23,6 +34,7 @@ def get_new_orders(request):
 
 
 @login_required
+@online_ordering_required
 def order_detail(request, order_id):
     order = Order.objects.get(id=order_id) 
     if order.unread:
@@ -34,6 +46,7 @@ def order_detail(request, order_id):
     })
 
 @login_required
+@online_ordering_required
 def order_pdf(request, order_id):
     order = Order.objects.get(id=order_id) 
     response = HttpResponse(order.get_pdf_invoice(), mimetype='application/pdf')
@@ -41,6 +54,7 @@ def order_pdf(request, order_id):
     return response
 
 @login_required
+@online_ordering_required
 def order_options(request):
     location = request.site.location_set.all()[0]
     if request.method == 'POST':
@@ -65,6 +79,7 @@ def order_options(request):
     })
 
 @login_required
+@online_ordering_required
 def order_payment(request):
     if request.method == 'POST':
         form = OrderPaymentForm(request.POST, instance=request.site.ordersettings)
@@ -79,6 +94,7 @@ def order_payment(request):
     })
 
 @login_required
+@online_ordering_required
 def order_messages(request):
     if request.method == 'POST':
         form = OrderMessageForm(request.POST, instance=request.site.ordersettings)

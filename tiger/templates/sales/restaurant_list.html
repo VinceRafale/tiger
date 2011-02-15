@@ -1,0 +1,39 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}marketing{% endblock %}
+
+{% block h2 %}
+Your restaurants
+{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Plan</th>
+        <th>Location</th>
+        <th>Signup date</th>
+    </tr>
+    {% for restaurant in restaurants %}
+    <tr>
+        <td><a href="{% url restaurant_detail restaurant.id %}">{{ restaurant.name }}</a></td>
+        <td>{{ restaurant.plan }} <a href="{% url edit_restaurant restaurant.id %}"><img src="{{ MEDIA_URL }}img/Edit_16x16.png" /></a></td>
+        <td>
+        {% with restaurant.location_set.all.0 as loc %}
+            {% if loc.city and loc.state %}
+                {{ loc.city }}, {{ loc.state }}
+            {% else %}
+                not set
+            {% endif %}
+        {% endwith %}
+        </td>
+        <td>{{ restaurant.signup_date|date }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">You haven't created any restaurant sites yet. <a href="{% url create_restaurant %}">Create one now</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

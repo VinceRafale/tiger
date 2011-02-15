@@ -5,16 +5,16 @@ from nose.tools import raises
 
 @raises(StorkConfigurationError)
 def test_swatch_requires_default():
-    panels = Stork('stork/tests/fixtures/no_swatch_default.yml')
+    panels = Stork(config_path='stork/tests/fixtures/no_swatch_default.yml')
 
 
 @raises(StorkConfigurationError)
 def test_swatch_requires_properties():
-    panels = Stork('stork/tests/fixtures/no_swatch_properties.yml')
+    panels = Stork(config_path='stork/tests/fixtures/no_swatch_properties.yml')
 
 
 def test_render_as_json():
-    panels = Stork('stork/tests/fixtures/valid.yml')
+    panels = Stork(config_path='stork/tests/fixtures/valid.yml')
     swatch = panels['foo-baz']
     swatch_as_array = [
        swatch.get_picker_id(),

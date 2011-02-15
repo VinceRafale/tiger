@@ -5,6 +5,9 @@ from south.v2 import SchemaMigration
 from django.db import models
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ("sms", "0004_auto__add_field_campaign_sent_count__add_field_campaign_completed__chg"),
+    )
 
     def forwards(self, orm):
         

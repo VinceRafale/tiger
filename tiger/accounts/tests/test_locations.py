@@ -1,3 +1,4 @@
+from nose.tools import *
 
 my_house = (42.213633, -72.567852)
 moms_house = (41.876919, -72.631275)

@@ -1,0 +1,6 @@
+Welcome to the Takeout Tiger Reseller Program!  You can log into your account at https://reseller.takeouttiger.com to manage account plans, create restaurant websites, and view billing information.  Log in with your e-mail address, {{ account.user.email }}.
+
+Happy selling!
+
+Sincerely,
+The Takeout Tiger crew

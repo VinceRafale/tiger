@@ -1,0 +1,24 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}marketing{% endblock %}
+
+{% block h2 %}
+{{ restaurant.name }}
+{% endblock %}
+
+{% block content %}
+        <p>Active as of {{ restaurant.signup_date|date }}</p>
+        <p>Current plan: {{ restaurant.plan }}</p>
+        {% with restaurant.location_set.all.0 as loc %}
+            <p>Address:<br />
+            {% if loc.city and loc.state %}
+                {{ loc.city }}, {{ loc.state }}
+            {% else %}
+                not set
+            {% endif %}
+            </p>
+        {% endwith %}
+
+<a href="{% url delete_restaurant restaurant.id %}">Delete this restaurant</a>
+{% endblock %}
+

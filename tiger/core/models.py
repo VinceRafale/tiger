@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 
 from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged
+from picklefield.fields import PickledObjectField
 from pytz import timezone
 
 from tiger.content.handlers import pdf_caching_handler
@@ -23,7 +24,6 @@ from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable, PricePo
 from tiger.core.messages import *
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler
-from tiger.utils.fields import PickledObjectField
 from tiger.utils.hours import *
 from tiger.utils.pdf import render_to_pdf
 
@@ -308,7 +308,7 @@ class Order(models.Model):
     )
     site = models.ForeignKey('accounts.Site', null=True, editable=False)
     session_key = models.CharField(max_length=40, null=True)
-    location = models.ForeignKey('accounts.Location', null=True, editable=False)
+    location = models.ForeignKey('accounts.Location', editable=False)
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
     street = models.CharField(max_length=255, blank=True, null=True)

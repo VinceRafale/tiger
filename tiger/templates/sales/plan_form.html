@@ -1,0 +1,60 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}site{% endblock %}
+
+{% block h2 %}
+{% if instance %}Editing "{{ instance }}" plan{% else %}New plan{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if instance %}
+<a href="{% url delete_plan instance.id %}">Delete this plan</a>
+{% endif %}
+{% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+<form method="POST">
+<label>{{ form.name.label }}<br /> {{ form.name }} {% if form.name.errors %}{{ form.name.errors }}{% endif %}</label>
+<h3>Phone features</h3>
+<p class="help">If you assign a soft cap to SMS or fax communcations, users will receive a warning message before and after each time they send beyond the assigned limit, telling them that they have exceeded the amount included in their plan and will be billed accordingly.  If you assign a hard cap, it will not allow them to send a quantity beyond that number.</p>
+<div>{{ form.fax_cap_type }} of {{ form.fax_cap }} faxed pages per month</div>
+<label>{{ form.has_sms }} Dedicated SMS number</label>
+<div id="sms-caps">{{ form.sms_cap_type }} of {{ form.sms_cap }} text messages per month</div>
+<h3>E-commerce features</h3>
+<div>{{ form.has_online_ordering }} {{ form.has_online_ordering.label }}
+<span id="multiple-locations">{{ form.multiple_locations }} {{ form.multiple_locations.label }}</span></div>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url restaurant_list %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    if ($("#id_has_sms").attr("checked")) {
+        $("#sms-caps").show();
+    } else {
+        $("#sms-caps").hide();
+    }
+    $("#id_has_sms").click(function () {
+        if ($(this).attr("checked")) {
+            $("#sms-caps").show();
+        } else {
+            $("#sms-caps").hide();
+        }
+    });
+    if ($("#id_has_online_ordering").attr("checked")) {
+        $("#multiple-locations").show();
+    } else {
+        $("#multiple-locations").hide();
+    }
+    $("#id_has_online_ordering").click(function () {
+        if ($(this).attr("checked")) {
+            $("#multiple-locations").show();
+        } else {
+            $("#multiple-locations").hide();
+        }
+    });
+});
+</script>
+{% endblock %}

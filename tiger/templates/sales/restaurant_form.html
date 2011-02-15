@@ -1,0 +1,21 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}marketing{% endblock %}
+
+{% block h2 %}
+{% if instance %}Editing {{ instance.name }}{% else %}New restaurant{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+<form method="POST">
+{% for field in form %}
+<label>{{ field.label }}<br /> {{ field }} {% if field.errors %}{{ field.errors }}{% endif %}</label>
+{% endfor %}
+<div class="save-row clearfix">
+<a class="cancel" href="{% url restaurant_list %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+
