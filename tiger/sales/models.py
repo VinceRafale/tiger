@@ -15,7 +15,7 @@ from tiger.utils.billing import prorate
 class SalesRep(models.Model):
     user = models.ForeignKey(User)
     code = models.CharField(max_length=8)
-    plan = models.CharField(max_length=12, default=settings.DEFAULT_BONUS_PRODUCT_HANDLE)
+    plan = models.CharField(max_length=12, default='')
 
     class Meta:
         db_table = 'accounts_salesrep'
