@@ -1,20 +1,4 @@
-from tiger.common_settings import *
-
-DEBUG = True
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'USER': 'tiger',
-        'NAME': 'tiger',
-        'PASSWORD': 'tiger',
-        'HOST': '',
-        'PORT': '',
-    }
-}
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'm%b99ylu)be%v!lh+vcgh4&6=_rs@)!s*n_6mjeh_br&$ni0dh'
+from tiger.local_settings import *
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
