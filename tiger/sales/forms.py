@@ -104,9 +104,9 @@ class CreateResellerAccountForm(BetterModelForm):
         return self.cleaned_data
 
     def create_payment_profile(self):
-        from tiger.sales.authnet import CIM
+        from tiger.sales.authnet import Cim
         data = self.cleaned_data
-        cim = CIM()
+        cim = Cim()
         account_data = {
             'exp_date': u'%d-%02d' % (data.get('year'), data.get('month')),
             'first_name': data.get('first_name'),
