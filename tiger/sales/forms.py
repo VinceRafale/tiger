@@ -108,10 +108,11 @@ class CreateResellerAccountForm(BetterModelForm):
         data = self.cleaned_data
         cim = Cim()
         account_data = {
-            'exp_date': u'%d-%02d' % (data.get('year'), data.get('month')),
+            'expiration_date': u'%d-%02d' % (data.get('year'), data.get('month')),
             'first_name': data.get('first_name'),
             'last_name': data.get('last_name'),
-            'card_number': data.get('cc_number')
+            'card_number': data.get('cc_number'),
+            'email': data.get('email')
         }
         return cim.create_cim_profile(**account_data)
 
