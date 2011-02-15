@@ -12,7 +12,7 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.models import Site
 from tiger.sales.forms import (AuthenticationForm, CreateSiteForm, 
-    CreatePlanForm, EditSiteForm)
+    CreatePlanForm, EditSiteForm, CreateResellerAccountForm)
 
 
 @csrf_protect
@@ -42,6 +42,18 @@ def login(request, redirect_field_name='next'):
     return direct_to_template(request, template='sales/login.html', extra_context={
         'form': form, redirect_field_name: redirect_to,
     })
+
+@csrf_protect
+def signup(request):
+    if request.method == 'POST':
+        form = CreateResellerAccountForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('auth_login'))
+    else:
+        form = CreateResellerAccountForm()
+    return direct_to_template(request, template='sales/signup.html', extra_context={'form': form})
+
 
 @login_required
 def home(request):

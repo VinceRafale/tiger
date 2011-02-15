@@ -36,7 +36,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'tiger.accounts.middleware.SSLRedirectMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = ('tiger.sales.backends.ResellerBackend',)
