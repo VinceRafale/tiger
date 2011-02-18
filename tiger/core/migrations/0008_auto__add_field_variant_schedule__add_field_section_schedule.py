@@ -162,7 +162,7 @@ class Migration(SchemaMigration):
             'ordering': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
             'out_of_stock': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'posting_stage': ('django.db.models.fields.SmallIntegerField', [], {'default': '0'}),
-            'price_list': ('tiger.utils.fields.PickledObjectField', [], {'null': 'True'}),
+            'price_list': ('picklefield.fields.PickledObjectField', [], {'null': 'True'}),
             'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['core.Section']"}),
             'site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['accounts.Site']"}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
@@ -173,7 +173,7 @@ class Migration(SchemaMigration):
         },
         'core.order': {
             'Meta': {'object_name': 'Order'},
-            'cart': ('tiger.utils.fields.PickledObjectField', [], {'null': 'True'}),
+            'cart': ('picklefield.fields.PickledObjectField', [], {'null': 'True'}),
             'city': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'method': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
