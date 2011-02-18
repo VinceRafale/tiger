@@ -167,10 +167,19 @@ class CreateSiteForm(BetterModelForm):
         """Validate that the subdomain is not already in use.
         """
         try:
-            Site.objects.get(domain__iexact=self.cleaned_data['subdomain'])
+            Site.objects.get(subdomain__iexact=self.cleaned_data['subdomain'])
         except Site.DoesNotExist:
             return self.cleaned_data['subdomain']
         raise forms.ValidationError("That subdomain is already in use.")
+
+    def clean_email(self):
+        """Validate that the subdomain is not already in use.
+        """
+        try:
+            User.objects.get(email__iexact=self.cleaned_data['email'])
+        except User.DoesNotExist:
+            return self.cleaned_data['email']
+        raise forms.ValidationError("That e-mail address is already in use.")
 
     def clean(self):
         data = self.cleaned_data
