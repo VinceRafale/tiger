@@ -70,7 +70,7 @@ def plan_list(request):
     })
 
 @login_required
-def create_plan(request, plan_id):
+def create_plan(request, plan_id=None):
     account = request.user.get_profile()
     instance = None
     try:
