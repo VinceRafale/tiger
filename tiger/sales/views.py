@@ -13,6 +13,7 @@ from django.views.generic.simple import direct_to_template
 from tiger.accounts.models import Site
 from tiger.sales.forms import (AuthenticationForm, CreateSiteForm, 
     CreatePlanForm, EditSiteForm, CreateResellerAccountForm)
+from tiger.sales.models import Plan
 
 
 @csrf_protect
@@ -73,10 +74,11 @@ def plan_list(request):
 def create_plan(request, plan_id=None):
     account = request.user.get_profile()
     instance = None
-    try:
-        instance = account.plan_set.get(id=plan_id)
-    except Site.DoesNotExist:
-        raise Http404
+    if plan_id is not None:
+        try:
+            instance = account.plan_set.get(id=plan_id)
+        except Plan.DoesNotExist:
+            raise Http404
     if request.method == 'POST':
         form = CreatePlanForm(request.POST, instance=instance)
         if form.is_valid():
@@ -123,7 +125,10 @@ def create_edit_restaurant(request, restaurant_id=None):
     instance = None
     RestaurantForm = CreateSiteForm
     if restaurant_id is not None:
-        instance = Site.objects.get(id=restaurant_id)
+        try:
+            instance = account.site_set.get(id=restaurant_id)
+        except Site.DoesNotExist:
+            raise Http404
         RestaurantForm = EditSiteForm
     if request.method == 'POST':
         form = RestaurantForm(request.POST, account=account, instance=instance)
