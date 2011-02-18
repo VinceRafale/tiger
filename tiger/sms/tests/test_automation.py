@@ -1,28 +1,41 @@
-import unittest
-
 from mock import Mock, patch
 import faker
 
+from tiger.accounts.models import Site
+from tiger.sales.models import Plan
 from tiger.sms.models import SmsSettings, SmsSubscriber, SMS
+from tiger.sms.sender import Sender
+from tiger.utils.test import TestCase
 
 
-class AutomatedResponseTestCase(unittest.TestCase):
+class AutomatedResponseTestCase(TestCase):
+    fixtures = ['plans.json']
+    poseur_fixtures = 'tiger.fixtures'
+
     def setUp(self):
-        self.settings = SmsSettings.objects.create(
-            sms_number='000-000-0000',
-            send_intro=True,
-            intro_sms='Free coffee!'
-        )
+        self.site = Site.objects.all()[0]
+        self.site.plan = Plan.objects.get(name='no caps')
+        self.site.save()
+        self.settings = self.site.sms 
+        self.settings.sms_number = '000-000-0000'
+        self.settings.send_intro = True
+        self.settings.intro_sms = 'Free coffee!'
+        self.settings.save()
+
+    def get_mock_sender(self):
+        sender = Sender(self.site, self.settings.intro_sms) 
+        sender.get_sms_response = Mock(return_value={})
+        return sender
 
     def test_signup_triggers_intro_sms_if_enabled(self):
         "signup triggers intro sms if enabled"
         self.settings.send_intro = True
         self.settings.save()
         number = faker.phone_number.phone_number()[:20]
-        with patch.object(SmsSubscriber, 'get_sms_response') as mock_method:
-            mock_method.return_value = {}
+        with patch.object(SmsSubscriber, 'sender') as mock_method:
+            mock_method.return_value = self.get_mock_sender()
             s = SmsSubscriber.objects.create(settings=self.settings, phone_number=number)
-            self.assertTrue(s.get_sms_response.called)
+            self.assertTrue(s.sender.called)
             assert SMS.objects.get(subscriber=s, body=self.settings.intro_sms)
 
     def test_signup_does_not_trigger_intro_sms_if_disabled(self):
@@ -30,8 +43,9 @@ class AutomatedResponseTestCase(unittest.TestCase):
         self.settings.send_intro = False
         self.settings.save()
         number = faker.phone_number.phone_number()[:20]
-        with patch.object(SmsSubscriber, 'get_sms_response') as mock_method:
-            mock_method.return_value = {}
+        with patch.object(SmsSubscriber, 'sender') as mock_method:
+            mock_method.return_value = self.get_mock_sender()
             s = SmsSubscriber.objects.create(settings=self.settings, phone_number=number)
-            self.assertFalse(s.get_sms_response.called)
+            s = SmsSubscriber.objects.create(settings=self.settings, phone_number=number)
+            self.assertFalse(s.sender.called)
             self.assertRaises(SMS.DoesNotExist, SMS.objects.get, subscriber=s, body=self.settings.intro_sms)

@@ -2,6 +2,7 @@ from django import forms
 
 from tiger.utils.forms import BetterModelForm
 from tiger.sms.models import Campaign, SmsSettings
+from tiger.sms.sender import Sender
 
 
 class CampaignForm(BetterModelForm):
@@ -17,6 +18,19 @@ class CampaignForm(BetterModelForm):
             'starred',
             'count',
         )
+
+    def clean(self):
+        data = self.cleaned_data
+        count = self.cleaned_data.get('count')
+        sender = Sender(self.site, data.get('body', ''))
+        try:
+            sender.add_recipients(*['dummy' for n in count])
+        except CapExceeded, e:
+            if e.cap_type == 'soft':
+                self.cap_exceeded = True
+            else:
+                raise forms.ValidationError('The send count requested will exceed your monthly plan limit.')
+        return data
 
 
 class SettingsForm(BetterModelForm):

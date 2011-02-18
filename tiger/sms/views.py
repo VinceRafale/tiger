@@ -12,6 +12,7 @@ import twilio
 
 from tiger.sms.forms import CampaignForm, SettingsForm
 from tiger.sms.models import SmsSubscriber, SMS
+from tiger.sms.sender import Sender
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 

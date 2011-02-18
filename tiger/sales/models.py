@@ -8,7 +8,8 @@ from django.core.mail import send_mail
 from django.db import models, connection
 from django.template.loader import render_to_string
 
-from tiger.sales.exceptions import PaymentGatewayError, SiteManagementError
+from tiger.sales.exceptions import (PaymentGatewayError, 
+    SiteManagementError, SoftCapExceeded, HardCapExceeded)
 from tiger.utils.billing import prorate
 
 
@@ -171,6 +172,21 @@ class Plan(models.Model):
     def total(self):
         print self.monthly_cost + self.sms_number_cost
         return self.monthly_cost + self.sms_number_cost
+
+    def _assert_cap_not_exceeded(self, service, num):
+        cap = getattr(self, '%s_cap' % service)
+        if 0 < cap < num:
+            cap_type = getattr(self, '%s_cap_type' % service)
+            if cap_type == Plan.CAP_SOFT:
+                raise SoftCapExceeded
+            elif cap_type == Plan.CAP_HARD:
+                raise HardCapExceeded
+        return True
+
+    def assert_sms_cap_not_exceeded(self, num):
+        return self._assert_cap_not_exceeded('sms', num)
+        
+
 
 
 class Invoice(models.Model):

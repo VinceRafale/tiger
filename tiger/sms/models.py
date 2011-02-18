@@ -8,6 +8,7 @@ from django.utils import simplejson as json
 import twilio
 
 from tiger.utils.models import Message
+from tiger.sms.sender import Sender
 
 # Create your models here.
 
@@ -65,22 +66,12 @@ class SmsSubscriber(models.Model):
         return not self.unsubscribed_at
 
     def send_message(self, body, sms_number=None, campaign=None):
-        if sms_number is None:
-            sms_number = self.settings.sms_number
-        data = self.get_sms_response(body, sms_number)
-        #TODO: learn more about failures
-        SMS.objects.create(
-            settings=self.settings,
-            campaign=campaign,
-            subscriber=self,
-            body=body,
-            destination=SMS.DIRECTION_OUTBOUND
-        )
+        sender = self.sender(self.settings, body)
+        sender.add_recipients(self)
+        sender.send_message()
 
-    def get_sms_response(self, body, sms_number): 
-        account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
-        response = account.request('/2010-04-01/Accounts/%s/SMS/Messages.json' % settings.TWILIO_ACCOUNT_SID, 'POST', dict(From=sms_number, To=self.phone_number, Body=body))
-        return json.loads(response)
+    def sender(self, settings, body):
+        return Sender(settings, body)
 
 
 class Campaign(models.Model):
@@ -118,11 +109,9 @@ class Campaign(models.Model):
         SmsBroadcastTask.delay(self.id)
 
     def broadcast(self):
-        sms_number = self.settings.sms_number
-        for subscriber in self.subscribers.all():
-            subscriber.send_message(self.body, self.sms_number)
-            self.sent_count += 1
-            self.save()
+        sender = Sender(self.settings.site_set.all()[0], self.body, campaign=self)
+        sender.add_recipients(*list(self.subscribers.all()))
+        sender.send_message()
         self.completed = True
         self.save()
 
