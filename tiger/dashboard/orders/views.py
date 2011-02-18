@@ -28,7 +28,7 @@ def home(request):
 @login_required
 @online_ordering_required
 def get_new_orders(request):
-    new_orders = Order.objects.filter(site=request.site).order_by('-timestamp')
+    new_orders = Order.objects.filter(site=request.site).order_by('-timestamp')[:10]
     rows = render_to_string('dashboard/orders/new_order.html', {'orders': new_orders})
     return HttpResponse(rows)
 
