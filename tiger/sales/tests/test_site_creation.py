@@ -88,6 +88,7 @@ class NewSiteFormTestCase(TestCase):
         site = form.save()
         self.assertTrue(self.client.login(email=data['email'], password=site.user.username, site=site))
         self.assertEquals(self.client.get('/').status_code, 200)
+        self.assertEquals(len(mail.outbox), 1)
 
 
 class ResellerSignupFormTestCase(TestCase):

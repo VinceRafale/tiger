@@ -195,6 +195,7 @@ class CreateSiteForm(BetterModelForm):
         site.user = User.objects.create_user(username, email, password=username)
         if commit:
             site.save()
+            site.send_confirmation_email()
         return site
 
 

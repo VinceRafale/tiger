@@ -151,6 +151,10 @@ class Site(models.Model):
     def is_suspended(self):
         return bool(self.account.invoice_set.filter(status=Invoice.STATUS_FAILED).count())
 
+    def send_confirmation_email(self):
+        body = render_to_string('accounts/confirmation.txt', {'site': self})
+        send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
+
 
 class Location(models.Model):
     RECEIPT_EMAIL = 1
