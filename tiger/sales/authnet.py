@@ -34,11 +34,11 @@ class Cim(object):
         response = urllib2.urlopen(request)
         return objectify.parse(response).getroot()
 
-    def create_cim_profile(self, customer_id, card_number, expiration_date, first_name, last_name):
+    def create_cim_profile(self, email, card_number, expiration_date, first_name, last_name):
         xml = self.get_xml('createCustomerProfileRequest') 
         profile = etree.SubElement(xml, 'profile')
-        cust = etree.SubElement(profile, 'merchantCustomerId')
-        cust.text = str(customer_id)
+        cust = etree.SubElement(profile, 'email')
+        cust.text = email
         payment_profiles = etree.SubElement(profile, 'paymentProfiles')
         billto = etree.SubElement(payment_profiles, 'billTo')
         first = etree.SubElement(billto, 'firstName')

@@ -1,0 +1,12 @@
+{% extends 'sales/login_base.html' %}
+
+{% block title %}Reseller Login{% endblock %}
+
+{% block content %}
+<h2>Reseller signup</h2>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Sign up" />
+</form>
+<div class="clear"></div>
+{% endblock %}

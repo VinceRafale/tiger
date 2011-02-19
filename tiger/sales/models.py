@@ -16,7 +16,7 @@ from tiger.utils.billing import prorate
 class SalesRep(models.Model):
     user = models.ForeignKey(User)
     code = models.CharField(max_length=8)
-    plan = models.CharField(max_length=12, default=settings.DEFAULT_BONUS_PRODUCT_HANDLE)
+    plan = models.CharField(max_length=12, default='')
 
     class Meta:
         db_table = 'accounts_salesrep'
@@ -71,13 +71,6 @@ class Account(models.Model):
         if new:
             body = render_to_string('sales/reseller_welcome.txt', {'account': self})
             send_mail('Welcome to the Takeout Tiger reseller program', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
-
-    def send_confirmation_email(self):
-        body = render_to_string('accounts/confirmation.txt', {'account': self})
-        send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
-
-    def set_sms_subscription(self, subscribed):
-        raise NotImplementedError
 
     def create_invoice(self):
         sites = self.site_set.all()

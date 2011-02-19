@@ -341,7 +341,7 @@ class Order(models.Model):
         content = self.get_pdf_invoice()
         location = self.site.location_set.all()[0]
         if location.receive_via == OrderSettings.RECEIPT_EMAIL:
-            email = EmailMessage('Takeout Tiger Order #%d' % self.id, 'Your order details are attached as PDF.', 'do-not-reply@takeouttiger.com', [self.site.email])
+            email = EmailMessage('Takeout Tiger Order #%d' % self.id, 'Your order details are attached as PDF.', 'do-not-reply@takeouttiger.com', [location.order_email])
             email.attach('order-%d.pdf' % self.id, content, 'application/pdf')
             email.send()
         else:

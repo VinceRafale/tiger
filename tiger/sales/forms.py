@@ -104,14 +104,15 @@ class CreateResellerAccountForm(BetterModelForm):
         return self.cleaned_data
 
     def create_payment_profile(self):
-        from tiger.sales.authnet import CIM
+        from tiger.sales.authnet import Cim
         data = self.cleaned_data
-        cim = CIM()
+        cim = Cim()
         account_data = {
-            'exp_date': u'%d-%02d' % (data.get('year'), data.get('month')),
+            'expiration_date': u'%d-%02d' % (data.get('year'), data.get('month')),
             'first_name': data.get('first_name'),
             'last_name': data.get('last_name'),
-            'card_number': data.get('cc_number')
+            'card_number': data.get('cc_number'),
+            'email': data.get('email')
         }
         return cim.create_cim_profile(**account_data)
 
@@ -166,10 +167,19 @@ class CreateSiteForm(BetterModelForm):
         """Validate that the subdomain is not already in use.
         """
         try:
-            Site.objects.get(domain__iexact=self.cleaned_data['subdomain'])
+            Site.objects.get(subdomain__iexact=self.cleaned_data['subdomain'])
         except Site.DoesNotExist:
             return self.cleaned_data['subdomain']
         raise forms.ValidationError("That subdomain is already in use.")
+
+    def clean_email(self):
+        """Validate that the subdomain is not already in use.
+        """
+        try:
+            User.objects.get(email__iexact=self.cleaned_data['email'])
+        except User.DoesNotExist:
+            return self.cleaned_data['email']
+        raise forms.ValidationError("That e-mail address is already in use.")
 
     def clean(self):
         data = self.cleaned_data
@@ -185,6 +195,7 @@ class CreateSiteForm(BetterModelForm):
         site.user = User.objects.create_user(username, email, password=username)
         if commit:
             site.save()
+            site.send_confirmation_email()
         return site
 
 
