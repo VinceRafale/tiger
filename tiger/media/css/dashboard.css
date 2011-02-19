@@ -179,6 +179,7 @@ form.sms-form div.sms-wrap {position:relative; margin-bottom:12px; width:455px; 
 form.sms-form div.sms-wrap textarea {margin-bottom:0;}
 form.sms-form p.charcount {position:absolute; bottom:0; right:0;}
 form.sms-form div.sms-wrap p.charcount {opacity:0.8;}
+#fancybox-inner form.sms-form p.charcount {bottom:0; left:0;}
 
 #star-status {margin-top:16px;} 
 #star-status li {float:left; margin:0 10px 16px 0;}
@@ -643,6 +644,37 @@ ul.messages.unenrolled {
 
 #unread-conversations li span.message {
     float:left;
+}
+
+#thread li {
+    margin-left:0;
+    position:relative;
+    background-color:white;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    padding: 8px 10px;
+    margin-bottom:10px;
+    font-size:14px;
+}
+
+#thread li.you {
+    background-color:#CDE0E8;
+    color:#272c2e;
+}
+
+#thread li span.message {
+    display:block;
+    width:700px;
+}
+
+#thread li span.timestamp {
+    position:absolute;
+    right:10px;
+    bottom:8px;
+    font-style:italic;
+    font-family:serif;
+    font-size:11px;
 }
 
 

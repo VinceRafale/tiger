@@ -43,7 +43,7 @@ This screen is where you manage your subscribers.  Inactive subscribers (those w
             <td>{{ subscriber.zip_code }}</td>
             <td> 
                 {% if subscriber.is_active %}
-                <a class="send-sms" href="{% url send_single_sms subscriber.id %}">
+                <a class="send-sms" href="{% url send_single_sms subscriber.phone_number %}">
                     <img src="{{ MEDIA_URL }}img/Comment_24x24.png" alt="Mobile phone icon"  title="Send SMS" />
                 </a>
                 {% endif %}

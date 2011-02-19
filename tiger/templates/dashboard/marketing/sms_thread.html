@@ -10,7 +10,12 @@ Conversation with {{ number }}
 {% endblock %}
 
 {% block content %}
-<ul>
+{% if not subscriber %}
+<p class="help">
+This number is not on your subscriber list.
+</p>
+{% endif %}
+<ul id="thread">
     {% for sms in thread %}
     <li class="{% if sms.destination == 'outbound' %}you{% endif %}">
         <span class="timestamp">{{ sms.get_timestamp }}</span>
@@ -19,5 +24,20 @@ Conversation with {{ number }}
     </li>
     {% endfor %}
 </ul>
+<div class="save-row clearfix">
+<a class="cancel" href="{% url inbox %}">Back to Conversations</a>
+<input type="submit" value="Reply" class="submit buttonTop" />
+</div>
 {% endblock %}
 
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("input[type='submit']").click(function() {
+        url = "{% url send_single_sms number %}";
+        $.fancybox({href: url});
+        return false;
+    });
+});
+</script>
+{% endblock %}

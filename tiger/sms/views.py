@@ -271,8 +271,13 @@ def inbox(request):
 @login_required
 def thread_detail(request, phone_number):
     Thread.objects.filter(phone_number=phone_number).update(unread=False)
+    try:
+        subscriber = SmsSubscriber.objects.get(settings=request.site.sms, phone_number=phone_number)
+    except SmsSubscriber.DoesNotExist:
+        subscriber = None
     return direct_to_template(request, template='dashboard/marketing/sms_thread.html', extra_context={
         'number': phone_number,
-        'thread': SMS.objects.thread_for(settings=request.site.sms, phone_number=phone_number)
+        'thread': SMS.objects.thread_for(settings=request.site.sms, phone_number=phone_number),
+        'subscriber': subscriber
     })
 
