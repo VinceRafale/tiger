@@ -30,7 +30,7 @@ class SMSInboxTestCase(TestCase):
             phone_number=self.numbers[0],
             destination='inbound'
         )
-        sms |should_not| be_into(SMS.objects.inbox())
+        sms |should_not| be_into(SMS.objects.inbox_for(self.site.sms))
 
     def test_older_sms_in_thread_not_in_inbox(self):
         sms = SMS.objects.create(
@@ -42,22 +42,22 @@ class SMSInboxTestCase(TestCase):
         )
         sms.timestamp -= timedelta(days=2)
         sms.save()
-        sms |should_not| be_into(SMS.objects.inbox())
+        sms |should_not| be_into(SMS.objects.inbox_for(self.site.sms))
 
     def test_reply_to_does_not_promote_inbox_position(self):
-        numbers = [sms.phone_number for sms in SMS.objects.inbox()]
+        numbers = [sms.phone_number for sms in SMS.objects.inbox_for(self.site.sms)]
         SMS.objects.create(
             settings=self.site.sms,
             body=faker.lorem.sentence(),
             conversation=True,
             phone_number=self.numbers[1],
-            destination='inbound'
+            destination='outbound'
         ) 
-        new_numbers = [sms.phone_number for sms in SMS.objects.inbox()]
+        new_numbers = [sms.phone_number for sms in SMS.objects.inbox_for(self.site.sms)]
         numbers |should| equal_to(new_numbers)
 
     def test_reply_from_promotes_inbox_position(self):
-        numbers = [sms.phone_number for sms in SMS.objects.inbox()]
+        numbers = [sms.phone_number for sms in SMS.objects.inbox_for(self.site.sms)]
         SMS.objects.create(
             settings=self.site.sms,
             body=faker.lorem.sentence(),
@@ -65,6 +65,6 @@ class SMSInboxTestCase(TestCase):
             phone_number=self.numbers[1],
             destination='inbound'
         ) 
-        new_numbers = [sms.phone_number for sms in SMS.objects.inbox()]
+        new_numbers = [sms.phone_number for sms in SMS.objects.inbox_for(self.site.sms)]
         numbers |should_not| equal_to(new_numbers)
         numbers |should| include_all_of(new_numbers)

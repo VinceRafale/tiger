@@ -123,9 +123,11 @@ class Campaign(models.Model):
         }
         return urls[self.starred]
             
+
 class SmsManager(models.Manager):
-    def inbox(self):
-        return self.all()
+    def inbox_for(self, settings):
+        return Thread.objects.filter(settings=settings)
+
 
 class SMS(Message):
     DELIVERY_PENDING = 0
@@ -137,7 +139,6 @@ class SMS(Message):
     sid = models.CharField(max_length=34)
     body = models.CharField(max_length=160)
     status = models.IntegerField(default=DELIVERY_PENDING)
-    read = models.BooleanField()
     conversation = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=20)
     objects = SmsManager()
@@ -148,3 +149,32 @@ class SMS(Message):
             subscriber = self.subscriber
             subscriber.unsubscribed_at = datetime.now()
             subscriber.save()
+        if self.conversation:
+            try:
+                thread = Thread.objects.get(phone_number=self.phone_number)
+            except Thread.DoesNotExist:
+                if self.destination == SMS.DIRECTION_OUTBOUND:
+                    return
+                thread = Thread.objects.create(
+                    settings=self.settings,
+                    phone_number=self.phone_number,
+                    timestamp=self.timestamp,
+                    body=self.body
+                )
+            else:
+                to_update = {'body': self.body}
+                if self.destination == SMS.DIRECTION_INBOUND:
+                    to_update['unread'] = True
+                    to_update['timestamp'] = self.timestamp
+                Thread.objects.filter(phone_number=self.phone_number).update(**to_update)
+
+
+class Thread(models.Model):
+    settings = models.ForeignKey(SmsSettings)
+    phone_number = models.CharField(max_length=20)
+    body = models.CharField(max_length=160)
+    unread = models.BooleanField(default=True)
+    timestamp = models.DateTimeField()
+
+    class Meta:
+        ordering = ('-timestamp',)
