@@ -57,28 +57,12 @@ Post signs and table tents in your restaurant asking your customers to sign up f
 <strong>Active subscribers:</strong> {{ count.active }}
 <strong>Unsubscribed:</strong> {{ count.inactive }}
 </p>
-<h3>Conversations
+<h3>Most recent conversations
 <span class="buttons">
-    <a href="#">View conversations</a>
+    <a href="{% url inbox %}">View all conversations</a>
 </span>
 </h3>
-<ul id="unread-conversations">
-{% for convo in unread_conversations %}
-    <li class="{% cycle '' 'white' %}">
-        <span class="data">
-            <strong>SMSes sent:</strong> {{ campaign.sent_count }}
-            <strong>Recipients:</strong>
-            <img src="{{ MEDIA_URL }}img/{{ campaign.img_url }}" />
-            {% if campaign.filter_value %}
-            {{ campaign.filter_on }}: {{ campaign.filter_value }}
-            {% endif %}
-        </span>
-        <h4>{{ campaign.title }} ({{ campaign.timestamp|date }})</h4>
-    </li>
-{% empty %}
-    <li>You don't have any unread SMS messages.</li>    
-{% endfor %}
-</ul>
+{% include 'dashboard/marketing/includes/inbox.html' %}
 {% endblock %}
 
 {% block js %}

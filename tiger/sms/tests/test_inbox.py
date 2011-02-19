@@ -11,7 +11,6 @@ class SMSInboxTestCase(TestCase):
     
     def setUp(self):
         self.site = Site.objects.all()[0]
-        
         self.numbers = [faker.phone_number.phone_number()[:20] for i in range(3)]
         for n in self.numbers:
             SMS.objects.create(
@@ -43,6 +42,8 @@ class SMSInboxTestCase(TestCase):
         sms.timestamp -= timedelta(days=2)
         sms.save()
         sms |should_not| be_into(SMS.objects.inbox_for(self.site.sms))
+        first_thread = SMS.objects.inbox_for(self.site.sms)[0]
+        first_thread.message_count |should| equal_to(2)
 
     def test_reply_to_does_not_promote_inbox_position(self):
         numbers = [sms.phone_number for sms in SMS.objects.inbox_for(self.site.sms)]

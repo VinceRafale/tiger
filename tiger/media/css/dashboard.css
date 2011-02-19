@@ -610,6 +610,41 @@ ul.messages.unenrolled {
     padding-left:8px;
 }
 
+#unread-conversations li {
+    border-bottom: 1px solid #bbb;
+    cursor:pointer;
+    -moz-border-radius:0;
+    -webkit-border-radius:0;
+    border-radius:0;
+    font-size:12px;
+    background-color:#fbdec9;
+    color:#2f2925;
+}
+
+#unread-conversations li.unread {
+    font-weight:bold;
+    background-color:white;
+    color:black;
+}
+
+#unread-conversations li.last {
+    border-bottom:none;
+}
+
+#unread-conversations li span.timestamp {
+    float:right;
+}
+
+#unread-conversations li span.number {
+    float:left;
+    display:block;
+    width:120px;
+}
+
+#unread-conversations li span.message {
+    float:left;
+}
+
 
 /* PROGRESS */
 #progress{color:#ffffff;margin:10px 0 20px;list-style:none;line-height:1em;overflow:auto;}

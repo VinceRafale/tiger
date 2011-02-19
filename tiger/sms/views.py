@@ -11,7 +11,7 @@ from django.views.generic.simple import direct_to_template
 import twilio
 
 from tiger.sms.forms import CampaignForm, SettingsForm
-from tiger.sms.models import SmsSubscriber, SMS
+from tiger.sms.models import SmsSubscriber, SMS, Thread
 from tiger.sms.sender import Sender
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
@@ -82,7 +82,8 @@ def sms_home(request):
         'in_progress': in_progress,
         'count': count_dict,
         'sms': sms,
-        'campaigns': campaigns
+        'campaigns': campaigns,
+        'inbox': SMS.objects.inbox_for(sms)[:5]
     })
 
 
@@ -106,7 +107,6 @@ def sms_signup(request):
         sms_settings.sid = data['sid']
         sms_settings.sms_number = data['phone_number']
         sms_settings.save()
-        request.site.account.set_sms_subscription(True)
         return HttpResponseRedirect(reverse('sms_home'))
     else:
         area_code = request.GET.get('area_code') or request.site.location_set.all()[0].phone[:3]
@@ -260,3 +260,19 @@ def campaign_list(request):
     return direct_to_template(request, template='dashboard/marketing/sms_campaign_list.html', extra_context={
         'campaigns': campaigns
     })
+
+@login_required
+def inbox(request):
+    return direct_to_template(request, template='dashboard/marketing/sms_inbox.html', extra_context={
+        'inbox': SMS.objects.inbox_for(request.site.sms)
+    })
+
+
+@login_required
+def thread_detail(request, phone_number):
+    Thread.objects.filter(phone_number=phone_number).update(unread=False)
+    return direct_to_template(request, template='dashboard/marketing/sms_thread.html', extra_context={
+        'number': phone_number,
+        'thread': SMS.objects.thread_for(settings=request.site.sms, phone_number=phone_number)
+    })
+

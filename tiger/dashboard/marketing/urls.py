@@ -13,6 +13,8 @@ dashboard_patterns = patterns('tiger.sms.views',
     url(r'^send/(\d+)/$', 'send_single_sms', name='send_single_sms'),
     url(r'^toggle-star/(\d+)/$', 'toggle_star', name='toggle_star'),
     url(r'^list/(\d+)/remove/$', 'remove_subscriber', name='remove_subscriber'),
+    url(r'^inbox/$', 'inbox', name='inbox'),
+    url(r'^inbox/([\w+(). -]+)/$', 'thread_detail', name='thread_detail'),
 )
 
 urlpatterns = patterns('tiger.dashboard.marketing.views',

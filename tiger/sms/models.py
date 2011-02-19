@@ -1,9 +1,13 @@
-from datetime import datetime
+from datetime import datetime, date
 import random
 
+from django.conf import settings
 from django.contrib.localflavor.us.models import *
 from django.db import models, connection
 from django.utils import simplejson as json
+from django.utils.dateformat import format
+
+from pytz import timezone
 
 import twilio
 
@@ -128,6 +132,13 @@ class SmsManager(models.Manager):
     def inbox_for(self, settings):
         return Thread.objects.filter(settings=settings)
 
+    def thread_for(self, settings, phone_number):
+        return self.filter(
+            settings=settings, 
+            phone_number=phone_number, 
+            conversation=True
+        ).order_by('timestamp')
+
 
 class SMS(Message):
     DELIVERY_PENDING = 0
@@ -162,11 +173,24 @@ class SMS(Message):
                     body=self.body
                 )
             else:
-                to_update = {'body': self.body}
+                to_update = {
+                    'body': self.body,
+                    'message_count': SMS.objects.thread_for(settings=self.settings, phone_number=self.phone_number).count()
+                }
                 if self.destination == SMS.DIRECTION_INBOUND:
                     to_update['unread'] = True
                     to_update['timestamp'] = self.timestamp
                 Thread.objects.filter(phone_number=self.phone_number).update(**to_update)
+
+    def get_timestamp(self):
+        timestamp = self.timestamp
+        if timestamp.date() == date.today():
+            format_string = 'P'
+        elif timestamp.year == date.today().year:
+            format_string = 'n/j/y'
+        else:
+            format_string = 'M j'
+        return format(timestamp, format_string)
 
 
 class Thread(models.Model):
@@ -175,6 +199,17 @@ class Thread(models.Model):
     body = models.CharField(max_length=160)
     unread = models.BooleanField(default=True)
     timestamp = models.DateTimeField()
+    message_count = models.PositiveIntegerField(default=1)
 
     class Meta:
         ordering = ('-timestamp',)
+
+    def get_timestamp(self):
+        timestamp = self.timestamp
+        if timestamp.date() == date.today():
+            format_string = 'P'
+        elif timestamp.year == date.today().year:
+            format_string = 'n/j/y'
+        else:
+            format_string = 'M j'
+        return format(timestamp, format_string)

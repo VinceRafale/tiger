@@ -1,0 +1,23 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}sms{% endblock %}
+
+{% block h2 %}
+Conversation with {{ number }}
+{% endblock %}
+
+{% block help %}
+{% endblock %}
+
+{% block content %}
+<ul>
+    {% for sms in thread %}
+    <li class="{% if sms.destination == 'outbound' %}you{% endif %}">
+        <span class="timestamp">{{ sms.get_timestamp }}</span>
+        <span class="message">{{ sms.body }}</span>
+        <div class="clear"></div>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
+

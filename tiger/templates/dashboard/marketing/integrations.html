@@ -36,12 +36,14 @@ Social media integrations
                 <a href="#">Deauthorize</a>
             {% endif %}
         </div>
+        {% if site.social.facebook_token %}
         <p id="facebook">
 
         {% with site.social as social %}
         {% include social.facebook_fragment %}
         {% endwith %}
         </p>
+        {% endif %}
         <h3>Mailchimp</h3>
         <div id="mailchimp-settings">
         {% if not site.social.mailchimp_api_key %}
