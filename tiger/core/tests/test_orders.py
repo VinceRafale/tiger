@@ -9,6 +9,8 @@ from django.test.client import Client
 
 from mock import Mock
 
+from nose.exc import SkipTest
+
 from faker.generators.utils import numerify
 from paypal.standard.ipn.models import PayPalIPN
 from pytz import timezone
@@ -262,7 +264,7 @@ class PayPalOrderTest(TestCase):
 
 class OrderListTest(TestCase):
     def test_jonathan_has_replaced_this_with_a_stubbed_javascript_test(self):
-        self.fail()
+        raise SkipTest
 
 
 class OrderScreensAvailabilityTestCase(TestCase):
