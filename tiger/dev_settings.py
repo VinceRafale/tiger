@@ -21,3 +21,20 @@ DISABLE_SITE_MIDDLEWARE = True
 #CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379'
 
 CELERY_ALWAYS_EAGER = True
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'handlers': {
+        'null': {
+            'level':'INFO',
+            'class':'django.utils.log.NullHandler',
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['null'],
+            'propagate': False
+        }
+    }
+}
