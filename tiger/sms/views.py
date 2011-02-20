@@ -27,13 +27,14 @@ def respond_to_sms(request):
     try:
         subscriber = SmsSubscriber.objects.get(settings=sms_settings, phone_number=phone_number)
     except SmsSubscriber.DoesNotExist:
-        if normalized_body == 'in':
+        if normalized_body in sms_settings.keywords:
             subscriber = SmsSubscriber.objects.create(
                 settings=sms_settings,
                 phone_number=phone_number,
                 city=request.POST.get('FromCity', ''),
                 state=request.POST.get('FromState', ''),
-                zip_code=request.POST.get('FromZip', '')
+                zip_code=request.POST.get('FromZip', ''),
+                tag=normalized_body
             )
         else:
             subscriber = None

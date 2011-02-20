@@ -8,6 +8,7 @@ from django.utils import simplejson as json
 from django.utils.dateformat import format
 
 from pytz import timezone
+from picklefield.fields import PickledObjectField
 
 import twilio
 
@@ -21,6 +22,7 @@ class SmsSettings(models.Model):
     sid = models.CharField(max_length=34, null=True)
     send_intro = models.BooleanField('send an automated introductory SMS when someone first subscribes', default=False, blank=True)
     intro_sms = models.CharField(max_length=160, null=True)
+    keywords = PickledObjectField(default=["in"])
 
     @property
     def enabled(self):
@@ -34,12 +36,25 @@ class SmsSettings(models.Model):
         """ % attr, [self.id])
         return json.dumps([r[0] for r in cursor.fetchall() if r[0]])
 
+    def add_keywords(self, *args):
+        keywords = self.keywords
+        keywords.extend(args)
+        self.keywords = list(set(keywords))
+        self.save()
+
+    def remove_keywords(self, *args):
+        keywords = set(self.keywords) - set(args)
+        self.keywords = list(keywords)
+        self.save()
+        for kw in args:
+            SmsSubscriber.objects.filter(settings=self, tag=kw).update(deactivated=True)
+
 
 class SmsSubscriberManager(models.Manager):
     use_for_related_fields = True
 
     def active(self):
-        return self.filter(unsubscribed_at__isnull=True)
+        return self.filter(unsubscribed_at__isnull=True, deactivated=False)
 
     def inactive(self):
         return self.filter(unsubscribed_at__isnull=False)
@@ -55,6 +70,8 @@ class SmsSubscriber(models.Model):
     signed_up_at = models.DateTimeField()
     unsubscribed_at = models.DateTimeField(null=True)
     starred = models.BooleanField(default=False)
+    tag = models.CharField(max_length=15)
+    deactivated = models.BooleanField(default=False)
     objects = SmsSubscriberManager()
 
     def save(self, *args, **kwargs):
@@ -62,12 +79,12 @@ class SmsSubscriber(models.Model):
         if new:
             self.signed_up_at = datetime.now()
         super(SmsSubscriber, self).save(*args, **kwargs)
-        if new and self.settings.send_intro:
+        if new and self.settings.send_intro and not self.unsubscribed_at:
             self.send_message(self.settings.intro_sms)
 
     @property
     def is_active(self):
-        return not self.unsubscribed_at
+        return not self.unsubscribed_at and not self.deactivated
 
     def send_message(self, body, sms_number=None, campaign=None):
         sender = self.sender(self.settings, body)
@@ -158,8 +175,15 @@ class SMS(Message):
         super(SMS, self).save(*args, **kwargs)
         if self.body.strip().lower() == 'out':
             subscriber = self.subscriber
-            subscriber.unsubscribed_at = datetime.now()
-            subscriber.save()
+            if subscriber is None:
+                SmsSubscriber.objects.create(
+                    settings=self.settings,
+                    phone_number=self.phone_number,
+                    unsubscribed_at=datetime.now()
+                )
+            else:
+                subscriber.unsubscribed_at = datetime.now()
+                subscriber.save()
         if self.conversation:
             try:
                 thread = Thread.objects.get(phone_number=self.phone_number)
@@ -170,7 +194,8 @@ class SMS(Message):
                     settings=self.settings,
                     phone_number=self.phone_number,
                     timestamp=self.timestamp,
-                    body=self.body
+                    body=self.body,
+                    tag=self.subscriber.tag if self.subscriber else None
                 )
             else:
                 to_update = {
@@ -200,6 +225,7 @@ class Thread(models.Model):
     unread = models.BooleanField(default=True)
     timestamp = models.DateTimeField()
     message_count = models.PositiveIntegerField(default=1)
+    tag = models.CharField(max_length=15)
 
     class Meta:
         ordering = ('-timestamp',)
@@ -213,3 +239,7 @@ class Thread(models.Model):
         else:
             format_string = 'M j'
         return format(timestamp, format_string)
+
+    @property
+    def tag_name(self):
+        return ''

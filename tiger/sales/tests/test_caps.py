@@ -60,34 +60,3 @@ class MonthlyCostPricingTestCase(unittest.TestCase):
         self.plan.has_online_ordering = True
         self.plan.multiple_locations = True
         self.assertEquals(self.plan.monthly_cost, Decimal('85.50'))
-
-
-class PlanCapTestCase(TestCase):
-    fixtures = ['plans.json']
-    poseur_fixtures = 'tiger.fixtures'
-
-    def setUp(self):
-        self.site = Site.objects.all()[0]
-        self.sender = Sender(self.site.sms)
-
-    def set_plan(self, plan_name):
-        self.site.plan = Plan.objects.get(name=plan_name)
-        self.site.save()
-
-    def test_sms_no_cap(self):
-        self.set_plan('no caps')
-        #sms model instance does not raise overage error
-        #campaign cannot be saved
-        assert False
-
-    def test_sms_soft_cap(self):
-        self.set_plan('soft caps')
-        #sms model instance raises overage error
-        #campaign can be saved
-        assert False
-
-    def test_sms_hard_cap(self):
-        self.set_plan('hard caps')
-        #sms model instance raises overage error
-        #campaign cannot be saved
-        assert False

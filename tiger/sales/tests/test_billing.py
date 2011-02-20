@@ -114,7 +114,6 @@ class BillingTestCase(TestCase):
                 subscriber=subscriber,
                 sid='000',
                 body='text',
-                read=False,
                 timestamp=date.today()+relativedelta(months=-2),
                 logged=False
             )

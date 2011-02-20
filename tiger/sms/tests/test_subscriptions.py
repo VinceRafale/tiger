@@ -11,12 +11,17 @@ import faker
 from poseur.fixtures import load_fixtures
 
 from tiger.accounts.models import Site
-from tiger.sms.models import SmsSubscriber, SMS
+from tiger.sms.models import SmsSubscriber, SMS, Thread
 from tiger.utils.test import TestCase
 
+from nose.exc import SkipTest
 from nose.tools import *
+from should_dsl import should, should_not
 
 client = Client(HTTP_HOST='foo.takeouttiger.com')
+
+get_subscriber = SmsSubscriber.objects.get
+get_thread = Thread.objects.get
 
 def setupModule():
     try:
@@ -68,7 +73,6 @@ def check_subscribe(keyword):
     twilio_header = get_twilio_header(site.tiger_domain() + '/sms/respond-to-sms/', data)
     response = client.post('/sms/respond-to-sms/', data, 
         HTTP_X_TWILIO_SIGNATURE=twilio_header)
-    print response.status_code
     assert SmsSubscriber.objects.get(phone_number=data['From'])
 
 def test_unsubscribe_keywords_unsubscribe():
@@ -105,7 +109,7 @@ class ConversationalSMSTestCase(TestCase):
 
     def test_non_keyword_does_not_subscribe(self):
         response = self.get_response()
-        self.assertRaises(SmsSubscriber.DoesNotExist, SmsSubscriber.objects.get, phone_number=self.data['From'])
+        self.assertRaises(SmsSubscriber.DoesNotExist, get_subscriber, phone_number=self.data['From'])
 
     def test_non_keyword_sms_is_saved_as_conversation(self):
         response = self.get_response()
@@ -120,4 +124,60 @@ class ConversationalSMSTestCase(TestCase):
     def test_non_keyword_does_not_unsubscribe(self):
         SmsSubscriber.objects.create(phone_number=self.data['From'], settings=self.site.sms)
         response = self.get_response()
-        assert SmsSubscriber.objects.get(phone_number=self.data['From'])
+        assert get_subscriber(phone_number=self.data['From'])
+
+    def test_unsubscribe_keyword_creates_inactive_account(self):
+        self.data = get_data_for_request('out')
+        assert SmsSubscriber.objects.filter(phone_number=self.data['From']).count() == 0
+        self.twilio_header = get_twilio_header(self.site.tiger_domain() + '/sms/respond-to-sms/', self.data)
+        response = self.get_response()
+        SmsSubscriber.DoesNotExist |should_not| be_thrown_by(lambda: get_subscriber(phone_number=self.data['From']))
+        get_subscriber(phone_number=self.data['From']) |should_not| be_active
+
+
+class SMSSubscribeKeywordTestCase(TestCase):
+    poseur_fixtures = 'tiger.fixtures'
+
+    def setUp(self):
+        self.site = Site.objects.all()[0]
+        sms = self.site.sms
+        sms.sms_number = faker.phone_number.phone_number()[:20]
+        sms.send_intro = False
+        sms.add_keywords("foo", "bar")
+        sms.save()
+        self.sms = sms
+        self.data = get_data_for_request("foo")
+        self.twilio_header = get_twilio_header(self.site.tiger_domain() + '/sms/respond-to-sms/', self.data)
+        self.get_response()
+        self.by_phone = dict(phone_number=self.data['From'])
+
+    def get_response(self):
+        return client.post('/sms/respond-to-sms/', self.data, 
+            HTTP_X_TWILIO_SIGNATURE=self.twilio_header)
+
+    def start_conversation(self):
+        self.data.update({"Body": faker.lorem.sentence()})
+        self.twilio_header = get_twilio_header(self.site.tiger_domain() + '/sms/respond-to-sms/', self.data)
+        self.get_response()
+
+    def test_subscription_assigns_to_appropriate_list(self):
+        SmsSubscriber.DoesNotExist |should_not| be_thrown_by(lambda: get_subscriber(**self.by_phone))
+        subscriber = get_subscriber(**self.by_phone)
+        subscriber.tag |should| equal_to("foo")
+
+    def test_thread_has_list_attribute(self):
+        self.start_conversation()
+        thread = get_thread(**self.by_phone)
+        thread.tag |should| equal_to("foo")
+
+    def test_threads_with_keyword_are_missing_from_inbox_with_keyword(self):
+        self.start_conversation()
+        self.sms.remove_keywords("foo")
+        thread = get_thread(**self.by_phone)
+        inbox_tags = [thread.tag_name for thread in SMS.objects.inbox_for(self.sms)]
+        inbox_tags |should_not| contain("foo")
+
+    def test_subscribers_for_keyword_are_missing_from_active_subscribers(self):
+        self.sms.remove_keywords("foo")
+        subscriber = get_subscriber(**self.by_phone)
+        subscriber |should_not| be_active
