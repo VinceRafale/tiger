@@ -1,14 +1,16 @@
 <ul id="unread-conversations">
+{% with sms.keywords as keywords %}
 {% for thread in inbox %}
     <li rel="{% url thread_detail thread.phone_number %}" class="{% if forloop.first %}first{% endif %}{% if forloop.last %}last{% endif %}{% if thread.unread %} unread{% endif %}">
         <span class="number">{{ thread.phone_number }} {% if thread.message_count > 1 %}({{ thread.message_count }}){% endif %}</span>
-        <span class="message">{{ thread.body|truncatewords:12 }}</span>
+        <span class="message">{% if keywords|length > 1 %}<strong>{{ thread.tag }}</strong>{% endif %} {{ thread.body|truncatewords:12 }}</span>
         <span class="timestamp">{{ thread.get_timestamp }}</span>
         <div class="clear"></div>
     </li>
 {% empty %}
     <li>You don't have any unread SMS messages.</li>    
 {% endfor %}
+{% endwith %}
 </ul>
 <script type="text/javascript">
 $(function() {

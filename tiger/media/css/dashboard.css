@@ -677,6 +677,71 @@ ul.messages.unenrolled {
     font-size:11px;
 }
 
+#add-keyword-wrap * {
+    vertical-align:middle;
+}
+
+#add-keyword-wrap input {
+    width:158px;
+}
+
+#add-keyword-wrap button.button {
+    color: #fff; 
+    border: none; 
+    background-color:#c76218;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:bold;
+    padding:4px 7px 4px 7px;
+    text-decoration:none;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    margin:0;
+}
+
+#keyword-list {
+    margin-bottom:10px;
+}
+
+#keyword-list li {
+    margin-left:0;
+    background-color:#CDE0E8;
+    color:#272c2e;
+    width:160px;
+    padding:3px 6px;
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border-radius:3px;
+    margin-bottom:10px;
+}
+
+#keywords {
+    border-left: 1px solid gray;
+    float: right;
+    padding-left: 25px;
+    width: 224px;
+}
+
+#keyword-list form {
+    display:inline;
+    float:right;
+}
+
+#keyword-list input.delete-button {
+    border:0;
+    background-color:transparent;
+}
+
+span.message strong {
+    color:white; 
+    background-color:#34484F; 
+    font-size:10px;
+    padding:2px 4px;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    border-radius:2px;
+}
+
 
 /* PROGRESS */
 #progress{color:#ffffff;margin:10px 0 20px;list-style:none;line-height:1em;overflow:auto;}

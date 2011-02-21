@@ -6,7 +6,7 @@ class Sender(object):
     def __init__(self, site, body, sms_number=None, campaign=None):
         self.site = site
         self.settings = site.sms
-        self.body = body
+        self.body = body[:140] + ' Reply "out" to quit'
         if sms_number is None:
             sms_number = self.settings.sms_number
         self.sms_number = sms_number
@@ -45,5 +45,6 @@ class Sender(object):
             campaign=campaign,
             subscriber=subscriber,
             body=body,
-            destination=SMS.DIRECTION_OUTBOUND
+            destination=SMS.DIRECTION_OUTBOUND,
+            phone_number=phone_number
         )

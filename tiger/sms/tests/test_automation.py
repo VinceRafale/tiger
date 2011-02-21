@@ -1,5 +1,6 @@
 from mock import Mock, patch
 import faker
+from should_dsl import should, should_not
 
 from tiger.accounts.models import Site
 from tiger.sales.models import Plan
@@ -36,7 +37,9 @@ class AutomatedResponseTestCase(TestCase):
             mock_method.return_value = self.get_mock_sender()
             s = SmsSubscriber.objects.create(settings=self.settings, phone_number=number)
             self.assertTrue(s.sender.called)
-            assert SMS.objects.get(subscriber=s, body=self.settings.intro_sms)
+            sms = SMS.objects.get(subscriber=s)
+            sms.body |should| start_with(self.settings.intro_sms)
+            sms.body |should| end_with(' Reply "out" to quit')
 
     def test_signup_does_not_trigger_intro_sms_if_disabled(self):
         "signup does not trigger intro sms if disabled"

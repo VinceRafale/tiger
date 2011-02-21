@@ -15,11 +15,11 @@ When choosing to filter by zip code or city, please bear in mind that Takeout Ti
     {{ form.title }}
     </label>
     <label>
-        Text messages can be a maximum of 160 characters.  Any characters beyond the first 160 will be truncated.
+        Text messages can be a maximum of 140 characters.  Any characters beyond the first 140 will be truncated.
         {% if form.body.errors %} {{ form.body.errors }} {% endif %}
         <div class="sms-wrap">
         {{ form.body }}
-        <p class="charcount">160</p>
+        <p class="charcount">140</p>
         </div>
     </label>
     <div class="clear"></div>
@@ -27,6 +27,12 @@ When choosing to filter by zip code or city, please bear in mind that Takeout Ti
     <p class="help">
         Filter your subscriber list with the options below.  If the filter list has more members than the number of SMSes you specify, Takeout Tiger will take a random sample from the list match that number of SMSes.
     </p>
+    {% if form.keyword %}
+    <label>
+        {{ form.keyword.label }} {{ form.keyword }} 
+        {% if form.keyword.errors %}{{ form.keyword.errors }}{% endif %}
+    </label>
+    {% endif %}
     <label>
         {{ form.count.label }} {{ form.count }} 
         {% if form.count.errors %}{{ form.count.errors }}{% endif %}
@@ -62,7 +68,7 @@ When choosing to filter by zip code or city, please bear in mind that Takeout Ti
 <script type="text/javascript">
 $(function () {
     $("form.sms-form textarea").keyup(function () {
-        remaining = 160 - $(this).val().length;
+        remaining = 140 - $(this).val().length;
         counter = $(this).closest("form").find("p.charcount");
         counter.text(remaining);
         if (remaining > 10) {

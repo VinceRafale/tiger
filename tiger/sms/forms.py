@@ -19,6 +19,11 @@ class CampaignForm(BetterModelForm):
             'count',
         )
 
+    def __init__(self, data=None, sms_settings=None, *args, **kwargs):
+        super(CampaignForm, self).__init__(data, *args, **kwargs)
+        if len(sms_settings.keywords) > 1:
+            self.fields['keyword'] = forms.ChoiceField(label='Subscriber list', choices=[(l, l) for l in sms_settings.keywords])
+
     def clean(self):
         data = self.cleaned_data
         count = self.cleaned_data.get('count')

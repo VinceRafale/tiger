@@ -10,7 +10,13 @@ Conversation with {{ number }}
 {% endblock %}
 
 {% block content %}
-{% if not subscriber %}
+{% if subscriber %}
+{% if not subscriber.is_active %}
+<p class="help">
+This number has opted out of SMS communications, which means you can no longer text them.
+</p>
+{% endif %}
+{% else %}
 <p class="help">
 This number is not on your subscriber list.
 </p>
@@ -26,7 +32,9 @@ This number is not on your subscriber list.
 </ul>
 <div class="save-row clearfix">
 <a class="cancel" href="{% url inbox %}">Back to Conversations</a>
+{% if subscriber and not subscriber.is_active %}
 <input type="submit" value="Reply" class="submit buttonTop" />
+{% endif %}
 </div>
 {% endblock %}
 

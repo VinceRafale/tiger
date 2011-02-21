@@ -21,8 +21,13 @@ class SmsSettings(models.Model):
     sms_number = PhoneNumberField(null=True)
     sid = models.CharField(max_length=34, null=True)
     send_intro = models.BooleanField('send an automated introductory SMS when someone first subscribes', default=False, blank=True)
-    intro_sms = models.CharField(max_length=160, null=True)
-    keywords = PickledObjectField(default=["in"])
+    intro_sms = models.CharField(max_length=140, null=True)
+    keywords = PickledObjectField(default='')
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.keywords = ['in']
+        super(SmsSettings, self).save(*args, **kwargs)
 
     @property
     def enabled(self):
@@ -98,8 +103,9 @@ class SmsSubscriber(models.Model):
 class Campaign(models.Model):
     settings = models.ForeignKey(SmsSettings, editable=False)
     title = models.CharField('title (for your reference later)', max_length=255)
-    body = models.CharField(max_length=160)
+    body = models.CharField(max_length=140)
     timestamp = models.DateTimeField(editable=False, auto_now_add=True)
+    keyword = models.CharField(max_length=15)
     filter_on = models.CharField(max_length=100, blank=True, choices=[
         ('city', 'city'),
         ('state', 'state'),
@@ -113,7 +119,7 @@ class Campaign(models.Model):
     completed = models.BooleanField(default=False, editable=False)
 
     def set_subscribers(self):
-        subscribers = self.settings.smssubscriber_set.active()
+        subscribers = self.settings.smssubscriber_set.active().filter(tag=self.keyword)
         if self.filter_on and self.filter_value:
             subscribers = subscribers.filter(**{self.filter_on: self.filter_value})
         if self.starred is not None:
@@ -195,7 +201,7 @@ class SMS(Message):
                     phone_number=self.phone_number,
                     timestamp=self.timestamp,
                     body=self.body,
-                    tag=self.subscriber.tag if self.subscriber else None
+                    tag=self.subscriber.tag if self.subscriber else ''
                 )
             else:
                 to_update = {
@@ -239,7 +245,3 @@ class Thread(models.Model):
         else:
             format_string = 'M j'
         return format(timestamp, format_string)
-
-    @property
-    def tag_name(self):
-        return ''

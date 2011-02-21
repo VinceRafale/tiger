@@ -170,13 +170,6 @@ class SMSSubscribeKeywordTestCase(TestCase):
         thread = get_thread(**self.by_phone)
         thread.tag |should| equal_to("foo")
 
-    def test_threads_with_keyword_are_missing_from_inbox_with_keyword(self):
-        self.start_conversation()
-        self.sms.remove_keywords("foo")
-        thread = get_thread(**self.by_phone)
-        inbox_tags = [thread.tag_name for thread in SMS.objects.inbox_for(self.sms)]
-        inbox_tags |should_not| contain("foo")
-
     def test_subscribers_for_keyword_are_missing_from_active_subscribers(self):
         self.sms.remove_keywords("foo")
         subscriber = get_subscriber(**self.by_phone)
