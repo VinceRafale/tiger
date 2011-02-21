@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.conf import settings
 from django.utils import simplejson as json
+import twilio
 
 class Sender(object):
     def __init__(self, site, body, sms_number=None, campaign=None):
@@ -46,5 +47,6 @@ class Sender(object):
             subscriber=subscriber,
             body=body,
             destination=SMS.DIRECTION_OUTBOUND,
-            phone_number=phone_number
+            phone_number=phone_number,
+            conversation=body != 'out' and body not in settings.keywords
         )

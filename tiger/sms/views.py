@@ -231,7 +231,7 @@ def send_single_sms(request, phone_number):
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         return direct_to_template(request, template='dashboard/marketing/includes/single_sms_form.html', extra_context={
-            'subscriber_id': subscriber_id
+            'subscriber_id': phone_number
         })
 
 @login_required
