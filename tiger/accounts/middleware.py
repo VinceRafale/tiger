@@ -13,6 +13,9 @@ class DomainDetectionMiddleware(object):
         """
         site = RequestSite(request)
         # Takeout Tiger itself has different URL patterns
+        if site.domain == 'www.takeouttiger.com':
+            request.urlconf = settings.TIGER_URLCONF
+            return None
         site_obj = site.get_site_object()
         if site_obj is None:
             return HttpResponseRedirect('http://www.takeouttiger.com')
