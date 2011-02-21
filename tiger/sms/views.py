@@ -182,7 +182,7 @@ def toggle_star(request, subscriber_id):
 @not_suspended
 def create_campaign(request):
     if request.method == 'POST':
-        form = CampaignForm(request.POST, sms_settings=request.site.sms)
+        form = CampaignForm(request.POST, site=request.site)
         if form.is_valid():
             campaign = form.save(commit=False)
             campaign.settings = request.site.sms
@@ -199,7 +199,7 @@ def create_campaign(request):
             """ % (campaign.title, campaign.sent_count, campaign.count))
             return HttpResponseRedirect(reverse('sms_home'))
     else:
-        form = CampaignForm(sms_settings=request.site.sms)
+        form = CampaignForm(site=request.site)
     return direct_to_template(request, template='dashboard/marketing/sms_campaign_form.html', extra_context={
         'form': form
     })
