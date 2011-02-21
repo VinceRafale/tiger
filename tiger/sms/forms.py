@@ -1,6 +1,7 @@
 from django import forms
 
 from tiger.utils.forms import BetterModelForm
+from tiger.sales.exceptions import CapExceeded
 from tiger.sms.models import Campaign, SmsSettings
 from tiger.sms.sender import Sender
 
