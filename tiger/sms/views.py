@@ -139,7 +139,6 @@ def sms_disable(request):
         )
         sms.sms_number = sms.sid = None
         sms.save()
-        request.site.account.set_sms_subscription(False)
         messages.success(request, "Your SMS number has been disabled.")
         return HttpResponseRedirect(reverse('sms_home'))
     else:

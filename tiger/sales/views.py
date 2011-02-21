@@ -162,6 +162,7 @@ def delete_restaurant(request, site_id):
     except Site.DoesNotExist:
         raise Http404
     if request.method == 'POST':
+        restaurant.user.delete()
         restaurant.delete()
         messages.success(request, 'Restaurant deleted successfully.')
         return HttpResponseRedirect(reverse('restaurant_list'))
