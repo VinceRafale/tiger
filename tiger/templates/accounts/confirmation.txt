@@ -4,7 +4,7 @@ Thanks for signing up for Takeout Tiger!  We're sure that it will provide great 
 
 You can log in to manage your site at {{ site.tiger_domain }}/dashboard/.   Your brand new site is currently accessible at {{ site.tiger_domain }}.  You will always be able to access your site at this address, even if you choose to add a custom domain (for example, http://www.{{ site.subdomain }}.com).
 
-Your login for your dashboard is {{ site.user.email }}.  If you don't remember the password that you set when you signed up, you can reset it by going to {{ site.tiger_domain }}/dashboard/reset-password/.
+Your login for your dashboard is {{ site.user.email }}.  If you haven't set a password yet or don't remember the password that you set when you signed up, you can reset it by going to {{ site.tiger_domain }}/dashboard/reset-password/.
 
 Welcome to the Takeout Tiger family, and congrats on your new website!
 
