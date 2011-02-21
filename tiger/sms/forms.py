@@ -31,7 +31,7 @@ class CampaignForm(BetterModelForm):
         count = self.cleaned_data.get('count')
         sender = Sender(self.site, data.get('body', ''))
         try:
-            sender.add_recipients(*['dummy' for n in count])
+            sender.add_recipients(*['dummy' for n in range(count)])
         except CapExceeded, e:
             if e.cap_type == 'soft':
                 self.cap_exceeded = True
