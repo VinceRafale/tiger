@@ -134,6 +134,12 @@ class ConversationalSMSTestCase(TestCase):
         SmsSubscriber.DoesNotExist |should_not| be_thrown_by(lambda: get_subscriber(phone_number=self.data['From']))
         get_subscriber(phone_number=self.data['From']) |should_not| be_active
 
+    def test_keyword_does_not_create_thread(self):
+        self.data = get_data_for_request('In')
+        self.twilio_header = get_twilio_header(self.site.tiger_domain() + '/sms/respond-to-sms/', self.data)
+        self.get_response()
+        lambda: get_thread(phone_number=self.data['Phone']) |should| throw(Thread.DoesNotExist)
+
 
 class SMSSubscribeKeywordTestCase(TestCase):
     poseur_fixtures = 'tiger.fixtures'

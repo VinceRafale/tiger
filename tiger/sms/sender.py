@@ -48,5 +48,5 @@ class Sender(object):
             body=body,
             destination=SMS.DIRECTION_OUTBOUND,
             phone_number=phone_number,
-            conversation=body != 'out' and body not in settings.keywords
+            conversation=False if campaign else True
         )
