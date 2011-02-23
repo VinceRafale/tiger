@@ -33,7 +33,7 @@ class LocationMiddleware(object):
         setattr(request, 'location', self.get_location(request))
 
     def get_location(self, request):
-        location = cache.get('location')
+        location = request.session.get('location')
         if location is None:
             try:
                 location = request.site.location_set.all()[0]

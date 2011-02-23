@@ -1,85 +1,80 @@
 from nose.tools import *
+from nose.exc import SkipTest
 
-my_house = (42.213633, -72.567852)
-moms_house = (41.876919, -72.631275)
+from should_dsl import should, should_not
 
-#multiple addresses appear in sidebar and footer
-#pdf menu location list...
+from tiger.core.models import LocationStockInfo, Order
+from tiger.accounts.models import Site, Location
+from tiger.fixtures import FakeOrder
+from tiger.sales.models import Account, Plan
+from tiger.utils.test import TestCase
 
-def test_delivery_area():
-    location = Site.location_set.all()[0]
-    # delivery area encompasses western mass
-    assert_true(location.contains(my_house))
-    assert_false(location.contains(moms_house))
 
-@with_setup(setup, teardown)
-def test_dashboard_location_selector():
-    # test no selector w/ one location
-    #TODO: get client
-    response = client.get(reverse("dashboard_menu"))
-    body = lxml(response.content)
-    assert_false(len(body.cssselect("a#change-location")))
-    # test selector w/ 2 locations
-    site = Site.objects.all()[0]
-    location = Location.objects.create(site=site)
-    response = client.get(reverse("dashboard_menu"))
-    body = lxml(response.content)
-    assert_true(len(body.cssselect("a#change-location")))
-    # post to switch URL
-    response = client.post(reverse("dashboard_change_location"), {"location_id": location.id}, follow=True)
-    # assert page contains selected location
-    assert_true("Location: %s" % location.display in response.content)
+class DashboardControlsTestCase(TestCase):
+    fixtures = ['plans.json']
+    poseur_fixtures = 'tiger.fixtures'
 
-def test_per_location_out_of_stock():
-    # set location
-    # post to update out of stock for an item
-    # refresh page
-    # one location has an item in stock
-    # one without 
-    assert False
+    def setUp(self):
+        self.site = Site.objects.all()[0]
+        second_location = Location.objects.create(site=self.site, schedule=self.site.schedule_set.all()[0])
+        self.client.login(email='test@test.com', password='password', site=self.site)
 
-def test_per_location_orders_list():
-    # create some orders for both locations
-    # set location
-    # assert orders for location
-    # change location
-    # assert orders for location
-    assert False
+    def test_one_location_has_no_selector(self):
+        self.site.location_set.all()[0].delete()
+        response = self.client.get('/dashboard/menu/', follow=True)
+        response.css("#change-location") |should| have(0).elements
 
-def test_location_on_order_detail():
-    # assert page contains location display value
-    assert False
+    def test_two_locations_has_selector(self):
+        response = self.client.get('/dashboard/menu/')
+        response.css("#change-location") |should| have(1).element
 
-def test_per_location_sales_tax():
-    # set sales tax per location
-    # place orders for each location
-    # test that sales tax matches
-    assert False
+    def test_selector_changes_location_in_context(self):
+        response = self.client.get('/dashboard/menu/')
+        initial_location = response.context['location']
+        response = self.client.post('/dashboard/change-location/', {
+            'loc': Location.objects.exclude(id=initial_location.id)[0].id}, follow=True)
+        new_location = response.context['location']
+        initial_location |should_not| equal_to(new_location)
 
-def test_per_location_order_delivery():
-    # set different e-mail addresses for receipt of orders
-    # place order to one location
-    # check e-mail outbox for matching address
-    # place order to other location
-    # check e-mail outbox for matching address
-    assert False
+    def test_changing_location_changes_stock_levels(self):
+        menu_item = self.site.item_set.all()[0]
+        checkbox = "input[name='out_of_stock-%s']" % menu_item.id
 
-def test_customer_location_selector():
-    # test no selector w/ one location
-    # test selector w/ 2 locations
-    # post to switch URL
-    # assert redirects
-    # assert page contains selected location
-    assert False
+        stock1, stock2 = menu_item.locationstockinfo_set.all()
+        stock1.out_of_stock = True
+        stock1.save()
+        stock2.out_of_stock = False
+        stock2.save()
 
-def test_no_items_allowed_without_location():
-    assert False
+        self.client.post('/dashboard/change-location/', {
+            'loc': stock1.location.id}, follow=True)
+        response = self.client.get('/dashboard/menu/')
+        response.css(checkbox)[0] |should| be_checked
+        
+        self.client.post('/dashboard/change-location/', {
+            'loc': stock2.location.id}, follow=True)
+        response = self.client.get('/dashboard/menu/')
+        response.css(checkbox)[0] |should_not| be_checked
 
-def test_delivery_option_for_blank_delivery_area():
-    assert False
+    def test_changing_location_changes_orders_list(self):
+        self.site.plan = Plan.objects.get(has_online_ordering=True)
+        self.site.save()
+        loc1, loc2 = self.site.location_set.all()
+        FakeOrder.generate(2)
+        order1, order2 = Order.objects.all()
+        order1.location = loc1
+        order1.save()
+        order2.location = loc2
+        order2.save()
 
-def test_items_create_stock_records_for_locations():
-    assert False
+        self.client.post('/dashboard/change-location/', {'loc': loc1.id})
+        response = self.client.get('/dashboard/orders/')
+        response.css("#%d" % order1.id) |should| have(1).element
+        response.css("#%d" % order2.id) |should| have(0).elements
+        
+        self.client.post('/dashboard/change-location/', {'loc': loc2.id})
+        response = self.client.get('/dashboard/orders/')
+        response.css("#%d" % order2.id) |should| have(1).element
+        response.css("#%d" % order1.id) |should| have(0).elements
 
-def test_locations_create_stock_records_for_items():
-    assert False
+

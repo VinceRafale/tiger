@@ -4,6 +4,7 @@ from tiger.dashboard.forms import PasswordResetForm
 urlpatterns = patterns('tiger.dashboard.views',
     url(r'^$', 'dashboard', name='dashboard'),
     url(r'^login/$', 'login', name='auth_login'),
+    url(r'^change-location/$', 'change_location', name='change_location'),
 )
 
 urlpatterns += patterns('django.contrib.auth.views',

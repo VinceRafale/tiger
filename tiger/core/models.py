@@ -324,6 +324,9 @@ class Order(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_INCOMPLETE)
     unread = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ('-timestamp',)
+
     def save(self, *args, **kwargs):
         super(Order, self).save(*args, **kwargs)
         if self.status in (Order.STATUS_SENT, Order.STATUS_PAID):

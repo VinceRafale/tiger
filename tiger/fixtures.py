@@ -77,4 +77,3 @@ class FakeOrder(FakeModel):
     class Meta:
         model = Order
         count = 0
-

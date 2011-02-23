@@ -22,7 +22,6 @@ def online_ordering_required(func):
 @online_ordering_required
 def home(request):
     return direct_to_template(request, template='dashboard/orders/order_history.html', extra_context={
-        'orders': Order.objects.filter(site=request.site).order_by('-timestamp')[:10] 
     })
 
 @login_required
