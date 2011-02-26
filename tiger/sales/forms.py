@@ -2,6 +2,7 @@ from datetime import date
 from hashlib import sha1
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 

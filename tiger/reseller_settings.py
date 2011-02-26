@@ -34,6 +34,7 @@ INSTALLED_APPS = (
     'tiger.accounts',
     'tiger.core',
     'tiger.sales',
+    'tiger.dashboard',
     'tiger.stork',
     'django_nose',
     'poseur',
