@@ -146,6 +146,8 @@ class ShoppingCartMiddleware(object):
                 expire_date=(datetime.now() + timedelta(days=7))
             ))
             request.cart = Cart(s)
+        else:
+            request.cart = None
 
     def process_response(self, request, response):
         cookie_name, session_key = self._get_cookie_pair(request)

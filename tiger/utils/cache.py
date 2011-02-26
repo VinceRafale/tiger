@@ -3,6 +3,7 @@ import re
 from django.conf import settings
 from django.core.cache import cache
 
+CACHING_DISABLED = getattr(settings, 'CACHING_DISABLED', False)
 
 def cachedmethod(cacheproxy):
     def wrap(method):
@@ -10,7 +11,7 @@ def cachedmethod(cacheproxy):
             instance, args = args[0], args[1:] 
             key = cacheproxy.key(instance.id)
             cached_val = cache.get(key)
-            if cached_val is not None:
+            if cached_val is not None and not CACHING_DISABLED:
                 return cached_val
             val = method(instance, *args, **kwargs)
             cache.set(key, val, 60 * 60 * 24 * 7)

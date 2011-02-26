@@ -10,6 +10,12 @@ from tiger.core.models import Coupon
 class CouponFeaturesTestCase(TestCase):
     poseur_fixtures = 'tiger.fixtures'
     urls = 'tiger.tiger_urls'
+    patch_settings = {
+        'tiger.tiger_settings': (
+            'MIDDLEWARE_CLASSES',
+            'INSTALLED_APPS',
+        )
+    }
 
     def setUp(self):
         self.site = Site.objects.all()[0]

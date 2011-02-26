@@ -101,9 +101,10 @@ class CouponUsageTestCase(TestCase):
     poseur_fixtures = 'tiger.fixtures'
 
     def setUp(self):
-        self.site = Site.objects.all()[0]
-        self.site.plan = Plan.objects.get(has_online_ordering=True)
-        self.site.save()
+        site = Site.objects.all()[0]
+        site.plan = Plan.objects.filter(has_online_ordering=True)[0]
+        site.save()
+        self.site = site
 
     def test_add_remove_coupon(self):
         coupon = Coupon.objects.create(
@@ -112,11 +113,10 @@ class CouponUsageTestCase(TestCase):
             discount_type=Coupon.DISCOUNT_DOLLARS,
             dollars_off='1.00'
         )
-        client = Client(HTTP_HOST='foo.takeouttiger.com')
-        client.get(reverse('menu_home'))
-        response = client.post(reverse('preview_order'), {'coupon_code': coupon.short_code}, follow=True)
+        self.client.get(reverse('menu_home'))
+        response = self.client.post(reverse('preview_order'), {'coupon_code': coupon.short_code}, follow=True)
         self.assertContains(response, 'Coupon TEST')
-        response = client.get(reverse('clear_coupon'), follow=True)
+        response = self.client.get(reverse('clear_coupon'), follow=True)
         self.assertContains(response, 'Your coupon has been removed.')
 
 
@@ -199,9 +199,9 @@ class PayPalOrderTest(TestCase):
 
     def setUp(self):
         site = Site.objects.all()[0]
-        site.plan = Plan.objects.get(has_online_ordering=True)
+        site.plan = Plan.objects.filter(has_online_ordering=True)[0]
         site.save()
-        location = site.location_set.all()[0]
+        location, = site.location_set.all()
         location.receive_via = Location.RECEIPT_EMAIL
         location.tax_rate = '6.25'
         location.save()

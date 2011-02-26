@@ -1,0 +1,46 @@
+{% extends 'dashboard/orders/home.html' %}
+
+{% block body-class %}{{ block.super }} order-settings{% endblock %}
+
+{% block h2 %}
+Online ordering settings
+{% endblock %}
+
+{% block help %}
+FIXME
+{% endblock %}
+
+{% block content %}
+<ul id="published">
+    {% for location in site.location_set.all %}
+    <li>
+        
+        <h3>    
+            {{ location.name }}
+            <span class="buttons">
+                <a href="{% url order_options location.id %}">edit</a>
+            </span>
+        </h3>
+        {% if location.receive_via %}
+        <p>
+        Orders delivered by {{ location.get_receive_via_display|lower }} to {{ location.order_recipient }}
+        </p>
+        {% endif %}
+        <div class="clear"></div>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("a.delete").live("click", function () {
+        h3Text = $(this).parent().hasClass("section-controls") ? "section" : "item";
+        c = confirm("Are you sure you want to delete this " + h3Text + "? This action cannot be undone.");
+        if (!c)
+            return false;
+    });
+});
+</script>
+{% endblock %}

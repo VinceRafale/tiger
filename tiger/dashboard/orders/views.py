@@ -54,8 +54,15 @@ def order_pdf(request, order_id):
 
 @login_required
 @online_ordering_required
-def order_options(request):
-    location = request.site.location_set.all()[0]
+def order_options_list(request):
+    if not request.site.plan.multiple_locations:
+        return HttpResponseRedirect(reverse('order_options', args=[request.site.location_set.all()[0].id]))
+    return direct_to_template(request, template='dashboard/orders/order_options_list.html')
+
+@login_required
+@online_ordering_required
+def order_options(request, location_id):
+    location = request.site.location_set.get(id=location_id)
     if request.method == 'POST':
         form = OrderSettingsForm(request.POST, site=request.site, instance=location)
         if form.is_valid():

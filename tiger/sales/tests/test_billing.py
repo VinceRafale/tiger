@@ -258,7 +258,7 @@ class ManagedCustomerTestCase(TestCase):
         self.site.plan = Plan.objects.create(name='no orders', has_online_ordering=False)
         self.site.save()
         self.client.login(email='test@test.com', password='password', site=Site.objects.all()[0])
-        for url in ('dashboard_orders', 'order_options', 'order_payment', 'order_messages', 'get_new_orders',):
+        for url in ('dashboard_orders', 'order_options_list', 'order_payment', 'order_messages', 'get_new_orders',):
             response = self.client.get(reverse(url), follow=True, SERVER_NAME='foo.takeouttiger.com')
             self.assertEqual(404, response.status_code)
 
@@ -267,6 +267,6 @@ class ManagedCustomerTestCase(TestCase):
         self.site.plan = Plan.objects.create(name='no orders', has_online_ordering=True)
         self.site.save()
         self.client.login(email='test@test.com', password='password', site=Site.objects.all()[0])
-        for url in ('dashboard_orders', 'order_options', 'order_payment', 'order_messages', 'get_new_orders',):
+        for url in ('dashboard_orders', 'order_options_list', 'order_payment', 'order_messages', 'get_new_orders',):
             response = self.client.get(reverse(url), follow=True, SERVER_NAME='foo.takeouttiger.com')
             self.assertEqual(200, response.status_code)

@@ -1,0 +1,25 @@
+{% extends base %}
+
+{% block title %}
+Choose your location
+{% endblock %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>Choose your location</h1>
+<p>You must select a location so that we can provide you with accurate availability and delivery information.</p>
+<form method="post">
+    <ul class="locations">
+        {% for location in site.location_set.all %}
+        <li>
+            <input type="radio" value="{{ location.id }}" name="loc" />
+            <label for="location-{{ location.id }}">{{ location.name }}</label>
+        </li>
+        {% endfor %}
+    </ul>
+    <input type="submit" name="" class="button" value="Go" />
+</form>
+{% endblock %}

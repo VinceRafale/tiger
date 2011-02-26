@@ -55,11 +55,10 @@ def login(request, redirect_field_name='next'):
 def dashboard(request):
     return HttpResponseRedirect(reverse('dashboard_menu'))
 
-
 @login_required
 def change_location(request):
     if not request.method == 'POST':
         raise Http404
     location_id = request.POST.get('loc')
-    request.session['location'] = request.site.location_set.get(id=location_id)
+    request.session['dashboard-location'] = request.site.location_set.get(id=location_id)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER') or '/dashboard/menu/')

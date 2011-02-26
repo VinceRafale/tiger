@@ -114,3 +114,21 @@ span.pepper {
 }
 dl dd, dl dt {display:inline;}
 dl dd {margin-right:10px;}
+
+div.locations h3, div.locations h4 {
+    margin-bottom:6px;
+}
+
+#user-location a.button {
+    font-size:13px;
+    padding:2px 4px;
+}
+
+ul.locations {
+    list-style-type:none;
+    margin-left:0;
+}
+
+ul.locations li {
+    margin-left:0;
+}

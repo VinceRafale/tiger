@@ -65,7 +65,7 @@ class HitManager(models.Manager):
 
 class Hit(models.Model):
     session = models.ForeignKey(Session)
-    location = models.ForeignKey('accounts.Location')
+    location = models.ForeignKey('accounts.Location', null=True)
     path = models.CharField(max_length=255)
     referrer = models.TextField(blank=True)
     verb = models.CharField(max_length=6)

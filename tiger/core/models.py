@@ -318,7 +318,7 @@ class Order(models.Model):
     ready_by = models.DateTimeField('Have order ready by:', null=True)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
     tax = models.DecimalField(editable=False, max_digits=6, decimal_places=2, default='0.00')
-    cart = PickledObjectField(editable=False)
+    cart = PickledObjectField(editable=False, null=True)
     timestamp = models.DateTimeField(default=datetime.now, editable=False)
     method = models.IntegerField('This order is for', default=1, choices=METHOD_CHOICES)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_INCOMPLETE)

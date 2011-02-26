@@ -7,6 +7,8 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 
+from mock import Mock
+
 from nose.tools import *
 from poseur.fixtures import load_fixtures
 from pytz import timezone
@@ -39,7 +41,7 @@ def setup_timeslots(dt):
         site = Site.objects.all()[0]
         site.plan, created = Plan.objects.get_or_create(has_online_ordering=True)
         site.save()
-        location = site.location_set.all()[0]
+        location, = site.location_set.all()
         location.eod_buffer = 15
         location.tax_rate = '6.25'
         site.enable_orders = True
@@ -256,10 +258,8 @@ class ItemDisplayTestCase(TestCase):
         self.client.get('/')
         self.item = Variant.objects.all()[0].item
         self.item.update_price()
-        location = Location.objects.all()[0]
-        stockinfo = self.item.locationstockinfo_set.get(location=location)
-        stockinfo.save()
-        self.stockinfo = stockinfo
+        location, = Location.objects.all()
+        self.stockinfo = self.item.locationstockinfo_set.get(location=location)
 
     def test_available(self):
         self.item.archived = self.stockinfo.out_of_stock = False
@@ -299,6 +299,9 @@ def set_timezone(tz):
 def get_order_form(ready_by, order_method):
     site = Site.objects.all()[0]
     location = site.location_set.all()[0]
+    request = Mock()
+    request.site = site
+    request.location = location
     form = OrderForm({
         'name': 'John Smith',
         'phone': '12345',
@@ -306,7 +309,7 @@ def get_order_form(ready_by, order_method):
         'ready_by_1': ready_by.strftime('%M'),
         'ready_by_2': ready_by.strftime('%p'),
         'method': order_method,
-    }, site=site, location=location)
+    }, request=request)
     form.total = '40.00'
     return form
 

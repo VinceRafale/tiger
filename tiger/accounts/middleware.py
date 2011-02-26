@@ -33,10 +33,14 @@ class LocationMiddleware(object):
         setattr(request, 'location', self.get_location(request))
 
     def get_location(self, request):
-        location = request.session.get('location')
-        if location is None:
-            try:
-                location = request.site.location_set.all()[0]
-            except:
-                pass
-        return location
+        if request.path.startswith('/dashboard'):
+            return self._dashboard_location(request)
+        return self._homepage_location(request)
+
+    def _dashboard_location(self, request):
+        return request.session.get('dashboard-location') or request.site.location_set.all()[0]
+
+    def _homepage_location(self, request):
+        if request.site.location_set.count() == 1:
+            return request.site.location_set.all()[0]
+        return request.session.get('location')

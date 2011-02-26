@@ -108,8 +108,10 @@ class OrderForm(forms.ModelForm):
         model = Order
         exclude = ('status', 'unread', 'pickup', 'session_key',)
 
-    def __init__(self, data=None, site=None, location=None, *args, **kwargs):
+    def __init__(self, data=None, request=None, *args, **kwargs):
         super(OrderForm, self).__init__(data, *args, **kwargs)
+        site = self.site = request.site
+        location = self.location = request.location
         self.fields['method'] = forms.TypedChoiceField(
             label='This order is for:',
             coerce=int,
@@ -117,8 +119,6 @@ class OrderForm(forms.ModelForm):
             widget=forms.RadioSelect
         )
         self.delivery_minimum = location.delivery_minimum
-        self.site = site
-        self.location = location
 
     def clean_method(self):
         method = self.cleaned_data.get('method')
@@ -167,6 +167,20 @@ class OrderForm(forms.ModelForm):
             if ready_by < server_tz.localize(datetime.now() + timedelta(minutes=lead_time)):
                 raise forms.ValidationError('%s orders must be placed %d minutes in advance.' % (method_display, lead_time))
         return cleaned_data
+
+    def save(self, commit=True):
+        instance = super(OrderForm, self).save(commit)
+        request = self.request
+        instance.total = request.cart.total()
+        instance.tax = request.cart.taxes()
+        cart = request.cart.session.get_decoded()
+        instance.cart = cart
+        instance.session_key = request.cart.session.session_key
+        instance.site = self.site
+        instance.location = self.location
+        if commit:
+            instance.save()
+        return instance
 
 
 class CouponForm(forms.Form):

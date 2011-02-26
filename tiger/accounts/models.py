@@ -237,6 +237,11 @@ class Location(models.Model):
                 escaped.append(s)
         return mark_safe(''.join(escaped))
 
+    def order_recipient(self):
+        if self.receive_via == Location.RECEIPT_EMAIL:
+            return self.order_email
+        return self.order_fax
+
 
 class Schedule(models.Model):
     site = models.ForeignKey(Site)
