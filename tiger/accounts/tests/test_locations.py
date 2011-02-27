@@ -110,6 +110,11 @@ class LocationControlsTestCase(LocationTestCase):
         response = self.client.get('/', follow=True)
         response.css("#change-location") |should| have(0).elements
 
+    def test_one_location_has_no_change_location_page(self):
+        self.site.location_set.all()[0].delete()
+        response = self.client.get('/change-location/')
+        response.status_code |should| equal_to(404)
+
     def test_two_locations_has_homepage_selector(self):
         response = self.client.get('/')
         response.css("#change-location") |should| have(1).element

@@ -278,6 +278,8 @@ def mailing_list_signup(request):
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def change_location(request):
+    if request.site.location_set.count() == 1:
+        raise Http404
     if request.method == 'POST':
         location_id = request.POST.get('loc')
         request.session['location'] = request.location = request.site.location_set.get(id=location_id)
