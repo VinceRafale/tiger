@@ -21,13 +21,24 @@
             <div id="menuWrap">
                 <div class="container_12 clearfix">
                     <div class="grid_10 push_1">
-                    <h1 class="title">{{site.name}} Dashboard</h1>
-                	<ul class="menu utility-nav">
-	                    <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
-	                </ul>
-                    {% if site.location_set.count > 1 %}
-                    {{ location }} <a href="#" id="change-location">Change</a>
-                    {% endif %}
+                        <h1 class="title">{{site.name}} Dashboard</h1>
+                        <ul class="menu utility-nav">
+                            <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
+                        </ul>
+                        <div id="location-selector">
+                        {% if site.location_set.count > 1 %}
+                        <span>
+                        {{ location }} <a href="#" class="button" id="change-location">Change</a>
+                        </span>
+                        <form method="POST" action="{% url dashboard_change_location %}">
+                            <select name="loc">
+                            {% for loc in site.location_set.all %}
+                                <option {% if loc == location %}selected{% endif %} value="{{ loc.id }}">{{ loc }}</option>
+                            {% endfor %}
+                            </select>
+                        </form>
+                        {% endif %}
+                        </div>
                     </div>            
                 </div>         
             </div>   
@@ -133,6 +144,13 @@
             });
             return false;
         });
+    });
+    $("#change-location").click(function () {
+        $("#location-selector span").hide();
+        $("#location-selector form").show();
+    });
+    $("#location-selector select").change(function () {
+        $(this).parent()[0].submit();
     });
     </script>
     {% block js %}

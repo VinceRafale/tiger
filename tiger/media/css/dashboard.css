@@ -54,6 +54,27 @@ a.lightlink {color:white;}
 
 .group-wrap a, a.delete-group{color:#192326;}
 
+#location-selector {
+    float:left;
+    color:white;
+    margin:8px 0 0 15px;
+}
+
+#location-selector #change-location {
+    background-color:#C76218 !important;
+    padding:1px 6px;
+    margin:0;
+}
+
+#location-selector select {
+    border:none;
+    font-size:13px;
+}
+
+#location-selector form {
+    display:none;
+}
+
 a.buttonTop, a.add-row, a.delete-row {
     background-color:#004c00;
     color:white;
