@@ -299,7 +299,9 @@ class Invoice(models.Model):
         send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [self.account.email])
 
     def send_to_gateway():
-        pass
+        from tiger.sales.authnet import Cim
+        cim = Cim()
+        cim.create_profile_transaction(self.total, self.account.customer_id, self.account.subscription_id, self.id)
 
 
 class Charge(models.Model):
