@@ -69,7 +69,7 @@ class Cim(object):
         customer_payment_profile.text = str(customer_payment_profile_id)
         order = etree.SubElement(auth_capture, 'order')
         invoice_number = etree.SubElement(order, 'invoiceNumber')
-        invoice_number.text = invoice.invoiceno
+        invoice_number.text = invoice
         results = self.fetch(xml)
         success = results.messages.resultCode == u'Ok'
         if not success:
