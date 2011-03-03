@@ -110,6 +110,7 @@ class OrderForm(forms.ModelForm):
 
     def __init__(self, data=None, request=None, *args, **kwargs):
         super(OrderForm, self).__init__(data, *args, **kwargs)
+        self.request = request
         site = self.site = request.site
         location = self.location = request.location
         self.fields['method'] = forms.TypedChoiceField(
