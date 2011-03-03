@@ -169,7 +169,7 @@ class OrderForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-        instance = super(OrderForm, self).save(commit)
+        instance = super(OrderForm, self).save(commit=False)
         request = self.request
         instance.total = request.cart.total()
         instance.tax = request.cart.taxes()

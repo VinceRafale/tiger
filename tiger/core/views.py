@@ -204,7 +204,7 @@ def send_order(request):
                 DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
                 return HttpResponseRedirect(reverse('order_success'))
     else:
-        form = OrderForm(site=request.site, request=request)
+        form = OrderForm(request=request)
     context = {
         'form': form
     }
