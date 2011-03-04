@@ -4,7 +4,7 @@ from django.utils import simplejson as json
 import twilio
 
 class Sender(object):
-    def __init__(self, site, body, sms_number=None, campaign=None):
+    def __init__(self, site, body, sms_number=None, campaign=None, reseller=False):
         self.site = site
         self.settings = site.sms
         self.body = body[:140] + ' Reply "out" to quit'
@@ -12,15 +12,17 @@ class Sender(object):
             sms_number = self.settings.sms_number
         self.sms_number = sms_number
         self.campaign = campaign
+        self.is_reseller = reseller
 
     def add_recipients(self, *recipients):
         from tiger.sms.models import SMS
-        plan = self.site.plan
-        this_month = datetime.now().replace(day=1, hour=0, minute=0)
-        smses_this_month = SMS.objects.filter(
-            settings=self.settings, timestamp__gte=this_month).count()
-        resulting_sms_count = smses_this_month + len(recipients)
-        plan.assert_sms_cap_not_exceeded(resulting_sms_count)
+        if not self.is_reseller:
+            plan = self.site.plan
+            this_month = datetime.now().replace(day=1, hour=0, minute=0)
+            smses_this_month = SMS.objects.filter(
+                settings=self.settings, timestamp__gte=this_month).count()
+            resulting_sms_count = smses_this_month + len(recipients)
+            plan.assert_sms_cap_not_exceeded(resulting_sms_count)
         if isinstance(recipients[0], basestring):
             self.recipients = [(None, number) for number in recipients]
         else:

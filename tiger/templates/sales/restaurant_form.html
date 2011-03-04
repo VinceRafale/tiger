@@ -1,4 +1,5 @@
 {% extends 'sales/base.html' %}
+{% load stork_tags %}
 
 {% block body-class %}marketing{% endblock %}
 
@@ -10,7 +11,11 @@
 {% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
 <form method="POST">
 {% for field in form %}
-<label>{{ field.label }}<br /> {{ field }} {% if field.errors %}{{ field.errors }}{% endif %}</label>
+{% if field|is_checkbox %}
+    <label>{{ field }} {{ field.label }} {% if field.errors %}{{ field.errors }}{% endif %}</label>
+{% else %}
+    <label>{{ field.label }}<br /> {{ field }} {% if field.errors %}{{ field.errors }}{% endif %}</label>
+{% endif %}
 {% endfor %}
 <div class="save-row clearfix">
 <a class="cancel" href="{% url restaurant_list %}">Cancel</a>

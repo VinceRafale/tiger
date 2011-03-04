@@ -18,11 +18,18 @@ from tiger.sms.sender import Sender
 # Create your models here.
 
 class SmsSettings(models.Model):
+    """Models can generically point to an instance of this model to provide SMS
+    functionality.  Both accounts (for resellers) and sites have an SMS module.
+
+    The ``reseller_network`` field value is copied from that of the site at the
+    time that the site is created.
+    """
     sms_number = PhoneNumberField(null=True)
     sid = models.CharField(max_length=34, null=True)
     send_intro = models.BooleanField('send an automated introductory SMS when someone first subscribes', default=False, blank=True)
     intro_sms = models.CharField(max_length=140, null=True)
     keywords = PickledObjectField(default='')
+    reseller_network = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -54,6 +61,11 @@ class SmsSettings(models.Model):
         for kw in args:
             SmsSubscriber.objects.filter(settings=self, tag=kw).update(deactivated=True)
 
+    def invite(self, phone_number):
+        sender = Sender(self, self.intro_text)
+        sender.add_recipients(phone_number)
+        sender.send_message()
+
 
 class SmsSubscriberManager(models.Manager):
     use_for_related_fields = True
@@ -84,20 +96,33 @@ class SmsSubscriber(models.Model):
         if new:
             self.signed_up_at = datetime.now()
         super(SmsSubscriber, self).save(*args, **kwargs)
-        if new and self.settings.send_intro and not self.unsubscribed_at:
-            self.send_message(self.settings.intro_sms)
+        if new and not self.unsubscribed_at:
+            if self.settings.send_intro:
+                self.send_message(self.settings.intro_sms)
+            if self.settings.reseller_network:
+                self.invite_to_reseller_network(self.phone_number)
 
     @property
     def is_active(self):
         return not self.unsubscribed_at and not self.deactivated
 
     def send_message(self, body, sms_number=None, campaign=None):
-        sender = self.sender(self.settings, body)
+        s = self._get_site()
+        sender = self.sender(s, body)
         sender.add_recipients(self)
         sender.send_message()
 
-    def sender(self, settings, body):
-        return Sender(settings, body)
+    def sender(self, site, body):
+        return Sender(site, body)
+
+    def invite_to_reseller_network(self, phone_number):
+        s = self._get_site()
+        s.account.sms.invite(self.phone_number)
+
+    def _get_site(self):
+        from tiger.accounts.models import Site
+        s = Site.objects.get(sms=self.settings)
+        return s
 
 
 class Campaign(models.Model):

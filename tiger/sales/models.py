@@ -6,10 +6,12 @@ from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
 from django.core.mail import send_mail
 from django.db import models, connection
+from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 
 from tiger.sales.exceptions import (PaymentGatewayError, 
     SiteManagementError, SoftCapExceeded, HardCapExceeded)
+from tiger.sms.models import SmsSettings
 from tiger.utils.billing import prorate
 
 
@@ -55,6 +57,7 @@ class Account(models.Model):
     sms_price = models.DecimalField(max_digits=5, decimal_places=2, default='0.02')
     fax_price = models.DecimalField(max_digits=5, decimal_places=2, default='0.07')
     manager = models.BooleanField(default=False)
+    sms = models.ForeignKey('sms.SmsSettings', null=True)
 
     class Meta:
         db_table = 'accounts_account'
@@ -322,3 +325,13 @@ class Charge(models.Model):
 
 class Payment(models.Model):
     pass
+
+
+def set_up_account(sender, instance, created, **kwargs):
+    if created:
+        sms = SmsSettings.objects.create()
+        instance.sms = sms
+        instance.save()
+
+
+post_save.connect(set_up_account, sender=Account)

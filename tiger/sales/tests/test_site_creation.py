@@ -7,6 +7,7 @@ from django.test.client import Client, RequestFactory
 
 from mock import Mock, patch
 from poseur.fixtures import load_fixtures
+from should_dsl import should, should_not
 
 from tiger import reseller_settings
 from tiger.accounts.models import Site
@@ -53,7 +54,7 @@ class NewSiteFormTestCase(TestCase):
         self.data = {
             'email': 'restaurant@restaurant.com',
             'name': 'Restaurant',
-            'subdomain': 'bar'
+            'subdomain': 'bar',
         }
         one, two, three, four = Plan.objects.all()
         one.account = two.account = self.account
@@ -89,6 +90,15 @@ class NewSiteFormTestCase(TestCase):
         self.assertTrue(self.client.login(email=data['email'], password=site.user.username, site=site))
         self.assertEquals(self.client.get('/').status_code, 200)
         self.assertEquals(len(mail.outbox), 1)
+        site.sms.reseller_network |should| be(False)
+
+    def test_reseller_network_propagates_to_sms_settings(self):
+        data = self.data.copy()
+        data['reseller_network'] = True
+        data['plan'] = self.valid_plan.id
+        form = CreateSiteForm(data, account=self.account)
+        site = form.save()
+        site.sms.reseller_network |should| be(True)
 
 
 class ResellerSignupFormTestCase(TestCase):

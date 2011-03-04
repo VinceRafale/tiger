@@ -48,6 +48,7 @@ class Site(models.Model):
     plan = models.ForeignKey('sales.Plan', null=True)
     signup_date = models.DateField(auto_now_add=True)
     managed = models.BooleanField(default=False)
+    reseller_network = models.BooleanField('I have this restaurant\'s written consent to send an invitation to its SMS subscribers', default=False)
 
     def natural_key(self):
         return (self.subdomain,)
@@ -334,7 +335,7 @@ def new_site_setup(sender, instance, created, **kwargs):
         schedule = Schedule.objects.create(site=instance, master=True)
         location = Location.objects.create(site=instance, schedule=schedule)
         theme = Theme.objects.create(name=instance.name)
-        sms = SmsSettings.objects.create()
+        sms = SmsSettings.objects.create(reseller_network=instance.reseller_network)
         instance.sms = sms
         stork = Stork(theme)
         stork.save()
