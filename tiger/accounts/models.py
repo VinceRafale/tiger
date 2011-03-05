@@ -187,6 +187,7 @@ class Location(models.Model):
     delivery_area = models.MultiPolygonField(null=True, blank=True) 
     tax_rate = models.DecimalField(decimal_places=3, max_digits=5, null=True)
     eod_buffer = models.PositiveIntegerField(default=30)
+    enable_orders = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name

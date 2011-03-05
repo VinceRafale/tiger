@@ -124,11 +124,11 @@ div.locations h3, div.locations h4 {
     padding:2px 4px;
 }
 
-ul.locations {
+#location-selection-form ul {
     list-style-type:none;
     margin-left:0;
 }
 
-ul.locations li {
+#location-selection-form li {
     margin-left:0;
 }

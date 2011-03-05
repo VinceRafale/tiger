@@ -44,7 +44,7 @@ class LocationTestCase(TestCase):
         self.site.save()
 
 
-class LocationControlsTestCase(LocationTestCase):
+class DashboardLocationControlsTestCase(LocationTestCase):
     def setUp(self):
         self.site = Site.objects.all()[0]
         self.client.login(email='test@test.com', password='password', site=self.site)
@@ -104,6 +104,32 @@ class LocationControlsTestCase(LocationTestCase):
         response = self.client.get('/dashboard/orders/')
         response.css("#%d" % order2.id) |should| have(1).element
         response.css("#%d" % order1.id) |should| have(0).elements
+
+    def test_order_settings_form_loaded_for_location(self):
+        self.client.post('/dashboard/change-location/', {'loc': 2})
+        response = self.client.get('/dashboard/orders/options/')
+        response.context['form'].instance.id |should| equal_to(2)
+
+    def test_ordering_enable_toggles_for_location(self):
+        self.client.post('/dashboard/change-location/', {'loc': 2})
+        response = self.client.get('/dashboard/orders/')
+        response.css("p.redlight") |should| have(1).element
+
+        response = self.client.get('/dashboard/orders/toggle/')
+        response.css("p.greenlight") |should| have(1).element
+        
+        self.client.post('/dashboard/change-location/', {'loc': 1})
+        response = self.client.get('/dashboard/orders/')
+        response.css("p.redlight") |should| have(1).element
+
+    def test_location_removed_from_selector_when_disabled(self):
+        self.fail()
+
+
+
+class LocationControlsTestCase(LocationTestCase):
+    def setUp(self):
+        self.site = Site.objects.all()[0]
 
     def test_one_location_has_no_homepage_selector(self):
         self.site.location_set.all()[0].delete()

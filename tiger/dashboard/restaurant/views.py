@@ -115,24 +115,6 @@ def delete_schedule(request, schedule_id):
         messages.success(request, 'Schedule deleted successfully.')
     return HttpResponseRedirect(reverse('edit_hours'))
 
-
-@login_required
-def toggle_order_status(request):
-    site = request.site
-    for location in site.location_set.all():
-        if not location.can_receive_orders():
-            messages.error(request, "You must enter a fax number or e-mail address to receive online orders.") 
-            return HttpResponseRedirect(reverse('order_options', args=[location.id]))
-        if not location.tax_rate:
-            messages.error(request, "You must enter a sales tax rate to receive online orders.") 
-            return HttpResponseRedirect(reverse('edit_location', args=[location.id]))
-    if site.enable_orders:
-        site.enable_orders = False
-    else:
-        site.enable_orders = True
-    site.save()
-    return HttpResponseRedirect(reverse('dashboard_orders'))
-
 @login_required
 def fetch_hours(request):
     forms = []

@@ -13,6 +13,7 @@ from django.views.generic.simple import direct_to_template
 from greatape import MailChimp, MailChimpError
 from paypal.standard.forms import PayPalPaymentsForm
 
+from tiger.accounts.forms import LocationSelectionForm
 from tiger.core.exceptions import OrderingError
 from tiger.core.forms import get_order_form, OrderForm, CouponForm, AuthNetForm
 from tiger.core.models import Section, Item, Coupon, Order
@@ -281,9 +282,13 @@ def change_location(request):
     if request.site.location_set.count() == 1:
         raise Http404
     if request.method == 'POST':
-        location_id = request.POST.get('loc')
-        request.session['location'] = request.location = request.site.location_set.get(id=location_id)
-        if request.cart:
-            request.cart.clear()
-        return HttpResponseRedirect(request.session.get('next') or '/')
-    return render_custom(request, 'core/change_location.html')
+        form = LocationSelectionForm(request.POST, site=request.site)
+        if form.is_valid():
+            request.session['location'] = request.location = form.cleaned_data.get('location')
+            if request.cart:
+                request.cart.clear()
+            return HttpResponseRedirect(request.session.get('next') or '/')
+    else:
+        form = LocationSelectionForm(site=request.site)
+        request.session['next'] = request.META.get('HTTP_REFERER') or '/'
+    return render_custom(request, 'core/change_location.html', {'form': form})

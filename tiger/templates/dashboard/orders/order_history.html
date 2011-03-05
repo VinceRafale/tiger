@@ -9,7 +9,7 @@
 {% block body-class %}{{ block.super }}history{% endblock %}
 
 {% block h2 %}
-Online orders status
+Online orders for your {{ location }} location
 {% endblock %}
 
 {% block help %}
@@ -18,13 +18,13 @@ Online orders status
 {% endblock %}
 
 {% block content %}
-        {% if site.enable_orders %}
+        {% if location.enable_orders %}
         <p class="usage greenlight">
-            You are currently taking online orders.  <a href="{% url toggle_order_status %}">Disable now</a>
+            You are currently taking online orders at your {{ location }} location.  <a href="{% url toggle_order_status %}">Disable now</a>
         </p>
         {% else %}
         <p class="usage redlight">
-            You are not currently taking online orders.  <a href="{% url toggle_order_status %}">Enable now</a>
+            You are not currently taking online orders at your {{ location }} location.  <a href="{% url toggle_order_status %}">Enable now</a>
         </p>
         {% endif %}
 

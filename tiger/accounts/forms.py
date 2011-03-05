@@ -456,3 +456,17 @@ class BasicInfoForm(BetterModelForm):
     class Meta:
         model = Site
         fields = ('name',)
+
+
+class LocationSelectionForm(forms.Form):
+    location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None, widget=forms.RadioSelect)
+
+    def __init__(self, data=None, site=None, *args, **kwargs):
+        super(LocationSelectionForm, self).__init__(data, *args, **kwargs)
+        self.fields['location'].queryset = site.location_set.all()
+
+    def clean_location(self):
+        loc = self.cleaned_data.get('location')
+        if loc and not loc.enable_orders:
+            raise forms.ValidationError("We aren't currently taking orders at our %s location." % unicode(loc))
+        return loc

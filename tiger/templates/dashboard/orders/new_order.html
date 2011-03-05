@@ -1,5 +1,5 @@
 {% for order in location.order_set.all %}
-    <tr id="{{ order.id }}" class="{% cycle '' 'shaded' %} {% if order.unread %}un{% endif %}read">
+    <tr id="order-{{ order.id }}" class="{% cycle '' 'shaded' %} {% if order.unread %}un{% endif %}read">
         <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
         <td><a href="{{ order.get_absolute_url }}">{{ order.localized_timestamp|date:"fa m/d" }}</a></td>
         <td><a href="{{ order.get_absolute_url }}">{{ order.get_status_display }}</a></td>

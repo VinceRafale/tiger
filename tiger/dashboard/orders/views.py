@@ -54,15 +54,8 @@ def order_pdf(request, order_id):
 
 @login_required
 @online_ordering_required
-def order_options_list(request):
-    if not request.site.plan.multiple_locations:
-        return HttpResponseRedirect(reverse('order_options', args=[request.site.location_set.all()[0].id]))
-    return direct_to_template(request, template='dashboard/orders/order_options_list.html')
-
-@login_required
-@online_ordering_required
-def order_options(request, location_id):
-    location = request.site.location_set.get(id=location_id)
+def order_options(request):
+    location = request.location
     if request.method == 'POST':
         form = OrderSettingsForm(request.POST, site=request.site, instance=location)
         if form.is_valid():
@@ -113,3 +106,22 @@ def order_messages(request):
     return direct_to_template(request, template='dashboard/orders/order_messages.html', extra_context={
         'form': form
     })
+
+@login_required
+@online_ordering_required
+def toggle_order_status(request):
+    site = request.site
+    location = request.location
+    if location.enable_orders:
+        location.enable_orders = False
+    else:
+        if not location.can_receive_orders():
+            messages.error(request, "You must enter a fax number or e-mail address to receive online orders.") 
+            return HttpResponseRedirect(reverse('order_options'))
+        if not location.tax_rate:
+            messages.error(request, "You must enter a sales tax rate to receive online orders.") 
+            return HttpResponseRedirect(reverse('edit_location', args=[location.id]))
+        location.enable_orders = True
+    location.save()
+    request.session['dashboard-location'] = location
+    return HttpResponseRedirect(reverse('dashboard_orders'))
