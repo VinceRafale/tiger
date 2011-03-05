@@ -13,6 +13,7 @@ class ImageComponent(BaseComponent):
     css_template = """%s {
         background-image: url('%s');
         background-repeat: %s;
+        text-indent:%s;
     }
     """
 
@@ -33,7 +34,10 @@ class ImageComponent(BaseComponent):
         if not image:
             return ''
         return self.css_template % (
-            self.selector, image.url, 'repeat' if (instance.tiling or tiling) else 'no-repeat'
+            self.selector, 
+            image.url, 
+            'repeat' if (instance.tiling or tiling) else 'no-repeat',
+            '-9999px' if self.text_indent else 'default'
         )
 
     def get_defaults(self):
