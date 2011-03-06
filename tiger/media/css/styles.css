@@ -132,3 +132,5 @@ div.locations h3, div.locations h4 {
 #location-selection-form li {
     margin-left:0;
 }
+
+h3.price {float:right;}
