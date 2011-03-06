@@ -215,7 +215,7 @@ class Variant(models.Model):
             new = True
         self.price = self.price.quantize(Decimal('0.01'))
         super(Variant, self).save(*args, **kwargs)
-        if new and self.item:
+        if self.item:
             self.item.update_price()
 
     def delete(self, *args, **kwargs):
