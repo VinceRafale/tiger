@@ -253,6 +253,11 @@ class Schedule(models.Model):
     def __unicode__(self):
         return self.display or ''
 
+    def save(self, *args, **kwargs):
+        super(Schedule, self).save(*args, **kwargs)
+        KeyChain.sidebar_locations.invalidate(self.site.id)
+        KeyChain.footer_locations.invalidate(self.site.id)
+
     @models.permalink
     def get_absolute_url(self):
         return 'edit_schedule', (), {'schedule_id': self.id}
