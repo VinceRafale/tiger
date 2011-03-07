@@ -49,7 +49,7 @@
 {% if cart|length %}
 <p class="has-items">You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}"><span>Complete your order</span></a></p>
 {% else %}
-<p>Order online for {{ site.order_options|join:"/" }}. Hungry?</p>
+<p>Order online for {{ site.order_options|join:"/" }}. Hungry? <a href="{% url menu_home %}"><span>Place an order</span></a></p>
 {% endif %}
 </div>
 {% endif %}
