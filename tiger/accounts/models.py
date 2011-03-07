@@ -155,6 +155,14 @@ class Site(models.Model):
     def enable_orders(self):
         return any(loc.enable_orders for loc in self.location_set.all())
 
+    def order_options(self):
+        options = []
+        for loc in self.location_set.all():
+            for opt in ('delivery', 'takeout', 'dine_in',):
+                if getattr(loc, opt, False):
+                    options.append(opt.replace('_', '-'))
+        return list(set(options))
+
 
 class Location(models.Model):
     RECEIPT_EMAIL = 1

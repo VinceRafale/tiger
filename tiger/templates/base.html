@@ -45,13 +45,13 @@
 
 {% block cart %}
 {% if site.enable_orders %}
+<div id="place-order">
 {% if cart|length %}
-<h3>Your order</h3>
-<p class="has-items">You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}">Complete your order</a></p>
+<p class="has-items">You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}"><span>Complete your order</span></a></p>
 {% else %}
-<h3>Order online!</h3>
-<p>Just browse our menu and choose what you'd like to eat, and you can send your order in right from our site!</p>
+<p>Order online for {{ site.order_options|join:"/" }}. Hungry?</p>
 {% endif %}
+</div>
 {% endif %}
 {% endblock %}
 
