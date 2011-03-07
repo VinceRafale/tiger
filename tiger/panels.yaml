@@ -27,7 +27,7 @@
             default: "000000"
             order: 2
             properties:
-              - selector: body
+              - selector: body, p.social a
                 css_property: color
 - panel: 
     name: Logo
@@ -560,6 +560,15 @@
       -webkit-border-radius:5px;
       border-radius:5px;
       }
+      p.social {margin-top:15px;}
+      p.social a {text-decoration:none;}
+      p.social a:hover i {text-decoration:underline;}
+      p.social b {width:16px; height:16px; display:block; float:left;}
+      p.social span {margin-right:5px;}
+      p.social span, p.social i {vertical-align:middle;}
+      p.facebook b {background: url(http://c192222.r22.cf1.rackcdn.com/facebook_16.png) center no-repeat;}
+      p.twitter b {background: url(http://c192222.r22.cf1.rackcdn.com/twitter_16.png) center no-repeat;}
+
 - panel:
     name: HTML
     type: html

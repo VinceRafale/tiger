@@ -81,14 +81,14 @@
 
 {% block social %}
 {% if site.twitter %}
-<div id="twitter">
-   You should <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a> to get menu updates and more!
-</div>
+<p class="twitter social">
+   <a href="http://twitter.com/{{ site.twitter }}"><span><b></b></span> <i>Follow us on <strong>Twitter</strong></i></a> 
+</p>
 {% endif %}
 {% if site.facebook %}
-<div id="facebook">
-   Become a fan on <a href="{{ site.facebook }}">Facebook</a>!
-</div>
+<p class="facebook social">
+   <a href="{{ site.facebook }}"><span><b></b></span> <i>Become a fan on <strong>Facebook</strong></i></a>
+</p>
 {% endif %}
 {% endblock %}
 
