@@ -41,7 +41,6 @@ class Site(models.Model):
     domain = models.CharField(max_length=200, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
     custom_domain = models.BooleanField(default=False)
-    enable_orders = models.BooleanField(default=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
     theme = models.ForeignKey(Theme, null=True)
     sms = models.ForeignKey(SmsSettings, null=True)
@@ -152,6 +151,9 @@ class Site(models.Model):
     def send_confirmation_email(self):
         body = render_to_string('accounts/confirmation.txt', {'site': self})
         send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
+
+    def enable_orders(self):
+        return any(loc.enable_orders for loc in self.location_set.all())
 
 
 class Location(models.Model):
