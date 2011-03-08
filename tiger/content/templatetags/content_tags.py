@@ -48,4 +48,4 @@ def get_showcase(site, slug):
         return ''
     if img is None:
         return ''
-    return mark_safe('<div id="showcase-image" style="background:url(%s) center no-repeat;"></div>' % img.image.url)
+    return mark_safe('<div id="showcase-image" style="background:url(%s) center no-repeat;overflow:none;"></div>' % img.image.url)
