@@ -1,4 +1,5 @@
 {% extends pre_base %}
+{% load content_tags %}
 
 {% block logo %}
 <h2>{{ site.name }}</h2>
@@ -34,13 +35,10 @@
 {% endif %}
 {% endblock %}
 
+{% block showcase %}
+{% endblock %}
+
 {% block content %}
-{% load content_tags %}
-<h1>{% get_title site "homepage" %}</h1>
-<div>
-{% get_image site "homepage" "medium" %}
-{% get_body site "homepage" %}
-</div>
 {% endblock %}
 
 {% block cart %}

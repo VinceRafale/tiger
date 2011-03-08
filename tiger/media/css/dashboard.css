@@ -612,6 +612,10 @@ span.buttons a, a.chooser, a.button {
     color:white;
 }
 
+div.img-chooser-wrap p a {
+    margin-top:5px;
+}
+
 a#price-points, a#extras, a#side-groups {
     color:white !important;
     background-color:#c76218 !important;

@@ -1,7 +1,11 @@
 {% extends base %}
+{% load content_tags %}
+
+{% block showcase %}
+{% get_showcase site "about" %}
+{% endblock %}
 
 {% block content %}
-{% load content_tags %}
 <h1>{% get_title site "about" %}</h1>
 {% get_image site "about" "medium" %}
 {% get_body site "about" %}

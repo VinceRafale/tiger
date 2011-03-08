@@ -23,17 +23,17 @@ class ImageChooserWidget(forms.HiddenInput):
 
     def render(self, name, value, attrs=None):
         html = super(ImageChooserWidget, self).render(name, value, {'class': 'chooser-input'}) 
-        html += '<div class="img-chooser-wrap">'
+        html = '<div class="img-chooser-wrap">' + html
         if value:
             html += '<img src="%s" />' % ItemImage.objects.get(id=value).thumb.url
         else:
             html += '<img src="%s" />' % '/static/img/blank.jpg'
-        html += '</div>'
-        anchor = ' <a href="%s" class="chooser">%s</a> ' % (
+        anchor = ' <p><a href="%s" class="chooser">%s</a> ' % (
             reverse('dashboard_get_images'),
             'Change' if value else 'Add'
         )
         if value:
             anchor += '<a href="#" class="chooser-remove">Remove</a>'
         html += anchor
+        html += '</p></div>'
         return mark_safe(html)

@@ -33,6 +33,7 @@ class Content(models.Model):
     title = models.CharField(max_length=200, default='')
     text = models.TextField(default=DEFAULT_CONTENT)
     image = models.ForeignKey('ItemImage', null=True, blank=True)
+    showcase = models.ForeignKey('ItemImage', null=True, blank=True, related_name='showcased_content_set')
 
     def save(self, *args, **kwargs):
         super(Content, self).save(*args, **kwargs)

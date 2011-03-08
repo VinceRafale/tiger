@@ -1,0 +1,12 @@
+{% extends base %}
+{% load content_tags %}
+
+{% block showcase %}
+{% get_showcase site "homepage" %}
+{% endblock %}
+
+{% block content %}
+<h1>{% get_title site "homepage" %}</h1>
+{% get_image site "homepage" "medium" %}
+{% get_body site "homepage" %}
+{% endblock %}

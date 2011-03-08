@@ -13,6 +13,7 @@ class ContentForm(BetterModelForm):
     def __init__(self, data=None, site=None, *args, **kwargs):
         super(ContentForm, self).__init__(data, *args, **kwargs)
         self.fields['image'].widget = ImageChooserWidget(site=site)
+        self.fields['showcase'].widget = ImageChooserWidget(site=site)
 
 
 class PdfMenuForm(BetterModelForm):
