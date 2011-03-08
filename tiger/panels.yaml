@@ -102,6 +102,7 @@
             order: 12
             selector: body
             allow_tiling: true
+            text_indent: false
           - name: Background color
             type: swatch
             default: D9D4D9
