@@ -92,12 +92,14 @@
 
 {% block mail %}
 {% if site.mailchimp %}
-<div id="mailchimp">
+<h4>Newsletter</h4>
+<div class="newsletter">
     <form method="POST" action="{% url mailing_list_signup %}">
-    Join our mailing list!
-    <input type="text" name="email" /> <input type="submit" value="Join" />
-    </form>
+    <p>Find out about promotions, new menu items, and more. Sign up for our  email newsletter.</p>
+    <input type="text" name="email" />
+    <input type="submit" value="Sign Up">
 </div>
+
 {% endif %}
 {% endblock %}
 
