@@ -43,7 +43,7 @@
 
 {% block cart %}
 {% if site.enable_orders %}
-<div id="place-order">
+<div id="place-order" {% if cart|length %}class="complete"{% endif %}>
 {% if cart|length %}
 <p class="has-items">You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}"><span>Complete your order</span></a></p>
 {% else %}
