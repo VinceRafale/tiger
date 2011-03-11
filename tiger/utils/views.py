@@ -106,3 +106,7 @@ def short_code_redirect(request, item_id, model):
 
 def robots(request):
     return render_custom(request, 'robots.txt', {'site_name': request.META['HTTP_HOST']})
+
+
+def render_static(request):
+    return render_custom(request, 'maintenance.html')
