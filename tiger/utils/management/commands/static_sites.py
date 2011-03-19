@@ -24,10 +24,10 @@ class Command(NoArgsCommand):
             for form in doc.forms:
                 form.method = "GET"
             html = tostring(doc)
-            tt_file = os.path.join(settings.PROJECT_ROOT, '../sites/%s.takeouttiger.com.html' % site.subdomain.lower())
+            tt_file = os.path.join(settings.PROJECT_ROOT, '../ops/sites/%s.takeouttiger.com.html' % site.subdomain.lower())
             with open(tt_file, 'w') as f:
                 f.write(html)
-            custom_file = os.path.join(settings.PROJECT_ROOT, '../sites/%s.html' % site.domain.lower())
             if site.custom_domain:
+                custom_file = os.path.join(settings.PROJECT_ROOT, '../sites/%s.html' % site.domain.lower())
                 with open(custom_file, 'w') as f:
                     f.write(html)
