@@ -144,6 +144,15 @@ def sms_disable(request):
     else:
         return direct_to_template(request, template='dashboard/marketing/disable_sms.html')
 
+@login_required
+@not_suspended
+def reorder_keywords(request):
+    sms = request.site.sms
+    new_keywords = request.POST.getlist('keywords')
+    if set(new_keywords) == set(sms.keywords):
+        sms.keywords = new_keywords
+        sms.save()
+    return HttpResponse('ok')
 
 @login_required
 @not_suspended

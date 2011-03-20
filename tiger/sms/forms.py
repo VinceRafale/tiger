@@ -48,6 +48,7 @@ class SettingsForm(BetterModelForm):
         fields = (
             'send_intro',
             'intro_sms',
+            'display',
         )
 
     def clean(self):

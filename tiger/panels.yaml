@@ -577,7 +577,7 @@
         <strong>Warning: HTML editing is for advanced users!</strong>
         For a complete overview of what you can do here, see the <a href="/dashboard/content/look/docs/">layout customization documentation</a>.
 
-    blocks: ['logo', 'search', 'menu', 'content', 'messages', 'cart', 'sections', 'contact', 'pdf', 'social', 'mail', 'footer', 'showcase']
+    blocks: ['logo', 'search', 'menu', 'content', 'messages', 'cart', 'sections', 'contact', 'pdf', 'social', 'mail', 'footer', 'showcase', 'sms']
     default: |
       <div class="wrapper">
           <div id="masthead">
@@ -614,6 +614,7 @@
                   {% block sections %}{% endblock %}
                   {% block contact %}{% endblock %}
                   {% block pdf %}{% endblock %}
+                  {% block sms %}{% endblock %}
                   {% block social %}{% endblock %}
                   {% block mail %}{% endblock %}
               </div>
