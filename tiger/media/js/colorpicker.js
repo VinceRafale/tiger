@@ -13,7 +13,7 @@
 			inAction,
 			charMin = 65,
 			visible,
-			tpl = '<div class="colorpicker"><div class="colorpicker_color"><div><div></div></div></div><div class="colorpicker_hue"><div></div></div><div class="colorpicker_new_color"></div><div class="colorpicker_current_color"></div><div class="colorpicker_hex"><input type="text" maxlength="6" size="6" /></div><div class="colorpicker_rgb_r colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_g colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_h colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_s colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_submit"></div></div>',
+			tpl = '<div class="colorpicker"><div class="colorpicker_color"><div><div></div></div></div><div class="colorpicker_hue"><div></div></div><div class="colorpicker_new_color"></div><div class="colorpicker_current_color"></div><div class="colorpicker_hex"><input type="text" maxlength="6" size="6" /></div><div class="colorpicker_rgb_r colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_g colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_h colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_s colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_alpha colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_submit"></div></div>',
 			defaults = {
 				eventName: 'click',
 				onShow: function () {},
@@ -42,6 +42,10 @@
 				$(cal).data('colorpicker').fields
 					.eq(0).val(HSBToHex(hsb)).end();
 			},
+            fillAlphaFields = function (alpha, cal) {
+				var a = $(cal).data('colorpicker').fields.eq(7);
+                a.val(alpha);
+            },
 			setSelector = function (hsb, cal) {
 				$(cal).data('colorpicker').selector.css('backgroundColor', '#' + HSBToHex({h: hsb.h, s: 100, b: 100}));
 				$(cal).data('colorpicker').selectorIndic.css({
@@ -69,7 +73,8 @@
 				}
 			},
 			change = function (ev) {
-				var cal = $(this).parent().parent(), col;
+				var cal = $(this).parent().parent(), col,
+                    alpha = cal.data('colorpicker').fields.eq(7).val();
 				if (this.parentNode.className.indexOf('_hex') > 0) {
 					cal.data('colorpicker').color = col = HexToHSB(fixHex(this.value));
 				} else if (this.parentNode.className.indexOf('_hsb') > 0) {
@@ -93,7 +98,7 @@
 				setSelector(col, cal.get(0));
 				setHue(col, cal.get(0));
 				setNewColor(col, cal.get(0));
-				cal.data('colorpicker').onChange.apply(cal, [col, HSBToHex(col), HSBToRGB(col)]);
+				cal.data('colorpicker').onChange.apply(cal, [col, HSBToHex(col), HSBToRGB(col), alpha]);
 			},
 			blur = function (ev) {
 				var cal = $(this).parent().parent();
@@ -448,7 +453,7 @@
 					}
 				});
 			},
-			setColor: function(col) {
+			setColor: function(col, alpha) {
 				if (typeof col == 'string') {
 					col = HexToHSB(col);
 				} else if (col.r != undefined && col.g != undefined && col.b != undefined) {
@@ -466,6 +471,7 @@
 						fillRGBFields(col, cal.get(0));
 						fillHSBFields(col, cal.get(0));
 						fillHexFields(col, cal.get(0));
+                        fillAlphaFields(alpha, cal.get(0));
 						setHue(col, cal.get(0));
 						setSelector(col, cal.get(0));
 						setCurrentColor(col, cal.get(0));

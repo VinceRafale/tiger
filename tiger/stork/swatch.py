@@ -28,14 +28,21 @@ class SwatchComponent(BaseComponent):
         return '#id_%s-color' % self.key
 
     def get_selector_prop(self):
+        selector_property = """%(selector)s {
+            %(property)s: rgba(%%(triplet)s,%%(alpha)s);
+        }
+        """
         return [
-            '%s{%s:#' % (prop.selector, prop.css_property) 
+            selector_property % {
+                'selector': prop.selector, 
+                'property': prop.css_property
+            }
             for prop in self.properties
         ]
 
     def get_style_tag_contents(self):
         selectors = ''.join([
-            '%s%s;}' % (prop, self.instance.color) 
+            prop % {'triplet': self.instance.color, 'alpha': self.instance.alpha}
             for prop in self.get_selector_prop()
         ])
         return selectors
@@ -57,6 +64,9 @@ class SwatchComponent(BaseComponent):
                 label=self.name,
                 widget=ColorPickerWidget, 
                 required=False
+            ),
+            'alpha': forms.CharField(
+                widget=forms.HiddenInput 
             )
         }
 

@@ -40,12 +40,16 @@
                         {% if group.make_list %}
                         <ul>
                             {% for component in group %}
-                            {% for field in component.form_instance %}
-                            <li>
-                                {{ field.label_tag }}
-                                {{ field }}
-                            </li>
-                            {% endfor %}
+                                {% for field in component.form_instance %}
+                                    {% if field.is_hidden %}
+                                        {{ field }}
+                                    {% else %}
+                                    <li>
+                                        {{ field.label_tag }}
+                                        {{ field }}
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
                             {% endfor %}
                         </ul>
                         <div class="clear"></div>

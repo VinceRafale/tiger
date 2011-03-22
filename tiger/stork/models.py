@@ -30,7 +30,8 @@ class Component(models.Model):
 
 
 class Swatch(Component):
-    color = models.CharField(max_length=6)
+    color = models.CharField(max_length=12)
+    alpha = models.DecimalField(max_digits=2, decimal_places=1, default='1.0')
 
 
 class FontStack(models.Model):
