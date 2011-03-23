@@ -10,7 +10,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 
 from tiger.notify.models import Fax, Social, Release
-from tiger.notify.utils import *
 from tiger.utils.views import render_custom
 
 TWITTER_REQUEST_TOKEN_URL = 'https://twitter.com/oauth/request_token'
@@ -52,17 +51,18 @@ def twitter_connect(request):
     consumer = oauth.Consumer(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
     client = oauth.Client(consumer)
     response, content = client.request(TWITTER_REQUEST_TOKEN_URL, "GET")
-    if resp['status'] != '200':
+    if response['status'] != '200':
         raise Exception("Invalid response from Twitter.")
     # Step 2. Store the request token in a session for later use.
     request.session['twitter_unauthed_token'] = dict(cgi.parse_qsl(content))
     # Step 3. Redirect the user to the authentication URL.
     url = "%s?oauth_token=%s" % (TWITTER_AUTHORIZATION_URL,
-        request.session['request_token']['oauth_token'])
+        request.session['twitter_unauthed_token']['oauth_token'])
     return HttpResponseRedirect(url)
 
 
 def twitter_return(request):
+    consumer = oauth.Consumer(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
     token = oauth.Token(request.session['twitter_unauthed_token']['oauth_token'],
         request.session['twitter_unauthed_token']['oauth_token_secret'])
     client = oauth.Client(consumer, token)
