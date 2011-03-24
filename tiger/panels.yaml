@@ -11,7 +11,7 @@
           - name: Header font color
             type: swatch
             order: 4
-            default: "301613"
+            default: 48,22,19
             properties:
               - selector: h1, h2, h4
                 css_property: color
@@ -24,7 +24,7 @@
             fontface: true
           - name: Body font color
             type: swatch
-            default: "000000"
+            default: 0,0,0
             order: 2
             properties:
               - selector: body, p.social a
@@ -44,49 +44,49 @@
         components:
           - name: Masthead color
             type: swatch
-            default: "121012"
+            default: 18,16,18
             order: 5
             properties:
               - selector: "#masthead"
                 css_property: background-color
           - name: Masthead font
             type: swatch
-            default: E3E3BE 
+            default: 227,227,190 
             order: 6
             properties:
               - selector: "#masthead h2, #masthead h4, #masthead label"
                 css_property: color
           - name: Menu color
             type: swatch
-            default: 2B292B 
+            default: 43,41,43 
             order: 6
             properties:
               - selector: "#menuWrap, .footer"
                 css_property: background-color
           - name: Center color
             type: swatch
-            default: fff
+            default: 255,255,255
             order: 7
             properties:
               - selector: "#mainWrap, #sidebarWrap"
                 css_property: background-color
           - name: Button text
             type: swatch
-            default: f7f7f7 
+            default: 247,247,247 
             order: 10
             properties:
-              - selector: "a.lightlink, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit"
+              - selector: "a.lightlink, a.lightlink:hover, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit, .footer"
                 css_property: color
           - name: Accent color
             type: swatch
-            default: bfccd1 
+            default: 191,204,209 
             order: 8
             properties:
               - selector: "#orderForm, .shaded"
                 css_property: background-color
           - name: Button color
             type: swatch
-            default: C76218 
+            default: 199,98,24 
             order: 9
             properties:
               - selector: a
@@ -105,7 +105,7 @@
             text_indent: false
           - name: Background color
             type: swatch
-            default: D9D4D9
+            default: 217,212,217
             order: 13
             properties:
               - selector: body
@@ -205,10 +205,6 @@
 
       form.send label {
       display:block;
-      }
-
-      .footer {
-      color:#FFF;
       }
 
       #orderPreview tr.total td {

@@ -9,7 +9,7 @@ function setCss(styleTagSelector, css) {
     }
 }
 
-function setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, rgb, alpha) {
+function setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, rgb, alpha, alphaSelector) {
     var previewCss = "",
         triplet = [rgb.r, rgb.g, rgb.b].join(",");
     
@@ -22,16 +22,18 @@ function setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, 
     }
     setCss(styleTagSelector, previewCss);
     $(inputSelector).val(triplet);
-    $(pickerSelector).closest("li").next().val(alpha);
+    $(alphaSelector).val(alpha);
+    $(pickerSelector + ' div').css({backgroundColor: 'rgb(' + triplet + ')'});
 }
 
 function addColorPicker(pickerSelector, styleTagSelector, inputSelector, cssTemplate) {
     var triplet = $(inputSelector).val(),
         rgb = triplet.split(","),
-        alpha = $(pickerSelector).closest("li").next().val();
+        alphaSelector = inputSelector.slice(0, inputSelector.length - 'color'.length) + 'alpha',
+        alpha = $(alphaSelector).val();
     $(pickerSelector).ColorPicker({
         onChange: function (hsb, hex, rgb, alpha) {
-            setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, rgb, alpha);
+            setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, rgb, alpha, alphaSelector);
             modified = true;
         }
     }).ColorPickerSetColor({r: rgb[0], g: rgb[1], b: rgb[2]}, alpha);
