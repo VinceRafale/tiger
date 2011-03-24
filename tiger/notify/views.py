@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.views.generic.simple import direct_to_template
 
 from tiger.notify.models import Fax, Social, Release
 from tiger.utils.views import render_custom
