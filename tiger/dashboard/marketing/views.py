@@ -251,9 +251,8 @@ def get_facebook_pages_form(request):
 @login_required
 def remove_facebook(request):
     social = request.site.social
-    social.facebook_id = ''
-    social.facebook_url = ''
-    social.facebook_auto_items = ''
+    social.facebook_page_name = social.facebook_page_token = social.facebook_token = social.facebook_id = social.facebook_url = ''
+    social.facebook_auto_items = False
     social.save()
     return HttpResponseRedirect(reverse('dashboard_marketing'))
 
