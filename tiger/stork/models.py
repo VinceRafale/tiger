@@ -51,8 +51,8 @@ class Font(Component):
 
 
 class Image(Component):
-    image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds', storage=cloudfiles_storage)
-    staged_image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds', storage=cloudfiles_storage)
+    image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds')
+    staged_image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds')
     tiling = models.BooleanField('make this background image tile', default=False)
 
 
