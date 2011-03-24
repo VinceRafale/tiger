@@ -1,0 +1,11 @@
+{% extends 'tiger/base.html' %}
+
+{% block content %}
+<h1>Bad Twitter username</h1>
+<p>Looks like you are trying to connect a Twitter account to your Takeout Tiger site, but something went wrong!  The username that Twitter sent back to us doesn't match what's in our database.  Here are a couple of hints:</p>
+<ul>
+    <li>Were you already logged into Twitter with a different account when you tried to connect?  If so, when you get to the page where you authorize Takeout Tiger, you need to be sure to log out and log back in as the user for your restaurant.</li>
+    <li>Is there a typo in the username you entered in Takeout Tiger?</li>
+</ul>
+<p>You'll have to hit back twice to make it back to the dashboard and try again.</p>
+{% endblock %}

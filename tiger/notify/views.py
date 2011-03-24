@@ -70,7 +70,10 @@ def twitter_return(request):
     if resp['status'] != '200':
         raise Exception("Invalid response from Twitter.")
     access_token = dict(cgi.parse_qsl(content))
-    social = Social.objects.get(twitter_screen_name=access_token['screen_name'])
+    try:
+        social = Social.objects.get(twitter_screen_name=access_token['screen_name'])
+    except Social.DoesNotExist:
+       return direct_to_template(request, template='notify/bad_twitter_name.html')
     social.twitter_token = access_token['oauth_token']
     social.twitter_secret = access_token['oauth_token_secret']
     social.save()
