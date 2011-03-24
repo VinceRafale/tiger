@@ -56,7 +56,7 @@ class SwatchComponent(BaseComponent):
         ]
 
     def get_defaults(self):
-        return {'color': self.default}
+        return {'color': self.default, 'alpha': '1.0'}
 
     def get_formfield_overrides(self):
         return {
