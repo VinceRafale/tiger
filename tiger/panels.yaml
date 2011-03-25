@@ -158,10 +158,6 @@
       text-decoration:none;
       }
 
-      a.lightlink:hover {
-      color:#fff;
-      }
-
       a#viewCart {
       margin-right:12px;
       }
