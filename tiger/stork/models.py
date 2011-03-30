@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 from django.core.files.base import ContentFile
 from django.db import models
+from imagekit.models import ImageModel
 
 from tiger.stork.font_choices import WebFonts
 

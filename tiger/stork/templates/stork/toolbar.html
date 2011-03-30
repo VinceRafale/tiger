@@ -36,7 +36,10 @@
                 </div>
                 {% else %}
                     {% for group in panel %}
-                    <div class="bg">
+                    <fieldset>
+                        {% if group.name %}
+                        <legend>{{ group.name }}</legend>
+                        {% endif %}
                         {% if group.make_list %}
                         <ul>
                             {% for component in group %}
@@ -98,7 +101,7 @@
                                 {% endfor %}
                             {% endfor %}
                         {% endif %}
-                    </div>
+                    </fieldset>
                     {% endfor %}
                 {% endif %}
             </div> 

@@ -51,7 +51,7 @@ div.tab_container {
     -moz-box-shadow:0px 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-div.tab_container div.bg{
+div.tab_container fieldset{
     padding:10px;
     background:rgb(234,234,234);
     background:rgba(234,234,234,0.6);
@@ -66,7 +66,7 @@ div.tab_container div.bg{
 div.picker-widget{margin-bottom:10px;}
     div.picker-widget:last-child{margin:0;}
 
-div.tab_container div.bg:first-child{margin:0;}
+div.tab_container fieldset:first-child{margin:0;}
 
 .colorpicker {
     z-index:1001;
@@ -181,11 +181,11 @@ div.picker-widget div {
 }
 .customizing .wrapper{margin-top:49px;}
 
-div.bg ul {
+fieldset ul {
     width:285px;
 }
 
-div.bg ul li {
+fieldset ul li {
     width:140px;
     margin-left:0;
 }

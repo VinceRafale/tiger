@@ -23,12 +23,12 @@ pseudoblock_re = re.compile(r'\{\{([a-z]+)\}\}')
 class HtmlComponent(BaseComponent):
     model = Html
 
-    def __init__(self, panel, group, name, default=None, blocks=None, order=None):
+    def __init__(self, panel, group, name, default=None, blocks=None, order=None, **kwargs):
         if default is None:
             raise StorkConfigurationError("A default value is required for html components")
         if blocks is None or len(blocks) < 1:
             raise StorkConfigurationError("A list of required blocks is required for html components")
-        super(HtmlComponent, self).__init__(panel, group, name, order)
+        super(HtmlComponent, self).__init__(panel, group, name, order, **kwargs)
         self.default = default
         self.blocks = blocks
 

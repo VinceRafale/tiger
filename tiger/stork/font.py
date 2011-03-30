@@ -13,7 +13,7 @@ from tiger.stork.models import Font, FontStack
 class FontComponent(BaseComponent):
     model = Font
 
-    def __init__(self, panel, group, name, order, selector=None, default=None, fontface=False):
+    def __init__(self, panel, group, name, order, selector=None, default=None, fontface=False, **kwargs):
         if selector is None:
             raise StorkConfigurationError('"selector" is required for font components')
         if default is None:
@@ -22,7 +22,7 @@ class FontComponent(BaseComponent):
             self.default = getattr(WebFonts, default)
         except:
             raise StorkConfigurationError('Font component defaults must be one of: ARIAL, GARAMOND, GEORGIA, IMPACT, MONOSPACE, TIMES, TREBUCHET, VERDANA')
-        super(FontComponent, self).__init__(panel, group, name, order)
+        super(FontComponent, self).__init__(panel, group, name, order, **kwargs)
         self.selector = selector
         self.fontface = fontface
 

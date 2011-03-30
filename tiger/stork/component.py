@@ -22,9 +22,10 @@ def get_component(panel, group, data):
 
 
 class ComponentGroup(object):
-    def __init__(self, panel, make_list=False, **data):
+    def __init__(self, panel, make_list=False, name=None, **data):
         self.panel = panel
         self.make_list = make_list
+        self.name = name
         self.components = [get_component(panel, self, c) for c in data['components']]
 
     def __iter__(self):
@@ -32,12 +33,13 @@ class ComponentGroup(object):
 
 
 class BaseComponent(object):
-    def __init__(self, panel, group, name, order, **kwargs):
+    def __init__(self, panel, group, name, order, id, **kwargs):
         self.panel = panel
         self.stork = panel.stork
         self.group = group
         self.name = name
         self.order = order
+        self.id = id
         self.key = self._set_key()
         self.add_to_cache()
 

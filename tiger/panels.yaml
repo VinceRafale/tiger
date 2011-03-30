@@ -3,12 +3,14 @@
     groups:
       - components:
           - name: Header font
+            id: headerfont
             type: font
             order: 3
             selector: h1, h2, h4
             default: ARIAL
             fontface: true
           - name: Header font color
+            id: headerfontcolor
             type: swatch
             order: 4
             default: 48,22,19
@@ -17,12 +19,14 @@
                 css_property: color
       - components:
           - name: Body font
+            id: bodyfont
             type: font
             order: 1
             selector: body
             default: ARIAL
             fontface: true
           - name: Body font color
+            id: bodyfontcolor
             type: swatch
             default: 0,0,0
             order: 2
@@ -34,6 +38,7 @@
     groups:
       - components:
           - name: Logo image
+            id: logo
             type: image
             order: 11
             selector: "#masthead h2"
@@ -43,6 +48,7 @@
       - make_list: true
         components:
           - name: Masthead color
+            id: mastheadbackgroundcolor
             type: swatch
             default: 18,16,18
             order: 5
@@ -50,6 +56,7 @@
               - selector: "#masthead"
                 css_property: background-color
           - name: Masthead font
+            id: mastheadtextcolor
             type: swatch
             default: 227,227,190 
             order: 6
@@ -57,6 +64,7 @@
               - selector: "#masthead h2, #masthead h4, #masthead label"
                 css_property: color
           - name: Menu color
+            id: menubackgroundcolor
             type: swatch
             default: 43,41,43 
             order: 6
@@ -64,6 +72,7 @@
               - selector: "#menuWrap, .footer"
                 css_property: background-color
           - name: Center color
+            id: centercolor
             type: swatch
             default: 255,255,255
             order: 7
@@ -71,6 +80,7 @@
               - selector: "#mainWrap, #sidebarWrap"
                 css_property: background-color
           - name: Button text
+            id: buttontext
             type: swatch
             default: 247,247,247 
             order: 10
@@ -78,6 +88,7 @@
               - selector: "a.lightlink, a.lightlink:hover, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit, .footer"
                 css_property: color
           - name: Accent color
+            id: accentcolor
             type: swatch
             default: 191,204,209 
             order: 8
@@ -85,6 +96,7 @@
               - selector: "#orderForm, .shaded"
                 css_property: background-color
           - name: Button color
+            id: buttoncolor
             type: swatch
             default: 199,98,24 
             order: 9
@@ -98,12 +110,14 @@
     groups: 
       - components:
           - name: Background image
+            id: backgroundimage
             type: image
             order: 12
             selector: body
             allow_tiling: true
             text_indent: false
           - name: Background color
+            id: backgroundcolor
             type: swatch
             default: 217,212,217
             order: 13
@@ -112,6 +126,7 @@
                 css_property: background-color
 - panel: 
     name: CSS
+    id: cssoverrides
     type: css
     order: 14
     default: |
@@ -564,6 +579,7 @@
 
 - panel:
     name: HTML
+    id: layout
     type: html
     admonition: |
         <strong>Warning: HTML editing is for advanced users!</strong>

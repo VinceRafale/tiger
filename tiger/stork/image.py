@@ -17,10 +17,10 @@ class ImageComponent(BaseComponent):
     }
     """
 
-    def __init__(self, panel, group, name, order, selector=None, text_indent=True, allow_tiling=False):
+    def __init__(self, panel, group, name, order, selector=None, text_indent=True, allow_tiling=False, **kwargs):
         if selector is None:
             raise StorkConfigurationError('"selector" is required for image components')
-        super(ImageComponent, self).__init__(panel, group, name, order)
+        super(ImageComponent, self).__init__(panel, group, name, order, **kwargs)
         self.selector = selector
         self.text_indent = text_indent
         self.allow_tiling = allow_tiling

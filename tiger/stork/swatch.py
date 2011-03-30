@@ -12,12 +12,12 @@ from tiger.stork.widgets import ColorPickerWidget
 class SwatchComponent(BaseComponent):
     model = Swatch
 
-    def __init__(self, panel, group, name, order, default=None, properties=None):
+    def __init__(self, panel, group, name, order, default=None, properties=None, **kwargs):
         if default is None:
             raise StorkConfigurationError('"default" is required for swatch components')
         if properties is None or len(properties) == 0:
             raise StorkConfigurationError('swatches must contain at least one property')
-        super(SwatchComponent, self).__init__(panel, group, name, order)
+        super(SwatchComponent, self).__init__(panel, group, name, order, **kwargs)
         self.default = default
         self.properties = [Property(**p) for p in properties]
 
