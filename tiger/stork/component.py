@@ -125,7 +125,7 @@ class BaseComponent(object):
         try:
             return self.model.objects.get(
                 theme=self.stork.theme,
-                component=self.key
+                component=self.id
             )
         except self.model.DoesNotExist:
             return None

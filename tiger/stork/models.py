@@ -11,11 +11,18 @@ from cumulus.storage import CloudFilesStorage
 cloudfiles_storage = CloudFilesStorage()
 
 
-class Theme(models.Model):
+class Theme(ImageModel):
     name = models.CharField(max_length=100)
     saved_at = models.DateTimeField(auto_now=True)
     bundled_css = models.FileField(upload_to='stork/css', null=True)
     private = models.BooleanField(default=True)
+    screenshot = models.ImageField(upload_to='screenshots', null=True, blank=True, default='')
+    description = models.TextField(blank=True)
+    notes = models.TextField(blank=True)
+
+    class IKOptions:
+        spec_module = 'tiger.content.specs'
+        image_field = 'screenshot'
 
     def update(self, css):
         filename = '%d-%d.css' % (self.id, int(time.mktime(datetime.now().timetuple())))
