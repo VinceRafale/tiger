@@ -113,10 +113,11 @@ class Site(models.Model):
     def has_news(self):
         return self.release_set.count()
 
+    @cachedmethod(KeyChain.template)
     def template(self):
         from tiger.stork import Stork
         stork = Stork(self.theme)
-        return stork['html-html'].as_template()
+        return stork['layout'].as_template()
 
     def skin_url(self):
         return self.theme.bundled_css.url

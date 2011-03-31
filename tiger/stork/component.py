@@ -51,11 +51,11 @@ class BaseComponent(object):
         return non_alpha_re.sub('-', key_string)
 
     def add_to_cache(self):
-        self.stork.component_cache.append((self.key, self))
+        self.stork.component_cache.append((self.id, self))
 
     @property
     def style_tag_id(self):
-        return 'st-st-%s' % self.key
+        return 'st-st-%s' % self.id
 
     def style_tag(self):
         tag = self.get_style_tag()
@@ -90,12 +90,12 @@ class BaseComponent(object):
 
     def form_instance(self, data=None, files=None):
         form_class = self.form_class()
-        return form_class(data, files, instance=self.instance, prefix=self.key)
+        return form_class(data, files, instance=self.instance, prefix=self.id)
 
     @property
     def defaults(self):
         return dict([
-            ('%s-%s' % (self.key, k), v)
+            ('%s-%s' % (self.id, k), v)
             for k, v in self.get_defaults().items()
         ])
         
@@ -116,7 +116,7 @@ class BaseComponent(object):
         form.full_clean()
         instance = form.save(commit=False)
         instance.theme = self.stork.theme
-        instance.component = self.key
+        instance.component = self.id
         instance.save()
         return instance
 

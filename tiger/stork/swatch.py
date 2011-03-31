@@ -22,10 +22,10 @@ class SwatchComponent(BaseComponent):
         self.properties = [Property(**p) for p in properties]
 
     def get_picker_id(self):
-        return '#picker-%s-color' % self.key
+        return '#picker-%s-color' % self.id
     
     def get_hidden_input_id(self):
-        return '#id_%s-color' % self.key
+        return '#id_%s-color' % self.id
 
     def get_selector_prop(self):
         selector_property = """%(selector)s {

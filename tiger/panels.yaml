@@ -1,15 +1,26 @@
 - panel: 
-    name: Fonts
+    name: General
     groups:
-      - components:
-          - name: Header font
+      - name: Fonts
+        components:
+          - name: Headers
             id: headerfont
             type: font
             order: 3
             selector: h1, h2, h4
             default: ARIAL
             fontface: true
-          - name: Header font color
+          - name: Body text
+            id: bodyfont
+            type: font
+            order: 1
+            selector: body
+            default: ARIAL
+            fontface: true
+      - name: Main colors
+        make_list: true
+        components:
+          - name: Header text
             id: headerfontcolor
             type: swatch
             order: 4
@@ -17,75 +28,13 @@
             properties:
               - selector: h1, h2, h4
                 css_property: color
-      - components:
-          - name: Body font
-            id: bodyfont
-            type: font
-            order: 1
-            selector: body
-            default: ARIAL
-            fontface: true
-          - name: Body font color
+          - name: Body text
             id: bodyfontcolor
             type: swatch
             default: 0,0,0
             order: 2
             properties:
               - selector: body, p.social a
-                css_property: color
-- panel: 
-    name: Logo
-    groups:
-      - components:
-          - name: Logo image
-            id: logo
-            type: image
-            order: 11
-            selector: "#masthead h2"
-- panel: 
-    name: Colors
-    groups:
-      - make_list: true
-        components:
-          - name: Masthead color
-            id: mastheadbackgroundcolor
-            type: swatch
-            default: 18,16,18
-            order: 5
-            properties:
-              - selector: "#masthead"
-                css_property: background-color
-          - name: Masthead font
-            id: mastheadtextcolor
-            type: swatch
-            default: 227,227,190 
-            order: 6
-            properties:
-              - selector: "#masthead h2, #masthead h4, #masthead label"
-                css_property: color
-          - name: Menu color
-            id: menubackgroundcolor
-            type: swatch
-            default: 43,41,43 
-            order: 6
-            properties:
-              - selector: "#menuWrap, .footer"
-                css_property: background-color
-          - name: Center color
-            id: centercolor
-            type: swatch
-            default: 255,255,255
-            order: 7
-            properties:
-              - selector: "#mainWrap, #sidebarWrap"
-                css_property: background-color
-          - name: Button text
-            id: buttontext
-            type: swatch
-            default: 247,247,247 
-            order: 10
-            properties:
-              - selector: "a.lightlink, a.lightlink:hover, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit, .footer"
                 css_property: color
           - name: Accent color
             id: accentcolor
@@ -95,6 +44,84 @@
             properties:
               - selector: "#orderForm, .shaded"
                 css_property: background-color
+          - name: Main content area
+            id: centercolor
+            type: swatch
+            default: 255,255,255
+            order: 7
+            properties:
+              - selector: "#mainWrap, #sidebarWrap"
+                css_property: background-color
+          - name: Background
+            id: backgroundcolor
+            type: swatch
+            default: 217,212,217
+            order: 13
+            properties:
+              - selector: body
+                css_property: background-color
+      - components:
+          - name: Background image
+            id: backgroundimage
+            type: image
+            order: 12
+            selector: body
+            allow_tiling: true
+            text_indent: false
+- panel: 
+    name: Page header 
+    groups:
+      - name: Logo
+        components:
+          - name: Logo image
+            id: logo
+            type: image
+            order: 11
+            selector: "#masthead h2"
+      - name: Masthead
+        make_list: true
+        components:
+          - name: Background
+            id: mastheadbackgroundcolor
+            type: swatch
+            default: 18,16,18
+            order: 5
+            properties:
+              - selector: "#masthead"
+                css_property: background-color
+          - name: Text
+            id: mastheadtextcolor
+            type: swatch
+            default: 227,227,190 
+            order: 6
+            properties:
+              - selector: "#masthead h2, #masthead h4, #masthead label"
+                css_property: color
+      - name: Menu
+        make_list: true
+        components:
+          - name: Menu color
+            id: menubackgroundcolor
+            type: swatch
+            default: 43,41,43 
+            order: 6
+            properties:
+              - selector: "#menuWrap, .footer"
+                css_property: background-color
+- panel: 
+    name: Buttons
+    groups:
+      - name: Primary buttons
+        make_list: true
+        components:
+          - name: Button text
+            id: buttontext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.lightlink, a.lightlink:hover, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit, .footer"
+                css_property: color
           - name: Button color
             id: buttoncolor
             type: swatch
@@ -105,25 +132,9 @@
                 css_property: color
               - selector: "#menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit"
                 css_property: background-color
-- panel: 
-    name: Background
-    groups: 
-      - components:
-          - name: Background image
-            id: backgroundimage
-            type: image
-            order: 12
-            selector: body
-            allow_tiling: true
-            text_indent: false
-          - name: Background color
-            id: backgroundcolor
-            type: swatch
-            default: 217,212,217
-            order: 13
-            properties:
-              - selector: body
-                css_property: background-color
+      - name: Online ordering buttons
+        make_list: true
+        components: []
 - panel: 
     name: CSS
     id: cssoverrides

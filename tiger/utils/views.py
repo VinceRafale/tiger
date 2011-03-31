@@ -24,7 +24,7 @@ def render_custom(request, template, context=None):
             'styles': panels.style_tags(),
             'toolbar': panels.toolbar(),
             'base': 'dashboard/look/preview.html',
-            'pre_base': panels['html-html'].as_template(staged=True),
+            'pre_base': panels['layout'].as_template(staged=True),
         })
     else:
         context.update({

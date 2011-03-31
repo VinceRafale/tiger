@@ -55,16 +55,16 @@ class ImageComponent(BaseComponent):
     def save(self, data=None, files=None):
         instance = self.instance
         if data:
-            if data.has_key('%s-stale' % self.key):
+            if data.has_key('%s-stale' % self.id):
                 instance.staged_image.delete()
             elif bool(instance.staged_image):
                 instance.image.save(
                     instance.staged_image.name.split('/')[-1], 
                     ContentFile(instance.staged_image.file.file.read()))
                 instance.staged_image.delete()
-            if data.has_key('%s-delete' % self.key):
+            if data.has_key('%s-delete' % self.id):
                 instance.image.delete()
-            instance.tiling = data.get('%s-tiling' % self.key) == 'on'
+            instance.tiling = data.get('%s-tiling' % self.id) == 'on'
             instance.save()
         else:
             super(ImageComponent, self).save(data, files)

@@ -88,7 +88,7 @@ class HtmlComponent(BaseComponent):
         form_class = self.form_class()
         instance = self.instance
         html = instance.invalid_html or instance.staged_html
-        form = form_class({'%s-staged_html' % self.key: self.prep_html(html)}, instance=instance, prefix=self.key)
+        form = form_class({'%s-staged_html' % self.id: self.prep_html(html)}, instance=instance, prefix=self.id)
         form.full_clean()
         return form
 
@@ -104,9 +104,9 @@ class HtmlComponent(BaseComponent):
                 instance.html = instance.staged_html
         else:
             instance = self.instance
-            instance.invalid_html = data['%s-staged_html' % self.key]
+            instance.invalid_html = data['%s-staged_html' % self.id]
         instance.theme = self.stork.theme
-        instance.component = self.key
+        instance.component = self.id
         instance.save()
 
     def prep_html(self, html):
