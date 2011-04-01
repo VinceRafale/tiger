@@ -33,7 +33,7 @@ class FontComponent(BaseComponent):
         return render_to_string('stork/font.css', {'component': self, 'ff': font or self.instance.font})
 
     def webfont(self):
-        return self.get_value(self.key)
+        return self.get_value(self.id)
 
     def get_defaults(self):
         return {
@@ -46,9 +46,9 @@ class FontComponent(BaseComponent):
     def for_json(self):
         return {
             'allowFontface': self.fontface,
-            'selector': '#id_%s-font' % self.key,
+            'selector': '#id_%s-font' % self.id,
             'styleTagId': '#' + self.style_tag_id,
-            'link': reverse('font_css', args=[self.key]).rstrip('.css')
+            'link': reverse('font_css', args=[self.id]).rstrip('.css')
         }
 
     def get_formfield_overrides(self):
