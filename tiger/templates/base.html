@@ -7,7 +7,7 @@
 
 {% block search %}
 <form method="GET" action="{% url menu_search %}">
-    {{ search_form.q }} <input type="submit" value="Go" /><br />
+    {{ search_form.q }} <input class="button primary" type="submit" value="Go" /><br />
     {{ search_form.vegetarian }} {{ search_form.vegetarian.label_tag }}
     {{ search_form.spicy }} {{ search_form.spicy.label_tag }}
 </form>
@@ -15,12 +15,12 @@
 
 {% block menu %}
 <ul>
-    <li><a class="lightlink" href="/">Home</a></li>
-    <li><a class="lightlink" href="{% url menu_home %}">Menu</a></li>
-    <li><a class="lightlink" href="/about/">About</a></li>
-    <li><a class="lightlink" href="/find-us/">Find Us</a></li>
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url menu_home %}">Menu</a></li>
+    <li><a href="/about/">About</a></li>
+    <li><a href="/find-us/">Find Us</a></li>
     {% if site.has_news %}
-    <li><a class="lightlink" href="/news/">News</a></li>
+    <li><a href="/news/">News</a></li>
     {% endif %}
 </ul>
 {% endblock %}
@@ -59,9 +59,9 @@
     {% if site.location_set.count > 1 %}
     <div id="user-location">
     {% if location %}
-    <span><strong>Your location:</strong> {{ location }}</span> <a class="button" href="{% url change_location %}" id="change-location">Change</a>
+    <span><strong>Your location:</strong> {{ location }}</span> <a class="button primary" href="{% url change_location %}" id="change-location">Change</a>
     {% else %}
-    <span><strong>Your location is not set.</strong></span> <a class="button" href="{% url change_location %}" id="change-location">Set now</a>
+    <span><strong>Your location is not set.</strong></span> <a class="button primary" href="{% url change_location %}" id="change-location">Set now</a>
     {% endif %}
     </div>
 </div>
@@ -106,7 +106,7 @@
     <form method="POST" action="{% url mailing_list_signup %}">
     <p>Find out about promotions, new menu items, and more. Sign up for our  email newsletter.</p>
     <input type="text" name="email" />
-    <input type="submit" value="Sign Up">
+    <input class="button primary" type="submit" value="Sign Up">
 </div>
 
 {% endif %}
@@ -114,5 +114,5 @@
 
 {% block footer %}
 {{ site.footer_locations }}
-<p><a class="lightlink" href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> &bull; powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
+<p><a href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> &bull; powered by <a href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
 {% endblock %}

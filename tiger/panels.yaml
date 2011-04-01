@@ -100,13 +100,47 @@
       - name: Menu
         make_list: true
         components:
-          - name: Menu color
+          - name: Menu item color
+            id: menuitembackground
+            type: swatch
+            default: 43,41,43 
+            order: 6
+            properties:
+              - selector: "#menu ul li a"
+                css_property: background-color
+          - name: Menu item color (hover)
+            id: menuitembackgroundhover
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: a
+                css_property: color
+              - selector: "#menu ul li a:hover"
+                css_property: background-color
+          - name: Menu item text
+            id: menuitemtext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "#menu ul li a"
+                css_property: color
+          - name: Menu item text (hover)
+            id: menuitemtexthover
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "#menu ul li a:hover"
+                css_property: color
+          - name: Background color
             id: menubackgroundcolor
             type: swatch
             default: 43,41,43 
             order: 6
             properties:
-              - selector: "#menuWrap, .footer"
+              - selector: "#menuWrap"
                 css_property: background-color
 - panel: 
     name: Buttons
@@ -114,27 +148,114 @@
       - name: Primary buttons
         make_list: true
         components:
-          - name: Button text
-            id: buttontext
-            type: swatch
-            default: 247,247,247 
-            order: 10
-            properties:
-              - selector: "a.lightlink, a.lightlink:hover, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit, .footer"
-                css_property: color
-          - name: Button color
+          - name: Color
             id: buttoncolor
             type: swatch
             default: 199,98,24 
             order: 9
             properties:
-              - selector: a
+              - selector: "a"
                 css_property: color
-              - selector: "#menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit"
+              - selector: "a.button.primary, input.button.primary"
                 css_property: background-color
+          - name: Color (hover)
+            id: buttonbackgroundhover
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: "a:hover"
+                css_property: color
+              - selector: "a.button.primary:hover, input.button.primary:hover"
+                css_property: background-color
+          - name: Text
+            id: buttontext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.button.primary, input.button.primary"
+                css_property: color
+          - name: Text (hover)
+            id: buttontexthover
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.button.primary:hover, input.button.primary:hover"
+                css_property: color
       - name: Online ordering buttons
         make_list: true
-        components: []
+        components:
+          - name: Color
+            id: orderbuttonbackground
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: "a.button.ordering, input.button.ordering"
+                css_property: background-color
+          - name: Color (hover)
+            id: orderbuttonbackgroundhover
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: "a.button.ordering:hover, input.button.ordering:hover"
+                css_property: background-color
+          - name: Text
+            id: orderbuttontext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.button.ordering, input.button.ordering"
+                css_property: color
+          - name: Text (hover)
+            id: orderbuttontexthover
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.button.ordering:hover, input.button.ordering:hover"
+                css_property: color
+- panel: 
+    name: Footer
+    groups:
+      - make_list: true
+        components:
+          - name: Background
+            id: footerbackground
+            type: swatch
+            default: 43,41,43 
+            order: 6
+            properties:
+              - selector: ".footer"
+                css_property: background-color
+          - name: Text
+            id: footertext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: ".footer"
+                css_property: color
+          - name: Links
+            id: footerlink
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: ".footer a"
+                css_property: color
+          - name: Links (hover)
+            id: footerlinkhover
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: ".footer a:hover"
+                css_property: color
 - panel: 
     name: CSS
     id: cssoverrides

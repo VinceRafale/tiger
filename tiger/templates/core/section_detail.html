@@ -31,7 +31,7 @@
         </div>
         <div>
             {% if site.enable_orders %}
-            <a class="add" href="{% url order_item section.id section.slug item.id item.slug %}">add to order</a>
+            <a class="button ordering" href="{% url order_item section.id section.slug item.id item.slug %}">add to order</a>
             {% endif %}
             <ul> 
             {% for price in item.price_list %}
