@@ -1,10 +1,10 @@
 {% autoescape off %}
 {% if ff.ttf %}
 @font-face {
-    font-family: FF{{ ff.id }};
+    font-family: {{ component.id }};
 	src: url('{{ ff.eot.url }}');
 	src: local('☺'), url('{{ ff.woff.url }}') format('woff'), url('{{ ff.ttf.url }}') format('truetype'), url('{{ ff.svg.url }}#webfont') format('svg');
 }
 {% endif %}
-{{ component.selector }} {font-family: {% if ff.ttf %}FF{{ ff.id }},{% endif %} {{ ff.stack }} !important;}
+{{ component.selector }} {font-family: {% if ff.ttf %}{{ component.id }},{% endif %} {{ ff.stack }} !important;}
 {% endautoescape %}

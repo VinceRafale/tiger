@@ -45,9 +45,9 @@
 {% if site.enable_orders %}
 <div id="place-order" {% if cart|length %}class="complete"{% endif %}>
 {% if cart|length %}
-<p class="has-items">You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}"><span>Complete your order</span></a></p>
+<p class="has-items">You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a class="button ordering" href="{% url preview_order %}"><span>Complete your order</span></a></p>
 {% else %}
-<p>Order online for {{ site.order_options|join:"/" }}. Hungry? <a href="{% url menu_home %}"><span>Place an order</span></a></p>
+<p>Order online for {{ site.order_options|join:"/" }}. Hungry? <a class="button primary" href="{% url menu_home %}"><span>Place an order</span></a></p>
 {% endif %}
 </div>
 {% endif %}

@@ -7,7 +7,14 @@
             id: headerfont
             type: font
             order: 3
-            selector: h1, h2, h4
+            selector: "h1, h2, h4"
+            default: ARIAL
+            fontface: true
+          - name: Emphasis
+            id: emphasisfont
+            type: font
+            order: 3
+            selector: "div.emphasis"
             default: ARIAL
             fontface: true
           - name: Body text
@@ -26,7 +33,7 @@
             order: 4
             default: 48,22,19
             properties:
-              - selector: h1, h2, h4
+              - selector: "#mainWrap h1, #mainWrap h2, #mainWrap h4, #sidebarWrap h4"
                 css_property: color
           - name: Body text
             id: bodyfontcolor
@@ -50,7 +57,7 @@
             default: 255,255,255
             order: 7
             properties:
-              - selector: "#mainWrap, #sidebarWrap"
+              - selector: "#content, #mainWrap, #sidebarWrap"
                 css_property: background-color
           - name: Background
             id: backgroundcolor
@@ -87,7 +94,7 @@
             default: 18,16,18
             order: 5
             properties:
-              - selector: "#masthead"
+              - selector: "#masthead, div.mastheadbackgroundcolor div"
                 css_property: background-color
           - name: Text
             id: mastheadtextcolor
@@ -95,7 +102,7 @@
             default: 227,227,190 
             order: 6
             properties:
-              - selector: "#masthead h2, #masthead h4, #masthead label"
+              - selector: "#mastheadWrap h2, #mastheadWrap h4, #mastheadWrap label"
                 css_property: color
       - name: Menu
         make_list: true
@@ -156,7 +163,7 @@
             properties:
               - selector: "a"
                 css_property: color
-              - selector: "a.button.primary, input.button.primary"
+              - selector: "a.button.primary, input.button.primary, #place-order.complete"
                 css_property: background-color
           - name: Color (hover)
             id: buttonbackgroundhover
@@ -166,7 +173,7 @@
             properties:
               - selector: "a:hover"
                 css_property: color
-              - selector: "a.button.primary:hover, input.button.primary:hover"
+              - selector: "a.button.primary:hover, input.button.primary:hover, ::-moz-selection, ::selection"
                 css_property: background-color
           - name: Text
             id: buttontext
@@ -174,7 +181,7 @@
             default: 247,247,247 
             order: 10
             properties:
-              - selector: "a.button.primary, input.button.primary"
+              - selector: "a.button.primary, input.button.primary, #place-order.complete p"
                 css_property: color
           - name: Text (hover)
             id: buttontexthover
@@ -182,7 +189,7 @@
             default: 247,247,247 
             order: 10
             properties:
-              - selector: "a.button.primary:hover, input.button.primary:hover"
+              - selector: "a.button.primary:hover, input.button.primary:hover, ::-moz-selection, ::selection"
                 css_property: color
       - name: Online ordering buttons
         make_list: true
