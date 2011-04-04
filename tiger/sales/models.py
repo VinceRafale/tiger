@@ -270,8 +270,13 @@ class Invoice(models.Model):
 
     @property
     def total(self):
+        if self.subinvoice_set.count():
+            return sum(self._total(inv) for inv in self.subinvoice_set.all())
+        return self._total(self)
+
+    def _total(self, invoice):
         return sum(
-            getattr(self, attr) 
+            getattr(invoice, attr) 
             for attr in (
                 'monthly_fee', 
                 'fax_charges', 
