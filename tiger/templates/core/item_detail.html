@@ -42,7 +42,7 @@
 
 {% block sections %}
 <h2>Menu sections</h2>
-<ul id="menuitems">
+<ul id="menuitems" class="alternating">
 {% for section in sections %}
     <li{% cycle ' class="shaded"' '' %}>
         <a href="{{ section.get_absolute_url }}">{{ section }}</a>

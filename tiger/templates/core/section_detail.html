@@ -20,7 +20,7 @@
     <dt><span class="veg">veg</span></dt>
     <dd>Vegetarian menu item</dd>
 </dl>
-<ul id="menuitems">
+<ul id="menuitems" class="alternating">
 {% for item in section.item_set.active %}
     <li{% cycle ' class="shaded"' '' %}>
         <div class="grid_4 alpha">
