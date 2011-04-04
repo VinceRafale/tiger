@@ -20,6 +20,20 @@ block_re = re.compile(r'\{% block ([a-z]+) %\}\s*\{% endblock %\}')
 pseudoblock_re = re.compile(r'\{\{([a-z]+)\}\}')
 
 
+def stork_to_django(html):
+    elements = fragments_fromstring(''.join([
+        c for c in html
+        if c != '\r'
+    ]))
+    html = ''.join(tostring(clean_html(element)) for element in elements)
+    with_blocks = pseudoblock_re.sub(r'&& block \1 &&&& endblock &&', html)
+    for bit, tag in TEMPLATE_TAG_ESCAPES:
+        sub = ''.join(['&#%d;' % ord(c) for c in bit])
+        with_blocks = with_blocks.replace(bit, sub)    
+    with_blocks = re.sub(r'&& block ([a-z]+) &&&& endblock &&', r'{% block \1 %}{% endblock %}', with_blocks)
+    return with_blocks
+
+
 class HtmlComponent(BaseComponent):
     model = Html
 
@@ -51,16 +65,7 @@ class HtmlComponent(BaseComponent):
         blocks = self.blocks
         class HtmlForm(klass):
             def clean_staged_html(self):
-                elements = fragments_fromstring(''.join([
-                    c for c in self.cleaned_data['staged_html']
-                    if c != '\r'
-                ]))
-                html = ''.join(tostring(clean_html(element)) for element in elements)
-                with_blocks = pseudoblock_re.sub(r'&& block \1 &&&& endblock &&', html)
-                for bit, tag in TEMPLATE_TAG_ESCAPES:
-                    sub = ''.join(['&#%d;' % ord(c) for c in bit])
-                    with_blocks = with_blocks.replace(bit, sub)    
-                with_blocks = re.sub(r'&& block ([a-z]+) &&&& endblock &&', r'{% block \1 %}{% endblock %}', with_blocks)
+                with_blocks = stork_to_django(self.cleaned_data['staged_html'])
                 t = Template(with_blocks)
                 required = list(blocks)
                 invalid = []

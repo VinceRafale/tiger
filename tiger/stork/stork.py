@@ -56,6 +56,14 @@ class Stork(object):
             component.save(data, files)
         self.theme.update(self.compressed_css())
 
+    def copy_to(self, target):
+        for name, component in self.component_cache:
+            instance = component.instance
+            instance.id = None
+            instance.theme = target
+            instance.save()
+        target.update(self.compressed_css())
+
     def css(self):
         css_ordered_components = sorted([
             component for name, component in self.component_cache

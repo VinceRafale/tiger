@@ -914,6 +914,9 @@ span.message strong {
 
     li.complete div{background:url(../img/checkmark.png) center center no-repeat;}
 
+a.screenshot {float:left; padding:0 10px 10px 0;}
+div.info {float:right; width:525px;}
+
 /* RESELLER STUFF */
 
 span.ballot {color:#dd0000;}

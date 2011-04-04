@@ -18,7 +18,7 @@ class Theme(ImageModel):
     private = models.BooleanField(default=True)
     screenshot = models.ImageField(upload_to='screenshots', null=True, blank=True, default='')
     description = models.TextField(blank=True)
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True, default='')
 
     class IKOptions:
         spec_module = 'tiger.content.specs'
