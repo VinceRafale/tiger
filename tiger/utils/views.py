@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader, RequestContext, Template
+from django.template.loader import get_template
 from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
@@ -31,7 +32,7 @@ def render_custom(request, template, context=None):
             'base': 'base.html',
             'pre_base': request.site.template()
         })
-    t = load_custom(request, template)
+    t = get_template(template)
     c = RequestContext(request, context)
     rendered = t.render(c)
     return HttpResponse(rendered)
