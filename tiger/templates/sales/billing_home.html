@@ -11,7 +11,7 @@ Your account
 <p>Currently configured to bill your credit card ending in {{ account.card_number }}.  Your balance for this month is currently ${{ account.running_total }}.</p>
 <h3>Invoices</h3>
 <ul>
-{% for invoice in account.invoice_set.all %}
+{% for invoice in invoices %}
     <li><a href="{% url invoice_detail invoice.id %}">Invoice for {{ invoice.arrears_date|date:"M Y" }} (${{ invoice.total }})</a></li>
 {% empty %}
     <li>You have not yet been billed.</li>

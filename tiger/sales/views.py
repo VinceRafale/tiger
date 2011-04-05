@@ -176,7 +176,7 @@ def delete_restaurant(request, site_id):
 def billing_home(request):
     account = request.user.get_profile()
     return direct_to_template(request, template='sales/billing_home.html', extra_context={
-        'account': account
+        'invoices': account.invoice_set.filter(invoice__isnull=True)
     })
 
 @login_required
