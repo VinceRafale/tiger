@@ -206,10 +206,11 @@ class Invoice(models.Model):
 
     def save(self, *args, **kwargs):
         managed_site = self.site and self.site.managed
+        new = not self.id
         if managed_site and not self.invoice:
             raise SiteManagementError
         super(Invoice, self).save(*args, **kwargs)
-        if self.site:
+        if self.site and new:
             self.create_charges()
 
     def create_charges(self):
