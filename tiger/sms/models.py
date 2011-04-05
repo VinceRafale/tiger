@@ -114,7 +114,7 @@ class SmsSubscriber(models.Model):
 
     @property
     def is_active(self):
-        return not self.unsubscribed_at and not self.deactivated
+        return not (self.unsubscribed_at or self.deactivated)
 
     def send_message(self, body, sms_number=None, campaign=None):
         s = self._get_site()

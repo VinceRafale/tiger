@@ -72,7 +72,7 @@ def check_subscribe(keyword):
     site = Site.objects.all()[0]
     twilio_header = get_twilio_header(site.tiger_domain() + '/sms/respond-to-sms/', data)
     response = client.post('/sms/respond-to-sms/', data, 
-        HTTP_X_TWILIO_SIGNATURE=twilio_header)
+        HTTP_X_TWILIO_SIGNATURE=twilio_header, HTTP_X_FORWARDED_PORT='443')
     assert SmsSubscriber.objects.get(phone_number=data['From'])
 
 def test_unsubscribe_keywords_unsubscribe():
@@ -86,7 +86,7 @@ def check_unsubscribe(keyword):
     SmsSubscriber.objects.create(phone_number=data['From'], settings=site.sms)
     twilio_header = get_twilio_header(site.tiger_domain() + '/sms/respond-to-sms/', data)
     response = client.post('/sms/respond-to-sms/', data, 
-        HTTP_X_TWILIO_SIGNATURE=twilio_header)
+        HTTP_X_TWILIO_SIGNATURE=twilio_header, HTTP_X_FORWARDED_PORT='443')
     subscriber = SmsSubscriber.objects.get(phone_number=data['From'])
     assert_false(subscriber.is_active)
 
