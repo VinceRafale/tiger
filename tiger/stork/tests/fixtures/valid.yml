@@ -3,6 +3,7 @@
     groups:
       - components:
           - name: Baz
+            id: foo-baz
             type: swatch
             default: "0,0,0"
             order: 1
@@ -14,6 +15,7 @@
     groups:
       - components:
           - name: Quux
+            id: bar-quux
             type: font
             order: 2
             selector: h1

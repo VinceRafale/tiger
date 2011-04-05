@@ -3,6 +3,7 @@
     groups:
       - components:
           - name: Baz
+            id: foo-baz
             type: swatch
             default: 000
             order: 1

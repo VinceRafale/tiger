@@ -4,6 +4,7 @@
       - components:
           - name: Baz
             type: swatch
+            id: foo-baz
             order: 1
             properties:
               - selector: #foo
