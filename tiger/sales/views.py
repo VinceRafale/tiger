@@ -133,7 +133,9 @@ def create_edit_restaurant(request, restaurant_id=None):
     if request.method == 'POST':
         form = RestaurantForm(request.POST, account=account, instance=instance)
         if form.is_valid():
-            form.save()
+            restaurant = form.save(commit=False)
+            restaurant.managed = True
+            restaurant.save()
             messages.success(request, 'Restaurant %s successfully.' % ('edited' if instance else 'created'))
             return HttpResponseRedirect(reverse('restaurant_list'))
     else:
@@ -174,5 +176,15 @@ def delete_restaurant(request, site_id):
 def billing_home(request):
     account = request.user.get_profile()
     return direct_to_template(request, template='sales/billing_home.html', extra_context={
-        'account': account
+        'invoices': account.invoice_set.filter(invoice__isnull=True)
     })
+
+@login_required
+def invoice_detail(request, invoice_id):
+    account = request.user.get_profile()
+    try:
+        invoice = account.invoice_set.get(id=invoice_id)
+    except Invoice.DoesNotExist:
+        raise Http404
+    return direct_to_template(request, template='sales/invoice_detail.html', 
+        extra_context={'invoice': invoice})

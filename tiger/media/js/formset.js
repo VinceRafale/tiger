@@ -18,7 +18,7 @@ function getForm(addAnchor) {
     inputs = formSnippets[fieldKey];
     fakeForm = '<li class="form' + ((arguments[1] && !noPopulate) ? ' populated' : '') + '">';
     $.each(inputs, function () {
-        titleCase = this[0].toUpperCase() + this.slice(1);
+        titleCase = this.charAt(0).toUpperCase() + this.slice(1);
         fakeForm += '<label for="' + this + '">' + titleCase + ' ';
         if (this != 'schedule') {
             fakeForm += ' <input type="text" id="id_' + this + '" name="' + this + '" value="' + (initial[this] || '') + '" />';

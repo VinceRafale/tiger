@@ -9,7 +9,7 @@ DATABASES = {
         'USER': 'tiger_dba',
         'NAME': 'tiger',
         'PASSWORD': 'MAAANNNIIING',
-        'HOST': '',
+        'HOST': '10.176.228.112',
         'PORT': '',
     }
 }

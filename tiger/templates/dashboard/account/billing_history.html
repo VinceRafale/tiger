@@ -2,12 +2,18 @@
 
 {% block body-class %}{{ block.super }}billing-history{% endblock %}
 
+{% block h2 %}Your billing history{% endblock %}
+
 {% block help %}
 You can browse your past invoices here.  This is for reference purposes only.
 {% endblock %}
 
 {% block content %}
-{% for invoice in invoices %}
-{{ invoice }}
-{% endfor %}
+<ul>
+    {% for invoice in invoices %}
+    <li><a href="{% url invoice_detail invoice.id %}">Invoice for {{ invoice.arrears_date|date:"M Y" }} (${{ invoice.total }})</a></li>
+    {% empty %}
+    <li>You have no invoices to view.</li>
+    {% endfor %}
+</ul>
 {% endblock %}

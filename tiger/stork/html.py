@@ -20,15 +20,29 @@ block_re = re.compile(r'\{% block ([a-z]+) %\}\s*\{% endblock %\}')
 pseudoblock_re = re.compile(r'\{\{([a-z]+)\}\}')
 
 
+def stork_to_django(html):
+    elements = fragments_fromstring(''.join([
+        c for c in html
+        if c != '\r'
+    ]))
+    html = ''.join(tostring(clean_html(element)) for element in elements)
+    with_blocks = pseudoblock_re.sub(r'&& block \1 &&&& endblock &&', html)
+    for bit, tag in TEMPLATE_TAG_ESCAPES:
+        sub = ''.join(['&#%d;' % ord(c) for c in bit])
+        with_blocks = with_blocks.replace(bit, sub)    
+    with_blocks = re.sub(r'&& block ([a-z]+) &&&& endblock &&', r'{% block \1 %}{% endblock %}', with_blocks)
+    return with_blocks
+
+
 class HtmlComponent(BaseComponent):
     model = Html
 
-    def __init__(self, panel, group, name, default=None, blocks=None, order=None):
+    def __init__(self, panel, group, name, default=None, blocks=None, order=None, **kwargs):
         if default is None:
             raise StorkConfigurationError("A default value is required for html components")
         if blocks is None or len(blocks) < 1:
             raise StorkConfigurationError("A list of required blocks is required for html components")
-        super(HtmlComponent, self).__init__(panel, group, name, order)
+        super(HtmlComponent, self).__init__(panel, group, name, order, **kwargs)
         self.default = default
         self.blocks = blocks
 
@@ -51,16 +65,7 @@ class HtmlComponent(BaseComponent):
         blocks = self.blocks
         class HtmlForm(klass):
             def clean_staged_html(self):
-                elements = fragments_fromstring(''.join([
-                    c for c in self.cleaned_data['staged_html']
-                    if c != '\r'
-                ]))
-                html = ''.join(tostring(clean_html(element)) for element in elements)
-                with_blocks = pseudoblock_re.sub(r'&& block \1 &&&& endblock &&', html)
-                for bit, tag in TEMPLATE_TAG_ESCAPES:
-                    sub = ''.join(['&#%d;' % ord(c) for c in bit])
-                    with_blocks = with_blocks.replace(bit, sub)    
-                with_blocks = re.sub(r'&& block ([a-z]+) &&&& endblock &&', r'{% block \1 %}{% endblock %}', with_blocks)
+                with_blocks = stork_to_django(self.cleaned_data['staged_html'])
                 t = Template(with_blocks)
                 required = list(blocks)
                 invalid = []
@@ -88,7 +93,7 @@ class HtmlComponent(BaseComponent):
         form_class = self.form_class()
         instance = self.instance
         html = instance.invalid_html or instance.staged_html
-        form = form_class({'%s-staged_html' % self.key: self.prep_html(html)}, instance=instance, prefix=self.key)
+        form = form_class({'%s-staged_html' % self.id: self.prep_html(html)}, instance=instance, prefix=self.id)
         form.full_clean()
         return form
 
@@ -104,9 +109,9 @@ class HtmlComponent(BaseComponent):
                 instance.html = instance.staged_html
         else:
             instance = self.instance
-            instance.invalid_html = data['%s-staged_html' % self.key]
+            instance.invalid_html = data['%s-staged_html' % self.id]
         instance.theme = self.stork.theme
-        instance.component = self.key
+        instance.component = self.id
         instance.save()
 
     def prep_html(self, html):

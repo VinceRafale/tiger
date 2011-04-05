@@ -7,7 +7,7 @@
 
 {% block search %}
 <form method="GET" action="{% url menu_search %}">
-    {{ search_form.q }} <input type="submit" value="Go" /><br />
+    {{ search_form.q }} <input class="button primary" type="submit" value="Go" /><br />
     {{ search_form.vegetarian }} {{ search_form.vegetarian.label_tag }}
     {{ search_form.spicy }} {{ search_form.spicy.label_tag }}
 </form>
@@ -15,12 +15,12 @@
 
 {% block menu %}
 <ul>
-    <li><a class="lightlink" href="/">Home</a></li>
-    <li><a class="lightlink" href="{% url menu_home %}">Menu</a></li>
-    <li><a class="lightlink" href="/about/">About</a></li>
-    <li><a class="lightlink" href="/find-us/">Find Us</a></li>
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url menu_home %}">Menu</a></li>
+    <li><a href="/about/">About</a></li>
+    <li><a href="/find-us/">Find Us</a></li>
     {% if site.has_news %}
-    <li><a class="lightlink" href="/news/">News</a></li>
+    <li><a href="/news/">News</a></li>
     {% endif %}
 </ul>
 {% endblock %}
@@ -45,9 +45,9 @@
 {% if site.enable_orders %}
 <div id="place-order" {% if cart|length %}class="complete"{% endif %}>
 {% if cart|length %}
-<p class="has-items">You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a href="{% url preview_order %}"><span>Complete your order</span></a></p>
+<p class="has-items">You have {{ cart|length }} item{{ cart|length|pluralize }} in your current order. <a class="button ordering" href="{% url preview_order %}"><span>Complete your order</span></a></p>
 {% else %}
-<p>Order online for {{ site.order_options|join:"/" }}. Hungry? <a href="{% url menu_home %}"><span>Place an order</span></a></p>
+<p>Order online for {{ site.order_options|join:"/" }}. Hungry? <a class="button primary" href="{% url menu_home %}"><span>Place an order</span></a></p>
 {% endif %}
 </div>
 {% endif %}
@@ -59,9 +59,9 @@
     {% if site.location_set.count > 1 %}
     <div id="user-location">
     {% if location %}
-    <span><strong>Your location:</strong> {{ location }}</span> <a class="button" href="{% url change_location %}" id="change-location">Change</a>
+    <span><strong>Your location:</strong> {{ location }}</span> <a class="button primary" href="{% url change_location %}" id="change-location">Change</a>
     {% else %}
-    <span><strong>Your location is not set.</strong></span> <a class="button" href="{% url change_location %}" id="change-location">Set now</a>
+    <span><strong>Your location is not set.</strong></span> <a class="button primary" href="{% url change_location %}" id="change-location">Set now</a>
     {% endif %}
     </div>
 </div>
@@ -74,6 +74,15 @@
 <p>
     <a href="{{ site.menu.url }}">Download our menu</a> as a PDF!  Always guaranteed to be up-to-date.
 </p>
+{% endif %}
+{% endblock %}
+
+{% block sms %}
+{% if site.sms.enabled %}
+<div class="sms">
+    <h4>Text Message Updates</h4>
+    <p>Text <strong>&ldquo;{{ site.sms.keywords.0 }}&rdquo;</strong> to {{ site.sms.number_display }} for special mobile offers</p>
+</div>
 {% endif %}
 {% endblock %}
 
@@ -97,7 +106,7 @@
     <form method="POST" action="{% url mailing_list_signup %}">
     <p>Find out about promotions, new menu items, and more. Sign up for our  email newsletter.</p>
     <input type="text" name="email" />
-    <input type="submit" value="Sign Up">
+    <input class="button primary" type="submit" value="Sign Up">
 </div>
 
 {% endif %}
@@ -105,5 +114,5 @@
 
 {% block footer %}
 {{ site.footer_locations }}
-<p><a class="lightlink" href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> &bull; powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
+<p><a href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> &bull; powered by <a href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
 {% endblock %}

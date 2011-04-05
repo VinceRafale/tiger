@@ -1,10 +1,5 @@
 {% extends 'dashboard/orders/home.html' %}
-
-{% block extrahead %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/raphael-min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/g.raphael-min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/g.bar-min.js"></script>
-{% endblock %}
+{% load pagination_tags %}
 
 {% block body-class %}{{ block.super }}history{% endblock %}
 
@@ -18,20 +13,22 @@ Online orders for your {{ location }} location
 {% endblock %}
 
 {% block content %}
-        {% if location.enable_orders %}
-        <p class="usage greenlight">
-            You are currently taking online orders at your {{ location }} location.  <a href="{% url toggle_order_status %}">Disable now</a>
-        </p>
-        {% else %}
-        <p class="usage redlight">
-            You are not currently taking online orders at your {{ location }} location.  <a href="{% url toggle_order_status %}">Enable now</a>
-        </p>
-        {% endif %}
+{% autopaginate orders %}
+    {% if location.enable_orders %}
+    <p class="usage greenlight">
+        You are currently taking online orders at your {{ location }} location.  <a href="{% url toggle_order_status %}">Disable now</a>
+    </p>
+    {% else %}
+    <p class="usage redlight">
+        You are not currently taking online orders at your {{ location }} location.  <a href="{% url toggle_order_status %}">Enable now</a>
+    </p>
+    {% endif %}
 
     <div id="chart"></div>
 
     <h3>Latest orders</h3>
     <p class=help>Your orders are listed below in reverse chronological order. Orders that you have not yet read are <span class="sample-highlight">highlighted in yellow</span>.</p>
+    {% paginate %}
     <table>
         <thead>
             <tr>
@@ -44,26 +41,14 @@ Online orders for your {{ location }} location
             </tr>
         </thead>
         <tbody>
-        {% include 'dashboard/orders/new_order.html' %}
+        {% for order in orders %}
+            {% include 'dashboard/orders/new_order.html' %}
+        {% empty %}
+            <tr>
+                <td colspan="6">You have not received any orders.</td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
-
-
-
+    {% paginate %}
 {% endblock %}
-
-{% block js %}
-<script type="text/javascript">
-function updateOrders() {
-    orderId = $("tbody tr:first").attr("id");
-    $.post("{% url get_new_orders %}", {}, function(data) {
-        if (data) {
-            $("tbody").html(data);
-        }
-    }, "html");
-}
-
-setInterval('updateOrders()', 1000 * 60);
-</script>
-{% endblock %}
-

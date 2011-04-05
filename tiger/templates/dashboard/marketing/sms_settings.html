@@ -2,6 +2,10 @@
 
 {% block body-class %}{{ block.super }}sms{% endblock %}
 
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui.min.js"></script>
+{% endblock %}
+
 {% block h2 %}
 SMS settings
 {% endblock %}
@@ -21,7 +25,7 @@ You can optionally configure an automatic response to a new sign-up below.  Send
 <h4>Opt-in keywords</h4>
 <ul id="keyword-list">
     {% for keyword in sms.keywords %}
-    <li>{{ keyword }} 
+    <li id="{{ keyword }}">{{ keyword }} 
     <form method="POST" action="">
         <input type="hidden" name="remove" value="{{ keyword }}" />
         <input type="image" class="delete-button" src="{{ MEDIA_URL }}img/Delete_16x16.png" />
@@ -46,6 +50,8 @@ You can optionally configure an automatic response to a new sign-up below.  Send
         <p class="charcount">140</p>
         </div>
     </div>
+    <label>{{ form.display }} {{ form.display.label }}</label>
+    <p class="help">{{ form.display.help_text }}</p>
     <div class="clear"></div>
     <div class="save-row clearfix">
     <a class="cancel" href="{% url sms_home %}">Cancel</a>
@@ -82,6 +88,17 @@ $(function () {
     $("input[type='image']").click(function () {
         c = confirm("Removing this opt-in keyword will prevent you from sending campaigns to associated users in the future.  Are you sure you want to proceed?  This action cannot be undone.");
         if (!c) return false;
+    });
+    $("#keyword-list").sortable({
+        stop: function(event, ui) { 
+            var keywords = $(this).sortable('toArray');
+            if (keywords.length > 1) {
+                $.post("reorder/", $.param({
+                    keywords: keywords
+                }, true));
+            }
+        },
+        cancel: "form"
     });
 });
 </script>

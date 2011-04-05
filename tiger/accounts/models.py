@@ -42,7 +42,7 @@ class Site(models.Model):
     email = models.EmailField(blank=True, null=True)
     custom_domain = models.BooleanField(default=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
-    theme = models.ForeignKey(Theme, null=True)
+    theme = models.ForeignKey(Theme, null=True, on_delete=models.SET_NULL)
     sms = models.ForeignKey(SmsSettings, null=True)
     plan = models.ForeignKey('sales.Plan', null=True)
     signup_date = models.DateField(auto_now_add=True)
@@ -113,10 +113,11 @@ class Site(models.Model):
     def has_news(self):
         return self.release_set.count()
 
+    @cachedmethod(KeyChain.template)
     def template(self):
         from tiger.stork import Stork
         stork = Stork(self.theme)
-        return stork['html-html'].as_template()
+        return stork['layout'].as_template()
 
     def skin_url(self):
         return self.theme.bundled_css.url

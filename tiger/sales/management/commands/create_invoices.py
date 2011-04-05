@@ -8,6 +8,7 @@ from tiger.sales.models import Account
 
 class Command(NoArgsCommand):
     def handle_noargs(self, **options):
-        for s in Account.objects.all():
+        for s in Account.objects.exclude(id__in=[12, 14, 19]):
             invoice = s.create_invoice()
+            invoice.charge()
 

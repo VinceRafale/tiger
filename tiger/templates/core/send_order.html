@@ -81,11 +81,11 @@ form li {margin-left:0;}
     {% with site.ordersettings as settings %}
     {% if settings.takes_payment %}
         {% if not settings.require_payment %}
-            <input id="submit" type="submit" value="Pay with cash" />
+            <input class="button primary" id="submit" type="submit" value="Pay with cash" />
         {% endif %}
-            <input id="pay" type="submit" name="pay" value="Pay online" />
+            <input class="button primary" id="pay" type="submit" name="pay" value="Pay online" />
     {% else %}
-    <input id="submit" type="submit" value="Send" />
+    <input class="button primary" id="submit" type="submit" value="Send" />
     {% endif %}
     <div class="clear"></div>
     {% endwith %}

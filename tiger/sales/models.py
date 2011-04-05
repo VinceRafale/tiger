@@ -1,6 +1,8 @@
 from datetime import date, datetime
 from decimal import Decimal
 
+from dateutil.relativedelta import *
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
@@ -166,7 +168,6 @@ class Plan(models.Model):
 
     @property
     def total(self):
-        print self.monthly_cost + self.sms_number_cost
         return self.monthly_cost + self.sms_number_cost
 
     def _assert_cap_not_exceeded(self, service, num):
@@ -198,13 +199,18 @@ class Invoice(models.Model):
     site = models.ForeignKey('accounts.Site', null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_UNBILLED)
     invoice = models.ForeignKey('self', related_name='subinvoice_set', null=True)
+    date = models.DateField(null=True, default=date.today)
+
+    class Meta:
+        ordering = ('-date',)
 
     def save(self, *args, **kwargs):
         managed_site = self.site and self.site.managed
+        new = not self.id
         if managed_site and not self.invoice:
             raise SiteManagementError
         super(Invoice, self).save(*args, **kwargs)
-        if self.site:
+        if self.site and new:
             self.create_charges()
 
     def create_charges(self):
@@ -270,8 +276,13 @@ class Invoice(models.Model):
 
     @property
     def total(self):
+        if self.subinvoice_set.count():
+            return sum(self._total(inv) for inv in self.subinvoice_set.all())
+        return self._total(self)
+
+    def _total(self, invoice):
         return sum(
-            getattr(self, attr) 
+            getattr(invoice, attr) 
             for attr in (
                 'monthly_fee', 
                 'fax_charges', 
@@ -306,6 +317,9 @@ class Invoice(models.Model):
         cim = Cim()
         cim.create_profile_transaction(self.total, self.account.customer_id, self.account.subscription_id, self.id)
 
+    def arrears_date(self):
+        return (self.date + relativedelta(months=-1)).replace(day=1)
+
 
 class Charge(models.Model):
     CHARGE_BASE = 1
@@ -319,7 +333,7 @@ class Charge(models.Model):
         (CHARGE_FAX_USAGE, 'Fax usage fees'),
     )
     invoice = models.ForeignKey(Invoice)
-    charge_type = models.IntegerField()
+    charge_type = models.IntegerField(choices=CHARGE_CHOICES)
     amount = models.DecimalField(max_digits=7, decimal_places=2)
 
 

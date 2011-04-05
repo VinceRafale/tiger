@@ -1,0 +1,50 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}account{% endblock %}
+
+{% block h2 %}Invoice for {{ invoice.arrears_date|date:"M Y" }}{% endblock %}
+
+{% block extrahead %}
+<style type="text/css">
+tr.total td {border-top:1px grey solid;}
+tr.grand {font-weight:bold;}
+th.money, td.money {text-align:right;}
+tr.restaurant {background-color:white; font-weight:bold; margin-top:10px;}
+td.charge {text-indent:10px;}
+</style>
+{% endblock %}
+
+{% block content %}
+<table cellspacing="0">
+    <tr>
+        <th>Charge</th>
+        <th class="money">Amount</th>
+    </tr>
+    {% for subinvoice in invoice.subinvoice_set.all %}
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="restaurant"><td colspan="2">{{ subinvoice.site.name }}</td></tr>
+        {% for charge in subinvoice.charge_set.all %}
+            {% if charge.amount > 0 %}
+            <tr>
+                <td class="charge">{{ charge.get_charge_type_display }}</td>
+                <td class="money">{{ charge.amount }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        <tr class="total">
+            <td>Subtotal</td>
+            <td class="money">{{ subinvoice.total }}</td>
+        </tr>
+    {% endfor %}
+    <tr class="spacer"><td colspan="2"></td></tr>
+    <tr class="spacer"><td colspan="2"></td></tr>
+    <tr class="spacer"><td colspan="2"></td></tr>
+    <tr class="grand total">
+        <td>Total</td>
+        <td class="money">{{ invoice.total }}</td>
+    </tr>
+</table>
+{% endblock %}
+

@@ -22,9 +22,10 @@ def get_component(panel, group, data):
 
 
 class ComponentGroup(object):
-    def __init__(self, panel, make_list=False, **data):
+    def __init__(self, panel, make_list=False, name=None, **data):
         self.panel = panel
         self.make_list = make_list
+        self.name = name
         self.components = [get_component(panel, self, c) for c in data['components']]
 
     def __iter__(self):
@@ -32,12 +33,13 @@ class ComponentGroup(object):
 
 
 class BaseComponent(object):
-    def __init__(self, panel, group, name, order, **kwargs):
+    def __init__(self, panel, group, name, order, id, **kwargs):
         self.panel = panel
         self.stork = panel.stork
         self.group = group
         self.name = name
         self.order = order
+        self.id = id
         self.key = self._set_key()
         self.add_to_cache()
 
@@ -49,11 +51,11 @@ class BaseComponent(object):
         return non_alpha_re.sub('-', key_string)
 
     def add_to_cache(self):
-        self.stork.component_cache.append((self.key, self))
+        self.stork.component_cache.append((self.id, self))
 
     @property
     def style_tag_id(self):
-        return 'st-st-%s' % self.key
+        return 'st-st-%s' % self.id
 
     def style_tag(self):
         tag = self.get_style_tag()
@@ -88,12 +90,12 @@ class BaseComponent(object):
 
     def form_instance(self, data=None, files=None):
         form_class = self.form_class()
-        return form_class(data, files, instance=self.instance, prefix=self.key)
+        return form_class(data, files, instance=self.instance, prefix=self.id)
 
     @property
     def defaults(self):
         return dict([
-            ('%s-%s' % (self.key, k), v)
+            ('%s-%s' % (self.id, k), v)
             for k, v in self.get_defaults().items()
         ])
         
@@ -114,7 +116,7 @@ class BaseComponent(object):
         form.full_clean()
         instance = form.save(commit=False)
         instance.theme = self.stork.theme
-        instance.component = self.key
+        instance.component = self.id
         instance.save()
         return instance
 
@@ -123,7 +125,7 @@ class BaseComponent(object):
         try:
             return self.model.objects.get(
                 theme=self.stork.theme,
-                component=self.key
+                component=self.id
             )
         except self.model.DoesNotExist:
             return None

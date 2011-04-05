@@ -30,6 +30,7 @@ class SmsSettings(models.Model):
     intro_sms = models.CharField(max_length=140, null=True)
     keywords = PickledObjectField(default='')
     reseller_network = models.BooleanField(default=False)
+    display = models.BooleanField('display your SMS number on your homepage', default=False, help_text='If you have more than one opt-in keyword, the top on the list will appear along side your SMS number.  You can drag the keywords in the right-hand column to reorder them.')
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -65,6 +66,15 @@ class SmsSettings(models.Model):
         sender = Sender(self, self.intro_text)
         sender.add_recipients(phone_number)
         sender.send_message()
+
+    def number_display(self):
+        def phone_number(val):
+            digits = ''.join(v for v in val if v.isalnum() and not v.isalpha())
+            if not digits:
+                return ''
+            digits = digits[-10:]
+            return '(%s) %s-%s' % (digits[:3], digits[3:6], digits[6:])
+        return phone_number(self.sms_number)
 
 
 class SmsSubscriberManager(models.Manager):

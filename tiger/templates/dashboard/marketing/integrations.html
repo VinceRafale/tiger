@@ -33,7 +33,7 @@ Social media integrations
             {% if not site.social.facebook_token %}
                 <a id="facebook-button" href="#">Connect</a>
             {% else %}
-                <a href="#">Deauthorize</a>
+                <a id="deauthorize" href="{% url dashboard_remove_facebook %}">Deauthorize</a>
             {% endif %}
         </div>
         {% if site.social.facebook_token %}
@@ -84,10 +84,11 @@ Social media integrations
 
 {% block js %}
 <div id="fb-root"></div>
-<script src="http://connect.facebook.net/en_US/all.js"></script>
+<script src="https://connect.facebook.net/en_US/all.js"></script>
 <script>
 FB.init({appId: '314120522290', status: true, cookie: true, xfbml: true});
-$("#facebook-button").click(function () {
+
+function requestAuthorization() {
     FB.login(function (response) {
         if (response.session) {
             if (response.perms) {
@@ -98,8 +99,21 @@ $("#facebook-button").click(function () {
             }
         }
     }, {perms: 'manage_pages,publish_stream,offline_access'});
-});
+}
+
+
 $(function () {
+	$("#facebook-button").click(function () {
+		FB.getLoginStatus(function (response) {
+			if (response.session) {
+				FB.logout(function(response) {
+					requestAuthorization();
+				});
+			} else {
+				requestAuthorization();
+			}
+		});
+	});
     $("label.ajax-checkbox input").live("click", function () {
         params = {};
         params[$(this).attr("name")] = $(this).attr("checked");

@@ -1,117 +1,271 @@
 - panel: 
-    name: Fonts
+    name: General
     groups:
-      - components:
-          - name: Header font
+      - name: Fonts
+        components:
+          - name: Headers
+            id: headerfont
             type: font
             order: 3
-            selector: h1, h2, h4
+            selector: "h1, h2, h4"
             default: ARIAL
             fontface: true
-          - name: Header font color
-            type: swatch
-            order: 4
-            default: "301613"
-            properties:
-              - selector: h1, h2, h4
-                css_property: color
-      - components:
-          - name: Body font
+          - name: Emphasis
+            id: emphasisfont
+            type: font
+            order: 3
+            selector: "div.emphasis"
+            default: ARIAL
+            fontface: true
+          - name: Body text
+            id: bodyfont
             type: font
             order: 1
             selector: body
             default: ARIAL
             fontface: true
-          - name: Body font color
+      - name: Main colors
+        make_list: true
+        components:
+          - name: Header text
+            id: headerfontcolor
             type: swatch
-            default: "000000"
+            order: 4
+            default: 48,22,19
+            properties:
+              - selector: "#mainWrap h1, #mainWrap h2, #mainWrap h4, #sidebarWrap h4"
+                css_property: color
+          - name: Body text
+            id: bodyfontcolor
+            type: swatch
+            default: 0,0,0
             order: 2
             properties:
               - selector: body, p.social a
                 css_property: color
-- panel: 
-    name: Logo
-    groups:
-      - components:
-          - name: Logo image
-            type: image
-            order: 11
-            selector: "#masthead h2"
-- panel: 
-    name: Colors
-    groups:
-      - make_list: true
-        components:
-          - name: Masthead color
-            type: swatch
-            default: "121012"
-            order: 5
-            properties:
-              - selector: "#masthead"
-                css_property: background-color
-          - name: Masthead font
-            type: swatch
-            default: E3E3BE 
-            order: 6
-            properties:
-              - selector: "#masthead h2, #masthead h4, #masthead label"
-                css_property: color
-          - name: Menu color
-            type: swatch
-            default: 2B292B 
-            order: 6
-            properties:
-              - selector: "#menuWrap, .footer"
-                css_property: background-color
-          - name: Center color
-            type: swatch
-            default: fff
-            order: 7
-            properties:
-              - selector: "#mainWrap, #sidebarWrap"
-                css_property: background-color
-          - name: Button text
-            type: swatch
-            default: f7f7f7 
-            order: 10
-            properties:
-              - selector: "a.lightlink, #menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit"
-                css_property: color
           - name: Accent color
+            id: accentcolor
             type: swatch
-            default: bfccd1 
+            default: 191,204,209 
             order: 8
             properties:
               - selector: "#orderForm, .shaded"
                 css_property: background-color
-          - name: Button color
+          - name: Main content area
+            id: centercolor
             type: swatch
-            default: C76218 
-            order: 9
+            default: 255,255,255
+            order: 7
             properties:
-              - selector: a
-                css_property: color
-              - selector: "#menu ul li:hover a, #menu ul li a:hover, a.button, a.add, #submit"
+              - selector: "#content, #mainWrap, #sidebarWrap"
                 css_property: background-color
-- panel: 
-    name: Background
-    groups: 
+          - name: Background
+            id: backgroundcolor
+            type: swatch
+            default: 217,212,217
+            order: 13
+            properties:
+              - selector: body
+                css_property: background-color
       - components:
           - name: Background image
+            id: backgroundimage
             type: image
             order: 12
             selector: body
             allow_tiling: true
             text_indent: false
-          - name: Background color
+- panel: 
+    name: Page header 
+    groups:
+      - name: Logo
+        components:
+          - name: Logo image
+            id: logo
+            type: image
+            order: 11
+            selector: "#masthead h2"
+      - name: Masthead
+        make_list: true
+        components:
+          - name: Background
+            id: mastheadbackgroundcolor
             type: swatch
-            default: D9D4D9
-            order: 13
+            default: 18,16,18
+            order: 5
             properties:
-              - selector: body
+              - selector: "#masthead, div.mastheadbackgroundcolor div"
+                css_property: background-color
+          - name: Text
+            id: mastheadtextcolor
+            type: swatch
+            default: 227,227,190 
+            order: 6
+            properties:
+              - selector: "#mastheadWrap h2, #mastheadWrap h4, #mastheadWrap label"
+                css_property: color
+      - name: Menu
+        make_list: true
+        components:
+          - name: Menu item color
+            id: menuitembackground
+            type: swatch
+            default: 43,41,43 
+            order: 6
+            properties:
+              - selector: "#menu ul li a"
+                css_property: background-color
+          - name: Menu item color (hover)
+            id: menuitembackgroundhover
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: a
+                css_property: color
+              - selector: "#menu ul li a:hover"
+                css_property: background-color
+          - name: Menu item text
+            id: menuitemtext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "#menu ul li a"
+                css_property: color
+          - name: Menu item text (hover)
+            id: menuitemtexthover
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "#menu ul li a:hover"
+                css_property: color
+          - name: Background color
+            id: menubackgroundcolor
+            type: swatch
+            default: 43,41,43 
+            order: 6
+            properties:
+              - selector: "#menuWrap"
                 css_property: background-color
 - panel: 
+    name: Buttons
+    groups:
+      - name: Primary buttons
+        make_list: true
+        components:
+          - name: Color
+            id: buttoncolor
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: "a"
+                css_property: color
+              - selector: "a.button.primary, input.button.primary, #place-order.complete"
+                css_property: background-color
+          - name: Color (hover)
+            id: buttonbackgroundhover
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: "a:hover"
+                css_property: color
+              - selector: "a.button.primary:hover, input.button.primary:hover, ::-moz-selection, ::selection"
+                css_property: background-color
+          - name: Text
+            id: buttontext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.button.primary, input.button.primary, #place-order.complete p"
+                css_property: color
+          - name: Text (hover)
+            id: buttontexthover
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.button.primary:hover, input.button.primary:hover, ::-moz-selection, ::selection"
+                css_property: color
+      - name: Online ordering buttons
+        make_list: true
+        components:
+          - name: Color
+            id: orderbuttonbackground
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: "a.button.ordering, input.button.ordering"
+                css_property: background-color
+          - name: Color (hover)
+            id: orderbuttonbackgroundhover
+            type: swatch
+            default: 199,98,24 
+            order: 9
+            properties:
+              - selector: "a.button.ordering:hover, input.button.ordering:hover"
+                css_property: background-color
+          - name: Text
+            id: orderbuttontext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.button.ordering, input.button.ordering"
+                css_property: color
+          - name: Text (hover)
+            id: orderbuttontexthover
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: "a.button.ordering:hover, input.button.ordering:hover"
+                css_property: color
+- panel: 
+    name: Footer
+    groups:
+      - make_list: true
+        components:
+          - name: Background
+            id: footerbackground
+            type: swatch
+            default: 43,41,43 
+            order: 6
+            properties:
+              - selector: ".footer"
+                css_property: background-color
+          - name: Text
+            id: footertext
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: ".footer"
+                css_property: color
+          - name: Links
+            id: footerlink
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: ".footer a"
+                css_property: color
+          - name: Links (hover)
+            id: footerlinkhover
+            type: swatch
+            default: 247,247,247 
+            order: 10
+            properties:
+              - selector: ".footer a:hover"
+                css_property: color
+- panel: 
     name: CSS
+    id: cssoverrides
     type: css
     order: 14
     default: |
@@ -158,10 +312,6 @@
       text-decoration:none;
       }
 
-      a.lightlink:hover {
-      color:#fff;
-      }
-
       a#viewCart {
       margin-right:12px;
       }
@@ -205,10 +355,6 @@
 
       form.send label {
       display:block;
-      }
-
-      .footer {
-      color:#FFF;
       }
 
       #orderPreview tr.total td {
@@ -572,12 +718,13 @@
 
 - panel:
     name: HTML
+    id: layout
     type: html
     admonition: |
         <strong>Warning: HTML editing is for advanced users!</strong>
         For a complete overview of what you can do here, see the <a href="/dashboard/content/look/docs/">layout customization documentation</a>.
 
-    blocks: ['logo', 'search', 'menu', 'content', 'messages', 'cart', 'sections', 'contact', 'pdf', 'social', 'mail', 'footer', 'showcase']
+    blocks: ['logo', 'search', 'menu', 'content', 'messages', 'cart', 'sections', 'contact', 'pdf', 'social', 'mail', 'footer', 'showcase', 'sms']
     default: |
       <div class="wrapper">
           <div id="masthead">
@@ -614,6 +761,7 @@
                   {% block sections %}{% endblock %}
                   {% block contact %}{% endblock %}
                   {% block pdf %}{% endblock %}
+                  {% block sms %}{% endblock %}
                   {% block social %}{% endblock %}
                   {% block mail %}{% endblock %}
               </div>

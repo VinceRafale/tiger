@@ -1,5 +1,6 @@
 import httplib
 import json
+import urllib
 import urllib2
 
 from django.conf import settings
@@ -11,11 +12,10 @@ from django.utils.http import int_to_base36
 import facebook
 import twilio
 from celery.task import Task
-from oauth import oauth
+import oauth2 as oauth
 
 from tiger.notify.fax import FaxServiceError
 from tiger.notify.models import Release
-from tiger.notify.utils import CONSUMER_KEY, CONSUMER_SECRET, SERVER, update_status
 
 
 class DeliverOrderTask(Task):
@@ -46,13 +46,17 @@ class SendMailChimpTask(Task):
 
 class TweetNewItemTask(Task):
     def run(self, msg, token, secret, release_id=None, **kwargs):
-        CONSUMER = oauth.OAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET)
-        CONNECTION = httplib.HTTPSConnection(SERVER)
-        access_token = oauth.OAuthToken(token, secret) 
+        access_token = oauth.Token(token, secret) 
+        consumer = oauth.Consumer(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
+        client = oauth.Client(consumer, access_token)
         try:
-            results = update_status(CONSUMER, CONNECTION, access_token, msg)
+            response, content = client.request(
+                'http://api.twitter.com/1/statuses/update.json', 
+                method='POST',
+                body=urllib.urlencode({'status': msg})
+            )
             if release_id is not None:
-                results = json.loads(results)
+                results = json.loads(content)
                 msg_id = results['id']
                 release = Release.objects.get(id=release_id)
                 Release.objects.filter(id=release_id).update(

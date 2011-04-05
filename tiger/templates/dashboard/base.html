@@ -2,6 +2,7 @@
 <html lang="en" {% block namespace %}{% endblock %}>
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <title>{{ site.name }} {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/dashboard.css" />
     <!--[if IE]>
@@ -14,6 +15,29 @@
     {% endblock %}
 </head>
 <body class="{% block body-class %}{% endblock %}">
+<!--[if IE]>
+    <script type="text/javascript" 
+     src="https://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+
+    <style>
+	.chromeFrameOverlayContent {
+		width: 600px;
+		z-index:9999px;
+		zoom: 1;
+	}
+	.chromeFrameOverlayContent iframe
+	.chromeFrameOverlayCloseBar
+	.chromeFrameOverlayUnderlay
+    </style>
+ 
+    <script>
+     window.attachEvent("onload", function() {
+       CFInstall.check({
+         mode: "overlay", // the default
+       });
+     });
+    </script>
+<![endif]-->
     <div class="wrapper">
             <div id="menuWrap">
                 <div class="container_12 clearfix">
