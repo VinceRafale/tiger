@@ -168,7 +168,6 @@ class Plan(models.Model):
 
     @property
     def total(self):
-        print self.monthly_cost + self.sms_number_cost
         return self.monthly_cost + self.sms_number_cost
 
     def _assert_cap_not_exceeded(self, service, num):
