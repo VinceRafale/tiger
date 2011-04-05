@@ -12,7 +12,7 @@ Your account
 <h3>Invoices</h3>
 <ul>
 {% for invoice in account.invoice_set.all %}
-    <li>{{ invoice }}</li>
+    <li><a href="{% url invoice_detail invoice.id %}">Invoice for {{ invoice.date|date:"M Y" }} (${{ invoice.total }})</a></li>
 {% empty %}
     <li>You have not yet been billed.</li>
 {% endfor %}

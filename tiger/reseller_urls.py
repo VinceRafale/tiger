@@ -21,6 +21,7 @@ urlpatterns = patterns('tiger.sales.views',
     url(r'^restaurants/(\d+)/edit/$', 'create_edit_restaurant', name='edit_restaurant'),
     url(r'^restaurants/(\d+)/delete/$', 'delete_restaurant', name='delete_restaurant'),
     url(r'^billing/$', 'billing_home', name='billing_home'),
+    url(r'^billing/invoice/(\d+)/$', 'invoice_detail', name='invoice_detail'),
 )
 
 urlpatterns += patterns('tiger.sales.views',

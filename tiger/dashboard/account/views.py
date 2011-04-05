@@ -3,12 +3,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import get_object_or_404
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import CreditCardForm, BasicInfoForm
 from tiger.accounts.models import Site
 from tiger.dashboard.account.forms import CancellationForm
-from tiger.sales.models import Account
+from tiger.sales.models import Account, Invoice
 from tiger.utils.views import add_edit_site_object
 
 
@@ -51,7 +52,17 @@ def basic_info(request):
 def billing_history(request):
     if request.site.managed:
         raise Http404
-    return direct_to_template(request, template='dashboard/account/billing_history.html')
+    invoices = request.site.invoice_set.all()
+    return direct_to_template(request, template='dashboard/account/billing_history.html', 
+        extra_context={'invoices': invoices})
+
+@login_required
+def invoice_detail(request, invoice_id):
+    if request.site.managed:
+        raise Http404
+    invoice = get_object_or_404(Invoice, site=request.site, id=invoice_id)
+    return direct_to_template(request, template='dashboard/account/invoice_detail.html', 
+        extra_context={'invoice': invoice})
 
 @login_required
 def update_cc(request):

@@ -176,3 +176,13 @@ def billing_home(request):
     return direct_to_template(request, template='sales/billing_home.html', extra_context={
         'account': account
     })
+
+@login_required
+def invoice_detail(request, invoice_id):
+    account = request.user.get_profile()
+    try:
+        invoice = account.invoice_set.get(id=invoice_id)
+    except Invoice.DoesNotExist:
+        raise Http404
+    return direct_to_template(request, template='sales/invoice_detail.html', 
+        extra_context={'invoice': invoice})

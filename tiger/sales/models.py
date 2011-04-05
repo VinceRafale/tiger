@@ -1,6 +1,8 @@
 from datetime import date, datetime
 from decimal import Decimal
 
+from dateutil.relativedelta import *
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
@@ -198,6 +200,10 @@ class Invoice(models.Model):
     site = models.ForeignKey('accounts.Site', null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_UNBILLED)
     invoice = models.ForeignKey('self', related_name='subinvoice_set', null=True)
+    date = models.DateField(null=True, default=date.today)
+
+    class Meta:
+        ordering = ('-date',)
 
     def save(self, *args, **kwargs):
         managed_site = self.site and self.site.managed
@@ -311,6 +317,9 @@ class Invoice(models.Model):
         cim = Cim()
         cim.create_profile_transaction(self.total, self.account.customer_id, self.account.subscription_id, self.id)
 
+    def arrears_date(self):
+        return (self.date + relativedelta(months=-1)).replace(day=1)
+
 
 class Charge(models.Model):
     CHARGE_BASE = 1
@@ -324,7 +333,7 @@ class Charge(models.Model):
         (CHARGE_FAX_USAGE, 'Fax usage fees'),
     )
     invoice = models.ForeignKey(Invoice)
-    charge_type = models.IntegerField()
+    charge_type = models.IntegerField(choices=CHARGE_CHOICES)
     amount = models.DecimalField(max_digits=7, decimal_places=2)
 
 

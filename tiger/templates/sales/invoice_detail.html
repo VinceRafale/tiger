@@ -1,0 +1,42 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}account{% endblock %}
+
+{% block h2 %}Invoice for {{ invoice.date|date:"M Y" }}{% endblock %}
+
+{% block extrahead %}
+<style type="text/css">
+tr.total {border-top:1px grey solid;}
+th.money, td.money {text-align:right;}
+tr.restaurant {border-bottom:1px grey solid;}
+</style>
+{% endblock %}
+
+{% block content %}
+<table cellspacing="0">
+    <tr>
+        <th>Charge</th>
+        <th class="money">Amount</th>
+    </tr>
+    {% for subinvoice in invoice.subinvoice_set.all %}
+        <tr><td colspan="2">{{ subinvoice.site.name }}</td></tr>
+        {% for charge in subinvoice.charge_set.all %}
+            {% if charge.amount > 0 %}
+            <tr>
+                <td>{{ charge.get_charge_type_display }}</td>
+                <td class="money">{{ charge.amount }}</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+        <tr class="total">
+            <td>Subtotal</td>
+            <td class="money">{{ subinvoice.total }}</td>
+        </tr>
+    {% endfor %}
+    <tr class="total">
+        <td>Total</td>
+        <td class="money">{{ invoice.total }}</td>
+    </tr>
+</table>
+{% endblock %}
+
