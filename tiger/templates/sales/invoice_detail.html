@@ -2,13 +2,15 @@
 
 {% block body-class %}account{% endblock %}
 
-{% block h2 %}Invoice for {{ invoice.date|date:"M Y" }}{% endblock %}
+{% block h2 %}Invoice for {{ invoice.arrears_date|date:"M Y" }}{% endblock %}
 
 {% block extrahead %}
 <style type="text/css">
-tr.total {border-top:1px grey solid;}
+tr.total td {border-top:1px grey solid;}
+tr.grand {font-weight:bold;}
 th.money, td.money {text-align:right;}
-tr.restaurant {border-bottom:1px grey solid;}
+tr.restaurant {background-color:white; font-weight:bold; margin-top:10px;}
+td.charge {text-indent:10px;}
 </style>
 {% endblock %}
 
@@ -19,11 +21,14 @@ tr.restaurant {border-bottom:1px grey solid;}
         <th class="money">Amount</th>
     </tr>
     {% for subinvoice in invoice.subinvoice_set.all %}
-        <tr><td colspan="2">{{ subinvoice.site.name }}</td></tr>
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="restaurant"><td colspan="2">{{ subinvoice.site.name }}</td></tr>
         {% for charge in subinvoice.charge_set.all %}
             {% if charge.amount > 0 %}
             <tr>
-                <td>{{ charge.get_charge_type_display }}</td>
+                <td class="charge">{{ charge.get_charge_type_display }}</td>
                 <td class="money">{{ charge.amount }}</td>
             </tr>
             {% endif %}
@@ -33,7 +38,10 @@ tr.restaurant {border-bottom:1px grey solid;}
             <td class="money">{{ subinvoice.total }}</td>
         </tr>
     {% endfor %}
-    <tr class="total">
+    <tr class="spacer"><td colspan="2"></td></tr>
+    <tr class="spacer"><td colspan="2"></td></tr>
+    <tr class="spacer"><td colspan="2"></td></tr>
+    <tr class="grand total">
         <td>Total</td>
         <td class="money">{{ invoice.total }}</td>
     </tr>

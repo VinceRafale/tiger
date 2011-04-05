@@ -2,7 +2,7 @@
 
 {% block body-class %}{{ block.super }}billing-history{% endblock %}
 
-{% block h2 %}Invoice for {{ invoice.date|date:"M Y" }}{% endblock %}
+{% block h2 %}Invoice for {{ invoice.arrears_date|date:"M Y" }}{% endblock %}
 {% block help %}
 This page displays the details of charges within a particular invoice.  This is for reference purposes only.
 {% endblock %}

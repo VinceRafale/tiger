@@ -11,7 +11,7 @@ You can browse your past invoices here.  This is for reference purposes only.
 {% block content %}
 <ul>
     {% for invoice in invoices %}
-    <li><a href="{% url invoice_detail invoice.id %}">Invoice for {{ invoice.date|date:"M Y" }} (${{ invoice.total }})</a></li>
+    <li><a href="{% url invoice_detail invoice.id %}">Invoice for {{ invoice.arrears_date|date:"M Y" }} (${{ invoice.total }})</a></li>
     {% empty %}
     <li>You have no invoices to view.</li>
     {% endfor %}
