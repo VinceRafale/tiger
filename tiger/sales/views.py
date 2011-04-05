@@ -133,7 +133,9 @@ def create_edit_restaurant(request, restaurant_id=None):
     if request.method == 'POST':
         form = RestaurantForm(request.POST, account=account, instance=instance)
         if form.is_valid():
-            form.save()
+            restaurant = form.save(commit=False)
+            restaurant.managed = True
+            restaurant.save()
             messages.success(request, 'Restaurant %s successfully.' % ('edited' if instance else 'created'))
             return HttpResponseRedirect(reverse('restaurant_list'))
     else:
