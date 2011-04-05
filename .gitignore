@@ -15,6 +15,7 @@ downloads
 eggs
 parts
 src
+tiger/local_settings.py
 tiger/media/cache
 tiger/media/skins
 tiger/media/stork
@@ -23,4 +24,6 @@ tiger/media/fonts
 tiger/media/img/backgrounds
 tiger/media/img/logos
 tiger/media/uploaded_images
+tiger/media/screenshots
+tiger/media/theme-assets
 tiger/GeoLiteCity.dat
