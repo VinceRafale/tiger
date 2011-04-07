@@ -32,7 +32,13 @@ def setupModule():
     sms = site.sms
     sms.sms_number = faker.phone_number.phone_number()[:20]
     sms.send_intro = False
+    sms.reseller_network = False
     sms.save()
+    site.reseller_network = False
+    site.save()
+    account_settings = site.account.sms
+    account_settings.intro_sms = 'Free burger!'
+    account_settings.save()
 
 def teardownModule():
     call_command('flush', verbosity=0, interactive=False, database='default')
@@ -97,15 +103,17 @@ class ConversationalSMSTestCase(TestCase):
     def setUp(self):
         self.site = Site.objects.all()[0]
         sms = self.site.sms
+        self.site.reseller_network = sms.reseller_network = False
         sms.sms_number = faker.phone_number.phone_number()[:20]
         sms.send_intro = False
         sms.save()
+        self.site.save()
         self.data = get_data_for_request(faker.lorem.sentence())
         self.twilio_header = get_twilio_header(self.site.tiger_domain() + '/sms/respond-to-sms/', self.data)
 
     def get_response(self):
         return client.post('/sms/respond-to-sms/', self.data, 
-            HTTP_X_TWILIO_SIGNATURE=self.twilio_header)
+            HTTP_X_TWILIO_SIGNATURE=self.twilio_header, HTTP_X_FORWARDED_PORT='443')
 
     def test_non_keyword_does_not_subscribe(self):
         response = self.get_response()
@@ -150,7 +158,10 @@ class SMSSubscribeKeywordTestCase(TestCase):
         sms.sms_number = faker.phone_number.phone_number()[:20]
         sms.send_intro = False
         sms.add_keywords("foo", "bar")
+        sms.reseller_network = False
         sms.save()
+        self.site.reseller_network = False
+        self.site.save()
         self.sms = sms
         self.data = get_data_for_request("foo")
         self.twilio_header = get_twilio_header(self.site.tiger_domain() + '/sms/respond-to-sms/', self.data)
@@ -159,7 +170,7 @@ class SMSSubscribeKeywordTestCase(TestCase):
 
     def get_response(self):
         return client.post('/sms/respond-to-sms/', self.data, 
-            HTTP_X_TWILIO_SIGNATURE=self.twilio_header)
+            HTTP_X_TWILIO_SIGNATURE=self.twilio_header, HTTP_X_FORWARDED_PORT='443')
 
     def start_conversation(self):
         self.data.update({"Body": faker.lorem.sentence()})

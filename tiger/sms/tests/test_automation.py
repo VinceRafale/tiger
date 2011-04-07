@@ -22,6 +22,10 @@ class AutomatedResponseTestCase(TestCase):
         self.settings.send_intro = True
         self.settings.intro_sms = 'Free coffee!'
         self.settings.save()
+        account_settings = self.site.account.sms
+        account_settings.intro_sms = 'Free burger!'
+        account_settings.save()
+        self.account_settings = account_settings
 
     def get_mock_sender(self):
         sender = Sender(self.site, self.settings.intro_sms) 

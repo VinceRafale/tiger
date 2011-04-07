@@ -17,7 +17,7 @@ Post signs and table tents in your restaurant asking your customers to sign up f
     <a href="{% url edit_settings %}">Edit settings</a>
 </span>
 </h3>
-<h2>Your SMS number: {{ sms.sms_number }}</h2>
+<h2>Your SMS number: {{ sms.number_display }}</h2>
 {% if sms.send_intro %}
 <h4>Automated response when someone subscribes:</h4>
 <p>{{ sms.intro_sms }}</p>

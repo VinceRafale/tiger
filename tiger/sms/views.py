@@ -1,53 +1,18 @@
 import re
-from datetime import datetime
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils import simplejson as json
 from django.views.generic.simple import direct_to_template
 
 import twilio
 
 from tiger.sms.forms import CampaignForm, SettingsForm
-from tiger.sms.models import SmsSubscriber, SMS, Thread
+from tiger.sms.models import SmsSubscriber, SMS, Thread, Campaign
 from tiger.sms.sender import Sender
-from tiger.utils.views import add_edit_site_object, delete_site_object
-
-
-def respond_to_sms(request):
-    utils = twilio.Utils(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
-    if not utils.validateRequest(request.site.tiger_domain() + reverse('respond_to_sms'), request.POST, request.META['HTTP_X_TWILIO_SIGNATURE']):
-        return HttpResponseForbidden()
-    sms_settings = request.site.sms
-    body = request.POST.get('Body', '')
-    normalized_body = body.strip().lower()
-    phone_number = request.POST.get('From')
-    try:
-        subscriber = SmsSubscriber.objects.get(settings=sms_settings, phone_number=phone_number)
-    except SmsSubscriber.DoesNotExist:
-        if normalized_body in sms_settings.keywords:
-            subscriber = SmsSubscriber.objects.create(
-                settings=sms_settings,
-                phone_number=phone_number,
-                city=request.POST.get('FromCity', ''),
-                state=request.POST.get('FromState', ''),
-                zip_code=request.POST.get('FromZip', ''),
-                tag=normalized_body
-            )
-        else:
-            subscriber = None
-    SMS.objects.create(
-        settings=sms_settings, 
-        subscriber=subscriber, 
-        destination=SMS.DIRECTION_INBOUND,
-        body=body,
-        phone_number=phone_number,
-        conversation=body != 'out' and body not in sms_settings.keywords
-    )
-    return HttpResponse('<Response></Response>', mimetype='text/xml')
 
 
 def not_suspended(func):
@@ -73,7 +38,6 @@ def sms_home(request):
     except IndexError:
         in_progress = None
     num = sms.sms_number
-    sms_number = '(%s) %s-%s' % (num[2:5], num[5:8], num[8:])
     count_dict = {
         'total': sms.smssubscriber_set.all().count(),
         'active': sms.smssubscriber_set.active().count(),
@@ -133,7 +97,7 @@ def sms_disable(request):
     account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
     if request.method == 'POST':
         sms = request.site.sms
-        response = account.request(
+        account.request(
             '/2010-04-01/Accounts/%s/IncomingPhoneNumbers/%s' % (settings.TWILIO_ACCOUNT_SID, sms.sid), 
             'DELETE' 
         )

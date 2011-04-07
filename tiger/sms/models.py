@@ -13,7 +13,7 @@ from picklefield.fields import PickledObjectField
 import twilio
 
 from tiger.utils.models import Message
-from tiger.sms.sender import Sender
+from tiger.sms.sender import Sender, BaseSender
 
 # Create your models here.
 
@@ -62,8 +62,8 @@ class SmsSettings(models.Model):
         for kw in args:
             SmsSubscriber.objects.filter(settings=self, tag=kw).update(deactivated=True)
 
-    def invite(self, phone_number):
-        sender = Sender(self, self.intro_text)
+    def invite(self, reseller, phone_number):
+        sender = BaseSender(reseller, self.intro_sms)
         sender.add_recipients(phone_number)
         sender.send_message()
 
@@ -127,7 +127,7 @@ class SmsSubscriber(models.Model):
 
     def invite_to_reseller_network(self, phone_number):
         s = self._get_site()
-        s.account.sms.invite(self.phone_number)
+        s.account.sms.invite(s.account, self.phone_number)
 
     def _get_site(self):
         from tiger.accounts.models import Site
