@@ -1,16 +1,19 @@
 from django.conf.urls.defaults import *
 
+from tiger.sms.views import SmsHomeView, SmsSignupView, SubscriberListView, SmsDisableView
 
-dashboard_patterns = patterns('tiger.sms.views',
-    url(r'^$', 'sms_home', name='sms_home'),
-    url(r'^disable/$', 'sms_disable', name='sms_disable'),
+
+sms_patterns = patterns('tiger.sms.views',
+    url(r'^$', SmsHomeView.as_view(), name='sms_home'),
+    url(r'^signup/$', SmsSignupView.as_view(), name='sms_signup'),
+    url(r'^disable/$', SmsDisableView.as_view(), name='sms_disable'),
     url(r'^settings/$', 'edit_settings', name='edit_settings'),
     url(r'^settings/reorder/$', 'reorder_keywords', name='reorder_keywords'),
     url(r'^create-campaign/$', 'create_campaign', name='create_campaign'),
     url(r'^create-campaign/get-options/$', 'get_options', name='get_options'),
     url(r'^campaign/progress/(\d+)/$', 'campaign_progress', name='campaign_progress'),
     url(r'^campaign/list/$', 'campaign_list', name='campaign_list'),
-    url(r'^list/$', 'sms_subscriber_list', name='sms_subscriber_list'),
+    url(r'^list/$', SubscriberListView.as_view(), name='sms_subscriber_list'),
     url(r'^send/([\d+-]+)/$', 'send_single_sms', name='send_single_sms'),
     url(r'^toggle-star/(\d+)/$', 'toggle_star', name='toggle_star'),
     url(r'^list/(\d+)/remove/$', 'remove_subscriber', name='remove_subscriber'),
@@ -54,5 +57,5 @@ urlpatterns = patterns('tiger.dashboard.marketing.views',
     url(r'^fb/change-page/$', 'get_facebook_pages_form', name='change_fb_page'),
     url(r'^register-id/$', 'register_id', name='register_id'),
 
-    url(r'^sms/', include(dashboard_patterns)),
+    url(r'^sms/', include(sms_patterns)),
 )

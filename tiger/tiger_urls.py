@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.conf.urls.defaults import *
 
+from tiger.sms.subscribe import ResellerSubscriptionView
+
 # Uncomment the next two lines to enable the admin:
 
 handler404 = 'tiger.utils.views.tiger404'
@@ -16,6 +18,10 @@ urlpatterns += patterns('tiger.accounts.views',
     url(r'^cancelled/$', 'cancelled', name='cancelled'),
     url(r'^privacy/$', 'privacy', name='privacy'),
     url(r'^terms/$', 'terms', name='terms'),
+)
+
+urlpatterns += patterns('',
+    url(r'^subscribe/(\d+)/$', ResellerSubscriptionView(), name='reseller_sms_subscribe'),
 )
 
 urlpatterns += patterns('tiger.core.views',

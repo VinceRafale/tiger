@@ -63,9 +63,10 @@ class SmsSettings(models.Model):
             SmsSubscriber.objects.filter(settings=self, tag=kw).update(deactivated=True)
 
     def invite(self, reseller, phone_number):
-        sender = BaseSender(reseller, self.intro_sms)
-        sender.add_recipients(phone_number)
-        sender.send_message()
+        if self.enabled:
+            sender = BaseSender(reseller, self.intro_sms)
+            sender.add_recipients(phone_number)
+            sender.send_message()
 
     def number_display(self):
         def phone_number(val):

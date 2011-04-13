@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from tiger.accounts.models import Site
 from tiger.sales.exceptions import PaymentGatewayError
 from tiger.sales.models import Account, Invoice, Plan
+from tiger.sms.models import SmsSettings
 from tiger.utils.forms import BetterModelForm
 
 
@@ -123,6 +124,7 @@ class CreateResellerAccountForm(BetterModelForm):
         account.subscription_id = self.payment_prof_id
         account.card_number = self.cleaned_data.get('cc_number')[-4:]
         account.manager = True
+        account.sms = Sms.objects.create()
         email = self.cleaned_data.get('email')
         user = User(
             username=sha1(email).hexdigest()[:30],

@@ -1,0 +1,52 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}{{ block.super }}network{% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui.min.js"></script>
+{% endblock %}
+
+{% block h2 %}
+SMS settings
+{% endblock %}
+
+{% block content %}
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+<form class="sms-form" method="POST" action=".">
+    <div id="intro">
+        <label>Invitation text message
+            {% if form.intro_sms.errors %} {{ form.intro_sms.errors }} {% endif %}
+        </label>
+        <p class="help">
+            Text messages can be a maximum of 140 characters.  Any characters beyond the first 140 will be truncated.
+        </p>
+        <div class="sms-wrap">
+        {{ form.intro_sms }}
+        <p class="charcount">140</p>
+        </div>
+    </div>
+    <div class="save-row clearfix">
+    <a class="cancel" href="{% url sms_home %}">Cancel</a>
+    <input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("form.sms-form textarea").keyup(function () {
+        remaining = 140 - $(this).val().length;
+        counter = $(this).closest("form").find("p.charcount");
+        counter.text(remaining);
+        if (remaining > 10) {
+            $(counter).removeClass("critical");
+        } else {
+            $(counter).addClass("critical");
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils import simplejson as json
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 from django.views.generic.simple import direct_to_template
 
 import twilio
@@ -27,57 +29,90 @@ def not_suspended(func):
         return func(request, *args, **kwargs)
     return wrapped
 
-@login_required
-@not_suspended
-def sms_home(request):
-    sms = request.site.sms
-    if not sms.enabled:
-        return sms_signup(request)
-    try:
-        in_progress = sms.campaign_set.filter(completed=False)[0]
-    except IndexError:
-        in_progress = None
-    num = sms.sms_number
-    count_dict = {
-        'total': sms.smssubscriber_set.all().count(),
-        'active': sms.smssubscriber_set.active().count(),
-        'inactive': sms.smssubscriber_set.inactive().count()
-    }
-    campaigns = sms.campaign_set.order_by('-timestamp')[:3]
-    return direct_to_template(request, template='dashboard/marketing/sms_home.html', extra_context={
-        'in_progress': in_progress,
-        'count': count_dict,
-        'sms': sms,
-        'campaigns': campaigns,
-        'inbox': SMS.objects.inbox_for(sms)[:5]
-    })
+
+class SmsView(TemplateView):
+    def get_sms_module(self):
+        return self.request.site.sms
 
 
-@login_required
-@not_suspended
-def sms_signup(request):
-    account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
-    site = request.site
-    if request.method == 'POST':
+class AccountCheckView(object):
+    @method_decorator(login_required)
+    @method_decorator(not_suspended)
+    def dispatch(self, *args, **kwargs):
+        return super(AccountCheckView, self).dispatch(*args, **kwargs)
+
+
+class SmsHomeBase(SmsView):
+    template_name = 'dashboard/marketing/sms_home.html'
+    redirect_to = 'sms_signup'
+
+    def get(self, request, *args, **kwargs):
+        sms = self.get_sms_module()
+        if not sms.enabled:
+            return HttpResponseRedirect(reverse(self.redirect_to))
+        return super(SmsHomeBase, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = {}
+        sms = self.get_sms_module()
+        try:
+            in_progress = sms.campaign_set.filter(completed=False)[0]
+        except IndexError:
+            in_progress = None
+        num = sms.sms_number
+        count_dict = {
+            'total': sms.smssubscriber_set.all().count(),
+            'active': sms.smssubscriber_set.active().count(),
+            'inactive': sms.smssubscriber_set.inactive().count()
+        }
+        campaigns = sms.campaign_set.order_by('-timestamp')[:3]
+        context.update({
+            'in_progress': in_progress,
+            'count': count_dict,
+            'sms': sms,
+            'campaigns': campaigns,
+            'inbox': SMS.objects.inbox_for(sms)[:5]
+        })
+        return context
+
+
+class SmsSignupBase(TemplateView):
+    template_name = 'dashboard/marketing/sms_signup.html'
+
+    def account(self):
+        return twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
+
+    def get_sms_name(self):
+        return self.request.site.name
+
+    def get_sms_url(self):
+        return self.request.site.tiger_domain() + reverse('respond_to_sms')
+
+    def post(self, request, *args, **kwargs):
         number = request.POST.get('number')
-        response = account.request(
+        response = self.account().request(
             '/2010-04-01/Accounts/%s/IncomingPhoneNumbers.json' % settings.TWILIO_ACCOUNT_SID, 
             'POST', 
             dict(
                 PhoneNumber=number, 
-                FriendlyName=site.name, 
-                SmsUrl=site.tiger_domain() + reverse('respond_to_sms')
+                FriendlyName=self.get_sms_name(), 
+                SmsUrl=self.get_sms_url()
         ))
         data = json.loads(response)
-        sms_settings = site.sms
+        sms_settings = self.get_sms_module()
         sms_settings.sid = data['sid']
         sms_settings.sms_number = data['phone_number']
         sms_settings.save()
         return HttpResponseRedirect(reverse('sms_home'))
-    else:
-        area_code = request.GET.get('area_code') or request.site.location_set.all()[0].phone[:3]
+
+    def get_area_code(self):
+        return self.request.site.location_set.all()[0].phone[:3]
+
+    def get_context_data(self, **kwargs):
+        context = super(SmsSignupBase, self).get_context_data(**kwargs)
+        area_code = self.request.GET.get('area_code') or self.get_area_code()
         try:
-            response = account.request('/2010-04-01/Accounts/%s/AvailablePhoneNumbers/us/Local.json' % settings.TWILIO_ACCOUNT_SID, 'GET', dict(AreaCode=area_code))
+            response = self.account().request('/2010-04-01/Accounts/%s/AvailablePhoneNumbers/us/Local.json' % settings.TWILIO_ACCOUNT_SID, 'GET', dict(AreaCode=area_code))
         except:
             available_numbers = []
         else:
@@ -86,27 +121,29 @@ def sms_signup(request):
                 (number['phone_number'], number['friendly_name'])
                 for number in data['available_phone_numbers']
             ]
-    return direct_to_template(request, template='dashboard/marketing/sms_signup.html', extra_context={ 'available_numbers': available_numbers,
-        'area_code': area_code
-    })
+        context.update({
+            'available_numbers': available_numbers,
+            'area_code': area_code
+        })
+        return context
 
 
-@login_required
-@not_suspended
-def sms_disable(request):
-    account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
-    if request.method == 'POST':
-        sms = request.site.sms
-        account.request(
-            '/2010-04-01/Accounts/%s/IncomingPhoneNumbers/%s' % (settings.TWILIO_ACCOUNT_SID, sms.sid), 
-            'DELETE' 
-        )
-        sms.sms_number = sms.sid = None
-        sms.save()
-        messages.success(request, "Your SMS number has been disabled.")
-        return HttpResponseRedirect(reverse('sms_home'))
-    else:
-        return direct_to_template(request, template='dashboard/marketing/disable_sms.html')
+class SmsDisableBase(SmsView):
+    template_name = 'dashboard/marketing/disable_sms.html'
+
+    def post(self, request, *args, **kwargs):
+        account = twilio.Account(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_ACCOUNT_TOKEN)
+        if request.method == 'POST':
+            sms = request.site.sms
+            account.request(
+                '/2010-04-01/Accounts/%s/IncomingPhoneNumbers/%s' % (settings.TWILIO_ACCOUNT_SID, sms.sid), 
+                'DELETE' 
+            )
+            sms.sms_number = sms.sid = None
+            sms.save()
+            messages.success(request, "Your SMS number has been disabled.")
+            return HttpResponseRedirect(reverse('sms_home'))
+
 
 @login_required
 @not_suspended
@@ -130,13 +167,13 @@ def remove_subscriber(request, subscriber_id):
     return HttpResponse("deleted");
 
 
-@login_required
-@not_suspended
-def sms_subscriber_list(request):
-    subscribers = request.site.sms.smssubscriber_set.active()
-    return direct_to_template(request, template='dashboard/marketing/sms_subscriber_list.html', extra_context={
-        'subscribers': subscribers
-    })
+class SubscriberListView(SmsView, AccountCheckView):
+    template_name = 'dashboard/marketing/sms_subscriber_list.html'
+
+    def get_context_data(self, **kwargs):
+        return {
+            'subscribers': self.request.site.sms.smssubscriber_set.active()
+        }
 
 
 @login_required
@@ -281,3 +318,14 @@ def thread_detail(request, phone_number):
         'subscriber': subscriber
     })
 
+
+class SmsHomeView(AccountCheckView, SmsHomeBase):
+    pass
+
+
+class SmsSignupView(AccountCheckView, SmsSignupBase):
+    pass
+
+
+class SmsDisableView(AccountCheckView, SmsDisableBase):
+    pass
