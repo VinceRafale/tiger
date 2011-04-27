@@ -71,8 +71,9 @@ class TigerSubscriptionView(SubscriptionView):
         return request.site.sms
 
     def matches_condition(self, request, keyword, *args, **kwargs):
-        normal = keyword.lower().strip()
-        if normal in self.get_sms_settings(request).keywords:
+        normalize = lambda k: k.lower().strip()
+        normal = normalize(keyword)
+        if normal in [normalize(k) for k in self.get_sms_settings(request).keywords]:
             return normal
         return False
 
