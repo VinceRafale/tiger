@@ -76,7 +76,7 @@ class SmsHomeBase(SmsView):
         return context
 
 
-class SmsSignupBase(TemplateView):
+class SmsSignupBase(SmsView):
     template_name = 'dashboard/marketing/sms_signup.html'
 
     def account(self):
