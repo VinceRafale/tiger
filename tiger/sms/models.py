@@ -109,7 +109,7 @@ class SmsSubscriber(models.Model):
         super(SmsSubscriber, self).save(*args, **kwargs)
         if new and not self.unsubscribed_at:
             if self.settings.send_intro:
-                self.send_message(self.settings.intro_sms)
+                self.send_message(self.settings.intro_sms, intro=True)
             if self.settings.reseller_network:
                 self.invite_to_reseller_network(self.phone_number)
 
@@ -117,11 +117,11 @@ class SmsSubscriber(models.Model):
     def is_active(self):
         return not (self.unsubscribed_at or self.deactivated)
 
-    def send_message(self, body, sms_number=None, campaign=None):
+    def send_message(self, body, sms_number=None, campaign=None, intro=False):
         s = self._get_site()
         sender = self.sender(s, body)
         sender.add_recipients(self)
-        sender.send_message()
+        sender.send_message(intro=intro)
 
     def sender(self, site, body):
         return Sender(site, body)
@@ -228,7 +228,7 @@ class SMS(Message):
                 subscriber.save()
         if self.conversation:
             try:
-                thread = Thread.objects.get(phone_number=self.phone_number)
+                thread = Thread.objects.get(settings=self.settings, phone_number=self.phone_number)
             except Thread.DoesNotExist:
                 if self.destination == SMS.DIRECTION_OUTBOUND:
                     return

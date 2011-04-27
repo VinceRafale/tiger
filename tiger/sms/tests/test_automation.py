@@ -45,6 +45,7 @@ class AutomatedResponseTestCase(TestCase):
         sms = SMS.objects.get(subscriber=s)
         sms.body |should| start_with(self.settings.intro_sms)
         sms.body |should| end_with(' Reply "out" to quit')
+        sms.conversation |should| equal_to(False)
 
     @patch.object(SmsSubscriber, 'invite_to_reseller_network')
     @patch.object(SmsSubscriber, 'sender')

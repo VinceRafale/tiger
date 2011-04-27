@@ -19,10 +19,10 @@ class BaseSender(object):
         else:
             self.recipients = [(recipient, recipient.phone_number) for recipient in recipients]
 
-    def send_message(self):
+    def send_message(self, intro=False):
         for subscriber, number in self.recipients:
             data = self.get_sms_response(number)
-            self.record_sms(self.settings, self.campaign, subscriber, self.body, number)
+            self.record_sms(self.settings, self.campaign, subscriber, self.body, number, intro=intro)
             if self.campaign:
                 self.campaign.sent_count += 1
                 self.campaign.save()
@@ -32,7 +32,7 @@ class BaseSender(object):
         response = account.request('/2010-04-01/Accounts/%s/SMS/Messages.json' % settings.TWILIO_ACCOUNT_SID, 'POST', dict(From=self.sms_number, To=phone_number, Body=self.body))
         return json.loads(response)
 
-    def record_sms(self, settings, campaign, subscriber, body, phone_number):
+    def record_sms(self, settings, campaign, subscriber, body, phone_number, intro=False):
         from tiger.sms.models import SMS
         SMS.objects.create(
             settings=settings,
@@ -41,7 +41,7 @@ class BaseSender(object):
             body=body,
             destination=SMS.DIRECTION_OUTBOUND,
             phone_number=phone_number,
-            conversation=False if campaign else True
+            conversation=False if campaign else not intro
         )
 
 
