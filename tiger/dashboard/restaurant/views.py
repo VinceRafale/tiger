@@ -34,6 +34,9 @@ def edit_location(request, location_id):
 @login_required
 def delete_location(request, location_id):
     location = Location.objects.get(id=location_id)
+    if request.site.location_set.count() == 1:
+        messages.error(request, 'You must keep at least one location.  If you want to delete %s, you will have to create another location first.' % location.name)
+        return HttpResponseRedirect(reverse('dashboard_location'))
     location.delete()
     messages.success(request, 'Location deleted successfully.')
     return HttpResponseRedirect(reverse('dashboard_location'))
