@@ -1,0 +1,26 @@
+{% extends 'sales/base.html' %}
+{% load stork_tags %}
+
+{% block body-class %}marketing{% endblock %}
+
+{% block h2 %}
+{% if instance %}Editing {{ instance.name }}{% else %}New restaurant{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+<form method="POST">
+{% for field in form %}
+{% if field|is_checkbox %}
+    <label>{{ field }} {{ field.label }} {% if field.errors %}{{ field.errors }}{% endif %}</label>
+{% else %}
+    <label>{{ field.label }}<br /> {{ field }} {% if field.errors %}{{ field.errors }}{% endif %}</label>
+{% endif %}
+{% endfor %}
+<div class="save-row clearfix">
+<a class="cancel" href="{% url restaurant_list %}">Cancel</a>
+<input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+

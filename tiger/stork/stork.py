@@ -1,4 +1,5 @@
 import cssmin
+import os.path
 import yaml
 
 from django.conf import settings
@@ -14,9 +15,12 @@ from swatch import SwatchComponent
 class Stork(object):
     """DOCS
     """
-    def __init__(self, theme=None):
+    def __init__(self, theme=None, config_path=None):
         self.component_cache = []
-        config = yaml.load(open(settings.STORK_CONFIG_FILE).read())
+        if config_path is not None:
+            config_path = os.path.join(settings.PROJECT_ROOT, config_path)
+        path = config_path or settings.STORK_CONFIG_FILE
+        config = yaml.load(open(path).read())
         panel_names = [p['panel']['name'] for p in config]
         if len(panel_names) != len(set(panel_names)):
             raise StorkConfigurationError('Panel names must be unique')
@@ -51,6 +55,14 @@ class Stork(object):
         for name, component in self.component_cache:
             component.save(data, files)
         self.theme.update(self.compressed_css())
+
+    def copy_to(self, target):
+        for name, component in self.component_cache:
+            instance = component.instance
+            instance.id = None
+            instance.theme = target
+            instance.save()
+        target.update(self.compressed_css())
 
     def css(self):
         css_ordered_components = sorted([

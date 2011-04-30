@@ -123,20 +123,13 @@
 	top: 112px;
 	left: 212px;
 }
-.colorpicker_hsb_h {
+.colorpicker_alpha {
 	background-image: url(../img/colorpicker_hsb_h.png);
 	top: 52px;
 	left: 282px;
 }
-.colorpicker_hsb_s {
-	background-image: url(../img/colorpicker_hsb_s.png);
-	top: 82px;
-	left: 282px;
-}
-.colorpicker_hsb_b {
-	background-image: url(../img/colorpicker_hsb_b.png);
-	top: 112px;
-	left: 282px;
+.colorpicker_hsb_h, .colorpicker_hsb_s, .colorpicker_hsb_b {
+    display:none;
 }
 .colorpicker_submit {
 	position: absolute;

@@ -1,7 +1,7 @@
 var swatchSet = {{ swatch_json|safe }},
     fontSet   = {{ font_json|safe }};
 function setCss(styleTagSelector, css) {
-    styleTag = $(styleTagSelector)[0];
+    var styleTag = $(styleTagSelector)[0];
     if (styleTag.styleSheet) {
         styleTag.styleSheet.cssText = css;
     } else {
@@ -9,27 +9,35 @@ function setCss(styleTagSelector, css) {
     }
 }
 
-function setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, hex) {
-    previewCss = "";
+function setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, rgb, alpha, alphaSelector) {
+    var previewCss = "",
+        triplet = [rgb.r, rgb.g, rgb.b].join(",");
+    
     if (cssTemplate instanceof Array) {
         for (i=0; i < cssTemplate.length; i++) {
-            previewCss += cssTemplate[i] + hex + ";}";
+            previewCss += cssTemplate[i].replace(/%\(triplet\)s/g, triplet).replace('%(alpha)s', alpha);
         }
     } else {
-        previewCss = cssTemplate + hex + ";}";
+        previewCss = cssTemplate.replace(/%\(triplet\)s/g, triplet).replace('%(alpha)s', alpha);
     }
     setCss(styleTagSelector, previewCss);
-    $(inputSelector).val(hex);
-    $(pickerSelector + ' div').css('backgroundColor', '#' + hex);
+    $(inputSelector).val(triplet);
+    $(alphaSelector).val(alpha);
+    $(pickerSelector + ' div').css({backgroundColor: 'rgb(' + triplet + ')'});
 }
 
 function addColorPicker(pickerSelector, styleTagSelector, inputSelector, cssTemplate) {
+    var triplet = $(inputSelector).val(),
+        rgb = triplet.split(","),
+        alphaSelector = inputSelector.slice(0, inputSelector.length - 'color'.length) + 'alpha',
+        alpha = $(alphaSelector).val();
     $(pickerSelector).ColorPicker({
-        onChange: function (hsb, hex, rgb) {
-            setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, hex);
+        onChange: function (hsb, hex, rgb, alpha) {
+            setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, rgb, alpha, alphaSelector);
             modified = true;
         }
-    });
+    }).ColorPickerSetColor({r: rgb[0], g: rgb[1], b: rgb[2]}, alpha);
+    $(pickerSelector + ' div').css({backgroundColor: 'rgb(' + triplet + ')'});
 }
 $(function () {
     var modified = false;

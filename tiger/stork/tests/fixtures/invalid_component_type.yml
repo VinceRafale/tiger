@@ -4,10 +4,12 @@
       - components:
           - name: Baz
             type: gibberish
+            id: foo-baz
 - panel: 
     name: Bar
     groups:
       - components:
           - name: Quux
             type: font
+            id: bar-quux
 

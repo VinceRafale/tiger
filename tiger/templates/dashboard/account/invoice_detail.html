@@ -1,0 +1,37 @@
+{% extends 'dashboard/account/home.html' %}
+
+{% block body-class %}{{ block.super }}billing-history{% endblock %}
+
+{% block h2 %}Invoice for {{ invoice.arrears_date|date:"M Y" }}{% endblock %}
+{% block help %}
+This page displays the details of charges within a particular invoice.  This is for reference purposes only.
+{% endblock %}
+
+{% block extrahead %}
+<style type="text/css">
+tr.total {border-top:1px grey solid;}
+th.money, td.money {text-align:right;}
+</style>
+{% endblock %}
+
+{% block content %}
+<table cellspacing="0">
+    <tr>
+        <th>Charge</th>
+        <th class="money">Amount</th>
+    </tr>
+    {% for charge in invoice.charge_set.all %}
+        {% if charge.amount > 0 %}
+        <tr>
+            <td>{{ charge.get_charge_type_display }}</td>
+            <td class="money">{{ charge.amount }}</td>
+        </tr>
+        {% endif %}
+    {% endfor %}
+    <tr class="total">
+        <td>Total</td>
+        <td class="money">{{ invoice.total }}</td>
+    </tr>
+</table>
+{% endblock %}
+

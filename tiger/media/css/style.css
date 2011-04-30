@@ -17,9 +17,7 @@ body{background:#d9d4d9 url(../img/bg_body.png) repeat-x;}
 /*body#signup{background:#d9d4d9;}*/
 
 header{height:254px;padding-top:50px;position:relative;}
-	header a.signup{display:block;width:112px;height:45px;background:url(../img/sprite_buttons.png) right top;cursor:pointer;}
-	header a.signup:hover{background:url(../img/sprite_buttons.png) right bottom;}
-	header a.signup:active{margin-top:1px;}
+	header a.signup{display:block;width:112px;height:45px;cursor:pointer;}
 	header p{font: 1.13em/1.2em Georgia,serif;color:#e0e0e0;margin-top:10px;}
 
 /*#signup header{height:80px;background:url(../img/bg_header.png)repeat-x;}*/
@@ -99,9 +97,7 @@ img.tiger{position:absolute;top:-210px;left:30px;z-index:100;}
 #promo{width:262px;height:67px;background:url(../img/sprite_forms.png) 0 -702px no-repeat;position:absolute;top:-16px;left:14px;}
 
 .callout{height:240px;background:url(../img/bg_callout.png);margin-top:45px;padding:20px 0 0 40px;width:500px !important;}
-	.callout a.signup{display:block;width:145px;height:58px;background:url(../img/sprite_buttons.png) left top;cursor:pointer;position:absolute;top:230px;right:40px;}
-	.callout a.signup:hover{background:url(../img/sprite_buttons.png) left bottom;}
-	.callout a.signup:active{margin-top:1px;}
+	.callout a.signup{display:block;width:145px;height:58px;cursor:pointer;position:absolute;top:230px;right:40px;}
 
 .orange-bar{height:67px;background:url(../img/bg_orange-bar.png) repeat-x;/*position:relative;top:-280px;*/}
 

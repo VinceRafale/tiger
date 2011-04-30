@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" {% block namespace %}{% endblock %}>
+<head>
+    <meta charset="utf-8" />
+    <title>{{ site.name }} {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/dashboard.css" />
+    <!--[if IE]>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
+    <![endif]--> 
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-1.4.2.min.js"></script>
+    {% block extrahead %}
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.fancybox-1.3.0.pack.js"></script>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/jquery.fancybox-1.3.0.css" />
+    {% endblock %}
+</head>
+<body class="{% block body-class %}{% endblock %}">
+    <div class="wrapper">
+            <div id="menuWrap">
+                <div class="container_12 clearfix">
+                    <div class="grid_10 push_1">
+                    <h1 class="title">{{ user.get_profile.company_name }}</h1>
+                	<ul class="menu utility-nav">
+	                    <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
+	                </ul>
+                    </div>            
+            </div>         
+            </div>   
+            <div class="container_12 clearfix">
+               	<div id="menu" class="container_12 clearfix ">
+					<ul class="grid_10 push_1 menu">
+	                    <li><a class="restaurant" href="{% url sales_home %}">Home</a></li>
+	                    <li><a class="site" href="{% url plan_list %}">Plans</a></li>
+	                    <li><a class="marketing" href="{% url restaurant_list %}">Restaurants</a></li>
+	                    <li><a class="network" href="{% url sms_home %}">Network</a></li>
+	                    <li><a class="account" href="{% url billing_home %}">Account</a></li>
+	                </ul>
+                </div>
+            </div> 
+      <div id="content" class="container_12 clearfix">
+            <div id="main" class="grid_10 push_1">
+                {% if messages %}
+                    <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        <a href="#" class="close-message">[x]</a>
+                        {{ message|safe }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                <h2 class="section-title">{% block h2 %}{% endblock %}</h2>
+                <div class="clear"></div>
+               {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    <div class="shim"></div>
+    </div>
+    <div class="footer">
+        <div class="container_12">
+            <address>{{ site.contact }}</address>
+            <p>Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a></p> 
+        </div> 
+    </div>
+    <script type="text/javascript">
+    $(function () {
+        $("a.close-message").click(function () {
+            $(this).parent().fadeOut("fast", function () { $(this).parent().remove(); }); 
+        });
+        $("#help-button").toggle(
+            function () {
+                $(this).text("Hide help");
+                $("#help-content").slideDown("fast");
+            },
+            function () {
+                $(this).text("Need help?");
+                $("#help-content").slideUp("fast");
+            }
+        );
+    });
+    </script>
+    <script type="text/javascript">
+    $(function() {
+        $("a.fancy").click(function() {
+            $.fancybox({
+                'padding'       : 0,
+                'autoScale'     : false,
+                'transitionIn'  : 'none',
+                'transitionOut' : 'none',
+                'title'         : this.title,
+                'width'         : 680,
+                'height'        : 495,
+                'href'          : this.href.replace(new RegExp("watch\\?v=", "i"), 'v/'),
+                'type'          : 'swf',
+                'swf'           : {
+                    'wmode'             : 'transparent',
+                    'allowfullscreen'   : 'true'
+                    }
+            });
+            return false;
+        });
+    });
+    </script>
+    {% block js %}
+    {% endblock %}
+</body>
+</html>
+
+

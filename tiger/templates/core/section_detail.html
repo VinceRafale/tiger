@@ -20,7 +20,7 @@
     <dt><span class="veg">veg</span></dt>
     <dd>Vegetarian menu item</dd>
 </dl>
-<ul id="menuitems">
+<ul id="menuitems" class="alternating">
 {% for item in section.item_set.active %}
     <li{% cycle ' class="shaded"' '' %}>
         <div class="grid_4 alpha">
@@ -31,7 +31,7 @@
         </div>
         <div>
             {% if site.enable_orders %}
-            <a class="add" href="{% url order_item section.id section.slug item.id item.slug %}">add to order</a>
+            <a class="button ordering" href="{% url order_item section.id section.slug item.id item.slug %}">add to order</a>
             {% endif %}
             <ul> 
             {% for price in item.price_list %}

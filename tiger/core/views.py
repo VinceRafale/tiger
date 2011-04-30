@@ -13,11 +13,24 @@ from django.views.generic.simple import direct_to_template
 from greatape import MailChimp, MailChimpError
 from paypal.standard.forms import PayPalPaymentsForm
 
+from tiger.accounts.forms import LocationSelectionForm
 from tiger.core.exceptions import OrderingError
 from tiger.core.forms import get_order_form, OrderForm, CouponForm, AuthNetForm
 from tiger.core.models import Section, Item, Coupon, Order
 from tiger.notify.tasks import DeliverOrderTask
 from tiger.utils.views import render_custom
+
+
+def online_ordering(func):
+    def wrapper(request, *args, **kwargs):
+        if not request.site.plan.has_online_ordering:
+            raise Http404
+        if not request.location:
+            request.session['next'] = request.path
+            return HttpResponseRedirect(reverse('change_location'))
+        return func(request, *args, **kwargs)
+    return wrapper
+
 
 def section_list(request):
     sections = Section.objects.filter(site=request.site)
@@ -57,6 +70,7 @@ def item_detail(request, section_id, section_slug, item_id, item_slug):
     return render_custom(request, 'core/item_detail.html', 
         {'item': i, 'sections': request.site.section_set.all()})
 
+@online_ordering
 def order_item(request, section_id, section_slug, item_id, item_slug):
     i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
@@ -79,8 +93,9 @@ def order_item(request, section_id, section_slug, item_id, item_slug):
         form = OrderForm(location=request.location)
     return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': '%.2f' % total, 'sections': request.site.section_set.all()})
 
+@online_ordering
 def preview_order(request):
-    if not hasattr(request, 'cart'):
+    if not request.cart:
         return HttpResponseRedirect('/menu/')
     if request.method == 'POST':
         form = CouponForm(request.site, request.POST)
@@ -98,6 +113,7 @@ def preview_order(request):
     return render_custom(request, 'core/preview_order.html', 
         {'form': form})
 
+@online_ordering
 def remove_item(request):
     request.cart.remove(request.GET.get('id'))
     return HttpResponseRedirect(reverse('preview_order'))
@@ -127,12 +143,13 @@ def share_coupon(request, coupon_id):
         'coupon': coupon
     })
 
+@online_ordering
 def add_coupon(request):
     code = request.GET.get('cc')
     if code is None:
         raise Http404
     coupon = get_object_or_404(Coupon, id=code, site=request.site)
-    if not hasattr(request, 'cart'):
+    if not request.cart:
         return HttpResponseRedirect('?'.join([reverse('add_coupon'), request.META['QUERY_STRING']]))
     if request.cart.has_coupon:
         messages.error(request, 'You already have a coupon in your cart.')   
@@ -141,11 +158,13 @@ def add_coupon(request):
         messages.success(request, 'Coupon added to your cart successfully.')   
     return HttpResponseRedirect(reverse('menu_home'))
 
+@online_ordering
 def clear_coupon(request):
     request.cart.remove_coupon()
     messages.success(request, 'Your coupon has been removed.')   
     return HttpResponseRedirect(reverse('preview_order'))
 
+@online_ordering
 def send_order(request):
     try:
         assert request.site.is_open(request.location)
@@ -164,19 +183,11 @@ def send_order(request):
     except:
         instance = None
     if request.method == 'POST':
-        form = OrderForm(request.POST, site=request.site, location=request.location, instance=instance)
+        form = OrderForm(request.POST, request=request, instance=instance)
         form.total = request.cart.total()
         if form.is_valid():
-            order = form.save(commit=False)
-            order.total = request.cart.total()
-            order.tax = request.cart.taxes()
-            cart = request.cart.session.get_decoded()
-            order.cart = cart
-            order.session_key = cart_key
-            order.site = request.site
-            order.location = request.location
             try:
-                order.save()
+                order = form.save()
             except InvalidOperation:
                 form._errors['__all__'] = ErrorList(['Your order is too large.  Please contact us for catering options.'])
             else:
@@ -194,12 +205,13 @@ def send_order(request):
                 DeliverOrderTask.delay(order.id, Order.STATUS_SENT)
                 return HttpResponseRedirect(reverse('order_success'))
     else:
-        form = OrderForm(site=request.site, location=request.location)
+        form = OrderForm(request=request)
     context = {
         'form': form
     }
     return render_custom(request, 'core/send_order.html', context)
 
+@online_ordering
 def payment_paypal(request):
     try:
         order = Order.objects.get(id=request.session['order_id'])
@@ -220,6 +232,7 @@ def payment_paypal(request):
     context = {'form': form}
     return render_custom(request, 'core/payment_paypal.html', context)
 
+@online_ordering
 def payment_authnet(request):
     order_id = request.REQUEST.get('o')
     try:
@@ -236,7 +249,7 @@ def payment_authnet(request):
     context = {'form': form, 'order_id': order_id, 'order_settings': request.site.ordersettings}
     return render_custom(request, 'core/payment_authnet.html', context)
             
-
+@online_ordering
 def order_success(request):
     return render_custom(request, 'core/order_success.html')
 
@@ -264,3 +277,18 @@ def mailing_list_signup(request):
         error_msg = 'Please enter a valid e-mail address.'
         messages.error(request, error_msg)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+def change_location(request):
+    if request.site.location_set.count() == 1:
+        raise Http404
+    if request.method == 'POST':
+        form = LocationSelectionForm(request.POST, site=request.site)
+        if form.is_valid():
+            request.session['location'] = request.location = form.cleaned_data.get('location')
+            if request.cart:
+                request.cart.clear()
+            return HttpResponseRedirect(request.session.get('next') or '/')
+    else:
+        form = LocationSelectionForm(site=request.site)
+        request.session['next'] = request.META.get('HTTP_REFERER') or '/'
+    return render_custom(request, 'core/change_location.html', {'form': form})

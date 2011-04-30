@@ -1,33 +1,29 @@
-from datetime import timedelta, time, datetime
 import random
 import unittest
-from time import sleep
 
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.test.client import Client
-from django.test.testcases import call_command
 
-from djangosanetesting.noseplugins import TestServerThread
+from mock import Mock
+
+from nose.exc import SkipTest
+
 from faker.generators.utils import numerify
 from paypal.standard.ipn.models import PayPalIPN
-from poseur.fixtures import load_fixtures
 from pytz import timezone
-from selenium import selenium
 
-from tiger.accounts.models import Site, TimeSlot, Location
-from tiger.core.exceptions import *
+from tiger.accounts.models import Site, Location
 from tiger.core.forms import get_order_form
 from tiger.core.middleware import Cart
-from tiger.core.models import (Section, Item, Variant, 
-    SideDish, SideDishGroup, Order, Coupon, OrderSettings)
+from tiger.core.models import Item, Order, Coupon
 from tiger.core.tests.shrapnel import TEST_PAYPAL_TRANSACTION, FakeSession, FakeCoupon
 from tiger.fixtures import FakeOrder
-from tiger.notify.tasks import DeliverOrderTask
-from tiger.utils.hours import DOW_CHOICES
+from tiger.sales.models import Plan
+from tiger.utils.test import TestCase
+
 
 
 def data_for_order_form(item):
@@ -77,51 +73,21 @@ def deliver_paypal(order, **kwargs):
     paypal.send_signals()
 
 
-class CouponTestCase(unittest.TestCase):
-    coupon = True
-
-    @classmethod
-    def setup_class(cls):
-        if not Site.objects.count():
-            load_fixtures('tiger.fixtures')
-        cls.server_thread = TestServerThread('127.0.0.1', 8000)
-        cls.server_thread.start()
-        cls.server_thread.started.wait()
-        if cls.server_thread.error:
-            raise cls.server_thread.error
-        cls.sel = selenium(
-            'localhost',
-            4444,
-            '*firefox',
-            'http://foo.takeouttiger.com:8000' 
-        )
-        cls.sel.start()
-        cls.sel.open('/dashboard/login/')
-        cls.sel.type('email', 'test@test.com')
-        cls.sel.type('password', 'password')
-        cls.sel.click("css=input[type='submit']")
-        cls.sel.wait_for_page_to_load(2000)
-
-    @classmethod
-    def teardown_class(cls):
-        cls.sel.close()
-        cls.server_thread.join()
-
+class CouponDisplayTestCase(unittest.TestCase):
     def setUp(self):
-        self.site = Site.objects.all()[0]
+        self.site = Mock(Site())
 
-    def tearDown(self):
-        Coupon.objects.all().delete()
-
-    def test_status_display(self):
-        dollar_coupon = Coupon.objects.create(
+    def test_dollar_display(self):
+        dollar_coupon = Coupon(
             site=self.site, 
             short_code='', 
             discount_type=Coupon.DISCOUNT_DOLLARS,
             dollars_off='1.00'
         )
         self.assertEquals(dollar_coupon.discount, '$1.00')
-        percent_coupon = Coupon.objects.create(
+
+    def test_percent_display(self):
+        percent_coupon = Coupon(
             site=self.site, 
             short_code='', 
             discount_type=Coupon.DISCOUNT_PERCENT,
@@ -129,48 +95,51 @@ class CouponTestCase(unittest.TestCase):
         )
         self.assertEquals(percent_coupon.discount, '10%')
 
+
+class CouponUsageTestCase(TestCase):
+    fixtures = ['plans.json']
+    poseur_fixtures = 'tiger.fixtures'
+
+    def setUp(self):
+        site = Site.objects.all()[0]
+        site.plan = Plan.objects.filter(has_online_ordering=True)[0]
+        site.save()
+        self.site = site
+
     def test_add_remove_coupon(self):
-        dollar_coupon = Coupon.objects.create(
+        coupon = Coupon.objects.create(
             site=self.site, 
             short_code='TEST', 
             discount_type=Coupon.DISCOUNT_DOLLARS,
             dollars_off='1.00'
         )
-        sel = CouponTestCase.sel
-        sel.open(reverse('preview_order'))
-        sel.type('id_coupon_code', 'TEST')
-        sel.click("css=#main input[type='submit']")
-        sel.wait_for_page_to_load(2000)
-        self.assertTrue(self.sel.is_text_present('Coupon TEST'))
-        sel.click("css=#clear-coupon")
-        sel.wait_for_page_to_load(2000)
-        self.assertFalse(self.sel.is_text_present('Coupon TEST'))
-        self.assertTrue(self.sel.is_text_present('Your coupon has been removed.'))
+        self.client.get(reverse('menu_home'))
+        response = self.client.post(reverse('preview_order'), {'coupon_code': coupon.short_code}, follow=True)
+        self.assertContains(response, 'Coupon TEST')
+        response = self.client.get(reverse('clear_coupon'), follow=True)
+        self.assertContains(response, 'Your coupon has been removed.')
 
 
-class CartTestCase(unittest.TestCase):
-    cart = True
+class CartTestCase(TestCase):
+    fixtures = ['plans.json']
+    poseur_fixtures = 'tiger.fixtures'
 
-    @classmethod
-    def setup_class(cls):
-        if not Site.objects.count():
-            load_fixtures('tiger.fixtures')
+    def setUp(self):
         FakeSession.generate(count=1)
-        cls.session = Session.objects.all()[0]
-        cls.cart = Cart(cls.session)
+        self.session = Session.objects.all()[0]
+        self.cart = Cart(self.session)
         FakeCoupon.generate(count=1)
-        cls.coupon = Coupon.objects.all()[0]
+        self.coupon = Coupon.objects.all()[0]
         site = Site.objects.all()[0]
         location = site.location_set.all()[0]
         location.tax_rate = '6.25'
         location.save()
 
-    @classmethod
-    def teardown_class(cls):
+    def tearDown(self):
         Session.objects.all()[0].delete()
 
     def test_adding_to_total(self):
-        cart = CartTestCase.cart
+        cart = self.cart
         self.assertEquals(cart.subtotal(), 0)
         self.assertEquals(cart.taxes(), 0)
         self.assertEquals(cart.total(), 0)
@@ -182,9 +151,9 @@ class CartTestCase(unittest.TestCase):
         self.assertEquals(cart.total() + cart.taxes(), cart.total_plus_tax())
         
     def test_coupons(self):
-        cart = CartTestCase.cart
+        cart = self.cart
         self.assertFalse(cart.has_coupon)
-        cart.add_coupon(CartTestCase.coupon)
+        cart.add_coupon(self.coupon)
         self.assertTrue(cart.has_coupon)
         self.assertTrue(cart.coupon_display().startswith('Coupon'))  
         self.assertTrue(cart.coupon_display().endswith('off'))  
@@ -194,16 +163,16 @@ class CartTestCase(unittest.TestCase):
 
 
 class OrderPropertiesTest(TestCase):
-    def setUp(self):
-        if not Site.objects.count():
-            call_command('flush', verbosity=0)
-            load_fixtures('tiger.fixtures')
+    fixtures = ['plans.json']
+    poseur_fixtures = 'tiger.fixtures'
 
     def test_display_hours(self):
         """Time that the order was placed should be localized to reflect the
         timezone selected by the restaurant.
         """
         site = Site.objects.all()[0]
+        site.plan = Plan.objects.get(has_online_ordering=True)
+        site.save()
         # site is using default timezone
         location = site.location_set.all()[0]
         self.assertEquals(settings.TIME_ZONE, location.timezone)
@@ -225,23 +194,20 @@ class OrderPropertiesTest(TestCase):
 
 
 class PayPalOrderTest(TestCase):
-    paypal = True
+    fixtures = ['plans.json']
+    poseur_fixtures = 'tiger.fixtures'
 
     def setUp(self):
-        if not Site.objects.count():
-            load_fixtures('tiger.fixtures')
         site = Site.objects.all()[0]
-        location = site.location_set.all()[0]
+        site.plan = Plan.objects.filter(has_online_ordering=True)[0]
+        site.save()
+        location, = site.location_set.all()
         location.receive_via = Location.RECEIPT_EMAIL
         location.tax_rate = '6.25'
         location.save()
-
-    @classmethod
-    def setup_class(cls):
         FakeSession.generate(count=1)
 
-    @classmethod
-    def teardown_class(cls):
+    def teardown(cls):
         Session.objects.all()[0].delete()
 
     def create_paypal_order(self, **kwargs):
@@ -296,58 +262,47 @@ class PayPalOrderTest(TestCase):
         self.assertContains(response, 'Paid online')
 
 
+class OrderListTest(TestCase):
+    def test_jonathan_has_replaced_this_with_a_stubbed_javascript_test(self):
+        raise SkipTest
 
-class OrderListTest(unittest.TestCase):
+
+class OrderScreensAvailabilityTestCase(TestCase):
+    fixtures = ['plans.json']
+    poseur_fixtures = 'tiger.fixtures'
+
     def setUp(self):
-        if not Site.objects.count():
-            load_fixtures('tiger.fixtures')
-        self.server_thread = TestServerThread('127.0.0.1', 8000)
-        self.server_thread.start()
-        self.server_thread.started.wait()
-        if self.server_thread.error:
-            raise self.server_thread.error
-        self.sel = selenium(
-            'localhost',
-            4444,
-            '*firefox',
-            'http://foo.takeouttiger.com:8000' 
-        )
-        self.sel.start()
-        self.sel.open('/dashboard/login/')
-        self.sel.type('email', 'test@test.com')
-        self.sel.type('password', 'password')
-        self.sel.click("css=input[type='submit']")
-        self.sel.wait_for_page_to_load(2000)
+        self.site = Site.objects.all()[0]
+        self.client = Client(HTTP_HOST='foo.takeouttiger.com')
+        urls = map(reverse, [
+            'preview_order',
+            'send_order',
+            'order_success',
+            'payment_paypal',
+            'payment_authnet'])
+        item = Item.objects.all()[0]
+        urls.append(reverse('order_item', kwargs={
+            'section_id': item.section.id,
+            'section_slug': item.section.slug,
+            'item_id': item.id,
+            'item_slug': item.slug
+        }))
+        self.ordering_urls = urls
 
-    def tearDown(self):
-        self.sel.close()
-        self.server_thread.join()
+    def test_site_with_online_ordering_has_ordering_screens(self):
+        self.site.plan = Plan.objects.get(has_online_ordering=True)
+        self.site.save()
+        # hit menu screen just to set cookie
+        self.client.get(reverse('menu_home'))
+        for url in self.ordering_urls:
+            response = self.client.get(url)
+            self.assertNotEquals(response.status_code, 404)
 
-    def test_list_update(self):
-        # create one already-read order
-        FakeOrder.generate(count=1)
-        order = Order.objects.all()[0]
-        order.unread = True
-        order.save()
-        # assert that the one order is on list and does not have class unread
-        self.sel.open(reverse('dashboard_orders'))
-        self.assertTrue(self.sel.is_element_present("css=tr.unread"))
-        self.assertFalse(self.sel.is_element_present("css=tbody tr:nth-child(2)"))
-        # click through on order
-        self.sel.click("css=tr:first-child a:first-child")
-        self.sel.wait_for_page_to_load(1000)
-        # assert that no orders have class unread
-        self.sel.open(reverse('dashboard_orders'))
-        self.assertFalse(self.sel.is_element_present("css=tr.unread"))
-        # create new order
-        FakeOrder.generate(count=1)
-        order = Order.objects.order_by('-id')[0]
-        order.unread = True
-        order.save()
-        # wait for update -- page polls every minute
-        sleep(60)
-        # assert update
-        self.assertTrue(self.sel.is_element_present("css=tbody tr:nth-child(2)"))
-        # assert that new order is on top
-        # assert that new order has class unread
-        self.assertTrue("unread" in self.sel.get_attribute("css=tr#%d@class" % order.id))
+    def test_site_without_online_ordering_has_no_ordering_screens(self):
+        self.site.plan = Plan.objects.filter(has_online_ordering=False)[0]
+        self.site.save()
+        # hit menu screen just to set cookie
+        self.client.get(reverse('menu_home'))
+        for url in self.ordering_urls:
+            response = self.client.get(url)
+            self.assertEquals(response.status_code, 404)

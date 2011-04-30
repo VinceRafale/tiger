@@ -1,6 +1,8 @@
 from haystack.indexes import *
 from haystack import site
 
+from django.conf import settings
+
 from tiger.core.models import Item
 
 
@@ -18,5 +20,6 @@ class ItemIndex(RealTimeSearchIndex):
         return Item.objects.all()
 
 
-site.register(Item, ItemIndex)
+if not settings.DEBUG:
+    site.register(Item, ItemIndex)
 

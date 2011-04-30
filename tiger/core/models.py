@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 
 from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import payment_was_successful, payment_was_flagged
+from picklefield.fields import PickledObjectField
 from pytz import timezone
 
 from tiger.content.handlers import pdf_caching_handler
@@ -23,7 +24,6 @@ from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable, PricePo
 from tiger.core.messages import *
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler
-from tiger.utils.fields import PickledObjectField
 from tiger.utils.hours import *
 from tiger.utils.pdf import render_to_pdf
 
@@ -215,7 +215,7 @@ class Variant(models.Model):
             new = True
         self.price = self.price.quantize(Decimal('0.01'))
         super(Variant, self).save(*args, **kwargs)
-        if new and self.item:
+        if self.item:
             self.item.update_price()
 
     def delete(self, *args, **kwargs):
@@ -308,7 +308,7 @@ class Order(models.Model):
     )
     site = models.ForeignKey('accounts.Site', null=True, editable=False)
     session_key = models.CharField(max_length=40, null=True)
-    location = models.ForeignKey('accounts.Location', null=True, editable=False)
+    location = models.ForeignKey('accounts.Location', editable=False)
     name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
     street = models.CharField(max_length=255, blank=True, null=True)
@@ -318,11 +318,14 @@ class Order(models.Model):
     ready_by = models.DateTimeField('Have order ready by:', null=True)
     total = models.DecimalField(editable=False, max_digits=6, decimal_places=2)
     tax = models.DecimalField(editable=False, max_digits=6, decimal_places=2, default='0.00')
-    cart = PickledObjectField(editable=False)
+    cart = PickledObjectField(editable=False, null=True)
     timestamp = models.DateTimeField(default=datetime.now, editable=False)
     method = models.IntegerField('This order is for', default=1, choices=METHOD_CHOICES)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_INCOMPLETE)
     unread = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ('-timestamp',)
 
     def save(self, *args, **kwargs):
         super(Order, self).save(*args, **kwargs)
@@ -341,7 +344,7 @@ class Order(models.Model):
         content = self.get_pdf_invoice()
         location = self.site.location_set.all()[0]
         if location.receive_via == OrderSettings.RECEIPT_EMAIL:
-            email = EmailMessage('Takeout Tiger Order #%d' % self.id, 'Your order details are attached as PDF.', 'do-not-reply@takeouttiger.com', [self.site.email])
+            email = EmailMessage('Takeout Tiger Order #%d' % self.id, 'Your order details are attached as PDF.', 'do-not-reply@takeouttiger.com', [location.order_email])
             email.attach('order-%d.pdf' % self.id, content, 'application/pdf')
             email.send()
         else:

@@ -1,14 +1,8 @@
-{% for order in orders %}
-    <tr id="{{ order.id }}" class="{% cycle '' 'shaded' %} {% if order.unread %}un{% endif %}read">
-        <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
-        <td><a href="{{ order.get_absolute_url }}">{{ order.localized_timestamp|date:"fa m/d" }}</a></td>
-        <td><a href="{{ order.get_absolute_url }}">{{ order.get_status_display }}</a></td>
-        <td><a href="{{ order.get_absolute_url }}">{% if order.pickup %}{{ order.pickup }}{% else %}{{ order.localized_ready_by|date:"fa m/d" }}{% endif %}</a></td>
-        <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
-        <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total_plus_tax|floatformat:"-2" }}</a></td>
-    </tr>
-{% empty %}
-            <tr>
-                <td colspan="6">You have not received any orders.</td>
-            </tr>
-{% endfor %}
+<tr id="order-{{ order.id }}" class="{% cycle '' 'shaded' %} {% if order.unread %}un{% endif %}read">
+    <td><a href="{{ order.get_absolute_url }}">{{ order.name }}</a></td>
+    <td><a href="{{ order.get_absolute_url }}">{{ order.localized_timestamp|date:"fa m/d" }}</a></td>
+    <td><a href="{{ order.get_absolute_url }}">{{ order.get_status_display }}</a></td>
+    <td><a href="{{ order.get_absolute_url }}">{% if order.pickup %}{{ order.pickup }}{% else %}{{ order.localized_ready_by|date:"fa m/d" }}{% endif %}</a></td>
+    <td><a href="{{ order.get_absolute_url }}">{{ order.phone }}</a></td>
+    <td class="total"><a href="{{ order.get_absolute_url }}">${{ order.total_plus_tax|floatformat:"-2" }}</a></td>
+</tr>

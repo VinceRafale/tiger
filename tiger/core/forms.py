@@ -11,7 +11,7 @@ from authorize.aim import Api
 from pytz import timezone
 
 from tiger.core.exceptions import PricePointNotAvailable
-from tiger.accounts.forms import AmPmTimeField
+from tiger.core.fields import SelectableTimeField
 from tiger.core.models import *
 from tiger.dashboard.widgets import ImageChooserWidget
 from tiger.utils.forms import BetterModelForm
@@ -102,14 +102,17 @@ def get_item_form(site):
 
 
 class OrderForm(forms.ModelForm):
-    ready_by = AmPmTimeField(required=True)
+    ready_by = SelectableTimeField(required=True)
 
     class Meta:
         model = Order
         exclude = ('status', 'unread', 'pickup', 'session_key',)
 
-    def __init__(self, data=None, site=None, location=None, *args, **kwargs):
+    def __init__(self, data=None, request=None, *args, **kwargs):
         super(OrderForm, self).__init__(data, *args, **kwargs)
+        self.request = request
+        site = self.site = request.site
+        location = self.location = request.location
         self.fields['method'] = forms.TypedChoiceField(
             label='This order is for:',
             coerce=int,
@@ -117,8 +120,6 @@ class OrderForm(forms.ModelForm):
             widget=forms.RadioSelect
         )
         self.delivery_minimum = location.delivery_minimum
-        self.site = site
-        self.location = location
 
     def clean_method(self):
         method = self.cleaned_data.get('method')
@@ -167,6 +168,20 @@ class OrderForm(forms.ModelForm):
             if ready_by < server_tz.localize(datetime.now() + timedelta(minutes=lead_time)):
                 raise forms.ValidationError('%s orders must be placed %d minutes in advance.' % (method_display, lead_time))
         return cleaned_data
+
+    def save(self, commit=True):
+        instance = super(OrderForm, self).save(commit=False)
+        request = self.request
+        instance.total = request.cart.total()
+        instance.tax = request.cart.taxes()
+        cart = request.cart.session.get_decoded()
+        instance.cart = cart
+        instance.session_key = request.cart.session.session_key
+        instance.site = self.site
+        instance.location = self.location
+        if commit:
+            instance.save()
+        return instance
 
 
 class CouponForm(forms.Form):

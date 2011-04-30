@@ -1,0 +1,105 @@
+{% extends 'dashboard/marketing/home.html' %}
+
+{% block body-class %}{{ block.super }}sms{% endblock %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui.min.js"></script>
+{% endblock %}
+
+{% block h2 %}
+SMS settings
+{% endblock %}
+
+{% block help %}
+<p>Opt-in keywords are how your customers sign up for SMS notifications.  When a customer texts one of your opt-in keywords to your SMS number, they will become a subscriber on a list associated with that keyword.</p>
+<p>
+You can optionally configure an automatic response to a new sign-up below.  Sending a thank-you coupon is a great way to get a new subscriber to spread the word!
+</p>
+{% endblock %}
+
+{% block content %}
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+<div id="keywords">
+<h4>Opt-in keywords</h4>
+<ul id="keyword-list">
+    {% for keyword in sms.keywords %}
+    <li id="{{ keyword }}">{{ keyword }} 
+    <form method="POST" action="">
+        <input type="hidden" name="remove" value="{{ keyword }}" />
+        <input type="image" class="delete-button" src="{{ MEDIA_URL }}img/Delete_16x16.png" />
+    </form>
+    </li>
+    {% endfor %}
+</ul>
+<form method="POST" id="add-keyword-wrap">
+<input type="text" name="add" /> <button class="button">Add</button>
+</form>
+</div>
+<form class="sms-form" method="POST" action=".">
+    <label>{{ form.send_intro }} {{ form.send_intro.label }} {% if form.send_intro.errors %} {{ form.send_intro.errors }} {% endif %}<br />
+    </label>
+    <div id="intro">
+        <label>
+            Text messages can be a maximum of 140 characters.  Any characters beyond the first 140 will be truncated.
+            {% if form.intro_sms.errors %} {{ form.intro_sms.errors }} {% endif %}
+        </label>
+        <div class="sms-wrap">
+        {{ form.intro_sms }}
+        <p class="charcount">140</p>
+        </div>
+    </div>
+    <label>{{ form.display }} {{ form.display.label }}</label>
+    <p class="help">{{ form.display.help_text }}</p>
+    <div class="clear"></div>
+    <div class="save-row clearfix">
+    <a class="cancel" href="{% url sms_home %}">Cancel</a>
+    <input type="submit" value="Save" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    if ($("#id_send_intro").attr("checked")) {
+        $("#intro").show();
+    } else {
+        $("#intro").hide();
+    }
+    $("#id_send_intro").click(function () {
+        if ($("#id_send_intro").attr("checked")) {
+            $("#intro").show();
+        } else {
+            $("#intro").hide();
+        }
+    });
+    $("form.sms-form textarea").keyup(function () {
+        remaining = 140 - $(this).val().length;
+        counter = $(this).closest("form").find("p.charcount");
+        counter.text(remaining);
+        if (remaining > 10) {
+            $(counter).removeClass("critical");
+        } else {
+            $(counter).addClass("critical");
+        }
+    });
+    $("input[type='image']").click(function () {
+        c = confirm("Removing this opt-in keyword will prevent you from sending campaigns to associated users in the future.  Are you sure you want to proceed?  This action cannot be undone.");
+        if (!c) return false;
+    });
+    $("#keyword-list").sortable({
+        stop: function(event, ui) { 
+            var keywords = $(this).sortable('toArray');
+            if (keywords.length > 1) {
+                $.post("reorder/", $.param({
+                    keywords: keywords
+                }, true));
+            }
+        },
+        cancel: "form"
+    });
+});
+</script>
+{% endblock %}

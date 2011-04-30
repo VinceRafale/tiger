@@ -2,19 +2,27 @@ import time
 from datetime import datetime
 from django.core.files.base import ContentFile
 from django.db import models
+from imagekit.models import ImageModel
 
-from tiger.stork.constants import FONT_CHOICES
+from tiger.stork.font_choices import WebFonts
 
 from cumulus.storage import CloudFilesStorage
 
 cloudfiles_storage = CloudFilesStorage()
 
 
-class Theme(models.Model):
+class Theme(ImageModel):
     name = models.CharField(max_length=100)
     saved_at = models.DateTimeField(auto_now=True)
     bundled_css = models.FileField(upload_to='stork/css', null=True)
     private = models.BooleanField(default=True)
+    screenshot = models.ImageField(upload_to='screenshots', null=True, blank=True, default='')
+    description = models.TextField(blank=True)
+    notes = models.TextField(blank=True, default='')
+
+    class IKOptions:
+        spec_module = 'tiger.content.specs'
+        image_field = 'screenshot'
 
     def update(self, css):
         filename = '%d-%d.css' % (self.id, int(time.mktime(datetime.now().timetuple())))
@@ -30,7 +38,8 @@ class Component(models.Model):
 
 
 class Swatch(Component):
-    color = models.CharField(max_length=6)
+    color = models.CharField(max_length=12)
+    alpha = models.DecimalField(max_digits=2, decimal_places=1, default='1.0')
 
 
 class FontStack(models.Model):
@@ -39,7 +48,7 @@ class FontStack(models.Model):
     eot = models.FileField(upload_to='fonts/eot', null=True)
     woff = models.FileField(upload_to='fonts/woff', null=True)
     svg = models.FileField(upload_to='fonts/svg', null=True)
-    stack = models.TextField(max_length=255, choices=FONT_CHOICES)
+    stack = models.TextField(max_length=255, choices=WebFonts.FONT_CHOICES)
 
     def __unicode__(self):
         return self.name
@@ -50,8 +59,8 @@ class Font(Component):
 
 
 class Image(Component):
-    image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds', storage=cloudfiles_storage)
-    staged_image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds', storage=cloudfiles_storage)
+    image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds')
+    staged_image = models.ImageField('Background image (max. 1MB)', null=True, blank=True, upload_to='img/backgrounds')
     tiling = models.BooleanField('make this background image tile', default=False)
 
 

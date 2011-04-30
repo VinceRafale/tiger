@@ -13,7 +13,7 @@ from tiger.stork.models import Font, FontStack
 class FontComponent(BaseComponent):
     model = Font
 
-    def __init__(self, panel, group, name, order, selector=None, default=None, fontface=False):
+    def __init__(self, panel, group, name, order, selector=None, default=None, fontface=False, **kwargs):
         if selector is None:
             raise StorkConfigurationError('"selector" is required for font components')
         if default is None:
@@ -22,7 +22,7 @@ class FontComponent(BaseComponent):
             self.default = getattr(WebFonts, default)
         except:
             raise StorkConfigurationError('Font component defaults must be one of: ARIAL, GARAMOND, GEORGIA, IMPACT, MONOSPACE, TIMES, TREBUCHET, VERDANA')
-        super(FontComponent, self).__init__(panel, group, name, order)
+        super(FontComponent, self).__init__(panel, group, name, order, **kwargs)
         self.selector = selector
         self.fontface = fontface
 
@@ -33,7 +33,7 @@ class FontComponent(BaseComponent):
         return render_to_string('stork/font.css', {'component': self, 'ff': font or self.instance.font})
 
     def webfont(self):
-        return self.get_value(self.key)
+        return self.get_value(self.id)
 
     def get_defaults(self):
         return {
@@ -46,9 +46,9 @@ class FontComponent(BaseComponent):
     def for_json(self):
         return {
             'allowFontface': self.fontface,
-            'selector': '#id_%s-font' % self.key,
+            'selector': '#id_%s-font' % self.id,
             'styleTagId': '#' + self.style_tag_id,
-            'link': reverse('font_css', args=[self.key]).rstrip('.css')
+            'link': reverse('font_css', args=[self.id]).rstrip('.css')
         }
 
     def get_formfield_overrides(self):

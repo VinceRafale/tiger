@@ -1,0 +1,42 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}site{% endblock %}
+
+{% block h2 %}
+Your plans
+{% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>Name</th>
+        <th>SMS</th>
+        <th>Fax</th>
+        <th>Online ordering</th>
+        <th>Multiple locations</th>
+    </tr>
+    {% for plan in plans %}
+    <tr>
+        <td><a href="{% url edit_plan plan.id %}">{{ plan.name }}</a></td>
+        <td>{% if plan.has_sms %}
+            <span class="check">&#10003;</span> ({{ plan.get_sms_cap_type_display }} of {{ plan.sms_cap }})
+            {% else %} 
+            <span class='ballot'>&#x2718;</span>
+            {% endif %} 
+        </td>
+        <td>{% if plan.has_fax %}
+            <span class="check">&#10003;</span> ({{ plan.get_fax_cap_type_display }} of {{ plan.fax_cap }})
+            {% else %} 
+            <span class='ballot'>&#x2718;</span>
+            {% endif %}
+        </td>
+        <td>{% if plan.has_online_ordering %}<span class="check">&#10003;</span>{% else %}<span class='ballot'>&#x2718;</span>{% endif %}</td>
+        <td>{% if plan.multiple_locations %}<span class="check">&#10003;</span>{% else %}<span class='ballot'>&#x2718;</span>{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4">You haven't created any plans yet. <a href="{% url create_plan %}">Create one now</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,59 @@
+[
+   {
+      "fields" : {
+         "fax_cap_type" : 0,
+         "fax_cap" : 0,
+         "account" : null,
+         "has_sms" : false,
+         "name" : "no caps",
+         "multiple_locations" : false,
+         "sms_cap_type" : 0,
+         "sms_cap" : 0
+      },
+      "pk" : 2,
+      "model" : "sales.plan"
+   },
+   {
+      "fields" : {
+         "fax_cap_type" : 1,
+         "fax_cap" : 100,
+         "account" : null,
+         "has_sms" : false,
+         "name" : "soft caps",
+         "multiple_locations" : false,
+         "sms_cap_type" : 1,
+         "sms_cap" : 1
+      },
+      "pk" : 3,
+      "model" : "sales.plan"
+   },
+   {
+      "fields" : {
+         "fax_cap_type" : 1,
+         "fax_cap" : 100,
+         "account" : null,
+         "has_sms" : false,
+         "name" : "online ordering",
+         "multiple_locations" : false,
+         "sms_cap_type" : 1,
+         "sms_cap" : 1,
+         "has_online_ordering" : true
+      },
+      "pk" : 4,
+      "model" : "sales.plan"
+   },
+   {
+      "fields" : {
+         "fax_cap_type" : 2,
+         "fax_cap" : 100,
+         "account" : null,
+         "has_sms" : false,
+         "name" : "hard caps",
+         "multiple_locations" : false,
+         "sms_cap_type" : 2,
+         "sms_cap" : 1
+      },
+      "pk" : 5,
+      "model" : "sales.plan"
+   }
+]

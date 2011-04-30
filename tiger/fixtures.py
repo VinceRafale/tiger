@@ -29,6 +29,8 @@ class FakeSite(FakeModel):
     subdomain = 'foo'
     custom_domain = False
     timezone = settings.TIME_ZONE
+    managed = False
+    enable_orders = True
 
     class Meta:
         model = Site
@@ -49,15 +51,6 @@ class FakeSection(FakeModel):
         model = Section
         count = 1
         requires = (FakeSite,)
-
-
-class FakeVariant(FakeModel):
-    price = ("3.00", "7.50",)
-
-    class Meta:
-        model = Variant
-        count = 12
-        requires = (FakeSection,)
     
 
 class FakeItem(FakeModel):
@@ -68,6 +61,15 @@ class FakeItem(FakeModel):
         model = Item
         count = 20
         requires = (FakeSection,)
+
+
+class FakeVariant(FakeModel):
+    price = ("3.00", "7.50",)
+
+    class Meta:
+        model = Variant
+        count = 12
+        requires = (FakeSection, FakeItem,)
     
 
 class FakeOrder(FakeModel):
@@ -76,4 +78,3 @@ class FakeOrder(FakeModel):
     class Meta:
         model = Order
         count = 0
-

@@ -10,8 +10,8 @@ from tiger.stork.models import CSS
 class CssComponent(BaseComponent):
     model = CSS
 
-    def __init__(self, panel, group, name, order, default=None):
-        super(CssComponent, self).__init__(panel, group, name, order)
+    def __init__(self, panel, group, name, order, default=None, **kwargs):
+        super(CssComponent, self).__init__(panel, group, name, order, **kwargs)
         self.default = default
 
     def get_style_tag_contents(self, staged=False):

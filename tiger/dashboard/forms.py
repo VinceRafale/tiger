@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import PasswordResetForm as ResetForm
 
 class AuthenticationForm(forms.Form):
     email = forms.EmailField()
@@ -30,3 +31,8 @@ class AuthenticationForm(forms.Form):
 
     def get_user(self):
         return self.user_cache
+
+
+class PasswordResetForm(ResetForm):
+    def save(self, *args, **kwargs):
+        super(PasswordResetForm, self).save(domain_override='Takeout Tiger', *args, **kwargs)

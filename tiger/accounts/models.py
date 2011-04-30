@@ -12,67 +12,22 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
+from dateutil.relativedelta import *
+
 import pytz
 from pytz import timezone
 
 from tiger.core.exceptions import NoOnlineOrders, ClosingTimeBufferError, RestaurantNotOpen
-from tiger.look.models import Skin
 from tiger.utils.cache import cachedmethod, KeyChain
+from tiger.utils.billing import prorate
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.utils.hours import *
+from tiger.sales.models import SalesRep, Account, Invoice, Charge
+from tiger.sms.models import SmsSettings
+from tiger.stork import Stork
 from tiger.stork.models import Theme
 
 TIMEZONE_CHOICES = zip(pytz.country_timezones('us'), [tz.split('/', 1)[1].replace('_', ' ') for tz in pytz.country_timezones('us')])
-
-
-class SalesRep(models.Model):
-    user = models.ForeignKey(User)
-    code = models.CharField(max_length=8)
-    plan = models.CharField(max_length=12, default=settings.DEFAULT_BONUS_PRODUCT_HANDLE)
-
-
-class Account(models.Model):
-    """Stores data for customer billing and contact.
-    """
-    STATUS_ACTIVE = 1
-    STATUS_COMPONENT_SUSPENSION = 2
-    STATUS_FULL_SUSPENSION = 3
-    STATUS_CHOICES = (
-        (STATUS_ACTIVE, 'Active'),
-        (STATUS_COMPONENT_SUSPENSION, 'Components suspended'),
-        (STATUS_FULL_SUSPENSION, 'All service suspended'),
-    )
-    user = models.ForeignKey(User)
-    company_name = models.CharField(max_length=200)
-    email = models.EmailField('billing e-mail address')
-    phone = PhoneNumberField(null=True, blank=True)
-    fax = PhoneNumberField(null=True, blank=True)
-    street = models.CharField(max_length=255, null=True, blank=True)
-    city = models.CharField(max_length=255, null=True, blank=True)
-    state = USStateField(null=True, blank=True)
-    zip = models.CharField(max_length=10)
-    signup_date = models.DateField(editable=False, default=datetime.now)
-    customer_id = models.CharField(max_length=200, default='')
-    subscription_id = models.CharField(max_length=200, default='')
-    card_number = models.CharField('credit card number', max_length=30, null=True)
-    card_type = models.CharField(max_length=50, null=True)
-    referrer = models.ForeignKey(SalesRep, null=True, editable=False)
-    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_COMPONENT_SUSPENSION)
-
-    def natural_key(self):
-        return (self.user.username,)
-
-    def __unicode__(self):
-        return self.company_name
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.signup_date = date.today()
-        super(Account, self).save(*args, **kwargs)
-
-    def send_confirmation_email(self):
-        body = render_to_string('accounts/confirmation.txt', {'account': self})
-        send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
 
 
 class Site(models.Model):
@@ -80,14 +35,19 @@ class Site(models.Model):
     displaying a specific site.
     """
     account = models.ForeignKey(Account)
+    user = models.ForeignKey('auth.User')
     name = models.CharField(max_length=200)
     subdomain = models.CharField(max_length=200, unique=True)
     domain = models.CharField(max_length=200, null=True, blank=True)
     email = models.EmailField(blank=True, null=True)
     custom_domain = models.BooleanField(default=False)
-    enable_orders = models.BooleanField(default=False)
     walkthrough_complete = models.BooleanField(default=False, editable=False)
-    theme = models.ForeignKey('stork.Theme', null=True)
+    theme = models.ForeignKey(Theme, null=True, on_delete=models.SET_NULL)
+    sms = models.ForeignKey(SmsSettings, null=True)
+    plan = models.ForeignKey('sales.Plan', null=True)
+    signup_date = models.DateField(auto_now_add=True)
+    managed = models.BooleanField(default=False)
+    reseller_network = models.BooleanField('I have this restaurant\'s written consent to send an invitation to its SMS subscribers', default=False)
 
     def natural_key(self):
         return (self.subdomain,)
@@ -99,10 +59,7 @@ class Site(models.Model):
             return self.tiger_domain()
 
     def tiger_domain(self, secure=False):
-        return 'http%s://%s.takeouttiger.com' % (
-            's' if secure else '',
-            self.subdomain
-        )
+        return 'https://%s.takeouttiger.com' % self.subdomain
 
     @property
     def custom_media_url(self):
@@ -156,10 +113,11 @@ class Site(models.Model):
     def has_news(self):
         return self.release_set.count()
 
+    @cachedmethod(KeyChain.template)
     def template(self):
         from tiger.stork import Stork
         stork = Stork(self.theme)
-        return stork['html-html'].as_template()
+        return stork['layout'].as_template()
 
     def skin_url(self):
         return self.theme.bundled_css.url
@@ -177,6 +135,34 @@ class Site(models.Model):
     def sidebar_locations(self):
         html = render_to_string('core/includes/sidebar_locations.html', {'site': self}) 
         return mark_safe(html)
+
+    def create_invoice(self):
+        return Invoice.objects.create(
+            account=self.account,
+            site=self
+        )
+
+    def prorate(self, amt):
+        return prorate(self.signup_date, amt)
+
+    @property
+    def is_suspended(self):
+        return bool(self.account.invoice_set.filter(status=Invoice.STATUS_FAILED).count())
+
+    def send_confirmation_email(self):
+        body = render_to_string('accounts/confirmation.txt', {'site': self})
+        send_mail('Takeout Tiger signup confirmation', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
+
+    def enable_orders(self):
+        return any(loc.enable_orders for loc in self.location_set.all())
+
+    def order_options(self):
+        options = []
+        for loc in self.location_set.all():
+            for opt in ('delivery', 'takeout', 'dine_in',):
+                if getattr(loc, opt, False):
+                    options.append(opt.replace('_', '-'))
+        return list(set(options))
 
 
 class Location(models.Model):
@@ -212,6 +198,7 @@ class Location(models.Model):
     delivery_area = models.MultiPolygonField(null=True, blank=True) 
     tax_rate = models.DecimalField(decimal_places=3, max_digits=5, null=True)
     eod_buffer = models.PositiveIntegerField(default=30)
+    enable_orders = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
@@ -263,6 +250,11 @@ class Location(models.Model):
                 escaped.append(s)
         return mark_safe(''.join(escaped))
 
+    def order_recipient(self):
+        if self.receive_via == Location.RECEIPT_EMAIL:
+            return self.order_email
+        return self.order_fax
+
 
 class Schedule(models.Model):
     site = models.ForeignKey(Site)
@@ -271,6 +263,11 @@ class Schedule(models.Model):
 
     def __unicode__(self):
         return self.display or ''
+
+    def save(self, *args, **kwargs):
+        super(Schedule, self).save(*args, **kwargs)
+        KeyChain.sidebar_locations.invalidate(self.site.id)
+        KeyChain.footer_locations.invalidate(self.site.id)
 
     @models.permalink
     def get_absolute_url(self):
@@ -352,10 +349,15 @@ class Subscriber(models.Model):
 
 def new_site_setup(sender, instance, created, **kwargs):
     if created:
-        Site = models.get_model('accounts', 'site')
-        if isinstance(instance, Site):
-            schedule = Schedule.objects.create(site=instance, master=True)
-            location = Location.objects.create(site=instance, schedule=schedule)
+        schedule = Schedule.objects.create(site=instance, master=True)
+        location = Location.objects.create(site=instance, schedule=schedule)
+        theme = Theme.objects.create(name=instance.name)
+        sms = SmsSettings.objects.create(reseller_network=instance.reseller_network)
+        instance.sms = sms
+        stork = Stork(theme)
+        stork.save()
+        instance.theme = theme
+        instance.save()
 
 
 def refresh_theme(sender, instance, created, **kwargs):
@@ -368,5 +370,5 @@ def refresh_theme(sender, instance, created, **kwargs):
         KeyChain.skin.invalidate(site.id)
 
 
-post_save.connect(new_site_setup)
+post_save.connect(new_site_setup, sender=Site)
 post_save.connect(refresh_theme, sender=Theme)

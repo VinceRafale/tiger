@@ -9,4 +9,5 @@ urlpatterns = patterns('tiger.dashboard.orders.views',
     url(r'^payment/$', 'order_payment', name='order_payment'),
     url(r'^messages/$', 'order_messages', name='order_messages'),
     url(r'^get-new-orders/$', 'get_new_orders', name='get_new_orders'),
+    url(r'^toggle/$', 'toggle_order_status', name='toggle_order_status'),
 )

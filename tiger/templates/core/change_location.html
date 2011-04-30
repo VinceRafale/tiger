@@ -1,0 +1,21 @@
+{% extends base %}
+
+{% block title %}
+Choose your location
+{% endblock %}
+
+{% block extrahead %}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1>Choose your location</h1>
+<p>You must select a location so that we can provide you with accurate availability and delivery information.</p>
+{% if form.location.errors %}
+{{ form.location.errors }}
+{% endif %}
+<form id="location-selection-form" method="post">
+    {{ form.location }}
+    <input type="submit" name="" class="button primary" value="Go" />
+</form>
+{% endblock %}

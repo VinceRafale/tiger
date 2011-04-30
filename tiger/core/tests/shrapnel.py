@@ -3,7 +3,6 @@ import datetime
 from poseur.fixtures import FakeModel
 from django.contrib.sessions.models import Session
 from tiger.core.models import Coupon
-import faker
 
 TEST_PAYPAL_TRANSACTION = {
      'address_city': u'',

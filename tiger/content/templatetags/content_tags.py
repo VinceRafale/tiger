@@ -38,3 +38,14 @@ def get_image(site, slug, size):
         return ''
     img_size = getattr(img, size)
     return mark_safe('<a href="%s"><img class="inset-left" src="%s" /></a>' % (img.get_absolute_url(), img_size.url))
+    
+@register.simple_tag
+def get_showcase(site, slug):
+    c = get_content(site=site, slug=slug)
+    try:
+        img = c.showcase
+    except ObjectDoesNotExist:
+        return ''
+    if img is None:
+        return ''
+    return mark_safe('<div id="showcase-image" style="background:url(%s) center no-repeat;overflow:none;"></div>' % img.image.url)

@@ -13,13 +13,14 @@ class ImageComponent(BaseComponent):
     css_template = """%s {
         background-image: url('%s');
         background-repeat: %s;
+        text-indent:%s;
     }
     """
 
-    def __init__(self, panel, group, name, order, selector=None, text_indent=True, allow_tiling=False):
+    def __init__(self, panel, group, name, order, selector=None, text_indent=True, allow_tiling=False, **kwargs):
         if selector is None:
             raise StorkConfigurationError('"selector" is required for image components')
-        super(ImageComponent, self).__init__(panel, group, name, order)
+        super(ImageComponent, self).__init__(panel, group, name, order, **kwargs)
         self.selector = selector
         self.text_indent = text_indent
         self.allow_tiling = allow_tiling
@@ -33,7 +34,10 @@ class ImageComponent(BaseComponent):
         if not image:
             return ''
         return self.css_template % (
-            self.selector, image.url, 'repeat' if (instance.tiling or tiling) else 'no-repeat'
+            self.selector, 
+            image.url, 
+            'repeat' if (instance.tiling or tiling) else 'no-repeat',
+            '-9999px' if self.text_indent else 'default'
         )
 
     def get_defaults(self):
@@ -51,16 +55,16 @@ class ImageComponent(BaseComponent):
     def save(self, data=None, files=None):
         instance = self.instance
         if data:
-            if data.has_key('%s-stale' % self.key):
+            if data.has_key('%s-stale' % self.id):
                 instance.staged_image.delete()
             elif bool(instance.staged_image):
                 instance.image.save(
                     instance.staged_image.name.split('/')[-1], 
                     ContentFile(instance.staged_image.file.file.read()))
                 instance.staged_image.delete()
-            if data.has_key('%s-delete' % self.key):
+            if data.has_key('%s-delete' % self.id):
                 instance.image.delete()
-            instance.tiling = data.get('%s-tiling' % self.key) == 'on'
+            instance.tiling = data.get('%s-tiling' % self.id) == 'on'
             instance.save()
         else:
             super(ImageComponent, self).save(data, files)

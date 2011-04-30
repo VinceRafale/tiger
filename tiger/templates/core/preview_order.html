@@ -69,10 +69,11 @@
 </tr>
 </table>
 {% if form %}
-<form method="POST">
+<form method="POST" class="coupon">
 {{ form }}
-<input type="submit" value="Add" />
+<input type="submit" class="button primary" value="Add" />
 </form>
 {% endif %}
-<a class="button" href="{% url send_order %}">Continue</a>
+<a class="button primary" href="{% url send_order %}">Continue</a>
+<div class="clear"></div>
 {% endblock %}

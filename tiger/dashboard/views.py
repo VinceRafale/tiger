@@ -4,10 +4,11 @@ from django.conf import settings
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.simple import direct_to_template
 
+from tiger.accounts.models import Location
 from tiger.dashboard.forms import AuthenticationForm
 
 
@@ -53,3 +54,11 @@ def login(request, redirect_field_name='next'):
 @login_required
 def dashboard(request):
     return HttpResponseRedirect(reverse('dashboard_menu'))
+
+@login_required
+def change_location(request):
+    if not request.method == 'POST':
+        raise Http404
+    location_id = request.POST.get('loc')
+    request.session['dashboard-location'] = request.site.location_set.get(id=location_id)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER') or '/dashboard/menu/')

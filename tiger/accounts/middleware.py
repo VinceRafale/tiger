@@ -6,9 +6,6 @@ from django.utils.cache import patch_vary_headers
 from tiger.utils.site import RequestSite
 
 
-SSL = 'SSL'
-
-
 class DomainDetectionMiddleware(object):
     def process_request(self, request):
         """Gets the domain from the request headers and adds a ``site`` 
@@ -29,38 +26,6 @@ class DomainDetectionMiddleware(object):
         return response
 
 
-class SSLRedirectMiddleware(object):
-    def process_view(self, request, view_func, view_args, view_kwargs):
-        if SSL in view_kwargs:
-            secure = view_kwargs[SSL]
-            del view_kwargs[SSL]
-        else:
-            secure = False
-
-        if not secure == self._is_secure(request):
-            return self._redirect(request, secure)
-
-    def _is_secure(self, request):
-        if request.META.has_key('HTTP_X_FORWARDED_PORT') and request.META['HTTP_X_FORWARDED_PORT'] == '443':
-            return True
-
-        #Handle the Webfaction case until this gets resolved in the request.is_secure()
-        if 'HTTP_X_FORWARDED_SSL' in request.META:
-            return request.META['HTTP_X_FORWARDED_SSL'] == 'on'
-
-        return False
-
-    def _redirect(self, request, secure):
-        protocol = secure and "https" or "http"
-        newurl = "%s://%s%s" % (protocol,get_host(request),request.get_full_path())
-        if settings.DEBUG and request.method == 'POST':
-            raise RuntimeError, \
-        """Django can't perform a SSL redirect while maintaining POST data.
-           Please structure your views so that redirects only occur during GETs."""
-
-        return HttpResponsePermanentRedirect(newurl)
-
-
 class LocationMiddleware(object):
     def process_request(self, request):
         """Sets user-selected location as attribute on request object.
@@ -68,10 +33,14 @@ class LocationMiddleware(object):
         setattr(request, 'location', self.get_location(request))
 
     def get_location(self, request):
-        location = cache.get('location')
-        if location is None:
-            try:
-                location = request.site.location_set.all()[0]
-            except:
-                pass
-        return location
+        if request.path.startswith('/dashboard'):
+            return self._dashboard_location(request)
+        return self._homepage_location(request)
+
+    def _dashboard_location(self, request):
+        return request.session.get('dashboard-location') or request.site.location_set.all()[0]
+
+    def _homepage_location(self, request):
+        if request.site.location_set.count() == 1:
+            return request.site.location_set.all()[0]
+        return request.session.get('location')

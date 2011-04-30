@@ -2,10 +2,8 @@
 <html lang="en" {% block namespace %}{% endblock %}>
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <title>{{ site.name }} {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" />
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/dashboard.css" />
     <!--[if IE]>
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
@@ -17,16 +15,53 @@
     {% endblock %}
 </head>
 <body class="{% block body-class %}{% endblock %}">
+<!--[if IE]>
+    <script type="text/javascript" 
+     src="https://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+
+    <style>
+	.chromeFrameOverlayContent {
+		width: 600px;
+		z-index:9999px;
+		zoom: 1;
+	}
+	.chromeFrameOverlayContent iframe
+	.chromeFrameOverlayCloseBar
+	.chromeFrameOverlayUnderlay
+    </style>
+ 
+    <script>
+     window.attachEvent("onload", function() {
+       CFInstall.check({
+         mode: "overlay", // the default
+       });
+     });
+    </script>
+<![endif]-->
     <div class="wrapper">
             <div id="menuWrap">
                 <div class="container_12 clearfix">
                     <div class="grid_10 push_1">
-                    <h1 class="title">{{site.name}} Dashboard</h1>
-                	<ul class="menu utility-nav">
-	                    <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
-	                </ul>
+                        <h1 class="title">{{site.name}} Dashboard</h1>
+                        <ul class="menu utility-nav">
+                            <li><a class="lightlink" href="{% url auth_logout %}">Logout</a></li>
+                        </ul>
+                        <div id="location-selector">
+                        {% if site.location_set.count > 1 %}
+                        <span>
+                        {{ location }} <a href="#" class="button" id="change-location">Change</a>
+                        </span>
+                        <form method="POST" action="{% url dashboard_change_location %}">
+                            <select name="loc">
+                            {% for loc in site.location_set.all %}
+                                <option {% if loc == location %}selected{% endif %} value="{{ loc.id }}">{{ loc }}</option>
+                            {% endfor %}
+                            </select>
+                        </form>
+                        {% endif %}
+                        </div>
                     </div>            
-            </div>         
+                </div>         
             </div>   
             <div class="container_12 clearfix">
 
@@ -46,7 +81,9 @@
 	                    <li><a class="restaurant" href="{% url dashboard_menu %}">Restaurant</a></li>
 	                    <li><a class="site" href="{% url dashboard_content %}">Site</a></li>
 	                    <li><a class="marketing" href="{% url dashboard_marketing %}">Marketing</a></li>
+                        {% if site.plan.has_online_ordering %}
 	                    <li><a class="orders" href="{% url dashboard_orders %}">Online Ordering</a></li>
+                        {% endif %}
 	                    <li><a class="account" href="{% url basic_info %}">Account</a></li>
 	                </ul>
                 </div>
@@ -128,6 +165,13 @@
             });
             return false;
         });
+    });
+    $("#change-location").click(function () {
+        $("#location-selector span").hide();
+        $("#location-selector form").show();
+    });
+    $("#location-selector select").change(function () {
+        $(this).parent()[0].submit();
     });
     </script>
     {% block js %}

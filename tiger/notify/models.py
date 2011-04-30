@@ -13,24 +13,20 @@ from markdown import markdown
 from tiger.content.models import PdfMenu
 from tiger.notify.fax import FaxMachine
 from tiger.utils.cache import KeyChain
+from tiger.utils.models import Message
 from tiger.utils.pdf import render_to_pdf
 
 
-class Fax(models.Model):
-    DIRECTION_INBOUND = 1
-    DIRECTION_OUTBOUND = 2
-    DIRECTION_CHOICES = (
-        (DIRECTION_INBOUND, 'Inbound'),
-        (DIRECTION_OUTBOUND, 'Outbound'),
-    )
+class Fax(Message):
     site = models.ForeignKey('accounts.Site')
-    timestamp = models.DateTimeField(null=True, blank=True)
     page_count = models.IntegerField(null=True, blank=True)
     parent_transaction = models.CharField(max_length=100, null=True)
     transaction = models.CharField(max_length=100)
     completion_time = models.DateTimeField(null=True, blank=True)
-    destination = models.CharField(max_length=20, null=True, blank=True)
-    logged = models.BooleanField(default=False, editable=False)
+
+
+class SMS(Message):
+    pass
 
 
 class Social(models.Model):
@@ -211,6 +207,7 @@ class Release(models.Model):
 
     def fax_count(self):
         return Fax.objects.filter(parent_transaction=self.fax_transaction).count()
+
 
 def new_site_setup(sender, instance, created, **kwargs):
     if created:

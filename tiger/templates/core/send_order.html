@@ -2,7 +2,6 @@
 
 {% block extrahead %}
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/timesuggest.js"></script>
 <style type="text/css">
 form ul {list-style-type:none;}
 form li {margin-left:0;}
@@ -35,9 +34,9 @@ form li {margin-left:0;}
         {% if form.ready_by.errors %}
         {{ form.ready_by.errors }}
         {% endif %}
-        <label>{{ form.ready_by.label }}<br />
+        <div>{{ form.ready_by.label }}<br />
         {{ form.ready_by }}
-        </label>
+        </div>
         {% if form.method.errors %}
         {{ form.method.errors }}
         {% endif %}
@@ -82,11 +81,11 @@ form li {margin-left:0;}
     {% with site.ordersettings as settings %}
     {% if settings.takes_payment %}
         {% if not settings.require_payment %}
-            <input id="submit" type="submit" value="Pay with cash" />
+            <input class="button primary" id="submit" type="submit" value="Pay with cash" />
         {% endif %}
-            <input id="pay" type="submit" name="pay" value="Pay online" />
+            <input class="button primary" id="pay" type="submit" name="pay" value="Pay online" />
     {% else %}
-    <input id="submit" type="submit" value="Send" />
+    <input class="button primary" id="submit" type="submit" value="Send" />
     {% endif %}
     <div class="clear"></div>
     {% endwith %}
@@ -106,7 +105,6 @@ $(function () {
             $(".delivery-options").hide();
         }
     });
-    $("#id_ready_by").timesuggest();
 });
 </script>
 {% endblock %}

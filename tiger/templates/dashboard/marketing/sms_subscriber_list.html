@@ -1,0 +1,96 @@
+{% extends 'dashboard/marketing/home.html' %}
+{% load sorting_tags %}
+{% load pagination_tags %}
+
+{% block body-class %}{{ block.super }}sms{% endblock %}
+
+{% block h2 %}
+SMS Subscribers
+{% endblock %}
+
+{% block help %}
+This screen is where you manage your subscribers.  Inactive subscribers (those who've unsubscribed, but you still have a record for) will appear in grey.  You can star subscribers by clicking the star icon and can then filter on those subscribers when you send SMS campaigns.  You can also send SMSes directly to individual subscribers from this page by clicking the word bubble icon for that subscriber.
+{% endblock %}
+
+{% block content %}
+
+{% autosort subscribers %}
+{% autopaginate subscribers %}
+{% paginate %}
+<table id="subscribers">
+    <thead>
+      <tr>
+            <th></th>
+            <th>{% anchor phone_number "Phone number" %}</th>
+            <th>{% anchor city %}</th>
+            <th>{% anchor state %}</th>
+            <th>{% anchor zip_code "Zip code" %}</th>
+            <th></th>
+            <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for subscriber in subscribers %}
+        <tr class="{% cycle '' 'shaded' %}{% if not subscriber.is_active %} disabled{% endif %}">
+            <td> 
+                <a class="toggle-star" href="{% url toggle_star subscriber.id %}">
+                    <img src="{{ MEDIA_URL }}img/{% if subscriber.starred %}Favourite_24x24{% else %}unstarred{% endif %}.png" alt="Favorite" title="{% if subscriber.starred %}Remove from favorites{% else %}Add to favorites{% endif %}" />
+                </a>
+             </td>
+            <td>{{ subscriber.phone_number }}</td>
+            <td>{{ subscriber.city }}</td>
+            <td>{{ subscriber.state }}</td>
+            <td>{{ subscriber.zip_code }}</td>
+            <td> 
+                {% if subscriber.is_active %}
+                <a class="send-sms" href="{% url send_single_sms subscriber.phone_number %}">
+                    <img src="{{ MEDIA_URL }}img/Comment_24x24.png" alt="Mobile phone icon"  title="Send SMS" />
+                </a>
+                {% endif %}
+             </td>
+            <td>
+                <a class="delete" href="{% url remove_subscriber subscriber.id %}">
+                    <img src="{{ MEDIA_URL }}img/Delete_24x24.png" alt="Delete icon" title="Delete subscriber" />
+                </a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td>No subscribers in this list.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% paginate %}
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    $("td a.toggle-star").click(function () {
+        starImg = $(this).children()[0];
+        starImg.src = "{{ MEDIA_URL }}img/ajax-loader.gif";
+        $.post($(this).attr("href"), {}, function (data) {
+            starImg.src = "{{ MEDIA_URL }}img/" + data + ".png";
+        }, "txt");
+        return false;
+    });
+    $("td a.delete").click(function () {
+        row = this;
+        deleteImg = $(this).children()[0];
+        deleteImg.src = "{{ MEDIA_URL }}img/ajax-loader.gif";
+        $.post($(this).attr("href"), {"delete": true}, function (data) {
+            if (data == 'deleted') {
+                $(row).closest("tr").fadeOut();
+            }
+        }, "txt");
+        return false;
+    });
+    $("a.send-sms").click(function() {
+        url = $(this).attr("href");
+        $.fancybox({href: url});
+        return false;
+    });
+});
+</script>
+{% endblock %}

@@ -15,15 +15,14 @@
         {% endif %}
     {% endwith %}
 {% else %}
+<h3>Our locations</h3>
     <ul>
     {% for location in site.location_set.all %}
         <li>
-            <a href="{{ location.get_absolute_url }}">{{ location.name }}</a><br />
+            <h4><a href="{{ location.get_absolute_url }}">{{ location.name }}</a></h4>
             {{ location.schedule.display }}<br />
             {{ location.phone }}
         </li>
     {% endfor %}
     </ul>
 {% endif %}
-
-

@@ -12,30 +12,37 @@ from tiger.stork.widgets import ColorPickerWidget
 class SwatchComponent(BaseComponent):
     model = Swatch
 
-    def __init__(self, panel, group, name, order, default=None, properties=None):
+    def __init__(self, panel, group, name, order, default=None, properties=None, **kwargs):
         if default is None:
             raise StorkConfigurationError('"default" is required for swatch components')
         if properties is None or len(properties) == 0:
             raise StorkConfigurationError('swatches must contain at least one property')
-        super(SwatchComponent, self).__init__(panel, group, name, order)
+        super(SwatchComponent, self).__init__(panel, group, name, order, **kwargs)
         self.default = default
         self.properties = [Property(**p) for p in properties]
 
     def get_picker_id(self):
-        return '#picker-%s-color' % self.key
+        return '#picker-%s-color' % self.id
     
     def get_hidden_input_id(self):
-        return '#id_%s-color' % self.key
+        return '#id_%s-color' % self.id
 
     def get_selector_prop(self):
+        selector_property = """%(selector)s {
+            %(property)s: rgba(%%(triplet)s,%%(alpha)s);
+        }
+        """
         return [
-            '%s{%s:#' % (prop.selector, prop.css_property) 
+            selector_property % {
+                'selector': prop.selector, 
+                'property': prop.css_property
+            }
             for prop in self.properties
         ]
 
     def get_style_tag_contents(self):
         selectors = ''.join([
-            '%s%s;}' % (prop, self.instance.color) 
+            prop % {'triplet': self.instance.color, 'alpha': self.instance.alpha}
             for prop in self.get_selector_prop()
         ])
         return selectors
@@ -49,7 +56,7 @@ class SwatchComponent(BaseComponent):
         ]
 
     def get_defaults(self):
-        return {'color': self.default}
+        return {'color': self.default, 'alpha': '1.0'}
 
     def get_formfield_overrides(self):
         return {
@@ -57,6 +64,9 @@ class SwatchComponent(BaseComponent):
                 label=self.name,
                 widget=ColorPickerWidget, 
                 required=False
+            ),
+            'alpha': forms.CharField(
+                widget=forms.HiddenInput 
             )
         }
 

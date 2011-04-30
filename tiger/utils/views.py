@@ -9,7 +9,6 @@ from django.template.loader import get_template
 from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
-from tiger.look.forms import *
 from tiger.stork import Stork
 
 
@@ -31,7 +30,7 @@ def render_custom(request, template, context=None):
                 'styles': panels.style_tags(),
                 'toolbar': panels.toolbar(),
                 'base': 'dashboard/look/preview.html',
-                'pre_base': panels['html-html'].as_template(staged=True),
+                'pre_base': panels['layout'].as_template(staged=True),
             })
         else:
             context.update({
@@ -113,3 +112,7 @@ def short_code_redirect(request, item_id, model):
 
 def robots(request):
     return render_custom(request, 'robots.txt', {'site_name': request.META['HTTP_HOST']})
+
+
+def render_static(request):
+    return render_custom(request, 'maintenance.html')

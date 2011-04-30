@@ -13,7 +13,6 @@ from olwidget.widgets import EditableMap
 
 from tiger.accounts.models import (Account, Subscriber, Site, TimeSlot, 
     SalesRep, FaxList, Schedule, Location)
-from tiger.utils.chargify import Chargify, ChargifyError
 from tiger.utils.forms import BetterModelForm
 from tiger.utils.geocode import geocode, GeocodeError
 
@@ -174,33 +173,7 @@ class SignupForm(forms.ModelForm):
         return self.cleaned_data
 
     def process_cc(self):
-        cleaned_data = self.cleaned_data
-        if cleaned_data.get('promo'):
-            referrer = SalesRep.objects.get(code=cleaned_data['promo'])
-            product_handle = referrer.plan
-        else:
-            product_handle = settings.DEFAULT_PRODUCT_HANDLE
-        chargify = Chargify(settings.CHARGIFY_API_KEY, settings.CHARGIFY_SUBDOMAIN)
-        try:
-            result = chargify.subscriptions.create(data={
-                'subscription':{
-                    'product_handle': product_handle,
-                    'customer_attributes':{
-                        'first_name': cleaned_data.get('first_name'),
-                        'last_name': cleaned_data.get('last_name'),
-                        'email': cleaned_data.get('email')
-                    },
-                    'credit_card_attributes':{
-                        'full_number': cleaned_data.get('cc_number'),
-                        'expiration_month': cleaned_data.get('month'),
-                        'expiration_year': cleaned_data.get('year'),
-                        'billing_zip': cleaned_data.get('cc_zip')
-                    }
-                }
-            })
-        except ChargifyError:
-            raise forms.ValidationError('There was an error processing your card information.')
-        self.subscription = result['subscription']
+        raise NotImplementedError
 
     def save(self):
         instance = super(SignupForm, self).save(commit=False)
@@ -483,3 +456,17 @@ class BasicInfoForm(BetterModelForm):
     class Meta:
         model = Site
         fields = ('name',)
+
+
+class LocationSelectionForm(forms.Form):
+    location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None, widget=forms.RadioSelect)
+
+    def __init__(self, data=None, site=None, *args, **kwargs):
+        super(LocationSelectionForm, self).__init__(data, *args, **kwargs)
+        self.fields['location'].queryset = site.location_set.all()
+
+    def clean_location(self):
+        loc = self.cleaned_data.get('location')
+        if loc and not loc.enable_orders:
+            raise forms.ValidationError("We aren't currently taking orders at our %s location." % unicode(loc))
+        return loc

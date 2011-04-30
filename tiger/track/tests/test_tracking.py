@@ -1,3 +1,5 @@
+__test__ = False
+
 from datetime import timedelta
 
 from django.core.urlresolvers import reverse
