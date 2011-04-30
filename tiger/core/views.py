@@ -57,6 +57,8 @@ def item_detail_abbr(request, section, item):
     return HttpResponsePermanentRedirect(i.get_absolute_url())
 
 def item_detail(request, section_id, section_slug, item_id, item_slug):
+    if not request.location:
+        return HttpResponseRedirect(reverse('change_location'))
     i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
         assert i.is_available(request.location)
@@ -72,6 +74,8 @@ def item_detail(request, section_id, section_slug, item_id, item_slug):
 
 @online_ordering
 def order_item(request, section_id, section_slug, item_id, item_slug):
+    if not request.location:
+        return HttpResponseRedirect(reverse('change_location'))
     i = get_object_or_404(Item, section__slug=section_slug, section__id=section_id, id=item_id, slug=item_slug, site=request.site)
     try:
         assert request.site.is_open(request.location) and i.is_available(request.location)
