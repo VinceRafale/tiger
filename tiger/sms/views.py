@@ -281,8 +281,7 @@ def edit_settings(request):
                 form.save()
                 messages.success(request, "Settings updated successfully.")
                 return HttpResponseRedirect(reverse('sms_home'))
-    else:
-        form = SettingsForm(instance=sms)
+    form = SettingsForm(instance=sms)
     return direct_to_template(request, template='dashboard/marketing/sms_settings.html', extra_context={
         'form': form,
         'sms': sms
