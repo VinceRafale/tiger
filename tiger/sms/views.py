@@ -271,11 +271,11 @@ def edit_settings(request):
 
         elif 'add' in request.POST:
             add_word = request.POST.get('add')
-            if re.match(r'[a-zA-Z0-9]+$', add_word):
+            if re.match(r'[a-zA-Z0-9 ]+$', add_word):
                 sms.add_keywords(add_word)
                 messages.success(request, "Keyword added successfully.")
             else:
-                messages.error(request, "Keywords may contain only letters and numbers.")
+                messages.error(request, "Keywords may contain only letters, numbers, and spaces.")
         else:
             if form.is_valid():
                 form.save()
