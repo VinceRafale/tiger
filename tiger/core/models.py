@@ -83,6 +83,14 @@ class Section(models.Model):
                 self.name, self.schedule.display), self.get_absolute_url())
         return True
 
+    def for_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "items": [i.for_json() for i in self.item_set.all()]
+        }
+
 
 class ItemManager(models.Manager):
     use_for_related_fields = True
@@ -179,6 +187,19 @@ class Item(models.Model):
     def incomplete(self):
         return self.price_list in (None, [])
 
+    def for_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "spicy": self.spicy,
+            "vegetarian": self.vegetarian,
+            #"image": self.image,
+            "prices": [p.for_json() for p in self.variant_set.all()],
+            "extras": [x.for_json() for x in self.upgrade_set.all()],
+            "choices": [c.for_json() for c in self.sidedishgroup_set.all()]
+        }
+
 
 class LocationStockInfo(models.Model):
     item = models.ForeignKey(Item)
@@ -231,6 +252,13 @@ class Variant(models.Model):
                 self.description, self.schedule.display), self.item.get_absolute_url())
         return True
 
+    def for_json(self):
+        return {
+            'id': self.id,
+            'description': self.description,
+            'price': str(self.price)
+        }
+
 
 class Upgrade(models.Model):
     """Provides additional cost data and/or order processing instructions. For
@@ -254,6 +282,13 @@ class Upgrade(models.Model):
         self.price = '%.02f' % self.price
         super(Upgrade, self).save(*args, **kwargs)
 
+    def for_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'price': str(self.price)
+        }
+
 
 class SideDishGroup(models.Model):
     item = models.ForeignKey(Item, null=True, blank=True)
@@ -269,6 +304,12 @@ class SideDishGroup(models.Model):
             sides = '%s or %s' % (sides, last)
         return 'Choice of ' + sides
 
+    def for_json(self):
+        return {
+            "id": self.id,
+            "sidedishes": [side.for_json() for side in self.sidedish_set.all()]
+        }
+
 
 class SideDish(models.Model):
     group = models.ForeignKey(SideDishGroup)
@@ -280,6 +321,12 @@ class SideDish(models.Model):
             return mark_safe('%s (add $<span>%.02f</span>)' % (self.name, self.price))
         return self.name
 
+    def for_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'price': str(self.price)
+        }
 
 class Order(models.Model):
     METHOD_TAKEOUT = 1
