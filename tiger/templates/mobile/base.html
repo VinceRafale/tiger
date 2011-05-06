@@ -1,5 +1,101 @@
 <html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <title>{{ site.name }}</title>
+        <style type="text/css" media="screen">
+            
+        </style>
+    </head>
     <body>
-        <p>Feed me</p>
+        <header>
+{% block logo %}
+<h2>{{ site.name }}</h2>
+{% endblock %}
+{% block menu %}
+<nav>
+<ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url menu_home %}">Menu</a></li>
+    <li><a href="/about/">About</a></li>
+    <li><a href="/find-us/">Find Us</a></li>
+    {% if site.has_news %}
+    <li><a href="/news/">News</a></li>
+    {% endif %}
+</ul>
+</nav>
+{% endblock %}  
+{% block search %}
+<form method="GET" action="{% url menu_search %}">
+    {{ search_form.q }} <input type="submit" value="Go" /><br />
+    {{ search_form.vegetarian }} {{ search_form.vegetarian.label_tag }}
+    {{ search_form.spicy }} {{ search_form.spicy.label_tag }}
+</form>
+{% endblock %}
+</header>
+<section id="content">
+{% block messages %}
+{% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% load content_tags %}
+<h1>{% get_title site "homepage" %}</h1>
+<div>
+{% get_image site "homepage" "medium" %}
+{% get_body site "homepage" %}
+</div>
+{% endblock %}
+</section>
+
+
+
+
+{% block pdf %}
+{% if site.menu %}
+<p>
+    <a href="{{ site.menu.url }}">Download our menu (PDF)</a> 
+</p>
+{% endif %}
+{% endblock %}
+<footer>
+{% block contact %}
+{{ site.sidebar_locations }}
+{% endblock %}
+
+{% block social %}
+{% if site.twitter %}
+<div id="twitter">
+   <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a>
+</div>
+{% endif %}
+{% if site.facebook %}
+<div id="facebook">
+   <a href="{{ site.facebook }}">Facebook</a>!
+</div>
+{% endif %}
+{% endblock %}
+
+{% block mail %}
+{% if site.mailchimp %}
+<div id="mailchimp">
+    <form method="POST" action="{% url mailing_list_signup %}">
+    Join our mailing list!
+    <input type="text" name="email" /> <input type="submit" value="Join" />
+    </form>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+{{ site.footer_locations }}
+<p><a class="lightlink" href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> &bull; powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
+{% endblock %}
+</footer>
     </body>
 </html>
