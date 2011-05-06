@@ -59,7 +59,7 @@ var OrderItemView = Backbone.View.extend({
     id: "itemDetail",
 
     initialize: function () {
-        _.bindAll(this, "render", "showNameTag"); 
+        _.bindAll(this, "render"); 
     },
 
     render: function () {
