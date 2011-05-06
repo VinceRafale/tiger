@@ -53,3 +53,23 @@ var ItemDetailView = Backbone.View.extend({
         return this;
     },
 });
+
+var OrderItemView = Backbone.View.extend({
+    tagName: "div",
+    id: "itemDetail",
+
+    initialize: function () {
+        _.bindAll(this, "render", "showNameTag"); 
+    },
+
+    render: function () {
+        var item = this.model,
+            template = _.template($("#order-item").text()),
+            context = item.attributes;
+        context.choice_sets = item.choice_sets; 
+        context.extras = item.extras; 
+        context.prices = item.prices; 
+        $(this.el).html(template(context));
+        return this;
+    }
+});

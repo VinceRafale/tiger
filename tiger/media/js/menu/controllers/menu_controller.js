@@ -2,7 +2,8 @@ var MenuController = Backbone.Controller.extend({
     routes: {
         "": "sectionList",
         "section/:id": "sectionDetail",
-        "section/:id/item/:id": "itemDetail"
+        "section/:id/item/:id": "itemDetail",
+        "section/:id/item/:id/order": "orderItem"
     },
 
     sectionList: function () {
@@ -22,6 +23,14 @@ var MenuController = Backbone.Controller.extend({
         var section = App.sections.get(sectionId),
             item = section.items.get(itemId),
             view = new ItemDetailView({model: item});
+        $("#container").children().remove();
+        $("#container").append(view.render().el);
+    },
+
+    orderItem: function (sectionId, itemId) {
+        var section = App.sections.get(sectionId),
+            item = section.items.get(itemId),
+            view = new OrderItemView({model: item});
         $("#container").children().remove();
         $("#container").append(view.render().el);
     }
