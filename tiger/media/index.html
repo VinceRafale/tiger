@@ -1,0 +1,34 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <div id="container">
+        </div>
+
+        <!--TEMPLATEZ-->
+        <script id="section-list" type="text/html">
+<h3><a href='#section/<%= id %>'><%= name %></a></h3><p><%= description %></p>
+        </script>
+        <script id="item-list" type="text/html">
+<h3><a href='#section/<%= section_id %>/item/<%= id %>'><%= name %></a></h3><p><%= description %></p>
+        </script>
+        <script id="item-detail" type="text/html">
+        </script>
+
+        <!--SKRIPTZ-->
+        <script type="text/javascript" src="/js/underscore.js"></script>
+        <script type="text/javascript" src="/js/zepto.js"></script>
+        <script type="text/javascript" src="/js/backbone.js"></script>
+        <script type="text/javascript" src="/js/menu.js"></script>
+        <script type="text/javascript" src="/js/menu/models/section.js"></script>
+        <script type="text/javascript" src="/js/menu/models/item.js"></script>
+        <script type="text/javascript" src="/js/menu/models/variant.js"></script>
+        <script type="text/javascript" src="/js/menu/models/extra.js"></script>
+        <script type="text/javascript" src="/js/menu/models/choice_set.js"></script>
+        <script type="text/javascript" src="/js/menu/models/choice.js"></script>
+        <script type="text/javascript" src="/js/menu/views/sections.js"></script>
+        <script type="text/javascript" src="/js/menu/views/items.js"></script>
+        <script type="text/javascript" src="/js/menu/controllers/menu_controller.js"></script>
+        <script type="text/javascript" src="/js/menu/application.js"></script>
+    </body>
+</html>
