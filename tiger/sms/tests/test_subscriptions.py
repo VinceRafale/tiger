@@ -68,10 +68,29 @@ def get_twilio_header(uri, postVars):
             s += k + v
     return base64.encodestring(hmac.new(settings.TWILIO_ACCOUNT_TOKEN, s, sha1).digest()).strip()
 
+def set_up_keyword(keyword):
+    def _setup():
+        site = Site.objects.all()[0]
+        sms = site.sms
+        sms.keywords = [keyword]
+        sms.save()
+    return _setup
+
+def reset_keyword():
+    return set_up_keyword('in')
+
 def test_subscribe_keywords_subscribe():
     keyword = 'in'
     for kw in get_keyword_variants(keyword):
         yield check_subscribe, kw
+
+@with_setup(set_up_keyword("CAPS"), reset_keyword)
+def test_all_caps_subscribe_keyword():
+    check_subscribe("CAPS")
+
+@with_setup(set_up_keyword("has spaces"), reset_keyword)
+def test_subscribe_keyword_with_spaces():
+    check_subscribe("has spaces")
 
 def check_subscribe(keyword):
     data = get_data_for_request(keyword)

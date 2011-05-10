@@ -74,12 +74,12 @@
                                                 {% endif %}
                                             </div>
                                             <div class="remove"{% if not instance.image %} style="display:none;"{% endif %}>
-                                                <a class="remove" href="{% url remove_image component.key %}">Remove</a>
+                                                <a class="remove" href="{% url remove_image component.id %}">Remove</a>
                                                 <a class="view" target="_blank" href="{% if instance.image %}{{ instance.image.url }}{% else %}#{% endif %}">View current image</a> 
                                                 <div class="clear"></div>
                                             </div>
                                             {% if component.instance.staged_image %}
-                                                <input type="hidden" name="{{ component.key }}-stale" value="1" />
+                                                <input type="hidden" name="{{ component.id }}-stale" value="1" />
                                             {% endif %}
                                             {% endwith %}
                                             <div class="upload">

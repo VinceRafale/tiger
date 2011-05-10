@@ -79,10 +79,10 @@
 
 {% block sms %}
 {% if site.sms.enabled %}
-<div class="sms">
+<p class="sms social">
     <h4>Text Message Updates</h4>
     <p>Text <strong>&ldquo;{{ site.sms.keywords.0 }}&rdquo;</strong> to {{ site.sms.number_display }} for special mobile offers</p>
-</div>
+</p>
 {% endif %}
 {% endblock %}
 
