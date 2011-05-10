@@ -42,24 +42,12 @@ var ItemDetailView = Backbone.View.extend({
     tagName: "div",
     id: "itemDetail",
 
-    initialize: function () {
-        _.bindAll(this, "render"); 
+    events: {
+        "click #toggle-name": "toggleName"
     },
 
-    render: function () {
-        var template = _.template("<h1><%= name %></h1><p><%= description %></p>"),
-            context = this.model.attributes;
-        $(this.el).html(template(context));
-        return this;
-    },
-});
-
-var OrderItemView = Backbone.View.extend({
-    tagName: "div",
-    id: "itemDetail",
-
     initialize: function () {
-        _.bindAll(this, "render"); 
+        _.bindAll(this, "render", "toggleName"); 
     },
 
     render: function () {
@@ -69,7 +57,14 @@ var OrderItemView = Backbone.View.extend({
         context.choice_sets = item.choice_sets; 
         context.extras = item.extras; 
         context.prices = item.prices; 
+        context.ordering = App.ordering;
         $(this.el).html(template(context));
         return this;
+    },
+
+    toggleName: function (e) {
+        var nameTag = this.$("#add-name");
+        e.preventDefault();
+        nameTag.show();
     }
 });

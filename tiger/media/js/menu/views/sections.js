@@ -20,10 +20,13 @@ var SectionListView = Backbone.View.extend({
 
     initialize: function () {
         _.bindAll(this, "render", "renderOne"); 
+        this.collection.bind("add", this.render); 
     },
 
     render: function () {
         var self = this; 
+
+        $(this.el).children().remove();
 
         this.collection.each(function(section) {
             self.renderOne(section);    

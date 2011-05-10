@@ -1,9 +1,18 @@
 var App = {
-    sections: new Sections(menu.sections),
+    sections: new Sections(),
     views: {},
     init: function () {
-        this.controller = new MenuController;
-        Backbone.history.start();
+        _.each(sectionIds, function (sectionId) {
+            $.get("/menu/section/" + sectionId + ".json", function (data) {
+                var section = new Section(JSON.parse(data));
+                App.sections.add(section);
+                if (!App.controller) {
+                    this.controller = new MenuController;
+                    Backbone.history.start();
+                }
+            }, "json");
+        });
+
     }
 };
 App.init();

@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader, RequestContext, Template
-from django.template.loader import get_template
+from django.template.loader import get_template, select_template
 from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
@@ -18,9 +18,10 @@ def render_custom(request, template, context=None):
     # add toolbar if it's an authorized user
     if request.is_mobile:
         if template == 'base.html':
-            template = 'mobile/base.html'
+            template = 'base.html'
         else:
             context['base'] = 'mobile/base.html'
+        t = select_template(['mobile/' + template, template])
     else:
         if request.session.get('customizing'):
             if template == 'base.html':
@@ -37,7 +38,7 @@ def render_custom(request, template, context=None):
                 'base': 'base.html',
                 'pre_base': request.site.template()
             })
-    t = get_template(template)
+        t = get_template(template)
     c = RequestContext(request, context)
     rendered = t.render(c)
     return HttpResponse(rendered)

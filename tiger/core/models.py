@@ -255,7 +255,7 @@ class Variant(models.Model):
     def for_json(self):
         return {
             'id': self.id,
-            'description': self.description,
+            'description': str(self),
             'price': str(self.price)
         }
 
@@ -285,7 +285,7 @@ class Upgrade(models.Model):
     def for_json(self):
         return {
             'id': self.id,
-            'name': self.name,
+            'name': str(self),
             'price': str(self.price)
         }
 
@@ -324,7 +324,7 @@ class SideDish(models.Model):
     def for_json(self):
         return {
             'id': self.id,
-            'name': self.name,
+            'name': unicode(self),
             'price': str(self.price)
         }
 

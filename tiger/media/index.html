@@ -16,6 +16,9 @@
         </script>
         <script id="order-item" type="text/html">
 <h3><%= name %></h3>
+<p><%= description %></p>
+
+<% if (ordering) { %>
 <label id="qty"> 
     Quantity
     <input type="text" name="quantity" value="1" id="id_quantity" /> 
