@@ -1,11 +1,16 @@
-<html>
-    <head>
-    </head>
-    <body>
-        <div id="container">
-        </div>
+{% extends base %}
 
-        <!--TEMPLATEZ-->
+{% block title %}
+Choose a menu section
+{% endblock %}
+
+{% block content %}
+<h1>Our Menu</h1>
+<div id="container">
+</div>
+{% endblock %}
+
+{% block js %}
         <script id="section-list" type="text/html">
 <h3><a href='#section/<%= id %>'><%= name %></a></h3><p><%= description %></p>
         </script>
@@ -18,7 +23,6 @@
 <h3><%= name %></h3>
 <p><%= description %></p>
 
-<% if (ordering) { %>
 <label id="qty"> 
     Quantity
     <input type="text" name="quantity" value="1" id="id_quantity" /> 
@@ -69,22 +73,28 @@
 <input type="text" name="label" id="id_label" /> 
 </div> 
 <input id="submit" class="button ordering" type="submit" value="Add to order" /> 
-<% } %>
 </script>
-
-        <!--SKRIPTZ-->
-        <script type="text/javascript" src="/js/underscore.js"></script>
-        <script type="text/javascript" src="/js/zepto.js"></script>
-        <script type="text/javascript" src="/js/backbone.js"></script>
-        <script type="text/javascript" src="/js/menu/models/section.js"></script>
-        <script type="text/javascript" src="/js/menu/models/item.js"></script>
-        <script type="text/javascript" src="/js/menu/models/variant.js"></script>
-        <script type="text/javascript" src="/js/menu/models/extra.js"></script>
-        <script type="text/javascript" src="/js/menu/models/choice_set.js"></script>
-        <script type="text/javascript" src="/js/menu/models/choice.js"></script>
-        <script type="text/javascript" src="/js/menu/views/sections.js"></script>
-        <script type="text/javascript" src="/js/menu/views/items.js"></script>
-        <script type="text/javascript" src="/js/menu/controllers/menu_controller.js"></script>
-        <script type="text/javascript" src="/js/menu/application.js"></script>
-    </body>
-</html>
+<script type="text/javascript">
+var sectionIds = [
+    {% for section in sections %}
+    {{ section.id }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+</script>
+{% load compress %}
+{% compress js %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/underscore.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/zepto.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/backbone.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/section.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/item.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/variant.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/extra.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/choice_set.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/choice.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/views/sections.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/views/items.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/controllers/menu_controller.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/application.js"></script>
+{% endcompress %}
+{% endblock %}
