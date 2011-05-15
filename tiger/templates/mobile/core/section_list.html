@@ -86,15 +86,10 @@ var sectionIds = [
 <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/zepto.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/section.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/item.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/variant.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/extra.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/choice_set.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/models/choice.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/views/sections.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/views/items.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/controllers/menu_controller.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/menu/application.js"></script>
+<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/models.coffee"></script>
+<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/views/sections.coffee"></script>
+<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/views/items.coffee"></script>
+<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/controllers/menu_controller.coffee"></script>
+<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/application.coffee"></script>
 {% endcompress %}
 {% endblock %}
