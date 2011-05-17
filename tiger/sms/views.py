@@ -71,7 +71,8 @@ class SmsHomeBase(SmsView):
             'count': count_dict,
             'sms': sms,
             'campaigns': campaigns,
-            'inbox': SMS.objects.inbox_for(sms)[:5]
+            'inbox': SMS.objects.inbox_for(sms)[:5],
+            'list_counts': SmsSubscriber.objects.counts_per_tag(sms)
         })
         return context
 

@@ -87,6 +87,16 @@ class SmsSubscriberManager(models.Manager):
     def inactive(self):
         return self.filter(unsubscribed_at__isnull=False)
 
+    def counts_per_tag(self, sms_settings):
+        cursor = connection.cursor()
+        cursor.execute("""SELECT tag, count(*) FROM sms_smssubscriber 
+        WHERE settings_id = %s 
+        GROUP BY tag 
+        ORDER BY tag
+        """, [sms_settings.id])
+        return cursor.fetchall()
+
+
 
 class SmsSubscriber(models.Model):
     settings = models.ForeignKey(SmsSettings)
