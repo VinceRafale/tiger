@@ -29,6 +29,7 @@ class SwatchComponent(BaseComponent):
 
     def get_selector_prop(self):
         selector_property = """%(selector)s {
+            %(property)s: rgb(%%(triplet)s);
             %(property)s: rgba(%%(triplet)s,%%(alpha)s);
         }
         """
