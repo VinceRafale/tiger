@@ -55,7 +55,7 @@ def calculate_hour_string(timeslots, for_mobile=False):
     abbr_length = 3
     time_list = times.items()
     time_list.sort(key=lambda obj: obj[1][0])
-    tmpl = '<p><strong>%s<strong> %s</p>' if for_mobile else '%s %s'
+    tmpl = '<p><strong>%s</strong> %s</p>' if for_mobile else '%s %s'
     for k, v in time_list:
         # test if the dow ints are consecutive
         if v == range(v[0], v[-1] + 1) and len(v) > 1:
