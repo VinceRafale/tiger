@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from django.conf import settings
 from pytz import timezone
+from django.utils.safestring import mark_safe
 
 
 DOW_MONDAY = 0
@@ -37,7 +38,7 @@ def is_available(timeslots, location, buff=0):
             return availability
     return TIME_CLOSED
 
-def calculate_hour_string(timeslots):
+def calculate_hour_string(timeslots, for_mobile=False):
     # this implementation is a little naive, but let's just assume our customers
     # don't keep ridiculous hours
     if type(timeslots) != list:
@@ -54,12 +55,14 @@ def calculate_hour_string(timeslots):
     abbr_length = 3
     time_list = times.items()
     time_list.sort(key=lambda obj: obj[1][0])
+    tmpl = '<p><strong>%s<strong> %s</p>' if for_mobile else '%s %s'
     for k, v in time_list:
         # test if the dow ints are consecutive
         if v == range(v[0], v[-1] + 1) and len(v) > 1:
-            s = '%s-%s %s' % (time_dict[v[0]][:abbr_length], time_dict[v[-1]][:abbr_length], k)
+            days = '%s-%s' % (time_dict[v[0]][:abbr_length], time_dict[v[-1]][:abbr_length],)
         else:
-            s = '%s %s' % ('/'.join(time_dict[n][:abbr_length] for n in v), k)
-        time_strings.append(s)
-    hours_string = ', '.join(time_strings)
-    return hours_string
+            days = '%s' % '/'.join(time_dict[n][:abbr_length] for n in v)
+        
+        time_strings.append(tmpl % (days, k,))
+    hours_string = ('' if for_mobile else ', ').join(time_strings)
+    return mark_safe(hours_string)

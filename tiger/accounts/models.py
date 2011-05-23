@@ -280,6 +280,9 @@ class Schedule(models.Model):
             buff=buff
         )
 
+    def mobile_schedule(self):
+        return calculate_hour_string(self.timeslot_set.all(), for_mobile=True)
+
 class TimeSlot(models.Model):
     schedule = models.ForeignKey(Schedule)
     section = models.ForeignKey('core.Section', null=True, editable=False)
