@@ -1,104 +1,170 @@
+{% load compress %}
+<!DOCTYPE HTML>
 <html>
     <head>
+        <meta charset="utf-8">
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+        <link rel="apple-touch-icon-precomposed" href="http://media.meirish.com/images/appIcon.png">
         <title>{{ site.name }}</title>
+        {% compress css %}
+        <link rel="stylesheet" href="{{ MEDIA_URL }}css/mobile.scss" type="text/x-scss" media="screen" charset="utf-8">
+        {% endcompress %}
         <style type="text/css" media="screen">
-            
         </style>
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock %}">
+        <span id="home"></span>
         <header>
-{% block logo %}
-<h2>{{ site.name }}</h2>
-{% endblock %}
-{% block menu %}
-<nav>
-<ul>
-    <li><a href="/">Home</a></li>
-    <li><a href="{% url menu_home %}">Menu</a></li>
-    <li><a href="/about/">About</a></li>
-    <li><a href="/find-us/">Find Us</a></li>
-    {% if site.has_news %}
-    <li><a href="/news/">News</a></li>
-    {% endif %}
-</ul>
-</nav>
-{% endblock %}  
-{% block search %}
-<form method="GET" action="{% url menu_search %}">
-    {{ search_form.q }} <input type="submit" value="Go" /><br />
-    {{ search_form.vegetarian }} {{ search_form.vegetarian.label_tag }}
-    {{ search_form.spicy }} {{ search_form.spicy.label_tag }}
-</form>
-{% endblock %}
-</header>
-<section id="content">
-{% block messages %}
-{% if messages %}
-    <ul class="messages">
-    {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
-    {% endfor %}
-    </ul>
-{% endif %}
-{% endblock %}
+        {% block cart %}
+        <div class="cart">
+            {% if site.enable_orders %}
+            {% if cart|length %}
+            <a class="button ordering" href="{% url preview_order %}">{{ cart|length }} </a>
+            {% else %}
+            <div class="place-order">
+                <span>Hungry?</span>
+            <a class="button primary" href="{% url menu_home %}">Place an order</a>
+        </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endblock %}
+        <div id="banner">
+            {% block logo %}
+            <h2><a href="/">{{ site.name }}</a></h2>
+            {% endblock %}
+            {% block menu %}
+            <nav>
+            <ul>
+                <li><a href="{% url menu_home %}">Menu</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            </nav>
+            {% endblock %}  
+        </div>
+        </header>
+        <section id="content">
+        {% block content %}
+        {% endblock %}
+        </section>
+        {% block pdf %}
+        {% if site.menu %}
+        <p>
+            <a href="{{ site.menu.url }}">Download our menu (PDF)</a> 
+        </p>
+        {% endif %}
+        {% endblock %}
+        <footer>
+        {% block contact %}
+        {{ site.sidebar_locations }}
+        {% endblock %}
 
-{% block content %}
-{% load content_tags %}
-<h1>{% get_title site "homepage" %}</h1>
-<div>
-{% get_image site "homepage" "medium" %}
-{% get_body site "homepage" %}
+        {% block social %}
+        {% if site.twitter %}
+        <div id="twitter">
+            <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a>
+        </div>
+        {% endif %}
+        {% if site.facebook %}
+        <div id="facebook">
+            <a href="{{ site.facebook }}">Facebook</a>!
+        </div>
+        {% endif %}
+        {% endblock %}
+
+        {% block footer %}
+        {% block search %}
+        <form method="GET" action="{% url menu_search %}">
+            {{ search_form.q }} <input type="submit" value="Go" /><br />
+        </form>
+        {% endblock %}
+
+        <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about/">About</a></li>
+            {% if site.has_news %}
+            <li><a href="/news/">News</a></li>
+            {% endif %}
+            <li><a href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> </li>
+        </ul>
+        </nav>
+        <p>
+            Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
+        {% endblock %}
+        </footer>
+        {% block messages %}
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endblock %}
+<div id="contact">
+    <a href="#home" class="back-link"><<Back</a>
+    <h1>Contact {{site.name}}</h1>
+        {% if site.location_set.count == 1 %}
+        {% with site.location_set.all.0 as location %}
+        <a href="http://maps.google.com/?q={{ location.address|iriencode }}" class="maplink" style="background-image: url('http://maps.google.com/maps/api/staticmap?size=640x200&maptype=roadmap&markers=color:red%7C{{ location.address|iriencode }}&sensor=true');">
+    </a>
+        {% if location.address %}
+        <address>
+        <p>{{ location.street }}</p>
+        <p>{{ location.city }}, {{ location.state }} {{ location.zip_code }}</p>
+        </address>
+        {% endif %}
+        <p> {% if location.phone %}{{ location.phone }}{% else %}[your phone number ]{% endif %}</p>
+        <p>{% if location.fax_number %}Fax: {{ location.fax_number }}{% endif %}</p>
+        {% if location.email %}
+        <p>{{ location.email_display }}</p>
+        {% endif %}
+        {{ location.schedule.mobile_schedule|default:'[your restaurant hours]' }}
+        {% endwith %}
+        {% endif %}
+
+        {% if site.twitter %}
+        <div id="twitter">
+            <a href="http://twitter.com/{{ site.twitter }}">We're @{{ site.twitter }} on Twitter</a>
+        </div>
+        {% endif %}
+        {% if site.facebook %}
+        <div id="facebook">
+            <a href="{{ site.facebook }}">Like us on Facebook</a>
+        </div>
+        {% endif %}
+
+        {% block mail %}
+        {% if site.mailchimp %}
+        <div id="mailchimp">
+            <form method="POST" action="{% url mailing_list_signup %}">
+                <p>Join our mailing list!</p>
+                <em>just enter you email below to receive updates</em>
+                <input type="text" name="email" /> <input type="submit" value="Join" />
+            </form>
+        </div>
+        {% endif %}
+        {% endblock %}
+
 </div>
-{% endblock %}
-</section>
 
-
-
-
-{% block pdf %}
-{% if site.menu %}
-<p>
-    <a href="{{ site.menu.url }}">Download our menu (PDF)</a> 
-</p>
-{% endif %}
-{% endblock %}
-<footer>
-{% block contact %}
-{{ site.sidebar_locations }}
-{% endblock %}
-
-{% block social %}
-{% if site.twitter %}
-<div id="twitter">
-   <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a>
-</div>
-{% endif %}
-{% if site.facebook %}
-<div id="facebook">
-   <a href="{{ site.facebook }}">Facebook</a>!
-</div>
-{% endif %}
-{% endblock %}
-
-{% block mail %}
-{% if site.mailchimp %}
-<div id="mailchimp">
-    <form method="POST" action="{% url mailing_list_signup %}">
-    Join our mailing list!
-    <input type="text" name="email" /> <input type="submit" value="Join" />
-    </form>
-</div>
-{% endif %}
-{% endblock %}
-
-{% block footer %}
-{{ site.footer_locations }}
-<p><a class="lightlink" href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> &bull; powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
-{% endblock %}
-</footer>
-
-{% block js %}
-{% endblock %}
-    </body>
-</html>
+        {% compress js %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/zepto.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            // do some dom ready magic here for menu perhaps?
+        $(document).ready(function(){
+                $('.back-link').bind('touch click', function(e){
+                    e.preventDefault();
+                    history.back();
+                    return false;
+                    });
+                });
+            </script>
+            {% endcompress %}
+            {% block js %}
+            {% endblock %}
+        </body>
+    </html>

@@ -1,5 +1,5 @@
 class this.SectionView extends Backbone.View
-    tagName: "div"
+    tagName: "li"
 
     render: =>
         template = _.template $("#section-list").text()
@@ -9,7 +9,7 @@ class this.SectionView extends Backbone.View
 
 
 class this.SectionListView extends Backbone.View
-    tagName: "div"
+    tagName: "ul"
     id: "sectionList"
 
     initialize: ->
@@ -34,7 +34,7 @@ class this.SectionDetailView extends Backbone.View
     id: "sectionDetail"
 
     render: =>
-        template = _.template "<h1><%= name %></h1><p><%= description %></p><ul id='items'></ul>"
+        template = _.template "<div class='breadcrumb'> <a href='/menu/'>Menu</a></div><h1><%= name %></h1><p><%= description %></p><ul id='items'></ul>"
         context = @model.attributes
         $(@el).html(template context)
         @itemList = new ItemListView {

@@ -1,95 +1,89 @@
 {% extends base %}
-
+{% block body_class %}menu{% endblock %}
 {% block title %}
 Choose a menu section
 {% endblock %}
 
 {% block content %}
 <h1>Our Menu</h1>
+<div id="breadcrumbs">
+</div>
 <div id="container">
 </div>
 {% endblock %}
 
 {% block js %}
-        <script id="section-list" type="text/html">
-<h3><a href='#section/<%= id %>'><%= name %></a></h3><p><%= description %></p>
-        </script>
-        <script id="item-list" type="text/html">
-<h3><a href='#section/<%= section_id %>/item/<%= id %>'><%= name %></a></h3><p><%= description %></p>
-        </script>
-        <script id="item-detail" type="text/html">
-        </script>
-        <script id="order-item" type="text/html">
-<h3><%= name %></h3>
-<p><%= description %></p>
+<script id="section-list" type="text/html">
+    <a href='#section/<%= id %>'><h3><%= name %></h3><p><%= description %></p></a>
+</script>
+<script id="item-list" type="text/html">
+    <a href='#section/<%= section_id %>/item/<%= id %>'><h3><%= name %></h3><p><%= description %></p></a>
+</script>
+<script id="item-detail" type="text/html">
+</script>
+<script id="order-item" type="text/html">
+    <h3><%= name %></h3>
+    <p><%= description %></p>
 
-<label id="qty"> 
-    Quantity
-    <input type="text" name="quantity" value="1" id="id_quantity" /> 
-</label> 
-<div class="clear"></div> 
+    <label id="qty"> 
+        Quantity
+        <input type="text" name="quantity" value="1" id="id_quantity" /> 
+    </label> 
+    <div class="clear"></div> 
 
-<% if (prices.length > 1) { %>
-  <ul> 
-  <% prices.each(function (price, i) { %>
-    <li><label for="id_variant_<%= i %>"><input type="radio" id="id_variant_<%= i %>" value="<%= price.id %>" name="variant_<%= price.id %>" /> <%= price.get("name") %></label></li> 
-  <% }); %>
-  </ul> 
-<div class="clear"></div> 
-<% } %>
-
-<% if (choice_sets.length > 0) { %>
-  <% choice_sets.each(function (choice_set, i) { %>
-    <div class="upgrades"> 
-        
-        <label>Your choice of:</label> 
+    <% if (prices.length > 1) { %>
         <ul> 
-          <% choice_set.choices.each(function (choice, j) { %>
-            <li><label for="id_side_<%= choice_set.id %>_<%= j %>"><input type="radio" id="id_side_<%= choice_set.id %>_<%= j %>" value="<%= choice.id %>" name="side_<%= choice_set.id %>" /> <%= choice.get("name") %></label></li> 
-<% }); %>
+            <% prices.each(function (price, i) { %>
+                <li><label for="id_variant_<%= i %>"><input type="radio" id="id_variant_<%= i %>" value="<%= price.id %>" name="variant_<%= price.id %>" /> <%= price.get("name") %></label></li> 
+                <% }); %>
         </ul> 
+        <div class="clear"></div> 
+        <% } %>
+
+    <% if (choice_sets.length > 0) { %>
+        <% choice_sets.each(function (choice_set, i) { %>
+            <div class="upgrades"> 
+
+                <label>Your choice of:</label> 
+                <ul> 
+                    <% choice_set.choices.each(function (choice, j) { %>
+                        <li><label for="id_side_<%= choice_set.id %>_<%= j %>"><input type="radio" id="id_side_<%= choice_set.id %>_<%= j %>" value="<%= choice.id %>" name="side_<%= choice_set.id %>" /> <%= choice.get("name") %></label></li> 
+                        <% }); %>
+                </ul> 
+            </div> 
+            <% }); %>
+        <div class="clear"></div> 
+        <% } %>
+
+
+    <% if (extras.length > 0) { %>
+        <div class="upgrades"> 
+            <ul> 
+                <% extras.each(function (extra, i) { %>
+                    <li><label for="id_upgrades_<%= i %>"><input type="checkbox" name="upgrades" value="<%= extra.id %>" id="id_upgrades_<%= i %>" /> <%= extra.get("name") %></label></li> 
+                    <% }); %>
+            </ul> 
+        </div> 
+        <div class="clear"></div> 
+        <% } %>
+
+    <label for="id_notes">Special instructions (&quot;No MSG&quot;, &quot;Extra lettuce&quot;)</label> 
+    <input type="text" name="notes" id="id_notes" /> 
+    <a href="#" id="toggle-name">Ordering for multiple people?</a> 
+    <div id="add-name" style="display:none;"> 
+        <label for="id_label">Enter a name here and we&#39;ll label this item for that person.</label> 
+        <input type="text" name="label" id="id_label" /> 
     </div> 
-  <% }); %>
-<div class="clear"></div> 
-<% } %>
- 
- 
-<% if (extras.length > 0) { %>
-    <div class="upgrades"> 
-    <ul> 
-  <% extras.each(function (extra, i) { %>
-      <li><label for="id_upgrades_<%= i %>"><input type="checkbox" name="upgrades" value="<%= extra.id %>" id="id_upgrades_<%= i %>" /> <%= extra.get("name") %></label></li> 
-  <% }); %>
-    </ul> 
-    </div> 
-<div class="clear"></div> 
-<% } %>
- 
-<label for="id_notes">Special instructions (&quot;No MSG&quot;, &quot;Extra lettuce&quot;)</label> 
-<input type="text" name="notes" id="id_notes" /> 
-<a href="#" id="toggle-name">Ordering for multiple people?</a> 
-<div id="add-name" style="display:none;"> 
-<label for="id_label">Enter a name here and we&#39;ll label this item for that person.</label> 
-<input type="text" name="label" id="id_label" /> 
-</div> 
-<input id="submit" class="button ordering" type="submit" value="Add to order" /> 
+    <input id="submit" class="button ordering" type="submit" value="Add to order" /> 
 </script>
 <script type="text/javascript">
-var sectionIds = [
-    {% for section in sections %}
-    {{ section.id }}{% if not forloop.last %},{% endif %}
-    {% endfor %}
+    var sectionIds = [
+{% for section in sections %}
+{{ section.id }}{% if not forloop.last %},{% endif %}
+{% endfor %}
 ];
 </script>
 {% load compress %}
-{% compress js %}
-<script type="text/javascript" src="{{ MEDIA_URL }}js/underscore.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/zepto.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone.js"></script>
-<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/models.coffee"></script>
-<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/views/sections.coffee"></script>
-<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/views/items.coffee"></script>
-<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/controllers/menu_controller.coffee"></script>
-<script type="text/coffeescript" src="{{ MEDIA_URL }}js/menu/application.coffee"></script>
-{% endcompress %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/menu.js"></script>
 {% endblock %}
