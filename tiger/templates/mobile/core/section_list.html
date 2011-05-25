@@ -6,8 +6,6 @@ Choose a menu section
 
 {% block content %}
 <h1>Our Menu</h1>
-<div id="breadcrumbs">
-</div>
 <div id="container">
 </div>
 {% endblock %}
@@ -22,6 +20,9 @@ Choose a menu section
 <script id="item-detail" type="text/html">
 </script>
 <script id="order-item" type="text/html">
+    <div class="breadcrumbs">
+        <a href="/menu">Menu</a> <a href="#section/<%= section.id %>"><%= section.get("name") %></a>
+    </div>
     <h3><%= name %></h3>
     <p><%= description %></p>
 

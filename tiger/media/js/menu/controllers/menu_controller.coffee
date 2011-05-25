@@ -19,7 +19,7 @@ class this.MenuController extends Backbone.Controller
     itemDetail: (sectionId, itemId) ->
         section = App.sections.get sectionId
         item = section.items.get itemId
-        view = new ItemDetailView {model: item}
+        view = new ItemDetailView {model: item, section:section}
         $("#container").children().remove()
         $("#container").append view.render().el
 
