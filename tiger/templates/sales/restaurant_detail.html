@@ -7,6 +7,9 @@
 {% endblock %}
 
 {% block content %}
+        <p>Registered e-mail: {{ restaurant.user.email }} 
+            <form action="{% url email_restaurant restaurant.id %}" method="POST"><input type="submit" value="Resend account confirmation e-mail" />
+        </p>
         <p>Active as of {{ restaurant.signup_date|date }}</p>
         <p>Current plan: {{ restaurant.plan }}</p>
         {% with restaurant.location_set.all.0 as loc %}

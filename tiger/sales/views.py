@@ -188,3 +188,16 @@ def invoice_detail(request, invoice_id):
         raise Http404
     return direct_to_template(request, template='sales/invoice_detail.html', 
         extra_context={'invoice': invoice})
+
+@login_required
+def email_restaurant(request, site_id):
+    if request.method != 'POST':
+        raise Http404
+    account = request.user.get_profile()
+    try:
+        restaurant = account.site_set.get(id=site_id)
+    except Site.DoesNotExist:
+        raise Http404
+    restaurant.send_confirmation_email()
+    messages.success(request, 'E-mail sent.')
+    return HttpResponseRedirect(reverse('restaurant_detail', args=[site_id]))
