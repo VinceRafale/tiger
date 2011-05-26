@@ -172,13 +172,28 @@ div.html ul.errorlist li {
 }
 
 div.picker-widget div {
-    background:url("../img/select.png") repeat scroll center center transparent;
     height:30px;
     left:3px;
     position:absolute;
     top:3px;
     width:30px;
 }
+
+div.picker-widget div.frame {
+    background:url("../img/select.png") repeat scroll center center transparent;
+}
+
+div.picker-widget div.content.disabled {
+    background:url("../img/disable.png") repeat scroll center center transparent;
+}
+
+div.picker-widget div.content .transparency {
+    background:url("../img/transparent-small.png") repeat scroll center center transparent;
+    overflow:hidden;
+    width:22px;
+    height:22px;
+}
+
 .customizing .wrapper{margin-top:49px;}
 
 fieldset ul {
