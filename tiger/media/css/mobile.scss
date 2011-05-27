@@ -1,3 +1,5 @@
+   $darkBlue:#1f7be5;
+   $lightBlue:#4a9bea;
 @mixin button{
     border-radius:5px;
     color: #fff;
@@ -38,9 +40,9 @@ p{
     line-height: 1.2;
 }
   a:active{
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#b8c6df), color-stop(100%,#6d88b7));
-   background: -webkit-linear-gradient(top, #b8c6df 0%,#6d88b7 100%); 
-  color: #fff;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
+  -webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
+  color: #fff !important;
 }
 #home{
     display:block;
@@ -138,5 +140,19 @@ padding: 0;
     li a{
         display: block;
         padding: 0 1rem;
+        text-decoration: none;
+        color: inherit;
+        font-size: 1.2rem;
+        border: 1px solid rgba(0,0,0,.5);
+        border-width: 1px 0 1px 0;
+        border-top-color: rgba(255,255,255, .3);
+        h3{
+          margin: 1rem 0 0 0;
+        }
+        p{
+          font-size: 80%;
+          margin: 0 0 1rem 0;
+        }
       }
+
 }
