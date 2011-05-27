@@ -1,4 +1,5 @@
 {% load compress %}
+{% load stork_tags %}
 <!DOCTYPE HTML>
 <html>
     <head>
@@ -11,6 +12,7 @@
         <link rel="stylesheet" href="{{ MEDIA_URL }}css/mobile.scss" type="text/x-scss" media="screen" charset="utf-8">
         {% endcompress %}
         <style type="text/css" media="screen">
+        {% build_css site.theme %}
         </style>
     </head>
     <body class="{% block body_class %}{% endblock %}">
