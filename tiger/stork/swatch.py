@@ -32,18 +32,30 @@ class SwatchComponent(BaseComponent):
             %(property)s: rgb(%%(triplet)s);
             %(property)s: rgba(%%(triplet)s,%%(alpha)s);
         }
+        %(ie_selector)s {
+            %(property)s: %%(ie_color)s;
+        }
         """
         return [
             selector_property % {
                 'selector': prop.selector, 
-                'property': prop.css_property
+                'property': prop.css_property,
+                'ie_selector': ','.join([
+                    '.ie6 %s, .ie7 %s' % (select, select) 
+                    for select in prop.selector.split(',')
+                ])
             }
             for prop in self.properties
         ]
 
     def get_style_tag_contents(self):
+        instance = self.instance
         selectors = ''.join([
-            prop % {'triplet': self.instance.color, 'alpha': self.instance.alpha}
+            prop % {
+                'triplet': instance.color, 
+                'alpha': instance.alpha,
+                'ie_color': ("transparent" if instance.alpha == 0 else "rgb(%s)" % instance.color)
+            }
             for prop in self.get_selector_prop()
         ])
         return selectors

@@ -33,7 +33,7 @@ var TigerColorPicker = ColorPicker.extend({
             triplet = [rgb.r, rgb.g, rgb.b].join(",");
 
         for (var i=0, length = cssTemplate.length; i < length; i++) {
-            previewCss += cssTemplate[i].replace(/%\(triplet\)s/g, triplet).replace('%(alpha)s', alpha / 100);
+            previewCss += cssTemplate[i].replace(/%\(triplet\)s/g, triplet).replace('%(alpha)s', alpha / 100).replace('%(ie_color)s', (alpha === 0) ? "transparent" : "#" + hex);
         }
         setCss(styleTagSelector, previewCss);
         setUpButton(button, triplet, alpha / 100);
@@ -46,7 +46,6 @@ var TigerColorPicker = ColorPicker.extend({
         $(inputSelector).val(triplet);
         $(alphaSelector).val(alpha / 100);
         modified = true;
-        console.log( inputSelector )
     }
 });
 

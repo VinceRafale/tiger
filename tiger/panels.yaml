@@ -50,7 +50,7 @@
             order: 8
             properties:
               - selector: "#orderForm, .shaded"
-                css_property: background
+                css_property: background-color
           - name: Main content area
             id: centercolor
             type: swatch
@@ -58,7 +58,7 @@
             order: 7
             properties:
               - selector: "#content, #mainWrap, #sidebarWrap"
-                css_property: background
+                css_property: background-color
           - name: Background
             id: backgroundcolor
             type: swatch
@@ -66,7 +66,7 @@
             order: 13
             properties:
               - selector: body
-                css_property: background
+                css_property: background-color
       - components:
           - name: Background image
             id: backgroundimage
@@ -95,7 +95,7 @@
             order: 5
             properties:
               - selector: "#masthead, div.mastheadbackgroundcolor div"
-                css_property: background
+                css_property: background-color
           - name: Text
             id: mastheadtextcolor
             type: swatch
@@ -114,7 +114,7 @@
             order: 6
             properties:
               - selector: "#menu ul li a"
-                css_property: background
+                css_property: background-color
           - name: Menu item color (hover)
             id: menuitembackgroundhover
             type: swatch
@@ -124,7 +124,7 @@
               - selector: a
                 css_property: color
               - selector: "#menu ul li a:hover"
-                css_property: background
+                css_property: background-color
           - name: Menu item text
             id: menuitemtext
             type: swatch
@@ -148,7 +148,7 @@
             order: 6
             properties:
               - selector: "#menuWrap"
-                css_property: background
+                css_property: background-color
 - panel: 
     name: Buttons
     groups:
@@ -164,7 +164,7 @@
               - selector: "a"
                 css_property: color
               - selector: "a.button.primary, input.button.primary, #place-order.complete"
-                css_property: background
+                css_property: background-color
           - name: Color (hover)
             id: buttonbackgroundhover
             type: swatch
@@ -174,7 +174,7 @@
               - selector: "a:hover"
                 css_property: color
               - selector: "a.button.primary:hover, input.button.primary:hover, ::-moz-selection, ::selection"
-                css_property: background
+                css_property: background-color
           - name: Text
             id: buttontext
             type: swatch
@@ -201,7 +201,7 @@
             order: 9
             properties:
               - selector: "a.button.ordering, input.button.ordering"
-                css_property: background
+                css_property: background-color
           - name: Color (hover)
             id: orderbuttonbackgroundhover
             type: swatch
@@ -209,7 +209,7 @@
             order: 9
             properties:
               - selector: "a.button.ordering:hover, input.button.ordering:hover"
-                css_property: background
+                css_property: background-color
           - name: Text
             id: orderbuttontext
             type: swatch
@@ -238,7 +238,7 @@
             order: 6
             properties:
               - selector: ".footer"
-                css_property: background
+                css_property: background-color
           - name: Text
             id: footertext
             type: swatch
