@@ -68,7 +68,7 @@ def image_css(request, key):
 def save(request, redirect_to, callback=None):
     stork = Stork(request.site.theme)
     stork.save(request.POST, request.FILES)
-    return HttpResponseRedirect(reverse(redirect_to))
+    return HttpResponse("OK")
 
 
 def preview_html(request, key):
