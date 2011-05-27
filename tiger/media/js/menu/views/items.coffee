@@ -32,6 +32,7 @@ class this.ItemDetailView extends Backbone.View
         item = @model
         template = _.template $("#order-item").text()
         context = item.attributes
+        context.section = @options.section
         context.choice_sets = item.choice_sets
         context.extras = item.extras
         context.prices = item.prices

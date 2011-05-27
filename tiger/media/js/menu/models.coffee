@@ -6,6 +6,8 @@ class this.Section extends Backbone.Model
 class this.Sections extends Backbone.Collection
     model: Section
 
+    comparator: (section) ->
+        return section.id
 
 class this.Item extends Backbone.Model
     initialize: ->
@@ -16,6 +18,9 @@ class this.Item extends Backbone.Model
 
 class this.Items extends Backbone.Collection
     model: Item
+
+    comparator: (item) ->
+       return item.id
 
 
 class this.Variant extends Backbone.Model
