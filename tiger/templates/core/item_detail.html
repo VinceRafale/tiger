@@ -14,7 +14,7 @@
 {% endif %}
 <h1>{{ item.name }}{% if item.spicy %} <span class="pepper">❧</span>{% endif %}{% if item.vegetarian %} <span class="veg">veg</span>{% endif %}</h1>
 <h3 class="price">
-{% for price in item.price_list %}
+{% for price in item.pricing %}
     {{ price }}{% if item.price_list|length > 1 and not forloop.last %} / {% endif %}
 {% endfor %}
 </h3>

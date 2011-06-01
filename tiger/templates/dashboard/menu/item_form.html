@@ -38,6 +38,16 @@
 <label>{{ form.taxable }}
 {{ form.taxable.label }}
 </label>
+<label>{{ form.available_online }}
+{{ form.available_online.label }}
+</label>
+<p class='help'>{{ form.available_online.help_text }}</p>
+<div id="text-price-wrap">
+<label>{{ form.text_price.label }}
+{{ form.text_price }}
+</label>
+<p class='help'>{{ form.text_price.help_text }}</p>
+</div>
 {% if form.image.errors %}
 {{ form.image.errors }}
 {% endif %}
@@ -49,4 +59,21 @@
 <a class="cancel" href="{% url dashboard_menu %}">Cancel</a>
 <input type="submit" value="Save" class="submit buttonTop" />
 </div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    if ($("#id_available_online:checked").length) {
+        $("#text-price-wrap").hide();
+    }
+    $("#id_available_online").click(function () {
+        if ($(this).is(":checked")) {
+            $("#text-price-wrap").hide();
+        } else {
+            $("#text-price-wrap").show();
+        }
+    });
+});
+</script>
 {% endblock %}

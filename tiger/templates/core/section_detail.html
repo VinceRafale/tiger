@@ -30,11 +30,11 @@
             {% endif %}
         </div>
         <div>
-            {% if site.enable_orders %}
+            {% if location.enable_orders and item.available_online %}
             <a class="button ordering" href="{% url order_item section.id section.slug item.id item.slug %}">add to order</a>
             {% endif %}
             <ul> 
-            {% for price in item.price_list %}
+            {% for price in item.pricing %}
                     <li>{{ price }}</li>
             {% endfor %}
             </ul>

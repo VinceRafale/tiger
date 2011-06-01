@@ -78,7 +78,9 @@ td {vertical-align:top; padding:0.5em;}
     {% for item in section.item_set.active %}
         <h4>{{ item.name }}
         <em>&nbsp;&nbsp;&nbsp;&nbsp;
-        {{ item.price_list|join:"&nbsp;&nbsp;&bull;&nbsp;&nbsp;" }}
+        {% for price in item.pricing %}
+            {{ price }}{% if item.price_list|length > 1 and not forloop.last %}&nbsp;&nbsp;&nbsp;&nbsp;{% endif %}
+        {% endfor %}
         </em></h4>
         {% if show_descriptions %}
             <p>{{ item.description }}</p>

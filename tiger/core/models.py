@@ -92,7 +92,7 @@ class ItemManager(models.Manager):
         return render_to_string(template, {'site': site, 'items': items})
 
     def active(self):
-        return self.filter(archived=False, price_list__isnull=False).exclude(price_list=[])
+        return self.filter(archived=False, price_list__isnull=False).exclude(price_list=[], text_price='')
 
 
 class Item(models.Model):
@@ -121,6 +121,8 @@ class Item(models.Model):
     taxable = models.BooleanField(default=True)
     price_list = PickledObjectField(null=True, editable=False)
     posting_stage = models.SmallIntegerField(default=0, choices=STAGE_CHOICES, editable=False)
+    available_online = models.BooleanField("Can this item be ordered online?", help_text="Only takes effect if online ordering is enabled for your restaurant.", default=True)
+    text_price = models.CharField("Display price", blank=True, default="", help_text='If you don\'t want to provide pricing for this item in the structured way you do for online ordering, put whatever you want in the field above and we\'ll display it as the pricing for this item (i.e. "market price", "$15/lb", etc.', max_length=20)
     objects = ItemManager()
 
     class Meta:
@@ -166,6 +168,8 @@ class Item(models.Model):
                 self.get_absolute_url())
         if self.archived or self.out_of_stock(location):
             raise ItemNotAvailable(ITEM_NOT_AVAILABLE % self.name, redirect_to=self.get_absolute_url())
+        if not self.available_online and location.enable_orders:
+            raise ItemNotAvailable(ITEM_NOT_AVAILABLE_ONLINE % self.name, self.get_absolute_url())
         return True
 
     def out_of_stock(self, location):
@@ -177,7 +181,18 @@ class Item(models.Model):
 
     @property
     def incomplete(self):
-        return self.price_list in (None, [])
+        return self.price_list in (None, []) and not (not self.available_online and self.text_price) 
+
+    @property
+    def pricing(self):
+        """Returns either `price_list` or `text_price` so that values can be looped 
+        over all black-box-like."""
+        if self.available_online:
+            return self.price_list
+        if self.text_price:
+            return [self.text_price]
+        return []
+
 
 
 class LocationStockInfo(models.Model):

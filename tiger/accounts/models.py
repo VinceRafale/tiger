@@ -164,6 +164,15 @@ class Site(models.Model):
                     options.append(opt.replace('_', '-'))
         return list(set(options))
 
+    def authorized(self, user):
+        if self.account.user == user:
+            return True
+        if self.user == user:
+            return True
+        if user.is_superuser:
+            return True
+        return False
+
 
 class Location(models.Model):
     RECEIPT_EMAIL = 1
