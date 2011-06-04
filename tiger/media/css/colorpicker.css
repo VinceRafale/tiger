@@ -12,13 +12,13 @@
      */
 }
 
-.colorpicker_nav {
+.colorpicker .colorpicker_nav {
 	position: absolute;
 	top: 3px;
 	right: 5px;
 }
 
-.colorpicker_nav a {
+.colorpicker .colorpicker_nav a {
     text-decoration:none;
     background-color:#dedede;
     width:14px;
@@ -31,19 +31,19 @@
     font-size:12px;
 }
 
-.colorpicker_nav a:hover {
+.colorpicker .colorpicker_nav a:hover {
     background-color:#fff;
 }
 
-.colorpicker_nav a.colorpicker_cancel {
+.colorpicker .colorpicker_nav a.colorpicker_cancel {
     color:#bb0000;
 }
 
-.colorpicker_nav a.colorpicker_accept {
+.colorpicker .colorpicker_nav a.colorpicker_accept {
     color:#008800;
 }
 
-.colorpicker_color {
+.colorpicker .colorpicker_color {
 	position: absolute;
 	top: 10px;
 	left: 10px;
@@ -54,7 +54,7 @@
 	cursor: crosshair;
 }
 
-.colorpicker_color .alpha_channel {
+.colorpicker .colorpicker_color .alpha_channel {
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -63,7 +63,7 @@
 	background: transparent url(../img/transparent.png);
 }
 
-.colorpicker_color div {
+.colorpicker .colorpicker_color div {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -71,7 +71,7 @@
 	height: 150px;
 	background: url(../img/colorpicker_overlay.png);
 }
-.colorpicker_color div div {
+.colorpicker .colorpicker_color div div {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -81,7 +81,7 @@
 	background: url(../img/colorpicker_select.gif);
 	margin: -5px 0 0 -5px;
 }
-.colorpicker_hue {
+.colorpicker .colorpicker_hue {
 	background: url(../img/hue.png) center no-repeat;
 	position: absolute;
 	top: 10px;
@@ -90,7 +90,7 @@
 	height: 150px;
 	cursor: n-resize;
 }
-.colorpicker_hue div {
+.colorpicker .colorpicker_hue div {
 	position: absolute;
 	width: 35px;
 	height: 9px;
@@ -104,7 +104,7 @@
     left:215px;
     top:22px;
 }
-.colorpicker input {
+.colorpicker div input {
 	font-size: 13px;
 	font-family: Arial, Helvetica, sans-serif;
 	text-align: center;
@@ -117,11 +117,11 @@
     color:#ccc;
 }
 
-.colorpicker input.hex {
+.colorpicker div input.hex {
 	font-size: 11px;
 }
 
-.colorpicker_fields label {
+.colorpicker_fields div label {
     font-size:13px;
     color:#ccc;
     width:15px;

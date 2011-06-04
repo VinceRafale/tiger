@@ -72,7 +72,7 @@ def import_theme(theme_dir, name=None):
         raise KeyError("No dirname provided for theme assets.")
     asset_target = os.path.join(settings.MEDIA_ROOT, 'theme-assets', target)
     notes = manifest.pop('notes', '')
-    theme = Theme.objects.create(private=False, description=description, notes=notes, name=manifest.pop('name'))
+    theme, created = Theme.objects.get_or_create(name=manifest.pop('name'), defaults=dict(private=False, description=description))
     theme.screenshot.save(screenshot.rsplit('/', 1)[1], ContentFile(open(screenshot).read()))
     os.remove(screenshot)
 
@@ -93,7 +93,10 @@ def import_theme(theme_dir, name=None):
             instance = component.instance
             switch[component.model](instance, asset_dir, values)
 
-    os.makedirs(asset_target)
+    try:
+        os.makedirs(asset_target)
+    except:
+        pass
 
     for f in os.listdir(asset_dir):
         shutil.move(os.path.join(asset_dir, f), os.path.join(asset_target, f))
