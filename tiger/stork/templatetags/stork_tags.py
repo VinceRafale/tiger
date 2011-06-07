@@ -18,4 +18,5 @@ def is_filefield(value):
 @register.simple_tag
 def build_css(theme):
     stork = Stork(theme)
-    return stork.compressed_css("backgroundimage", "cssoverrides")
+    return ';\n'.join("$%s: rgba(%s,%s)" % (swatch.id, swatch.instance.color, swatch.instance.alpha) for swatch in stork.swatches) + ";"
+
