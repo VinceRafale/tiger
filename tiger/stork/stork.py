@@ -64,17 +64,18 @@ class Stork(object):
             instance.save()
         target.update(self.compressed_css())
 
-    def css(self):
+    def css(self, *excludes):
         css_ordered_components = sorted([
             component for name, component in self.component_cache
+            if name not in excludes
         ], key=lambda x: x.order)
         return ''.join([
             c.get_css()
             for c in css_ordered_components
         ])
 
-    def compressed_css(self):
-        compressed = cssmin.cssmin(self.css())
+    def compressed_css(self, *excludes):
+        compressed = cssmin.cssmin(self.css(*excludes))
         return compressed
 
     def swatch_json(self):

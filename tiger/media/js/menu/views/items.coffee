@@ -27,6 +27,7 @@ class this.ItemDetailView extends Backbone.View
 
     events:
         "click #toggle-name": "toggleName"
+        "click #toggle-extras": "toggleExtras"
 
     render: =>
         item = @model
@@ -38,9 +39,24 @@ class this.ItemDetailView extends Backbone.View
         context.prices = item.prices
         context.ordering = App.ordering
         $(@el).html(template context)
+        @$('.extras').hide();
         return this
 
     toggleName: (e) =>
         nameTag = @$("#add-name")
         e.preventDefault()
         nameTag.show()
+
+    toggleExtras: (e) ->
+        extras = @$(".extras")
+        targ = $(e.target)
+        changeText = targ.data("text")
+        currText = targ.text()
+        e.preventDefault()
+        targ.text(changeText).data "text", currText
+        if extras.height()
+            extras.hide()
+                #anim {'height':'0px'}, .35, 'ease-in'
+        else
+            extras.show()
+                #anim {'height':'auto'}, .35, 'ease-in'

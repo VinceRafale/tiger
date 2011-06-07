@@ -1,0 +1,158 @@
+   $darkBlue:#1f7be5;
+   $lightBlue:#4a9bea;
+@mixin button{
+    border-radius:5px;
+    color: #fff;
+    text-decoration: none;
+    background-color: rgba(0,0,0,.7);
+    padding: 5px 10px;
+    display: inline-block;
+    margin: 0 2px;
+}
+@mixin border-box{
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+@mixin ul-reset{
+    padding: 0;
+    margin: 0;
+    list-style-type:none;
+}
+body, html{
+    overflow-x: hidden;
+    margin: 0; 
+    padding: 0;
+    background-color: #B8BABF;
+    font-size: 14px;
+}
+body{
+  width: 100%;
+  @include border-box;
+}
+div.section, section{
+    position:relative;
+    display: block; 
+    clear: both; 
+    padding: 0 1rem;
+}
+p{
+    font-size: 16px;
+    line-height: 1.2;
+}
+  a:active{
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
+  -webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
+  color: #fff !important;
+}
+#home{
+    display:block;
+    visibility: hidden;
+    position: absolute;
+    top:0;
+}
+
+nav ul{
+    list-display-type: none;
+    margin: 0;
+    padding: 0;
+}
+#banner{
+    overflow: auto; 
+    padding: .5em;
+    h2{
+        max-width: 50%;
+        float: left; 
+        margin: 0;
+    }
+    nav{
+      float:right;
+      padding: 5px;
+      ul li{
+        display: inline-block;
+      }
+      a{
+        @include button;
+      }
+    }
+}
+.inset-left{
+  float:left; 
+  margin: 0 10px 10px 0;
+  max-width: 50%; 
+  background-size: auto auto;
+}
+div.cart{
+  background: black;
+  color: #fff;
+  padding: 5px;
+  overflow: auto;
+  a.button{
+    @include button;
+      background: rgba(255,255,255, .2);
+      float: right;
+      font: normal 12px/1 sans-serif;
+  }
+}
+.maplink{
+  @include border-box;
+  display: block; 
+  height: 220px;
+  width: 100%;
+  background-position: center 10px;
+  background-repeat: no-repeat;
+  background-color: rgba(0,0,0,.3);
+}
+#contact{
+  @include border-box;
+  -webkit-transition: all 350ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+  position:absolute;
+  width: 100%;
+  background: white;
+  top: 0;
+  overflow-x:hidden;
+  left: 0;
+  -webkit-transform: translate3d(100%, 0, 0);
+  height: auto;
+  padding-bottom: 2em;
+  > *{
+    padding: 0 1em;
+  }
+}
+#contact:target{
+  -webkit-transform: translate3d(0, 0, 0);
+  overflow:auto;
+  #twitter, #facebook{
+  @include border-box;
+    width: 46%;
+    margin: 0 1%;
+    display: inline-block;
+    font-size: 16px;
+    text-align: center;
+  }
+  #facebook{
+  }
+}
+body.menu section{
+padding: 0;
+}
+#sectionList, #items, .upgrades ul{
+    @include ul-reset;
+    li a{
+        display: block;
+        padding: 0 1rem;
+        text-decoration: none;
+        color: inherit;
+        font-size: 1.2rem;
+        border: 1px solid rgba(0,0,0,.5);
+        border-width: 1px 0 1px 0;
+        border-top-color: rgba(255,255,255, .3);
+        h3{
+          margin: 1rem 0 0 0;
+        }
+        p{
+          font-size: 80%;
+          margin: 0 0 1rem 0;
+        }
+      }
+
+}

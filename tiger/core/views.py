@@ -8,6 +8,7 @@ from django.forms.util import ErrorList
 from django.http import (HttpResponsePermanentRedirect, 
     HttpResponseRedirect, Http404, HttpResponse)
 from django.shortcuts import get_object_or_404
+from django.utils import simplejson as json
 from django.views.generic.simple import direct_to_template
 
 from greatape import MailChimp, MailChimpError
@@ -48,6 +49,10 @@ def section_detail(request, section_id, section_slug):
     s = get_object_or_404(Section, slug=section_slug, id=section_id, site=request.site)
     return render_custom(request, 'core/section_detail.html', 
         {'section': s})
+
+def section_json(request, section_id):
+    s = get_object_or_404(Section, id=section_id, site=request.site)
+    return HttpResponse(json.dumps(s.for_json()))
     
 def item_detail_abbr(request, section, item):
     try:

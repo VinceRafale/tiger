@@ -1,0 +1,363 @@
+{% load compress %}
+{% load stork_tags %}
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+        <link rel="apple-touch-icon-precomposed" href="http://media.meirish.com/images/appIcon.png">
+        <title>{{ site.name }}</title>
+        {% compress css %}
+        <style type="text/x-scss" media="screen">
+        {% build_css site.theme %}
+
+//$headerfontcolor: rgba(119,255,0,1.0);
+//$bodyfontcolor: rgba(255,255,255,1.0);
+//$accentcolor: rgba(247,10,10,1.0);
+//$centercolor: rgba(0,0,0,1.0);
+//$backgroundcolor: rgba(0,0,0,1.0);
+//$mastheadbackgroundcolor: rgba(0,0,0,1.0);
+//$mastheadtextcolor: rgba(145,255,0,1.0);
+//$menuitembackground: rgba(247,255,0,1.0);
+//$menuitembackgroundhover: rgba(255,255,0,1.0);
+//$menuitemtext: rgba(0,0,0,1.0);
+//$menuitemtexthover: rgba(0,0,0,1.0);
+//$menubackgroundcolor: rgba(247,255,0,1.0);
+//$buttoncolor: rgba(255,255,0,1.0);
+//$buttonbackgroundhover: rgba(255,255,0,1.0);
+//$buttontext: rgba(0,0,0,1.0);
+//$buttontexthover: rgba(0,0,0,1.0);
+//$orderbuttonbackground: rgba(255,255,0,1.0);
+//$orderbuttonbackgroundhover: rgba(255,255,0,1.0);
+//$orderbuttontext: rgba(0,0,0,1.0);
+//$orderbuttontexthover: rgba(0,0,0,1.0);
+//$footerbackground: rgba(247,255,0,1.0);
+//$footertext: rgba(0,0,0,1.0);
+//$footerlink: rgba(0,0,0,1.0);
+//$footerlinkhover: rgba(0,0,0,1.0)
+
+$darkBlue:#1f7be5;
+$lightBlue:#4a9bea;
+@mixin button{
+  border-radius:5px;
+    color: #fff;
+    text-decoration: none;
+    background-color: rgba(0,0,0,.7);
+    padding: 5px 10px;
+    display: inline-block;
+    margin: 0 2px;
+}
+@mixin border-box{
+  -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+@mixin ul-reset{
+  padding: 0;
+    margin: 0;
+    list-style-type:none;
+}
+body, html{
+  overflow-x: hidden;
+    margin: 0; 
+    padding: 0;
+    background-color: $centercolor;
+    font-size: 14px;
+    color: $bodyfontcolor;
+}
+body{
+  width: 100%;
+  @include border-box;
+}
+div.section, section{
+  position:relative;
+    display: block; 
+    clear: both; 
+    padding: 0 1rem;
+}
+p{
+  font-size: 16px;
+    line-height: 1.2;
+}
+  a:active{
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
+  -webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
+  color: #fff !important;
+}
+#home{
+  display:block;
+    visibility: hidden;
+    position: absolute;
+    top:0;
+}
+
+nav ul{
+  list-display-type: none;
+    margin: 0;
+    padding: 0;
+}
+#banner{
+  overflow: auto; 
+    padding: .5em;
+    h2{
+      max-width: 50%;
+        float: left; 
+        margin: 0;
+    }
+    nav{
+      float:right;
+      padding: 5px;
+      ul li{
+        display: inline-block;
+      }
+      a{
+        @include button;
+      }
+    }
+}
+.inset-left{
+  float:left; 
+  margin: 0 10px 10px 0;
+  max-width: 50%; 
+  background-size: auto auto;
+}
+div.cart{
+  background: black;
+  color: #fff;
+  padding: 5px;
+  overflow: auto;
+  a.button{
+    @include button;
+      background: rgba(255,255,255, .2);
+      float: right;
+      font: normal 12px/1 sans-serif;
+  }
+}
+.maplink{
+  @include border-box;
+    display: block; 
+  height: 220px;
+  width: 100%;
+  background-position: center 10px;
+  background-repeat: no-repeat;
+  background-color: rgba(0,0,0,.3);
+}
+#contact{
+  @include border-box;
+    -webkit-transition: all 350ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+  position:absolute;
+  width: 100%;
+  background: white;
+  top: 0;
+  overflow-x:hidden;
+  left: 0;
+  -webkit-transform: translate3d(100%, 0, 0);
+  height: auto;
+  padding-bottom: 2em;
+  > *{
+    padding: 0 1em;
+  }
+}
+#contact:target{
+  -webkit-transform: translate3d(0, 0, 0);
+  overflow:auto;
+  #twitter, #facebook{
+  @include border-box;
+    width: 46%;
+    margin: 0 1%;
+    display: inline-block;
+    font-size: 16px;
+    text-align: center;
+  }
+  #facebook{
+  }
+}
+body.menu section{
+  padding: 0;
+}
+#sectionList, #items, .upgrades ul{
+    @include ul-reset;
+    li a{
+      display: block;
+        padding: 0 1rem;
+        text-decoration: none;
+        color: inherit;
+        font-size: 1.2rem;
+        border: 1px solid rgba(0,0,0,.5);
+        border-width: 1px 0 1px 0;
+        border-top-color: rgba(255,255,255, .3);
+        h3{
+          margin: 1rem 0 0 0;
+        }
+        p{
+          font-size: 80%;
+          margin: 0 0 1rem 0;
+        }
+      }
+
+}
+        </style>
+        {% endcompress %}
+    </head>
+    <body class="{% block body_class %}{% endblock %}">
+        <span id="home"></span>
+        <header>
+        {% block cart %}
+        <div class="cart">
+            {% if site.enable_orders %}
+            {% if cart|length %}
+            <a class="button ordering" href="{% url preview_order %}">{{ cart|length }} </a>
+            {% else %}
+            <div class="place-order">
+                <span>Hungry?</span>
+            <a class="button primary" href="{% url menu_home %}">Place an order</a>
+        </div>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endblock %}
+        <div id="banner">
+            {% block logo %}
+            <h2><a href="/">{{ site.name }}</a></h2>
+            {% endblock %}
+            {% block menu %}
+            <nav>
+            <ul>
+                <li><a href="{% url menu_home %}">Menu</a></li>
+                <li><a href="#contact" class="contact">Contact</a></li>
+            </ul>
+            </nav>
+            {% endblock %}  
+        </div>
+        </header>
+        <section id="content">
+        {% block content %}
+        {% endblock %}
+        </section>
+        {% block pdf %}
+        {% if site.menu %}
+        <p>
+            <a href="{{ site.menu.url }}">Download our menu (PDF)</a> 
+        </p>
+        {% endif %}
+        {% endblock %}
+        <footer>
+        {% block contact %}
+        {{ site.sidebar_locations }}
+        {% endblock %}
+
+        {% block social %}
+        {% if site.twitter %}
+        <div id="twitter">
+            <a href="http://twitter.com/{{ site.twitter }}">follow us on Twitter</a>
+        </div>
+        {% endif %}
+        {% if site.facebook %}
+        <div id="facebook">
+            <a href="{{ site.facebook }}">Facebook</a>!
+        </div>
+        {% endif %}
+        {% endblock %}
+
+        {% block footer %}
+        {% block search %}
+        <form method="GET" action="{% url menu_search %}">
+            {{ search_form.q }} <input type="submit" value="Go" /><br />
+        </form>
+        {% endblock %}
+
+        <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about/">About</a></li>
+            {% if site.has_news %}
+            <li><a href="/news/">News</a></li>
+            {% endif %}
+            <li><a href="{{ site.tiger_domain }}/dashboard/">Restaurant login</a> </li>
+        </ul>
+        </nav>
+        <p>
+            Powered by <a class="lightlink" href="http://www.takeouttiger.com">Takeout Tiger</a> </p> 
+        {% endblock %}
+        </footer>
+        {% block messages %}
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endblock %}
+<div id="contact">
+    <a href="#home" class="back-link"><<Back</a>
+    <h1>Contact {{site.name}}</h1>
+        {% if site.location_set.count == 1 %}
+        {% with site.location_set.all.0 as location %}
+        <a href="http://maps.google.com/?q={{ location.address|iriencode }}" class="maplink" style="background-image: url('http://maps.google.com/maps/api/staticmap?size=640x200&maptype=roadmap&markers=color:red%7C{{ location.address|iriencode }}&sensor=true');">
+    </a>
+        {% if location.address %}
+        <address>
+        <p>{{ location.street }}</p>
+        <p>{{ location.city }}, {{ location.state }} {{ location.zip_code }}</p>
+        </address>
+        {% endif %}
+        <p> {% if location.phone %}{{ location.phone }}{% else %}[your phone number ]{% endif %}</p>
+        <p>{% if location.fax_number %}Fax: {{ location.fax_number }}{% endif %}</p>
+        {% if location.email %}
+        <p>{{ location.email_display }}</p>
+        {% endif %}
+        {{ location.schedule.mobile_schedule|default:'[your restaurant hours]' }}
+        {% endwith %}
+        {% endif %}
+
+        {% if site.twitter %}
+        <div id="twitter">
+            <a href="http://twitter.com/{{ site.twitter }}">We're @{{ site.twitter }} on Twitter</a>
+        </div>
+        {% endif %}
+        {% if site.facebook %}
+        <div id="facebook">
+            <a href="{{ site.facebook }}">Like us on Facebook</a>
+        </div>
+        {% endif %}
+
+        {% block mail %}
+        {% if site.mailchimp %}
+        <div id="mailchimp">
+            <form method="POST" action="{% url mailing_list_signup %}">
+                <p>Join our mailing list!</p>
+                <em>just enter you email below to receive updates</em>
+                <input type="text" name="email" /> <input type="submit" value="Join" />
+            </form>
+        </div>
+        {% endif %}
+        {% endblock %}
+
+</div>
+
+        {% compress js %}
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore.js"></script>
+        <script type="text/javascript" src="{{ MEDIA_URL }}js/zepto.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            // do some dom ready magic here for menu perhaps?
+        $(document).ready(function(){
+                $('.back-link').bind('touch click', function(e){
+                    e.preventDefault();
+                    $('body').css('height','auto');
+                    history.back();
+                    return false;
+                });
+                $('.contact').bind('touch click', function(e){
+                    var cHeight = $('#contact').height();
+                    console.log(cHeight);
+                        $('body').css('height',cHeight+'px');
+                        
+                 });
+            });
+        </script>
+            {% endcompress %}
+            {% block js %}
+            {% endblock %}
+        </body>
+    </html>

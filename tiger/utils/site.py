@@ -1,5 +1,6 @@
 import re
 
+from django.conf import settings
 from django.contrib.sites.models import RequestSite as BaseRequestSite
 
 from tiger.accounts.models import Site
@@ -26,5 +27,7 @@ class RequestSite(BaseRequestSite):
         try:
             domain = Site.objects.get(domain__iexact=self.domain)
         except Site.DoesNotExist:
+            if settings.DEBUG:
+                return Site.objects.all()[0]
             return None
         return domain

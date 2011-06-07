@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader, RequestContext, Template
-from django.template.loader import get_template
+from django.template.loader import get_template, select_template
 from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
@@ -16,22 +16,29 @@ def render_custom(request, template, context=None):
     if context is None:
         context = {}
     # add toolbar if it's an authorized user
-    if request.session.get('customizing'):
+    if request.is_mobile:
         if template == 'base.html':
-            template = 'dashboard/look/preview.html'
-        panels = Stork(request.site.theme)
-        context.update({
-            'styles': panels.style_tags(),
-            'toolbar': panels.toolbar(),
-            'base': 'dashboard/look/preview.html',
-            'pre_base': panels['layout'].as_template(staged=True),
-        })
+            template = 'base.html'
+        else:
+            context['base'] = 'mobile/base.html'
+        t = select_template(['mobile/' + template, template])
     else:
-        context.update({
-            'base': 'base.html',
-            'pre_base': request.site.template()
-        })
-    t = get_template(template)
+        if request.session.get('customizing'):
+            if template == 'base.html':
+                template = 'dashboard/look/preview.html'
+            panels = Stork(request.site.theme)
+            context.update({
+                'styles': panels.style_tags(),
+                'toolbar': panels.toolbar(),
+                'base': 'dashboard/look/preview.html',
+                'pre_base': panels['layout'].as_template(staged=True),
+            })
+        else:
+            context.update({
+                'base': 'base.html',
+                'pre_base': request.site.template()
+            })
+        t = get_template(template)
     c = RequestContext(request, context)
     rendered = t.render(c)
     return HttpResponse(rendered)

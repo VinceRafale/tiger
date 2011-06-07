@@ -207,3 +207,7 @@ class CreatePlanForm(BetterModelForm):
     class Meta:
         model = Plan
         exclude = ('account',)
+
+
+class ImportMenuForm(BetterModelForm):
+    import_file = forms.FileField()
