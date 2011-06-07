@@ -285,7 +285,7 @@ class Upgrade(models.Model):
     def for_json(self):
         return {
             'id': self.id,
-            'name': str(self),
+            'name': self.name,
             'price': str(self.price)
         }
 
