@@ -44,24 +44,23 @@ Choose a menu section
     <% if (choice_sets.length > 0) { %>
         <% choice_sets.each(function (choice_set, i) { %>
             <div class="upgrades"> 
-
                 <label>Your choice of:</label> 
-                <ul> 
+                <select> 
                     <% choice_set.choices.each(function (choice, j) { %>
-                        <li><label for="id_side_<%= choice_set.id %>_<%= j %>"><input type="radio" id="id_side_<%= choice_set.id %>_<%= j %>" value="<%= choice.id %>" name="side_<%= choice_set.id %>" /> <%= choice.get("name") %></label></li> 
+                        <option id="id_side_<%= choice_set.id %>_<%= j %>" value="<%= choice.id %>" name="side_<%= choice_set.id %>" /> <%= choice.get("name") %></option> 
                         <% }); %>
-                </ul> 
+                </select> 
             </div> 
             <% }); %>
         <div class="clear"></div> 
         <% } %>
 
-
     <% if (extras.length > 0) { %>
-        <div class="upgrades"> 
+        <a href="#" data-text="Hide Extras" id="toggle-extras">Add Extras</a>
+        <div class="upgrades extras"> 
             <ul> 
                 <% extras.each(function (extra, i) { %>
-                    <li><label for="id_upgrades_<%= i %>"><input type="checkbox" name="upgrades" value="<%= extra.id %>" id="id_upgrades_<%= i %>" /> <%= extra.get("name") %></label></li> 
+                    <li><label for="id_upgrades_<%= i %>"><input type="checkbox" name="upgrades" value="<%= extra.id %>" id="id_upgrades_<%= i %>" /> <h3 class="extra-name"><%= extra.get("name") %></h3><em>$<%= extra.get("price") %></em></label></li> 
                     <% }); %>
             </ul> 
         </div> 
