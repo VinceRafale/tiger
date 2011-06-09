@@ -41,9 +41,9 @@ $darkBlue:#1f7be5;
 $lightBlue:#4a9bea;
 @mixin button{
   border-radius:5px;
-    color: #fff;
+    color: $buttontext;
     text-decoration: none;
-    background-color: rgba(0,0,0,.7);
+    background-color: $buttoncolor;
     padding: 5px 10px;
     display: inline-block;
     margin: 0 2px;
@@ -62,7 +62,7 @@ body, html{
     margin: 0; 
     padding: 0;
     background-color: $centercolor;
-    font-size: 14px;
+    font-size: 16px;
     color: $bodyfontcolor;
 }
 body{
@@ -76,13 +76,14 @@ div.section, section{
     padding: 0 1rem;
 }
 p{
-  font-size: 16px;
+  font-size: 18px;
     line-height: 1.2;
 }
   a:active{
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
-  -webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
-  color: #fff !important;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
+  -webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
+  color: $buttontext !important;
+  text-shadow: 0 1px 0 fade-out(invert($buttontext), .5);
 }
 #home{
   display:block;
@@ -121,16 +122,20 @@ nav ul{
   max-width: 50%; 
   background-size: auto auto;
 }
+.place-order{
+  border-bottom: 1px solid $accentcolor;
+  overflow: auto;
+  padding: .5rem 0;
+}
 div.cart{
-  background: black;
+  background: $mastheadbackgroundcolor;
   color: #fff;
   padding: 5px;
   overflow: auto;
   a.button{
     @include button;
-      background: rgba(255,255,255, .2);
       float: right;
-      font: normal 12px/1 sans-serif;
+      font: normal 14px/1 sans-serif;
   }
 }
 .maplink{
@@ -147,15 +152,15 @@ div.cart{
     -webkit-transition: all 350ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
   position:absolute;
   width: 100%;
-  background: white;
+  background: lighten($centercolor, 20%);
   top: 0;
   overflow-x:hidden;
   left: 0;
   -webkit-transform: translate3d(100%, 0, 0);
   height: auto;
-  padding-bottom: 2em;
+  padding-bottom: 2rem;
   > *{
-    padding: 0 1em;
+    padding: 0 1rem;
   }
 }
 #contact:target{
@@ -166,7 +171,6 @@ div.cart{
     width: 46%;
     margin: 0 1%;
     display: inline-block;
-    font-size: 16px;
     text-align: center;
   }
   #facebook{
@@ -183,18 +187,39 @@ body.menu section{
         text-decoration: none;
         color: inherit;
         font-size: 1.2rem;
-        border: 1px solid rgba(0,0,0,.5);
+        border: 1px solid grayscale($accentcolor);
         border-width: 1px 0 1px 0;
-        border-top-color: rgba(255,255,255, .3);
+        border-top-color: fade-out(grayscale($accentcolor), .7);
         h3{
           margin: 1rem 0 0 0;
+          color: $menuitembackground;
         }
         p{
-          font-size: 80%;
           margin: 0 0 1rem 0;
         }
       }
+      li a:active h3{
+        color: $buttontext;
+      }
 
+}
+#sectionDetail > p, #sectionDetail .breadcrumb,
+h1, #itemDetail, footer{ padding: 0 1rem;}
+#itemDetail h1{ padding: 0; }
+header{
+  background: $mastheadbackgroundcolor;
+  color: $mastheadtextcolor;
+  border-bottom: 1px solid $accentcolor;
+  h2 a{color: $headerfontcolor;}
+}
+footer{
+  border: 1px solid $accentcolor;
+  border-width: 1px 0;
+  background: $footerbackground;
+  overflow: hidden;
+  margin: 1rem 0 0 0;
+  color: $footertext;
+  a{color: $footerlink}
 }
         </style>
         {% endcompress %}
@@ -294,7 +319,7 @@ body.menu section{
     <h1>Contact {{site.name}}</h1>
         {% if site.location_set.count == 1 %}
         {% with site.location_set.all.0 as location %}
-        <a href="http://maps.google.com/?q={{ location.address|iriencode }}" class="maplink" style="background-image: url('http://maps.google.com/maps/api/staticmap?size=640x200&maptype=roadmap&markers=color:red%7C{{ location.address|iriencode }}&sensor=true');">
+        <a href="http://maps.google.com/?q={{ location.address|iriencode }}" class="maplink" style="background: url('http://maps.google.com/maps/api/staticmap?size=640x200&maptype=roadmap&markers=color:red%7C{{ location.address|iriencode }}&sensor=true') center center no-repeat !important;">
     </a>
         {% if location.address %}
         <address>

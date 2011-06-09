@@ -9,6 +9,7 @@ class this.MenuController extends Backbone.Controller
         view = new SectionListView {collection: App.sections}
         $("#container").children().remove()
         $("#container").append view.render().el
+        $("#container").prepend('<h1>Our Menu</h1>');
 
     sectionDetail: (sectionId) ->
         section = App.sections.get sectionId
