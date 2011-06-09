@@ -88,7 +88,8 @@ class Section(models.Model):
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "items": [i.for_json() for i in self.item_set.all()]
+            "items": [i.for_json() for i in self.item_set.all()],
+            "ordering": self.ordering
         }
 
 
@@ -202,18 +203,28 @@ class Item(models.Model):
         return []
 
 
-    def for_json(self):
-        return {
+    def for_json(self, drilldown=True):
+        data = {
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "spicy": self.spicy,
-            "vegetarian": self.vegetarian,
-            #"image": self.image,
-            "prices": [p.for_json() for p in self.variant_set.all()],
-            "extras": [x.for_json() for x in self.upgrade_set.all()],
-            "choices": [c.for_json() for c in self.sidedishgroup_set.all()]
         }
+        if drilldown:
+            # data for building complete menu in JavaScript
+            data.update({
+                "prices": [p.for_json() for p in self.variant_set.all()],
+                "extras": [x.for_json() for x in self.upgrade_set.all()],
+                "choices": [c.for_json() for c in self.sidedishgroup_set.all()],
+                "spicy": self.spicy,
+                "vegetarian": self.vegetarian,
+                "ordering": self.ordering
+            })
+        else:
+            # data for cart, and for building line items in JavaScript
+            data["item_id"] = self.id
+            data["section_id"] = self.section.id
+
+        return data
 
 
 class LocationStockInfo(models.Model):
@@ -270,7 +281,7 @@ class Variant(models.Model):
     def for_json(self):
         return {
             'id': self.id,
-            'description': str(self),
+            'description': self.description,
             'price': str(self.price)
         }
 

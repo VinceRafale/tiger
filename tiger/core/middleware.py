@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.sessions.models import Session
+from django.utils import simplejson as json
 
 from tiger.core.models import Coupon
 from tiger.utils.site import RequestSite
@@ -52,13 +53,16 @@ class Cart(object):
 
     def add(self, item, form):
         cleaned_data = form.cleaned_data
-        cleaned_data.update(item.__dict__)
+        cleaned_data.update(item.for_json(drilldown=False))
         if not cleaned_data.has_key('variant'):
-            cleaned_data['variant'] = item.variant_set.all()[0]
+            cleaned_data['variant'] = item.variant_set.all()[0].for_json()
+        else:
+            cleaned_data['variant'] = cleaned_data['variant'].for_json()
+        cleaned_data['upgrades'] = [upgrade.for_json() for upgrade in cleaned_data.get('upgrades', [])]
         cleaned_data['sides'] = []
         for k, v in cleaned_data.items():
             if k.startswith('side_'):
-                cleaned_data['sides'].append(cleaned_data.pop(k))
+                cleaned_data['sides'].append(cleaned_data.pop(k).for_json())
         cleaned_data['total'] = self.tally(cleaned_data)
         cleaned_data['name'] = '%s - %s' % (item.section.name, cleaned_data['name'])
         if item.taxable:
@@ -87,12 +91,12 @@ class Cart(object):
 
     def tally(self, item):
         qty = item['quantity']
-        base_price = item['variant'].price
+        base_price = Decimal(item['variant']['price'])
         upgrades, sides = 0, 0
         if item.has_key('upgrades'):
-            upgrades = sum(upgrade.price for upgrade in item['upgrades'])
+            upgrades = sum(Decimal(upgrade['price']) for upgrade in item['upgrades'])
         if len(item['sides']):
-            sides = sum(side.price for side in item['sides'])
+            sides = sum(Decimal(side['price']) for side in item['sides'])
         return (base_price + upgrades + sides) * qty
 
     def subtotal(self):
@@ -127,6 +131,9 @@ class Cart(object):
 
     def total_plus_tax(self):
         return self.total() + self.taxes()
+
+    def to_json(self):
+        return json.dumps(self.contents)
 
 
 class ShoppingCartMiddleware(object):
