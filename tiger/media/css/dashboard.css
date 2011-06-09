@@ -335,14 +335,14 @@ div.pagination {text-align:center; font-size:14px; padding:8px; color:#635d50;}
 ***********/
 
 .messages {list-style-type:none;}
-.messages li {
+.messages li, p.help.error {
     border:1px solid;
     margin-left:0;
     padding:6px;
 }
 .messages li.success {color:green;background-color:#d3ead3;border-color:green;}
 .messages li.warning {color:#704308;background-color:#f9f7c3;border-color:#704308;}
-.messages li.error {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}
+.messages li.error, p.help.error {color:#ae0001;background-color:#f1abab;border-color:#ae0001;}
 
 a.close-message {float:right; color: green;}
 .messages li.error a.close-message {float:right; color: #ae0001;}
@@ -917,6 +917,24 @@ span.message strong {
 
 a.screenshot {float:left; padding:0 10px 10px 0;}
 div.info {float:right; width:525px;}
+
+ul.theme-list {
+    padding-left:0;
+}
+
+ul.theme-list li {
+    float:left;
+    margin:0;
+    padding:10px;
+    text-align:center;
+}
+ul.theme-list li:hover {
+    background-color: #94cad0;
+}
+ul.theme-list li span {
+    display:block;
+    
+}
 
 /* RESELLER STUFF */
 

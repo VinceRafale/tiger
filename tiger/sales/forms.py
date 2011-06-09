@@ -1,10 +1,14 @@
 from datetime import date
+from decimal import Decimal
 from hashlib import sha1
+
+import yaml
 
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from tiger.accounts.models import Site
 from tiger.sales.exceptions import PaymentGatewayError
@@ -207,3 +211,64 @@ class CreatePlanForm(BetterModelForm):
     class Meta:
         model = Plan
         exclude = ('account',)
+
+def set_attributes(obj, obj_type, attrs):
+    from tiger.core.models import Upgrade, Variant, SideDishGroup, SideDish
+    prices = attrs.get('prices')
+    if prices:
+        for p in prices:
+            v = Variant(description=p['label'], price=Decimal(str(p.get('price') or '0')))
+            setattr(v, obj_type, obj)
+            v.save()
+    extras = attrs.get('extras')
+    if extras:
+        for x in extras:
+            upg = Upgrade(name=p['label'], price=Decimal(str(p.get('price') or '0')))
+            setattr(upg, obj_type, obj)
+            upg.save()
+    choice_sets = attrs.get('choice_sets')
+    if choice_sets:
+        for cs in choice_sets:
+            group = SideDishGroup()
+            setattr(group, obj_type, obj)
+            group.save()
+            for c in cs['choices']:
+                SideDish.objects.create(name=c['label'], price=Decimal(str(c.get('price') or '0')), group=group)
+
+
+def import_menu(site, raw_data):
+    from tiger.core.models import Section, Item
+    data = yaml.load(raw_data)
+    with transaction.commit_on_success():
+        for s in data['sections']:
+            section = Section.objects.create(site=site, name=s['name'], description=s.get('description') or '')
+            defaults = s.get('defaults')
+            if defaults:
+                set_attributes(section, 'section', defaults)
+            for i in s['items']:
+                item = Item(name=i['name'], description=i.get('label') or '', section=section, site=site)
+                item.vegetarian = i.get('vegetarian', False)
+                item.spicy = i.get('spicy', False)
+                item.taxable = i.get('taxable', False)
+                if i.get('price_override'):
+                    item.available_online = False
+                    item.text_price = i['price_override']
+                item.save()
+                set_attributes(item, 'item', i)
+    
+
+
+class ImportMenuForm(BetterModelForm):
+    import_file = forms.FileField()
+
+    class Meta:
+        model = Site
+        fields = ()
+
+    def clean_import_file(self):
+        upload = self.cleaned_data.get('import_file')
+        import pdb; pdb.set_trace() 
+        if not upload:
+            raise forms.ValidationError("No file provided.")
+        import_menu(self.instance, upload.read())
+        return upload

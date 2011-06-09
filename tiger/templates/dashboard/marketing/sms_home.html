@@ -52,11 +52,24 @@ Post signs and table tents in your restaurant asking your customers to sign up f
     <a href="{% url sms_subscriber_list %}" >View subscriber list</a>
 </span>
 </h3>
-<p>
-<strong>Total subscribers:</strong> {{ count.total }}
-<strong>Active subscribers:</strong> {{ count.active }}
-<strong>Unsubscribed:</strong> {{ count.inactive }}
-</p>
+<ul class="subscriber-data">
+    <li>Subscribers by list:</li>
+    {% for tag, count in list_counts %}
+    <li>
+        <span class="message">
+            <strong>{{ tag }}</strong> <span>× {{ count }}</span>
+        </span>
+    </li>
+    {% endfor %}
+</ul>
+<ul class="subscriber-data">
+    <li>
+        <strong>Total subscribers:</strong> {{ count.total }}
+    </li>
+    <li><strong>Active subscribers:</strong> {{ count.active }}</li>
+    <li><strong>Unsubscribed:</strong> {{ count.inactive }}</li>
+</ul>
+<div class="clear"></div>
 <h3>Most recent conversations
 <span class="buttons">
     <a href="{% url inbox %}">View all conversations</a>

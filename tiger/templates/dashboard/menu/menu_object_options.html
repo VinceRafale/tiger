@@ -20,14 +20,20 @@ FIXME
     {% endif %} {% endblock %}
 <div>
     {% block pricepoints %}
-        <h3>Price points 
-        <a id="price-points" class="add" href="#" rel="{% url add_pricepoint type,object.id %}">Add</a>
-        </h3>
         {% block pricepoints-help %}
             <p class="help">
             All menu items must have at least one pricepoint.
             </p>
         {% endblock %}
+
+        <h3>Price points 
+        <a id="price-points" class="add" href="#" rel="{% url add_pricepoint type,object.id %}">Add</a>
+        </h3>
+        {% if type == "item" and not object.available_online and object.text_price %}
+        <p class="help error">
+        You've disabled online ordering for this item and have entered a display price.  Pricing below will not be reflected on the site until you've removed that display price.
+        </p>
+        {% endif %}
         <ul id="price-points-list" class="item-container">
             {% for obj in object.variant_set.all %}
             {% include 'dashboard/menu/includes/variant_row.html' %}

@@ -60,4 +60,3 @@ class this.ItemDetailView extends Backbone.View
         else
             extras.show()
                 #anim {'height':'auto'}, .35, 'ease-in'
-

@@ -1,0 +1,18 @@
+{% extends 'sales/base.html' %}
+
+{% block body-class %}marketing{% endblock %}
+
+{% block h2 %}
+{{ restaurant.name }}
+{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data">
+{{ form }}
+<div class="save-row clearfix">
+<a class="cancel" href="{% url restaurant_detail form.instance.id %}">Cancel</a>
+<input type="submit" value="Import" class="submit buttonTop" />
+</div>
+</form>
+{% endblock %}
+

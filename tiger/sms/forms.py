@@ -29,6 +29,8 @@ class CampaignForm(BetterModelForm):
     def clean(self):
         data = self.cleaned_data
         count = self.cleaned_data.get('count')
+        if not count:
+            return data
         sender = Sender(self.site, data.get('body', ''))
         try:
             sender.add_recipients(*['dummy' for n in range(count)])

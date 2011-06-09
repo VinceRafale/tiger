@@ -1,5 +1,7 @@
 import re
 
+import yaml
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -12,7 +14,7 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.models import Site
 from tiger.sales.forms import (AuthenticationForm, CreateSiteForm, 
-    CreatePlanForm, EditSiteForm, CreateResellerAccountForm)
+    CreatePlanForm, EditSiteForm, CreateResellerAccountForm, ImportMenuForm,)
 from tiger.sales.models import Plan
 
 
@@ -188,3 +190,34 @@ def invoice_detail(request, invoice_id):
         raise Http404
     return direct_to_template(request, template='sales/invoice_detail.html', 
         extra_context={'invoice': invoice})
+
+@login_required
+def email_restaurant(request, site_id):
+    if request.method != 'POST':
+        raise Http404
+    account = request.user.get_profile()
+    try:
+        restaurant = account.site_set.get(id=site_id)
+    except Site.DoesNotExist:
+        raise Http404
+    restaurant.send_confirmation_email()
+    messages.success(request, 'E-mail sent.')
+    return HttpResponseRedirect(reverse('restaurant_detail', args=[site_id]))
+
+@login_required
+def import_menu(request, site_id):
+    account = request.user.get_profile()
+    try:
+        restaurant = account.site_set.get(id=site_id)
+    except Site.DoesNotExist:
+        raise Http404
+    if request.method == "POST":
+        form = ImportMenuForm(request.POST, request.FILES, instance=restaurant)
+        if form.is_valid():
+            messages.success(request, 'Menu imported successfully.')
+            return HttpResponseRedirect(reverse('restaurant_detail', args=[site_id]))
+    else:
+        form = ImportMenuForm(instance=restaurant)
+    return direct_to_template(request, template='sales/import_menu.html', extra_context={
+        'form': form
+    })

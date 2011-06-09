@@ -9,7 +9,13 @@ SMS Subscribers
 {% endblock %}
 
 {% block help %}
-This screen is where you manage your subscribers.  Inactive subscribers (those who've unsubscribed, but you still have a record for) will appear in grey.  You can star subscribers by clicking the star icon and can then filter on those subscribers when you send SMS campaigns.  You can also send SMSes directly to individual subscribers from this page by clicking the word bubble icon for that subscriber.
+<p>This screen is where you manage your subscribers.  To sort your list, click the column headings.</p>
+
+<p>Inactive subscribers (those who've unsubscribed, but you still have a record for) will appear in grey.</p>  
+
+<p>You can star subscribers by clicking the star icon and can then filter on those subscribers when you send SMS campaigns.</p>  
+
+<p>You can also send SMSes directly to individual subscribers from this page by clicking the word bubble icon for that subscriber.</p>
 {% endblock %}
 
 {% block content %}
@@ -21,6 +27,7 @@ This screen is where you manage your subscribers.  Inactive subscribers (those w
     <thead>
       <tr>
             <th></th>
+            <th>{% anchor tag "List" %}</th>
             <th>{% anchor phone_number "Phone number" %}</th>
             <th>{% anchor city %}</th>
             <th>{% anchor state %}</th>
@@ -37,6 +44,7 @@ This screen is where you manage your subscribers.  Inactive subscribers (those w
                     <img src="{{ MEDIA_URL }}img/{% if subscriber.starred %}Favourite_24x24{% else %}unstarred{% endif %}.png" alt="Favorite" title="{% if subscriber.starred %}Remove from favorites{% else %}Add to favorites{% endif %}" />
                 </a>
              </td>
+            <td><span class="message"><strong>{{ subscriber.tag }}</strong></span></td>
             <td>{{ subscriber.phone_number }}</td>
             <td>{{ subscriber.city }}</td>
             <td>{{ subscriber.state }}</td>
@@ -70,9 +78,9 @@ $(function () {
     $("td a.toggle-star").click(function () {
         starImg = $(this).children()[0];
         starImg.src = "{{ MEDIA_URL }}img/ajax-loader.gif";
-        $.post($(this).attr("href"), {}, function (data) {
+        $.post($(this).attr("href"), function (data) {
             starImg.src = "{{ MEDIA_URL }}img/" + data + ".png";
-        }, "txt");
+        }, "html");
         return false;
     });
     $("td a.delete").click(function () {
@@ -83,7 +91,7 @@ $(function () {
             if (data == 'deleted') {
                 $(row).closest("tr").fadeOut();
             }
-        }, "txt");
+        }, "html");
         return false;
     });
     $("a.send-sms").click(function() {

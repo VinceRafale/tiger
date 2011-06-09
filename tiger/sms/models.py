@@ -87,6 +87,16 @@ class SmsSubscriberManager(models.Manager):
     def inactive(self):
         return self.filter(unsubscribed_at__isnull=False)
 
+    def counts_per_tag(self, sms_settings):
+        cursor = connection.cursor()
+        cursor.execute("""SELECT tag, count(*) FROM sms_smssubscriber 
+        WHERE settings_id = %s 
+        GROUP BY tag 
+        ORDER BY tag
+        """, [sms_settings.id])
+        return cursor.fetchall()
+
+
 
 class SmsSubscriber(models.Model):
     settings = models.ForeignKey(SmsSettings)
@@ -155,7 +165,7 @@ class Campaign(models.Model):
     completed = models.BooleanField(default=False, editable=False)
 
     def set_subscribers(self):
-        subscribers = self.settings.smssubscriber_set.active().filter(tag=self.keyword)
+        subscribers = self.settings.smssubscriber_set.active().filter(tag__iexact=self.keyword)
         if self.filter_on and self.filter_value:
             subscribers = subscribers.filter(**{self.filter_on: self.filter_value})
         if self.starred is not None:

@@ -9,35 +9,60 @@ function setCss(styleTagSelector, css) {
     }
 }
 
-function setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, rgb, alpha, alphaSelector) {
-    var previewCss = "",
-        triplet = [rgb.r, rgb.g, rgb.b].join(",");
-    
-    if (cssTemplate instanceof Array) {
-        for (i=0; i < cssTemplate.length; i++) {
-            previewCss += cssTemplate[i].replace(/%\(triplet\)s/g, triplet).replace('%(alpha)s', alpha);
-        }
+function setUpButton (button, triplet, alpha) {
+    button.find('div.content').css({backgroundColor: 'rgb(' + triplet + ')'});
+    console.log(alpha);
+    if (Number(alpha) === 0) {
+        button.find('div.content').addClass("disabled");
+        button.find("div.transparency").fadeTo(0, 0);
     } else {
-        previewCss = cssTemplate.replace(/%\(triplet\)s/g, triplet).replace('%(alpha)s', alpha);
+        button.find('div.content').removeClass("disabled");
+        button.find("div.transparency").fadeTo(0, 1 - alpha);
     }
-    setCss(styleTagSelector, previewCss);
-    $(inputSelector).val(triplet);
-    $(alphaSelector).val(alpha);
-    $(pickerSelector + ' div').css({backgroundColor: 'rgb(' + triplet + ')'});
 }
+
+var TigerColorPicker = ColorPicker.extend({
+    onChange: function (rgb, hex, alpha) {
+        var options = this.options,
+            button = options.button,
+            styleTagSelector = options.styleTagSelector, 
+            inputSelector = options.inputSelector, 
+            cssTemplate = options.cssTemplate, 
+            alphaSelector = options.alphaSelector,
+            previewCss = "",
+            triplet = [rgb.r, rgb.g, rgb.b].join(",");
+
+        for (var i=0, length = cssTemplate.length; i < length; i++) {
+            previewCss += cssTemplate[i].replace(/%\(triplet\)s/g, triplet).replace('%(alpha)s', alpha / 100).replace('%(ie_color)s', (alpha === 0) ? "transparent" : "#" + hex);
+        }
+        setCss(styleTagSelector, previewCss);
+        setUpButton(button, triplet, alpha / 100);
+    },
+    onAccept: function (rgb, hex, alpha) {
+        var options = this.options,
+            inputSelector = options.inputSelector, 
+            alphaSelector = options.alphaSelector,
+            triplet = [rgb.r, rgb.g, rgb.b].join(",");
+        $(inputSelector).val(triplet);
+        $(alphaSelector).val(alpha / 100);
+        modified = true;
+    }
+});
 
 function addColorPicker(pickerSelector, styleTagSelector, inputSelector, cssTemplate) {
     var triplet = $(inputSelector).val(),
-        rgb = triplet.split(","),
+        rgb = _.map(triplet.split(","), function (n) { return Number(n) }),
         alphaSelector = inputSelector.slice(0, inputSelector.length - 'color'.length) + 'alpha',
         alpha = $(alphaSelector).val();
-    $(pickerSelector).ColorPicker({
-        onChange: function (hsb, hex, rgb, alpha) {
-            setColor(pickerSelector, styleTagSelector, inputSelector, cssTemplate, rgb, alpha, alphaSelector);
-            modified = true;
-        }
-    }).ColorPickerSetColor({r: rgb[0], g: rgb[1], b: rgb[2]}, alpha);
-    $(pickerSelector + ' div').css({backgroundColor: 'rgb(' + triplet + ')'});
+    new TigerColorPicker({
+        r: rgb[0], g: rgb[1], b: rgb[2], a: alpha * 100,
+        button: $(pickerSelector),
+        styleTagSelector: styleTagSelector, 
+        inputSelector: inputSelector, 
+        cssTemplate: cssTemplate, 
+        alphaSelector: alphaSelector
+    });
+    setUpButton($(pickerSelector), triplet, alpha);
 }
 $(function () {
     var modified = false;
@@ -100,7 +125,7 @@ $(function () {
         });
     });
     
-    for (i=0; i < swatchSet.length; i++) {
+    for (var i=0, length = swatchSet.length; i < length; i++) {
         addColorPicker(swatchSet[i][0], swatchSet[i][1], swatchSet[i][2], swatchSet[i][3]);
     }
 

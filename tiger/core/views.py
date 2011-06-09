@@ -69,8 +69,8 @@ def item_detail(request, section_id, section_slug, item_id, item_slug):
         assert i.is_available(request.location)
     except OrderingError, e:
         messages.warning(request, e.msg) 
-    if i.price_list in (None, []):
-        if request.user.is_authenticated() and request.site.account.user == request.user:
+    if i.incomplete:
+        if request.user.is_authenticated() and request.site.authorized(request.user):
             messages.warning(request, 'This is menu item is incomplete and will not appear to users.  To complete it, <a href="%s">add a price</a>.' % reverse('dashboard_edit_options', args=['item', i.id]))
         else:
             raise Http404
