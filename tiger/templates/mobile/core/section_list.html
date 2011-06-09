@@ -81,7 +81,8 @@ Choose a menu section
 {% for section in sections %}
 {{ section.id }}{% if not forloop.last %},{% endif %}
 {% endfor %}
-];
+    ],
+        line_items = {{ cart.to_json|safe }};
 </script>
 {% load compress %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone.js"></script>

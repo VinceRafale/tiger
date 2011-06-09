@@ -7,7 +7,8 @@ class this.Sections extends Backbone.Collection
     model: Section
 
     comparator: (section) ->
-        return section.id
+        return section.get("ordering")
+
 
 class this.Item extends Backbone.Model
     initialize: ->
@@ -20,7 +21,7 @@ class this.Items extends Backbone.Collection
     model: Item
 
     comparator: (item) ->
-       return item.id
+       return item.get("ordering")
 
 
 class this.Variant extends Backbone.Model
