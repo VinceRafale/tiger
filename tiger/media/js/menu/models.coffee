@@ -55,7 +55,7 @@ class this.Choices extends Backbone.Collection
 
 
 class LineItem extends Backbone.Model
-    initialize ->
+    initialize: ->
         section_id = @get "section_id"
         item_id = @get "item_id"
         item = App.sections.get(section_id).items.get(item_id)
