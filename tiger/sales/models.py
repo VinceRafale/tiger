@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
 from django.db import models, connection
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
@@ -147,6 +148,9 @@ class Plan(models.Model):
     fax_cap = models.IntegerField(default=0)
     fax_cap_type = models.IntegerField(choices=CAP_TYPE_CHOICES, default=0)
     secret = models.CharField(max_length=32, default='')
+    price = models.DecimalField('Base monthly cost', max_digits=5, decimal_places=2, null=True)
+    sms_rate = models.IntegerField('Cost per SMS beyond cap', null=True)
+    fax_rate = models.IntegerField('Cost per fax beyond cap in cents', null=True)
 
     def __unicode__(self):
         return self.name
@@ -201,6 +205,9 @@ class Plan(models.Model):
 
     def assert_sms_cap_not_exceeded(self, num):
         return self._assert_cap_not_exceeded('sms', num)
+
+    def signup_url(self):
+        return 'https://www.takeouttiger.com' + reverse('tiger_signup', kwargs={'plan_secret': self.secret, 'reseller_secret': self.account.secret}, urlconf='tiger.tiger_urls')
 
 
 class Invoice(models.Model):

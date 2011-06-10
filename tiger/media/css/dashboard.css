@@ -944,3 +944,6 @@ span.ballout, span.check {font-size:18px;}
 .messages li.error li {border:none;}
 .messages li.error li a {color:#AE0001;}
 .messages li.error ul {margin-bottom:0;}
+#id_fax_rate,#id_sms_rate {width:30px;}
+#id_price {width:92px;}
+label.bump {margin-top: 2px;}

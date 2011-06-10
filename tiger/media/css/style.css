@@ -87,7 +87,9 @@ span.errorlist{color:#ffffff;display:inline;background:#EB1C23;padding:0;font-si
 .thanks .note{font-size:0.75em;line-height:1.3;display:block;margin-top:10px;}
 
 #price{padding:20px 0 0;background:#192326;/*margin-top:-23px;*/}
-#price p{height:54px;margin-top:0;background:#192326 url(../img/sprite_forms.png) 20px -432px no-repeat;}
+#price p{height:54px;margin-top:0; padding-left:18px;}
+#price p span {color:white; vertical-align:text-bottom;}
+#price p span.dollars {color:rgb(227,227,190); vertical-align:baseline; font-family:serif; font-weight:bold; font-size:40px;}
 #price ul{color:#e0e0e0;margin:0 20px 0;padding:20px 0 0 20px;list-style-image:url(../img/bullet_form-list.png);border-top:3px solid #6C8FA0;}
 #price li{margin-bottom:20px;padding-left:10px;}
 
@@ -116,7 +118,7 @@ footer ul li{float:left;margin-left:20px;}
 footer a{color:#34484F;font-size:0.81em;}
 
 /* Hide text */
-h1,a.signup,legend#one,legend#two,legend#three,span.no,span.yes,span.looking,#price p,span.matches,span.no-match{text-indent:-9999px;}
+h1,a.signup,legend#one,legend#two,legend#three,span.no,span.yes,span.looking,span.matches,span.no-match{text-indent:-9999px;}
 
 /* LoopedSlider */
 .container {width:460px;height:240px;padding-right:40px;overflow:hidden;position:relative;}

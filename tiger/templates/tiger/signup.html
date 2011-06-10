@@ -50,13 +50,44 @@
 				</fieldset>
 			</div>
 			<div id="price" class="grid_4 push_1">
-			    <p>$75/month 30-day free trial</p>
+			    <p><span class="dollars">${{ plan.price }}</span><span>/month</span></p>
 			    <ul>
 			        <li>A customizable website for your restaurant</li>
-                    <li>Our online ordering system</li>
                     <li>Social media integration (Facebook and Twitter)</li>
                     <li>Automatic PDF menus</li>
-                    <li>Receive orders by fax<br />(10&cent; / page)* or e-mail</li>
+                        <li>
+                        {% if plan.fax_cap > 0 %}
+                        {{ plan.fax_cap }} fax pages included
+                            {% if plan.fax_cap_type == 1 %}
+                            (additional pages for {{ plan.fax_rate }}&cent;/page)
+                            {% endif %}
+                        {% else %}
+                            {% if plan.fax_cap_type == 1 %}
+                            Web-based faxing for {{ plan.fax_rate }}&cent;/page
+                            {% endif %}
+                        {% endif %}
+                        </li>
+                    {% if plan.has_online_ordering %}
+                        <li>Our online ordering system</li>
+                            {% if plan.multiple_locations %}
+                            <li>Multiple location support</li>
+                            {% endif %}
+                    {% endif %}
+                    {% if plan.has_sms %}
+                        <li>Dedicated SMS number</li>
+                        <li>
+                        {% if plan.sms_cap > 0 %}
+                        {{ plan.sms_cap }} SMSes included
+                            {% if plan.sms_cap_type == 1 %}
+                            (additional SMSes for {{ plan.sms_rate }}&cent;/SMS)
+                            {% endif %}
+                        {% else %}
+                            {% if plan.sms_cap_type == 1 %}
+                            Send/receive SMSes for {{ plan.sms_rate }}&cent;/SMS
+                            {% endif %}
+                        {% endif %}
+                        </li>
+                    {% endif %}
                 </ul>
 			</div>
 			<div class="clear"></div>
