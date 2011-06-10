@@ -1,16 +1,19 @@
 import time
+import hashlib
 from datetime import datetime, date
 from decimal import Decimal
 import random
 
 from django.core.mail import EmailMessage
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
 from django.contrib.localflavor.us.models import *
 from django.contrib.sessions.models import Session
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
+from django.utils import simplejson as json
 from django.utils.http import int_to_base36, base36_to_int
 from django.utils.safestring import mark_safe
 
@@ -703,9 +706,38 @@ def create_defaults(sender, instance, created, **kwargs):
                 )
 
 
+def reset_menu_json(site):
+    data = json.dumps([section.for_json() for section in site.section_set.all()])
+    md5 = hashlib.md5(data).hexdigest()
+    cache.set("menu-md5-%d" % site.id, md5)
+    cache.set('menu-json-%d' % site.id, data)
+
+def reset_by_section_or_item(sender, instance, created, **kwargs):
+    reset_menu_json(instance.site)
+
+def reset_by_upgrade_variant_or_choice_set(sender, instance, created, **kwargs):
+    reset_menu_json(instance.item.site)
+
+def reset_by_choice(sender, instance, created, **kwargs):
+    reset_menu_json(instance.group.item.site)
+
 payment_was_successful.connect(register_paypal_payment)
 payment_was_flagged.connect(register_paypal_payment)
 post_save.connect(new_site_setup)
 post_save.connect(item_social_handler, sender=Item)
 post_save.connect(pdf_caching_handler, sender=Item)
 post_save.connect(create_defaults, sender=Item)
+
+post_save.connect(reset_by_section_or_item, sender=Item)
+post_save.connect(reset_by_section_or_item, sender=Section)
+post_save.connect(reset_by_upgrade_variant_or_choice_set, sender=Upgrade)
+post_save.connect(reset_by_upgrade_variant_or_choice_set, sender=Variant)
+post_save.connect(reset_by_upgrade_variant_or_choice_set, sender=SideDishGroup)
+post_save.connect(reset_by_choice, sender=SideDish)
+
+pre_delete.connect(reset_by_section_or_item, sender=Item)
+pre_delete.connect(reset_by_section_or_item, sender=Section)
+pre_delete.connect(reset_by_upgrade_variant_or_choice_set, sender=Upgrade)
+pre_delete.connect(reset_by_upgrade_variant_or_choice_set, sender=Variant)
+pre_delete.connect(reset_by_upgrade_variant_or_choice_set, sender=SideDishGroup)
+pre_delete.connect(reset_by_choice, sender=SideDish)

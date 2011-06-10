@@ -1,9 +1,11 @@
-import os
 from datetime import date, datetime
+import hashlib
+import os
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.contrib.gis.db import models
@@ -172,6 +174,12 @@ class Site(models.Model):
         if user.is_superuser:
             return True
         return False
+
+    def get_menu_md5(self):
+        return cache.get("menu-md5-%d" % self.id)
+
+    def get_menu_json(self):
+        return cache.get('menu-json-%d' % self.id, '')
 
 
 class Location(models.Model):

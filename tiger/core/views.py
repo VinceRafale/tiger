@@ -50,9 +50,8 @@ def section_detail(request, section_id, section_slug):
     return render_custom(request, 'core/section_detail.html', 
         {'section': s})
 
-def section_json(request, section_id):
-    s = get_object_or_404(Section, id=section_id, site=request.site)
-    return HttpResponse(json.dumps(s.for_json()))
+def section_json(request):
+    return HttpResponse(request.site.get_menu_json())
     
 def item_detail_abbr(request, section, item):
     try:
