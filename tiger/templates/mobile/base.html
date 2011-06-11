@@ -46,8 +46,6 @@
 //$footerlink: rgba(0,0,0,1.0);
 //$footerlinkhover: rgba(0,0,0,1.0)
 
-$darkBlue:#1f7be5;
-$lightBlue:#4a9bea;
 @mixin button{
   border-radius:5px;
     color: $buttontext;
@@ -205,7 +203,7 @@ body.menu section{
         border-top-color: fade-out(grayscale($accentcolor), .7);
         h3{
           margin: 1rem 0 0 0;
-          color: $menuitembackground;
+          color: $buttoncolor;
         }
         p{
           margin: 0 0 1rem 0;
@@ -223,7 +221,7 @@ header{
   background: $mastheadbackgroundcolor;
   color: $mastheadtextcolor;
   border-bottom: 1px solid $accentcolor;
-  h2 a{color: $headerfontcolor;}
+  h2 a{color: $mastheadtextcolor;}
 }
 footer{
   border: 1px solid $accentcolor;
