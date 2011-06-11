@@ -12,6 +12,7 @@ from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
+from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
 
 from dateutil.relativedelta import *
@@ -175,23 +176,30 @@ class Site(models.Model):
             return True
         return False
 
-    def get_menu_md5(self):
-        return cache.get("menu-md5-%d" % self.id)
-
-    def get_menu_json(self):
-        return cache.get('menu-json-%d' % self.id, '')
+    @cachedmethod(KeyChain.menu_json)
+    def menu_json(self):
+        data = json.dumps([section.for_json() for section in self.section_set.all()])
+        md5 = hashlib.md5(data).hexdigest()
+        return {
+            'data': data,
+            'md5': md5
+        }
 
     @cachedmethod(KeyChain.font_data)
     def font_data(self):
         from tiger.stork import Stork
         stork = Stork(self.theme)
-        return dict(
+        data = dict(
             (font.id, {
                 'stack': font.instance.font.stack,
                 'font_face': font.get_mobile_css()
             })
             for font in stork.fonts
         )
+        return {
+            'md5': hashlib.md5(json.dumps(data)).hexdigest(),
+            'data': data
+        }
 
 
 class Location(models.Model):

@@ -9,14 +9,48 @@
         <link rel="apple-touch-icon-precomposed" href="http://media.meirish.com/images/appIcon.png">
         <title>{{ site.name }}</title>
         <style id="font-face-fonts">
-        {% for fontname, attrs in site.font_data.items %}
+        {% if not fonts_are_cached %}
+        {% for fontname, attrs in site.font_data.data.items %}
         {{ attrs.font_face }}
         {% endfor %}
+        {% endif %}
         </style>
+        <script type='text/javascript'>
+        var font_key = "{{ font_key }}",
+            font_face_tag = document.getElementById("font-face-fonts");
+
+        function createCookie(name,value,days) {
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime()+(days*24*60*60*1000));
+                var expires = "; expires="+date.toGMTString();
+            }
+            else var expires = "";
+            document.cookie = name+"="+value+expires+"; path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0;i < ca.length;i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        }
+
+        if (readCookie("font_key") !== font_key) {
+            localStorage.setItem("fontface", font_face_tag.innerHTML);
+            createCookie("font_key", font_key, 365);
+        } else {
+            font_face_tag.innerHTML = localStorage.getItem("fontface");
+        }
+        </script>
         {% compress css %}
         <style type="text/x-scss" media="screen">
         {% build_css site.theme %}
-        {% for fontname, attrs in site.font_data.items %}
+        {% for fontname, attrs in site.font_data.data.items %}
         ${{ fontname }}: {{ fontname }}, {{ attrs.stack|safe }};
         {% endfor %}
 
@@ -371,35 +405,21 @@ footer{
         {% endblock %}
 
 </div>
-
+{{ menu_is_cached }}
+        {% if not menu_is_cached %}
+        <script id="menu-data" type="text/json">
+        {{ site.menu_json.data|safe }}
+        </script>
+        {% endif %}
         {% compress js %}
         <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/zepto.js"></script>
         <script type="text/javascript" charset="utf-8">
-        function createCookie(name,value,days) {
-            if (days) {
-                var date = new Date();
-                date.setTime(date.getTime()+(days*24*60*60*1000));
-                var expires = "; expires="+date.toGMTString();
-            }
-            else var expires = "";
-            document.cookie = name+"="+value+expires+"; path=/";
-        }
 
-        function readCookie(name) {
-            var nameEQ = name + "=";
-            var ca = document.cookie.split(';');
-            for(var i=0;i < ca.length;i++) {
-                var c = ca[i];
-                while (c.charAt(0)==' ') c = c.substring(1,c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-            }
-            return null;
-        }
             // do some dom ready magic here for menu perhaps?
         $(document).ready(function(){
                 {# hash to be stored in cookie to check for menu updates #}
-                var menu_key = "{{ site.get_menu_md5 }}";
+                var menu_key = "{{ menu_key }}";
                 $('.back-link').bind('touch click', function(e){
                     e.preventDefault();
                     $('body').css('height','auto');
@@ -410,13 +430,11 @@ footer{
                     var cHeight = $('#contact').height();
                     $('body').css('height',cHeight+'px');
                 });
-                if (readCookie("menu") !== menu_key) {
-                    $.get("/menu/sections.json", function (data) {
-                        localStorage.setItem("menu", data);
-                        createCookie("menu", menu_key, 365);
-                    });
+                if (readCookie("menu_key") !== menu_key) {
+                    localStorage.setItem("menu", $("#menu-data").text());
+                    createCookie("menu_key", menu_key, 365);
                 }
-            });
+        });
         </script>
             {% endcompress %}
             {% block js %}

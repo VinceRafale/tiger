@@ -1,5 +1,4 @@
 import time
-import hashlib
 from datetime import datetime, date
 from decimal import Decimal
 import random
@@ -13,7 +12,6 @@ from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save, pre_delete
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.utils import simplejson as json
 from django.utils.http import int_to_base36, base36_to_int
 from django.utils.safestring import mark_safe
 
@@ -27,6 +25,7 @@ from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable, PricePo
 from tiger.core.messages import *
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler
+from tiger.utils.cache import KeyChain
 from tiger.utils.hours import *
 from tiger.utils.pdf import render_to_pdf
 
@@ -707,10 +706,7 @@ def create_defaults(sender, instance, created, **kwargs):
 
 
 def reset_menu_json(site):
-    data = json.dumps([section.for_json() for section in site.section_set.all()])
-    md5 = hashlib.md5(data).hexdigest()
-    cache.set("menu-md5-%d" % site.id, md5)
-    cache.set('menu-json-%d' % site.id, data)
+    KeyChain.menu_json.invalidate(site.id)
 
 def reset_by_section_or_item(sender, instance, created, **kwargs):
     reset_menu_json(instance.site)
