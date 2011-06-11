@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+import hashlib
 
 from dateutil.relativedelta import *
 
@@ -7,14 +8,22 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
 from django.db import models, connection
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
+from django.utils.http import int_to_base36
 
 from tiger.sales.exceptions import (PaymentGatewayError, 
     SiteManagementError, SoftCapExceeded, HardCapExceeded)
 from tiger.sms.models import SmsSettings
 from tiger.utils.billing import prorate
+
+
+def convert_to_secret(i):
+    hash = hashlib.md5(str(i)).hexdigest()
+    hash_as_int = int(hash, 16)
+    return int_to_base36(hash_as_int)
 
 
 class SalesRep(models.Model):
@@ -60,6 +69,7 @@ class Account(models.Model):
     fax_price = models.DecimalField(max_digits=5, decimal_places=2, default='0.07')
     manager = models.BooleanField(default=False)
     sms = models.ForeignKey('sms.SmsSettings', null=True)
+    secret = models.CharField(max_length=32, default='')
 
     class Meta:
         db_table = 'accounts_account'
@@ -74,6 +84,7 @@ class Account(models.Model):
             new = True
         super(Account, self).save(*args, **kwargs)
         if new:
+            self.secret = convert_to_secret(self.id)
             body = render_to_string('sales/reseller_welcome.txt', {'account': self})
             send_mail('Welcome to the Takeout Tiger reseller program', body, settings.DEFAULT_FROM_EMAIL, [self.user.email])
 
@@ -120,7 +131,6 @@ class Account(models.Model):
         return base_plan_total + fax_total + sms_total
 
 
-
 class Plan(models.Model):
     CAP_SOFT = 1
     CAP_HARD = 2
@@ -137,9 +147,22 @@ class Plan(models.Model):
     sms_cap_type = models.IntegerField(choices=CAP_TYPE_CHOICES, default=0)
     fax_cap = models.IntegerField(default=0)
     fax_cap_type = models.IntegerField(choices=CAP_TYPE_CHOICES, default=0)
+    secret = models.CharField(max_length=32, default='')
+    price = models.DecimalField('Base monthly cost', max_digits=5, decimal_places=2, null=True)
+    sms_rate = models.IntegerField('Cost per SMS beyond cap', null=True)
+    fax_rate = models.IntegerField('Cost per fax beyond cap in cents', null=True)
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        new = False
+        if not self.id:
+            new = True
+        super(Plan, self).save(*args, **kwargs)
+        if new:
+            self.secret = convert_to_secret(self.id)
+            self.save()
 
     def _from_account_or_default(self, attr_name, dec):
         account = self.account
@@ -182,8 +205,9 @@ class Plan(models.Model):
 
     def assert_sms_cap_not_exceeded(self, num):
         return self._assert_cap_not_exceeded('sms', num)
-        
 
+    def signup_url(self):
+        return 'https://www.takeouttiger.com' + reverse('tiger_signup', kwargs={'plan_secret': self.secret, 'reseller_secret': self.account.secret}, urlconf='tiger.tiger_urls')
 
 
 class Invoice(models.Model):

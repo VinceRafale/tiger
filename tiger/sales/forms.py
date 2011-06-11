@@ -210,7 +210,7 @@ class CreateSiteForm(BetterModelForm):
 class CreatePlanForm(BetterModelForm):
     class Meta:
         model = Plan
-        exclude = ('account',)
+        exclude = ('account', 'secret',)
 
 def set_attributes(obj, obj_type, attrs):
     from tiger.core.models import Upgrade, Variant, SideDishGroup, SideDish

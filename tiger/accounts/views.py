@@ -7,10 +7,12 @@ from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import SignupForm
 from tiger.accounts.models import Site, SalesRep
+from tiger.sales.models import Account, Plan
 from tiger.utils.forms import SpanErrorList
 
 
-def signup(request):
+def signup(request, reseller_secret, plan_secret):
+    plan = Plan.objects.get(secret=plan_secret)
     if request.method == 'POST':
         form = SignupForm(request.POST, error_class=SpanErrorList)
         if form.is_valid():
@@ -20,7 +22,8 @@ def signup(request):
     else:
         form = SignupForm()
     return direct_to_template(request, template='tiger/signup.html', extra_context={
-        'form': form
+        'form': form,
+        'plan': plan
     })
 
 
