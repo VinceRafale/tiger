@@ -75,13 +75,10 @@ Choose a menu section
     </div> 
     <input id="submit" class="button ordering" type="submit" value="Add to order" /> 
 </script>
+<script id="cart-table" type="text/html">
+</script>
 <script type="text/javascript">
-    var sectionIds = [
-{% for section in sections %}
-{{ section.id }}{% if not forloop.last %},{% endif %}
-{% endfor %}
-    ],
-        line_items = {{ cart.to_json|safe }};
+    var line_items = {{ cart.to_json|safe|default:"[]" }};
 </script>
 {% load compress %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone.js"></script>

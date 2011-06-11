@@ -218,7 +218,8 @@ class Item(models.Model):
                 "choices": [c.for_json() for c in self.sidedishgroup_set.all()],
                 "spicy": self.spicy,
                 "vegetarian": self.vegetarian,
-                "ordering": self.ordering
+                "ordering": self.ordering,
+                "cart_url": self.get_absolute_url() + "order/"
             })
         else:
             # data for cart, and for building line items in JavaScript

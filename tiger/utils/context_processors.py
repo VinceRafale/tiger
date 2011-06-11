@@ -11,3 +11,4 @@ def mobile(request):
         context['fonts_are_cached'] = True if request.COOKIES.get('font_key') == font_data['md5'] else False
         context['menu_is_cached'] = True if request.COOKIES.get('menu_key') == menu_json['md5'] else False
         return context
+    return {}
