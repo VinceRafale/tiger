@@ -1,0 +1,8 @@
+{% autoescape off %}
+{% if ff.ttf %}
+@font-face {
+    font-family: {{ component.id }};
+	src: url('data:font/truetype;base64,{{ ff.data }}');
+}
+{% endif %}
+{% endautoescape %}

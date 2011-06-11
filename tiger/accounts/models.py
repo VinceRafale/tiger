@@ -181,6 +181,18 @@ class Site(models.Model):
     def get_menu_json(self):
         return cache.get('menu-json-%d' % self.id, '')
 
+    @cachedmethod(KeyChain.font_data)
+    def font_data(self):
+        from tiger.stork import Stork
+        stork = Stork(self.theme)
+        return dict(
+            (font.id, {
+                'stack': font.instance.font.stack,
+                'font_face': font.get_mobile_css()
+            })
+            for font in stork.fonts
+        )
+
 
 class Location(models.Model):
     RECEIPT_EMAIL = 1
@@ -388,6 +400,7 @@ def refresh_theme(sender, instance, created, **kwargs):
             return
         KeyChain.template.invalidate(site.id)
         KeyChain.skin.invalidate(site.id)
+        KeyChain.font_data.invalidate(site.id)
 
 
 post_save.connect(new_site_setup, sender=Site)

@@ -1,3 +1,4 @@
+import base64
 import time
 from datetime import datetime
 from django.core.files.base import ContentFile
@@ -49,9 +50,17 @@ class FontStack(models.Model):
     woff = models.FileField(upload_to='fonts/woff', null=True)
     svg = models.FileField(upload_to='fonts/svg', null=True)
     stack = models.TextField(max_length=255, choices=WebFonts.FONT_CHOICES)
+    data = models.TextField(default='')
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.data and self.ttf:
+            binary_data = self.ttf.read()
+            b64_data = base64.encodestring(binary_data)
+            self.data = b64_data.replace('\n', '').strip()
+        super(FontStack, self).save(*args, **kwargs)
 
 
 class Font(Component):

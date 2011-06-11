@@ -8,9 +8,18 @@
         <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
         <link rel="apple-touch-icon-precomposed" href="http://media.meirish.com/images/appIcon.png">
         <title>{{ site.name }}</title>
+        <style id="font-face-fonts">
+        {% for fontname, attrs in site.font_data.items %}
+        {{ attrs.font_face }}
+        {% endfor %}
+        </style>
         {% compress css %}
         <style type="text/x-scss" media="screen">
         {% build_css site.theme %}
+        {% for fontname, attrs in site.font_data.items %}
+        ${{ fontname }}: {{ fontname }}, {{ attrs.stack|safe }};
+        {% endfor %}
+
 
 //$headerfontcolor: rgba(119,255,0,1.0);
 //$bodyfontcolor: rgba(255,255,255,1.0);
@@ -63,11 +72,15 @@ body, html{
     padding: 0;
     background-color: $centercolor;
     font-size: 16px;
+    font-family: $bodyfont;
     color: $bodyfontcolor;
 }
 body{
   width: 100%;
   @include border-box;
+}
+h1,h2,h3 {
+    font-family: $headerfont;
 }
 div.section, section{
   position:relative;
