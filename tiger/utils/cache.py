@@ -20,7 +20,6 @@ def cachedmethod(cacheproxy):
     return wrap
 
 
-
 class CacheProxy(object):
     def __init__(self, key_template):
         self.key_template = key_template
