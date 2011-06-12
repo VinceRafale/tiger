@@ -25,4 +25,8 @@ task 'build', 'Build single application file from source files', ->
         fs.unlink 'media/js/menu.coffee', (err) ->
           throw err if err
 
-
+task 'watch', 'Watch source files for changes and invoke build', ->
+    for file in appFiles then do (file) ->
+        fs.watchFile "media/js/menu/#{file}.coffee", (curr, prev) ->
+            if +curr.mtime isnt +prev.mtime
+                invoke 'build'
