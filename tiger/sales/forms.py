@@ -12,7 +12,7 @@ from django.db import transaction
 
 from tiger.accounts.models import Site
 from tiger.sales.exceptions import PaymentGatewayError
-from tiger.sales.models import Account, Invoice, Plan
+from tiger.sales.models import Account, Invoice, Plan, CreditCard
 from tiger.sms.models import SmsSettings
 from tiger.utils.forms import BetterModelForm
 
@@ -47,30 +47,10 @@ class AuthenticationForm(forms.Form):
         return self.user_cache
 
 
-class CreateResellerAccountForm(BetterModelForm):
-    first_name = forms.CharField()
-    last_name = forms.CharField()
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+class CreditCardForm(BetterModelForm):
     cc_number = forms.CharField(label='Card number')
     month = forms.CharField()
     year = forms.CharField()
-
-    class Meta:
-        model = Account
-        fields = (
-            'email',
-            'zip',
-        )
-
-    def clean_email(self):
-        """Validate that the e-mail is not already in use.
-        """
-        try:
-            User.objects.get(email__iexact=self.cleaned_data['email'])
-        except User.DoesNotExist:
-            return self.cleaned_data['email']
-        raise forms.ValidationError("That e-mail address is already in use.")
 
     def clean_month(self):
         month = self.cleaned_data['month']
@@ -95,12 +75,6 @@ class CreateResellerAccountForm(BetterModelForm):
             raise forms.ValidationError(msg)
         return year
 
-    def clean_password2(self):
-        if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
-            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-                raise forms.ValidationError("The two password fields didn't match.")
-        return self.cleaned_data['password2']
-
     def clean(self):
         if not self._errors:
             try:
@@ -123,12 +97,48 @@ class CreateResellerAccountForm(BetterModelForm):
         return cim.create_cim_profile(**account_data)
 
     def save(self, commit=True):
+        instance = super(CreditCardForm, self).save(commit=False)
+        self.credit_card = CreditCard.objects.create(
+            customer_id = self.customer_prof_id,
+            subscription_id = self.payment_prof_id,
+            card_number = self.cleaned_data.get('cc_number')[-4:]
+        )
+        return instance
+
+
+class CreateResellerAccountForm(CreditCardForm):
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+
+    class Meta:
+        model = Account
+        fields = (
+            'email',
+            'zip',
+        )
+
+    def clean_email(self):
+        """Validate that the e-mail is not already in use.
+        """
+        try:
+            User.objects.get(email__iexact=self.cleaned_data['email'])
+        except User.DoesNotExist:
+            return self.cleaned_data['email']
+        raise forms.ValidationError("That e-mail address is already in use.")
+
+    def clean_password2(self):
+        if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
+            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+                raise forms.ValidationError("The two password fields didn't match.")
+        return self.cleaned_data['password2']
+
+    def save(self, commit=True):
         account = super(CreateResellerAccountForm, self).save(commit=False)
-        account.customer_id = self.customer_prof_id
-        account.subscription_id = self.payment_prof_id
-        account.card_number = self.cleaned_data.get('cc_number')[-4:]
+        account.credit_card = self.credit_card
         account.manager = True
-        account.sms = Sms.objects.create()
+        account.sms = SmsSettings.objects.create()
         email = self.cleaned_data.get('email')
         user = User(
             username=sha1(email).hexdigest()[:30],
@@ -142,6 +152,75 @@ class CreateResellerAccountForm(BetterModelForm):
         if commit:
             account.save()
         return account
+
+
+class SiteSignupForm(CreditCardForm):
+    subdomain = forms.CharField()
+    first_name = forms.CharField()
+    last_name = forms.CharField()
+    site_name = forms.CharField(label='Restaurant name')
+    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
+    password2 = forms.CharField(label='Confirm password', widget=forms.PasswordInput)
+    email = forms.EmailField()
+    zip = forms.CharField()
+
+    class Meta:
+        model = Site
+        fields = ('subdomain',)
+
+    def __init__(self, data, account, plan, *args, **kwargs):
+        self.account = account
+        self.plan = plan
+        super(SiteSignupForm, self).__init__(data, *args, **kwargs)
+
+    def clean_email(self):
+        """Validate that the e-mail is not already in use.
+        """
+        try:
+            User.objects.get(email__iexact=self.cleaned_data['email'])
+        except User.DoesNotExist:
+            return self.cleaned_data['email']
+        raise forms.ValidationError("That e-mail address is already in use.")
+
+    def clean_subdomain(self):
+        """Validate that the subdomain is not already in use.
+        """
+        try:
+            Site.objects.get(domain__iexact=self.cleaned_data['subdomain'])
+        except Site.DoesNotExist:
+            return self.cleaned_data['subdomain']
+        raise forms.ValidationError("That subdomain is already in use.")
+
+    def clean_password2(self):
+        """Verify that the values entered into the two password fields
+        match. Note that an error here will end up in
+        ``non_field_errors()`` because it doesn't apply to a single
+        field.
+        """
+        if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
+            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+                raise forms.ValidationError("The two password fields didn't match.")
+
+    def save(self, commit=True):
+        site = super(SiteSignupForm, self).save(commit=False)
+        site.credit_card = self.credit_card
+        site.managed = True
+        site.account = self.account
+        site.plan = self.plan
+        email = self.cleaned_data.get('email')
+        user = User(
+            username=sha1(email).hexdigest()[:30],
+            first_name=self.cleaned_data.get('first_name'),
+            last_name=self.cleaned_data.get('last_name'),
+            email=email
+        )
+        user.set_password(self.cleaned_data.get('password1'))
+        user.save()
+        site.user = user
+        if commit:
+            site.save()
+            site.send_confirmation_email()
+        return site
 
 
 class EditSiteForm(BetterModelForm):

@@ -15,6 +15,7 @@ from tiger.accounts.models import (Account, Subscriber, Site, TimeSlot,
     SalesRep, FaxList, Schedule, Location)
 from tiger.utils.forms import BetterModelForm
 from tiger.utils.geocode import geocode, GeocodeError
+from tiger.sales.models import CreditCard
 
 
 class SubscriberForm(BetterModelForm):
@@ -225,21 +226,7 @@ class CreditCardForm(BetterModelForm):
     year = forms.CharField()
 
     class Meta:
-        model = Account
-        fields = (
-            'first_name',
-            'last_name',
-            'card_number',
-            'month',
-            'year',
-            'company_name',
-            'phone',
-            'fax',
-            'street',
-            'city',
-            'state',
-            'zip',
-        )
+        model = CreditCard
 
     def __init__(self, *args, **kwargs):
         instance = kwargs['instance']

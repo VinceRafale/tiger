@@ -35,6 +35,17 @@ class SalesRep(models.Model):
         db_table = 'accounts_salesrep'
 
 
+class CreditCard(models.Model):
+    signup_date = models.DateField(editable=False, default=datetime.now)
+    customer_id = models.CharField(max_length=200, default='')
+    subscription_id = models.CharField(max_length=200, default='')
+    card_number = models.CharField('credit card number', max_length=30, null=True)
+    card_type = models.CharField(max_length=50, null=True)
+
+    def __unicode__(self):
+        return '%s %s' % (self.card_type, self.card_number)
+
+
 class Account(models.Model):
     """Stores data for customer billing and contact.
     """
@@ -56,10 +67,6 @@ class Account(models.Model):
     state = USStateField(null=True, blank=True)
     zip = models.CharField(max_length=10)
     signup_date = models.DateField(editable=False, default=datetime.now)
-    customer_id = models.CharField(max_length=200, default='')
-    subscription_id = models.CharField(max_length=200, default='')
-    card_number = models.CharField('credit card number', max_length=30, null=True)
-    card_type = models.CharField(max_length=50, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_COMPONENT_SUSPENSION)
     basic_price = models.DecimalField(max_digits=5, decimal_places=2, default='40.00')
     ecomm_price = models.DecimalField(max_digits=5, decimal_places=2, default='67.50')
@@ -70,6 +77,7 @@ class Account(models.Model):
     manager = models.BooleanField(default=False)
     sms = models.ForeignKey('sms.SmsSettings', null=True)
     secret = models.CharField(max_length=32, default='')
+    credit_card = models.ForeignKey(CreditCard, null=True)
 
     class Meta:
         db_table = 'accounts_account'
@@ -339,7 +347,7 @@ class Invoice(models.Model):
     def send_to_gateway(self):
         from tiger.sales.authnet import Cim
         cim = Cim()
-        cim.create_profile_transaction(self.total, self.account.customer_id, self.account.subscription_id, self.id)
+        cim.create_profile_transaction(self.total, self.account.credit_card.customer_id, self.account.credit_card.subscription_id, self.id)
 
     def arrears_date(self):
         return (self.date + relativedelta(months=-1)).replace(day=1)
