@@ -9,6 +9,7 @@ class this.MenuController extends Backbone.Controller
         view = new SectionListView {collection: App.sections}
         $("#container").children().remove()
         $("#container").append view.render().el
+        $("#container").prepend('<h1>Our Menu</h1>');
 
     sectionDetail: (sectionId) ->
         section = App.sections.get sectionId
@@ -29,9 +30,4 @@ class this.MenuController extends Backbone.Controller
         $("#container").children().remove()
         $("#container").append view.render().el
 
-    orderItem: (sectionId, itemId) ->
-        section = App.sections.get sectionId
-        item = section.items.get itemId
-        view = new OrderItemView {model: item}
-        $("#container").children().remove()
-        $("#container").append view.render().el
+    

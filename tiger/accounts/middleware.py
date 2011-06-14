@@ -16,10 +16,8 @@ class DomainDetectionMiddleware(object):
         if site.domain == 'www.takeouttiger.com':
             request.urlconf = settings.TIGER_URLCONF
             return None
-        site_obj = site.get_site_object()
-        if site_obj is None:
-            return HttpResponseRedirect('http://www.takeouttiger.com')
-        request.site = site_obj
+        from tiger.accounts.models import Site
+        request.site = Site.objects.get(subdomain='casadenana')
 
     def process_response(self, request, response):
         patch_vary_headers(response, ('Host',))

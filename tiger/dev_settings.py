@@ -18,7 +18,7 @@ HAYSTACK_WHOOSH_PATH = PROJECT_ROOT
 
 DISABLE_SITE_MIDDLEWARE = True
 
-#CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379'
+CACHE_BACKEND = 'redis_cache.cache://127.0.0.1:6379'
 
 CELERY_ALWAYS_EAGER = True
 
@@ -39,6 +39,6 @@ LOGGING = {
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 CACHING_DISABLED = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

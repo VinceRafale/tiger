@@ -47,6 +47,19 @@ class AuthenticationForm(forms.Form):
         return self.user_cache
 
 
+class SignupRedirectForm(forms.Form):
+    promo_code = forms.CharField(label="Please enter your promo code")
+
+    def clean_promo_code(self):
+        promo_code = self.cleaned_data.get('promo_code')
+        try:
+            plan = Plan.objects.get(promo_code=promo_code)
+        except Plan.DoesNotExist:
+            raise forms.ValidationError("Sorry, that's not a valid promo code.")
+        self.plan = plan
+        return promo_code
+
+
 class CreditCardForm(BetterModelForm):
     cc_number = forms.CharField(label='Card number')
     month = forms.CharField()
@@ -168,7 +181,7 @@ class SiteSignupForm(CreditCardForm):
         model = Site
         fields = ('subdomain',)
 
-    def __init__(self, data, account, plan, *args, **kwargs):
+    def __init__(self, data=None, account=None, plan=None, *args, **kwargs):
         self.account = account
         self.plan = plan
         super(SiteSignupForm, self).__init__(data, *args, **kwargs)
@@ -290,6 +303,15 @@ class CreatePlanForm(BetterModelForm):
     class Meta:
         model = Plan
         exclude = ('account', 'secret',)
+
+    def clean_promo_code(self):
+        promo_code = self.cleaned_data.get('promo_code')
+        try:
+            plan = Plan.objects.get(promo_code=promo_code)
+        except Plan.DoesNotExist:
+            return promo_code
+        raise forms.ValidationError("That promo code is already taken.")
+
 
 def set_attributes(obj, obj_type, attrs):
     from tiger.core.models import Upgrade, Variant, SideDishGroup, SideDish

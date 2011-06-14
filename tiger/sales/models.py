@@ -159,6 +159,7 @@ class Plan(models.Model):
     price = models.DecimalField('Base monthly cost', max_digits=5, decimal_places=2, null=True)
     sms_rate = models.IntegerField('Cost per SMS beyond cap', null=True)
     fax_rate = models.IntegerField('Cost per fax beyond cap in cents', null=True)
+    promo_code = models.CharField(max_length=10, null=True)
 
     def __unicode__(self):
         return self.name

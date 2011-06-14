@@ -89,6 +89,7 @@ def create_plan(request, plan_id=None):
             plan.save()
             messages.success(request, 'Plan %s successfully.' % 'edited' if instance else 'created')
             return HttpResponseRedirect(reverse('plan_list'))
+        print form._errors
     else:
         form = CreatePlanForm(instance=instance)
     return direct_to_template(request, template='sales/plan_form.html', extra_context={
