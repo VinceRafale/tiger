@@ -313,22 +313,28 @@ class CreatePlanForm(BetterModelForm):
         raise forms.ValidationError("That promo code is already taken.")
 
 
-def set_attributes(obj, obj_type, attrs):
+def set_attributes(obj, obj_type, attrs, defaults=None):
     from tiger.core.models import Upgrade, Variant, SideDishGroup, SideDish
     prices = attrs.get('prices')
     if prices:
+        if defaults.get('prices'):
+            obj.variant_set.all().delete()
         for p in prices:
             v = Variant(description=p['label'], price=Decimal(str(p.get('price') or '0')))
             setattr(v, obj_type, obj)
             v.save()
     extras = attrs.get('extras')
     if extras:
+        if defaults.get('extras'):
+            obj.upgrade_set.all().delete()
         for x in extras:
             upg = Upgrade(name=p['label'], price=Decimal(str(p.get('price') or '0')))
             setattr(upg, obj_type, obj)
             upg.save()
     choice_sets = attrs.get('choice_sets')
     if choice_sets:
+        if defaults.get('choice_sets'):
+            obj.sidedishgroup_set.all().delete()
         for cs in choice_sets:
             group = SideDishGroup()
             setattr(group, obj_type, obj)
@@ -355,7 +361,7 @@ def import_menu(site, raw_data):
                     item.available_online = False
                     item.text_price = i['price_override']
                 item.save()
-                set_attributes(item, 'item', i)
+                set_attributes(item, 'item', i, defaults)
     
 
 
@@ -368,7 +374,6 @@ class ImportMenuForm(BetterModelForm):
 
     def clean_import_file(self):
         upload = self.cleaned_data.get('import_file')
-        import pdb; pdb.set_trace() 
         if not upload:
             raise forms.ValidationError("No file provided.")
         import_menu(self.instance, upload.read())
