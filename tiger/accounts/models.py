@@ -49,6 +49,8 @@ class Site(models.Model):
     managed = models.BooleanField(default=False)
     reseller_network = models.BooleanField('I have this restaurant\'s written consent to send an invitation to its SMS subscribers', default=False)
     credit_card = models.ForeignKey('sales.CreditCard', null=True)
+    google_analytics = models.CharField('Google analytics Web Property ID', max_length=30, null=True)
+    webmaster_tools = models.TextField(null=True, max_length=255)
 
     def natural_key(self):
         return (self.subdomain,)

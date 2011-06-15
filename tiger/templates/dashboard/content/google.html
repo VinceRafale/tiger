@@ -1,0 +1,40 @@
+{% extends 'dashboard/content/home.html' %}
+
+{% block body-class %}{{ block.super }} google{% endblock %}
+
+{% block help %}
+<h3>Webmaster Tools</h3>
+<p class="help">To verify your site for Google Webmaster Tools, log into your Webmaster Tools account and choose to add a new site.  You'll be on a "Recommended method" tab that looks something like this:</p>
+
+<img src="{{ MEDIA_URL }}docs/verify.png" />
+
+<p class="help">Click "Alternative methods" tab, and on that tab select the "meta tag" option (the first one).  Copy and paste that meta tag into the field below.</p>
+
+<img src="{{ MEDIA_URL }}docs/meta.png" />
+
+<h3>Analytics</h3>
+
+<p class="help">To add Google Analytics to your site, create a Google Analytics account and create a profile for your site (if you are using a custom domain, be sure to use the "www.yourdomain.com" rather than "yourdomain.com").  After creating the profile, you are taken to a page with a cut &amp; paste code snippet.  The Web Property ID is what you provide in the text box below.</p>
+<img src="{{ MEDIA_URL }}docs/analytics.png" />
+{% endblock %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block h2 %}
+Google SEO tools
+{% endblock %}
+
+{% block content %}
+<form method="POST" action=".">
+    {{ form }}
+    <div class="save-row clearfix">
+    <a class="cancel" href="{% url dashboard_content %}">Cancel</a>
+    <input type="submit" value="Save" class="submit buttonTop" />
+    </div>
+</form>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+
