@@ -89,9 +89,15 @@
     display: inline-block;
     margin: 0 2px;
 }
+.btn{
+  @include button;
+}
 @mixin border-box{
   -webkit-box-sizing: border-box;
     box-sizing: border-box;
+}
+@mixin round-corners($radius){
+  border-radius: $radius;
 }
 @mixin ul-reset{
   padding: 0;
@@ -103,7 +109,7 @@ body, html{
     margin: 0; 
     padding: 0;
     background-color: $centercolor;
-    font-size: 16px;
+    font-size: 15px;
     font-family: $bodyfont;
     color: $bodyfontcolor;
 }
@@ -113,16 +119,50 @@ body{
 }
 h1,h2,h3 {
     font-family: $headerfont;
+    font-weight: bold;
+    line-height: 1.4;
+    color: $headerfontcolor;
+}
+h1{
+  font-size: 1.3rem;
+}
+h2{ 
+  font-size: 1.15rem;
+}
+h3{
+  margin: 1rem 0 .25rem 0;
+  font-size: 1rem;
 }
 div.section, section{
   position:relative;
-    display: block; 
-    clear: both; 
-    padding: 0 1rem;
+  display: block; 
+  clear: both; 
+  padding: 0 1rem;
 }
+input, select, label, textarea{
+  font-size: 1.15em;
+  @include border-box;
+}
+label, textarea{
+  display: block;
+}
+textarea, input[name="label"]{
+  width: 100%;
+}
+input[type="submit"]{
+  @include button;
+  font-size: 17px;
+  font-style: bold;
+  margin: 1rem 0;
+}
+input[type="checkbox"], input[type="radio"]{
+  display: inline-block;
+  width: auto;
+}
+
 p{
-  font-size: 18px;
-    line-height: 1.2;
+  font-size: 15px;
+  line-height: 1.4;
 }
   a:active{
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
@@ -137,8 +177,8 @@ p{
     top:0;
 }
 
-nav ul{
-  list-display-type: none;
+nav ul, .prices{
+    list-style-type: none;
     margin: 0;
     padding: 0;
 }
@@ -226,7 +266,9 @@ body.menu section{
 }
 #sectionList, #items, .upgrades ul{
     @include ul-reset;
-    li a{
+    li{
+    overflow: hidden;
+    a{
       display: block;
         padding: 0 1rem;
         text-decoration: none;
@@ -235,19 +277,35 @@ body.menu section{
         border: 1px solid grayscale($accentcolor);
         border-width: 1px 0 1px 0;
         border-top-color: fade-out(grayscale($accentcolor), .7);
-        h3{
-          margin: 1rem 0 0 0;
-          color: $buttoncolor;
-        }
         p{
           margin: 0 0 1rem 0;
         }
       }
-      li a:active h3{
+      a:active h3{
         color: $buttontext;
       }
-
+    }
 }
+.extra label{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    border-bottom: 1px solid #ccc;
+    padding: .5rem;
+      .extra-name{
+          -webkit-box-flex: 1;
+          margin: 0;
+          color: $bodyfontcolor;
+          font-family: $bodyfont;
+        }
+      .price{
+          -webkit-box-flex: 1;
+          font-family: $emphasisfont;
+          color: $buttoncolor;
+          line-height: 1.4;
+          font-size: 14px;
+      }
+}
+h2.price{ text-align: right;}
 #sectionDetail > p, #sectionDetail .breadcrumb,
 h1, #itemDetail, footer{ padding: 0 1rem;}
 #itemDetail h1{ padding: 0; }
@@ -265,7 +323,44 @@ footer{
   margin: 1rem 0 0 0;
   color: $footertext;
   a{color: $footerlink}
-}
+  }
+  @mixin block-input{
+    font:inherit;
+    display: block;
+    @include round-corners(5px);
+  }
+  label {
+    font-size: 1.15rem;
+    input{
+      @include block-input;
+      width: 100%;
+       }
+  }
+  input[name="notes"], input[name="label"] {
+      @include block-input;
+  }
+  input[type="submit"].ordering{
+    -webkit-appearance: none;
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  select{
+    width: 100%;
+    display:block;
+    font-size: 1.15rem;
+  }
+  .breadcrumbs a {
+    color: $buttoncolor;
+    font-size: .9rem;
+  } 
+  .breadcrumbs a::before{
+    content: '< ';
+    text-decoration: none;
+    height: 5px;
+    width: 5px;
+    position: relative;
+  }
         </style>
         {% endcompress %}
     </head>
