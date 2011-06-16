@@ -25,20 +25,27 @@ Choose a menu section
     <h1><%= name %></h1>
     <p><%= description %></p>
 
+    <% if (prices.length > 1) { %>
+        <ul class="prices"> 
+            <% prices.each(function (price, i) { %>
+              <li>
+                <label for="id_variant_<%= i %>">
+                  <input type="radio" id="id_variant_<%= i %>" value="<%= price.id %>" name="prices" /> 
+                  <%= price.get("description") %>
+                  $<%= price.get("price") %>
+                </label>
+              </li> 
+            <% }); %>
+        </ul> 
+    <% } else if (prices.length === 1) { %>
+    <h2 class="price"> $<%= prices.at(0).get("price") %> </h2>
+
+    <% } %>
     <label id="qty"> 
         Quantity
-        <input type="text" name="quantity" value="1" id="id_quantity" /> 
+        <input type="number" name="quantity" value="1" id="id_quantity" /> 
     </label> 
-    <div class="clear"></div> 
 
-    <% if (prices.length > 1) { %>
-        <ul> 
-            <% prices.each(function (price, i) { %>
-                <li><label for="id_variant_<%= i %>"><input type="radio" id="id_variant_<%= i %>" value="<%= price.id %>" name="variant_<%= price.id %>" /> <%= price.get("name") %></label></li> 
-                <% }); %>
-        </ul> 
-        <div class="clear"></div> 
-        <% } %>
 
     <% if (choice_sets.length > 0) { %>
         <% choice_sets.each(function (choice_set, i) { %>
@@ -51,24 +58,29 @@ Choose a menu section
                 </select> 
             </div> 
             <% }); %>
-        <div class="clear"></div> 
         <% } %>
 
     <% if (extras.length > 0) { %>
-        <a href="#" data-text="Hide Extras" id="toggle-extras">Add Extras</a>
+        <a href="#" data-text="Hide Extras" class="btn small" id="toggle-extras">Add Extras</a>
         <div class="upgrades extras"> 
             <ul> 
                 <% extras.each(function (extra, i) { %>
-                    <li><label for="id_upgrades_<%= i %>"><input type="checkbox" name="upgrades" value="<%= extra.id %>" id="id_upgrades_<%= i %>" /> <h3 class="extra-name"><%= extra.get("name") %></h3><em>$<%= extra.get("price") %></em></label></li> 
+                  <li class="extra">
+                    <label for="id_upgrades_<%= i %>">
+                      <input type="checkbox" name="upgrades" value="<%= extra.id %>" id="id_upgrades_<%= i %>" /> 
+                      <h3 class="extra-name"><%= extra.get("name") %></h3>
+                      <em class="price">$<%= extra.get("price") %></em>
+                    </label>
+                  </li> 
                     <% }); %>
             </ul> 
         </div> 
-        <div class="clear"></div> 
         <% } %>
 
     <label for="id_notes">Special instructions (&quot;No MSG&quot;, &quot;Extra lettuce&quot;)</label> 
-    <input type="text" name="notes" id="id_notes" /> 
-    <a href="#" id="toggle-name">Ordering for multiple people?</a> 
+    <textarea type="text" name="notes" id="id_notes" ></textarea>
+
+    <a href="#" id="toggle-name" class="btn">Ordering for multiple people?</a> 
     <div id="add-name" style="display:none;"> 
         <label for="id_label">Enter a name here and we&#39;ll label this item for that person.</label> 
         <input type="text" name="label" id="id_label" /> 

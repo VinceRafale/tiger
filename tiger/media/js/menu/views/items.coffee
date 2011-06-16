@@ -46,6 +46,7 @@ class this.ItemDetailView extends Backbone.View
     toggleName: (e) =>
         nameTag = @$("#add-name")
         e.preventDefault()
+        $(e.target).remove();
         nameTag.show()
 
     toggleExtras: (e) ->
