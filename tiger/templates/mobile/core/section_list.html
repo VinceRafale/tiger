@@ -73,7 +73,35 @@ Choose a menu section
     </div> 
     <input id="submit" class="button ordering" type="submit" value="Add to order" /> 
 </script>
-<script id="cart-table" type="text/html">
+<script id="review-order" type="text/html">
+<h2>Review your order</h2>
+
+<table>
+    <tr>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Total</th>
+        <th></th>
+    </tr>
+
+</table>
+</script>
+<script id="line-item-template" type="text/html">
+<td class="item">
+item.name (price description)
+{% if item.upgrades or item.notes or item.sides %}
+    <ul>
+        <li>upgrade name: upgrade price per item</li>
+        <li>side</li>
+        <li>item.notes</li>
+    </ul>
+{% endif %}
+</td>
+<td>row price</td>
+<td>row quantity</td>
+<td>row total</td>
+<td class="remove"><a href="">[x]</a></td>
 </script>
 <script type="text/javascript">
     var line_items = {{ cart.to_json|safe|default:"[]" }};
