@@ -1,0 +1,15 @@
+{% extends 'tiger/index.html' %}
+
+{% block main %}
+<div class="grid_7 push_5">
+    <form method="POST">
+    <label>
+        {{ form.promo_code.label }}:
+        {% if form.promo_code.errors %}
+            {{ form.promo_code.errors }}
+        {% endif %}
+        <br /><span>{{ form.promo_code }}</span></label>
+    <input type="submit" value="" />
+    </form>
+</div>
+{% endblock %}

@@ -5,12 +5,18 @@ from django.utils.cache import patch_vary_headers
 
 from tiger.utils.site import RequestSite
 
+LOCAL_SUBDOMAIN = getattr(settings, "LOCAL_DOMAIN", None)
+
 
 class DomainDetectionMiddleware(object):
     def process_request(self, request):
         """Gets the domain from the request headers and adds a ``site`` 
         attribute to the ``Request`` object.
         """
+        if settings.DEBUG == True and LOCAL_SUBDOMAIN is not None:
+            from tiger.accounts.models import Site
+            request.site = Site.objects.get(subdomain=LOCAL_SUBDOMAIN)
+            return None
         site = RequestSite(request)
         # Takeout Tiger itself has different URL patterns
         if site.domain == 'www.takeouttiger.com':

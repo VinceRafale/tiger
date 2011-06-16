@@ -13,7 +13,7 @@ from tiger import reseller_settings
 from tiger.accounts.models import Site
 from tiger.accounts.views import domain_check
 from tiger.sales.exceptions import PaymentGatewayError, SiteManagementError
-from tiger.sales.forms import CreateResellerAccountForm, CreateSiteForm
+from tiger.sales.forms import CreateResellerAccountForm, CreateSiteForm, SiteSignupForm
 from tiger.sales.models import Account, Plan, Invoice
 from tiger.utils.test import TestCase
 
@@ -143,9 +143,60 @@ class ResellerSignupFormTestCase(TestCase):
             form.full_clean()
             self.assertTrue(form.create_payment_profile.called)
             account = form.save()
-            self.assertEquals(account.customer_id, 'foo')
-            self.assertEquals(account.subscription_id, 'bar')
-            self.assertEquals(account.card_number, '5678')
+            account.credit_card |should_not| be(None)
+            card = account.credit_card
+            self.assertEquals(card.customer_id, 'foo')
+            self.assertEquals(card.subscription_id, 'bar')
+            self.assertEquals(card.card_number, '5678')
             self.assertTrue(account.manager)
             self.assertEquals(len(mail.outbox), 1)
             self.assertTrue(self.client.login(email=account.user.email, password='password'))
+
+
+class SelfSignupFormTestCase(TestCase):
+    poseur_fixtures = 'tiger.sales.fixtures.accounts'
+    
+    def setUp(self):
+        self.client = Client(HTTP_HOST='wickedtastyeats.takeouttiger.com')
+        self.account = Account.objects.all()[0]
+        self.plan = Plan.objects.create(name='testing')
+        self.factory = RequestFactory()
+        self.data = {
+            'email': 'new@new.com',
+            'password1': 'password',
+            'password2': 'password',
+            'cc_number': '12345678',
+            'first_name': 'First',
+            'last_name': 'Last',
+            'zip': '11111',
+            'month': '3',
+            'year': '2012',
+            'site_name': 'Wicked Tasty Eats',
+            'subdomain': 'wickedtastyeats'
+        }
+
+    def test_invalid_credit_card_displays_errors(self):
+        with patch.object(SiteSignupForm, 'create_payment_profile') as mock_method:
+            mock_method.side_effect = PaymentGatewayError()
+            form = SiteSignupForm(self.data, account=self.account, plan=self.plan)
+            self.assertFalse(form.is_valid())
+            self.assertTrue(form.create_payment_profile.called)
+            self.assertTrue('Unable to process your credit card.' in form.non_field_errors())
+
+    def test_valid_form_creates_manager_account(self):
+        with patch.object(SiteSignupForm, 'create_payment_profile') as mock_method:
+            mock_method.return_value = ['foo', 'bar']
+            form = SiteSignupForm(self.data, account=self.account, plan=self.plan)
+            form.full_clean()
+            self.assertTrue(form.create_payment_profile.called)
+            site = form.save()
+            site.plan |should| equal_to(self.plan)
+            site.account |should| equal_to(self.account)
+            site.credit_card |should_not| be(None)
+            card = site.credit_card
+            self.assertEquals(card.customer_id, 'foo')
+            self.assertEquals(card.subscription_id, 'bar')
+            self.assertEquals(card.card_number, '5678')
+            self.assertTrue(site.managed)
+            self.assertEquals(len(mail.outbox), 1)
+            self.assertTrue(self.client.login(email=site.user.email, password='password', site=site))

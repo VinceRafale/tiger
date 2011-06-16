@@ -72,7 +72,7 @@ $(function () {
         starImg.src = "{{ MEDIA_URL }}img/ajax-loader.gif";
         $.post($(this).attr("href"), {}, function (data) {
             starImg.src = "{{ MEDIA_URL }}img/" + data + ".png";
-        }, "txt");
+        }, "html");
         return false;
     });
     $("td a.delete").click(function () {
@@ -83,7 +83,7 @@ $(function () {
             if (data == 'deleted') {
                 $(row).closest("tr").fadeOut();
             }
-        }, "txt");
+        }, "html");
         return false;
     });
     $("a.send-sms").click(function() {

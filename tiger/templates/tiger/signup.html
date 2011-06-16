@@ -168,12 +168,6 @@
                         {% endif %}
 					    <br /><span>{{ form.zip }}</span></label>
 
-			        <p><a href="#" class="promo">Do you have a promo code?</a></p>
-			        <label class="promo">Promo code:
-			            {% if form.promo.errors %}
-                            {{ form.promo.errors }}
-                        {% endif %}
-			            <br /><span>{{ form.promo }}</span></label>
 		        	<ul>
 					    <!-- <li><img src="{{ MEDIA_URL }}/img/Card - AmEx_32x32.png" alt="Card   AmEx 32x32"></li> -->
                         <li><img src="{{ MEDIA_URL }}/img/Card - Discover_32x32.png" alt="Card   Discover 32x32"></li>
@@ -183,9 +177,10 @@
 				</fieldset>
 			</div>
 			<div class="thanks grid_4 push_1">
-			    <span id="promo"></span>
-			    <span class="free-trial"></span>
-			    <p>You won't be billed unless you keep your account open past your <span class="trial-period">30</span>-day free trial.<br /><span class="note">We need your billing information to reduce fraud and verify that you have a valid credit card should you keep your account open. This prevents any interruption in service.</span><span class="note">*Fax charges not included in free trial</span></p>
+                <span id="promo"></span>
+                <span class="free-trial"></span>
+
+			    <p>You won't be billed unless you keep your account open past your <span class="trial-period">90</span>-day free trial.<br /><span class="note">We need your billing information to reduce fraud and verify that you have a valid credit card should you keep your account open. This prevents any interruption in service.</span><span class="note">*Fax charges not included in free trial</span></p>
 			</div>    
 			<div class="grid_12">
 			    <input type="submit" value="">
@@ -241,10 +236,6 @@
             }
         }
 		$(function(){
-            $("span#promo").hide();
-            if (!$("#id_promo").val()) {
-                $("label.promo").hide();
-            }
             $("#id_subdomain").keyup(function () {
                 keystrokes++;
                 domain = $(this).val();
@@ -252,15 +243,6 @@
                     setTimeout('checkAvailable()', 1000);
                     $("span.looking").show();
                     $("span.yes,span.no").hide();
-                } else {
-                    keystrokes--;
-                }		
-            });
-            $("#id_promo").keyup(function () {
-                keystrokes++;
-                couponCode = $(this).val();
-                if (couponCode) {
-                    setTimeout('validateCoupon()', 1000);
                 } else {
                     keystrokes--;
                 }		
@@ -277,11 +259,6 @@
                         $("span.matches").hide(); 
                     }
                 }
-            });
-            $("a.promo").toggle(function() {
-                $("label.promo").slideDown();
-            }, function() {
-                $("label.promo").slideUp();
             });
 		});
 	</script>

@@ -25,6 +25,7 @@
 		</header>
 		<section id="content" class="container_12 clearfix">
 			<img src="/static/img/img_tiger.png" alt="Takeout Tiger" class="tiger">
+            {% block main %}
 			<div id="loopedSlider" class="grid_7 push_5 callout">
 				<div class="container">
 					<div class="slides">
@@ -45,6 +46,7 @@
 							<p>Keep your regulars in the loop and spend less time doing it.  Send your specials, your complete menu, or an online coupon to your customers by fax, e-mail, or both.</p>
 						</div>
 					</div>	
+                    
 				</div>
 				<ul class="pagination">
 					<li><a href="#"></a></li>
@@ -53,8 +55,8 @@
 					<li><a href="#"></a></li>
 				</ul>
 				<a href="#" class="signup">Sign Up</a>
-
 			</div>	
+            {% endblock %}
 		</section>
 		<div class="orange-bar content"></div>
 		<footer class="container_12 clearfix">

@@ -35,5 +35,3 @@ class this.MenuController extends Backbone.Controller
         view = new CartView {collection: App.cart}
         $("#container").children().remove()
         $("#container").append view.render().el
-
-    

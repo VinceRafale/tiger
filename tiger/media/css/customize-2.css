@@ -1,22 +1,25 @@
 #toolbar {
-    width:100%;
-    position:fixed;
+    width: 105px;
+    position: absolute;
     z-index:999;
-    top:0;
-    left:0;
+    top:5px;
+    left:5px;
     font-family:Arial !important;
     background:#151415;
-    padding:10px 0;
     border-bottom:1px solid rgba(200,200,200,0.15);
+    padding:8px;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
 }
 #toolbar div.toolbar-inner {
-    padding:0 10px;
+    
 }
 
 #toolbar ul {
     list-style-type:none;
     margin:0;
-}
+padding: 0;}
 
 #toolbar li {
     display:block;
@@ -38,8 +41,8 @@
 div.tab_container {
     z-index:1000;
     position:absolute;
-    top:57px;
-    left:7px;
+    top: 0;
+    left: 126px;
     padding:10px;
     -moz-border-radius:5px;
     -webkit-border-radius:5px;
@@ -72,40 +75,37 @@ div.tab_container fieldset:first-child{margin:0;}
     z-index:1001;
 }
 ul.tabs li {
-    margin-left:0;
-    margin-right:10px;
-}
+    margin: 0;
+    
+width: 105px;  padding: 0; float: none;}
 
 ul.tabs li:hover{
 
 }
 
 ul.tabs li a {
-    color:#4B4B4B;
+    background-color: #4B4B4B;
     text-decoration:none;
-    background-color: #DEDEDE;
-    padding: 4px 9px;
+    color: #DEDEDE;
+    padding: 4px 0 4px 4px;
     display:block;
-}
+border-bottom: 1px solid #2a2a2a;}
 
 ul.tabs li a, ul.tabs li button,button.preview, div.remove a.remove {
     -moz-border-radius:5px;
-    -webkit-border-radius:5px;
-    border-radius:5px;   
+    
+       
 }
 
 ul.tabs li.button{
     /*background-color:#6c8fa0; */   
 }
 
-ul.tabs li button {
+ul.tabs li a#save {
     background-color:#6c8fa0;
     border:none;
     color:#ffffff;
-    font-size:14px;
-    font-family:Arial,sans-serif;
     cursor:pointer;
-    padding: 5px 9px;
 }
 
 button.preview, div.remove a.remove {
@@ -243,4 +243,33 @@ div.remove a.remove {
 
 #toolbar p.admonition {
     margin:0;
+    color:#dd0000 !important;
+    padding-bottom:4px;
+}
+
+#toolbar p.admonition a {
+    color:#dd0000 !important;
+}
+
+ul.tabs li button {
+    background-color:#6c8fa0;
+    border:none;
+    color:#ffffff;
+    font-size:14px;
+    font-family:Arial,sans-serif;
+    cursor:pointer;
+    padding: 5px 9px;
+}
+
+#hider {
+    color:white;
+    float:right;
+    font-size:14px;
+    text-decoration:none;
+}
+
+#toolbar h3 {
+    font-size:16px;
+    color:white;
+    margin-bottom:4px;
 }

@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
-from tiger.accounts.forms import DomainForm
+from tiger.accounts.forms import DomainForm, GoogleToolsForm
 from tiger.content.forms import *
 from tiger.content.models import *
 
@@ -118,3 +118,15 @@ def get_images(request):
 def look_docs(request):
     return direct_to_template(request, template='dashboard/content/look_docs.html')
     
+@login_required
+def google(request):
+    if request.method == 'POST':
+        form = GoogleToolsForm(request.POST, instance=request.site)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Google tools settings changed successfully.')
+    else:
+        form = GoogleToolsForm(instance=request.site)
+    return direct_to_template(request, template='dashboard/content/google.html', extra_context={
+        'form': form
+    })

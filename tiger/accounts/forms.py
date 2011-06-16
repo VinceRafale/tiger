@@ -1,6 +1,8 @@
 import hashlib
 from datetime import time, date
 
+from lxml.html import fromstring, fragment_fromstring
+
 from django import forms
 from django.conf import settings
 from django.core.mail import mail_admins
@@ -15,6 +17,7 @@ from tiger.accounts.models import (Account, Subscriber, Site, TimeSlot,
     SalesRep, FaxList, Schedule, Location)
 from tiger.utils.forms import BetterModelForm
 from tiger.utils.geocode import geocode, GeocodeError
+from tiger.sales.models import CreditCard
 
 
 class SubscriberForm(BetterModelForm):
@@ -225,21 +228,7 @@ class CreditCardForm(BetterModelForm):
     year = forms.CharField()
 
     class Meta:
-        model = Account
-        fields = (
-            'first_name',
-            'last_name',
-            'card_number',
-            'month',
-            'year',
-            'company_name',
-            'phone',
-            'fax',
-            'street',
-            'city',
-            'state',
-            'zip',
-        )
+        model = CreditCard
 
     def __init__(self, *args, **kwargs):
         instance = kwargs['instance']
@@ -456,6 +445,33 @@ class BasicInfoForm(BetterModelForm):
     class Meta:
         model = Site
         fields = ('name',)
+
+
+class GoogleToolsForm(BetterModelForm):
+    webmaster_tools = forms.CharField(label='Webmaster Tools meta tag', required=False)
+    google_analytics = forms.RegexField(label='Google analytics Web Property ID', regex=r'[\w-]+', required=False)
+
+    class Meta:
+        model = Site
+        fields = (
+            'webmaster_tools',
+            'google_analytics',
+        )
+
+    def clean_webmaster_tools(self):
+        tools = self.cleaned_data.get('webmaster_tools')
+        INVALID = 'Not a valid meta tag. Please verify that you have copied it correctly.'
+        if tools:
+            try:
+                frag = fragment_fromstring(tools)
+                assert all([
+                    frag.tag == 'meta',
+                    frag.get('name') == 'google-site-verification',
+                    frag.get('content')
+                ])
+            except:
+                raise forms.ValidationError(INVALID)
+        return tools
 
 
 class LocationSelectionForm(forms.Form):

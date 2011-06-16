@@ -1,0 +1,67 @@
+# GENERAL NOTES
+#
+# If the indents don't line up, the import will fail.
+# If the indents are made of something other than 2 spaces each (like tabs, for
+# example), the import will fail.
+sections:
+  # BEGIN SECTION
+  # Before you do anything else, it'd be a good idea to copy and paste everything
+  # between here and the END SECTION line as many times as you have sections in
+  # this menu.
+  - name: <Section name here>
+    description: <Description here>
+    # BEGIN DEFAULTS
+    # Any prices, choice sets, or extras that you create in the 'defaults' block 
+    # for a section will automatically be added to every item in the section,
+    # unless those pieces of information are specified separately for a given
+    # menu item.  If you don't need this feature, just delete the whole section.
+    defaults:
+      prices:
+        # Repeat the two lines below for as many price variants as this product
+        # has (small/large, lunch/dinner, etc.).
+        - label: <name of the price -- will only appear if multiple prices>
+          price: <dollar amount (but no dollar sign)>
+      choice_sets:
+        # Each choice set represents a "pick one of" option for an item.  Repeat
+        # the next four lines for a second choice set.
+        - choices:
+          # Repeat the two lines below to provide the choices in the set (the 
+          # "price" line can be left out).
+          - label: <Description>
+            price: <dollar amount (but no dollar sign)>
+      extras:
+        # Repeat the next two lines for extras (e.g. "extra cheese for 50 cents").
+        # Price is required for these; if you expect to have an extra without a
+        # price, you probably should be using a choice set.
+        - label: <Description>
+          price: <dollar amount (but no dollar sign)>
+    # END DEFAULTS
+    items:
+      # BEGIN ITEM
+      # Copy between here and the "END ITEM" line and paste as many times as the 
+      # section has items.
+      - name: <Name of menu item>
+        label: <Description>
+        # to uncheck "Available for online ordering" and provide a freeform price:
+        price_override: <Descriptive pricing such as "market price">
+        prices:
+          # Repeat the two lines below for as many price variants as this product
+          # has (small/large, lunch/dinner, etc.).
+          - label: <name of the price -- will only appear if multiple prices>
+            price: <dollar amount (but no dollar sign)>
+        choice_sets:
+          # Each choice set represents a "pick one of" option for an item.  Repeat
+          # the next four lines for a second choice set.
+          - choices:
+            # Repeat the two lines below to provide the choices in the set (the 
+            # "price" line can be left out).
+            - label: <Description>
+              price: <dollar amount (but no dollar sign)>
+        extras:
+          # Repeat the next two lines for extras (e.g. "extra cheese for 50 cents").
+          # Price is required for these; if you expect to have an extra without a
+          # price, you probably should be using a choice set.
+          - label: <Description>
+            price: <dollar amount (but no dollar sign)>
+      # END ITEM
+  # END SECTION

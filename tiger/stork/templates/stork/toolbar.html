@@ -1,12 +1,14 @@
 {% load stork_tags %}
 <div id="toolbar">
     <div class="toolbar-inner">
+        <a id="hider" href="#">[-]</a>
+        <h3>Toolbar</h3>
         <ul class="tabs"> 
             {% for panel in panels %}
             <li><a href="#tab{{ forloop.counter }}">{{ panel.name }}</a></li> 
             {% endfor %}
-            <li class="back"><a class="back" href="{% url back_to_dashboard %}">Back to dashboard</a></li>
-            <li class="button"><button id="save">Save</button></li>
+            <li class="back"><a class="back" href="{% url back_to_dashboard %}">Done</a></li>
+            <li class="button"><a id="save">Save</a></li>
         </ul> 
         <div class="tab_container"> 
             {% for panel in panels %}
@@ -122,6 +124,18 @@ if (!currentTabId) {
     $("a[href='" + currentTabId + "']").parent().addClass("active");
     $(currentTabId).show();
 }
+
+$("#hider").click(function () {
+    if ($(this).hasClass("hiding")) {
+        $(this).removeClass("hiding");
+        $(this).text("[-]");
+        $("ul.tabs,div.tab_container").show();
+    } else {
+        $(this).addClass("hiding");
+        $(this).text("[+]");
+        $("ul.tabs,div.tab_container").hide();
+    }
+});
 
 $("ul.tabs li").click(function() {
     $("ul.tabs li").removeClass("active"); 
