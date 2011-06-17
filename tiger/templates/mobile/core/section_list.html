@@ -101,18 +101,14 @@ Choose a menu section
 </script>
 <script id="line-item-template" type="text/html">
 <td class="item">
-item.name (price description)
-{% if item.upgrades or item.notes or item.sides %}
-    <ul>
-        <li>upgrade name: upgrade price per item</li>
-        <li>side</li>
-        <li>item.notes</li>
-    </ul>
-{% endif %}
+<%= item.get("name") %> 
+<% if (item.prices.size() > 1) { %>
+(<%= price.description %>)
+<% } %>
 </td>
-<td>row price</td>
-<td>row quantity</td>
-<td>row total</td>
+<td>$<%= price.get("price") %></td>
+<td><%= quantity %></td>
+<td><%= total %></td>
 <td class="remove"><a href="">[x]</a></td>
 </script>
 <script type="text/javascript">

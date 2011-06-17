@@ -6,6 +6,7 @@ appFiles  = [
   'models'
   'views/sections'
   'views/items'
+  'views/cart'
   'controllers/menu_controller'
   'application'
 ]
