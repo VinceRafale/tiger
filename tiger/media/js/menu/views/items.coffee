@@ -72,11 +72,12 @@ class this.ItemDetailView extends Backbone.View
             return memo), {}
             
         $.post (@model.get "cart_url"), ($.param params), (data) =>
-            if data.error
+            newData = JSON.parse data
+            if newData.error
                 #TODO put data.msg somewhere and make it perty
-                console.log data
+                alert newData.msg
             else
                 #TODO beautify this
                 alert "#{@model.get "name"} successfully added to your order."
-                App.cart.refresh (JSON.parse data)
+                App.cart.refresh newData
             

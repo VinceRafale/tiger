@@ -66,6 +66,7 @@ class LineItem extends Backbone.Model
         @choices = []
         item.choice_sets.each (choice) =>
             @choices.push (choices.choices.filter (c) -> c.id in choice_ids)
+        @item = item
             
 
 class Cart extends Backbone.Collection

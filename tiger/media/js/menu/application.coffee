@@ -7,9 +7,9 @@ this.App =
         for section in sections
             do (section) ->
                 App.sections.add(new Section section)
+        @cart = new Cart line_items
         if not App.controller?
             App.controller = new MenuController
             Backbone.history.start()
-        @cart = new Cart line_items
 
 App.init()
