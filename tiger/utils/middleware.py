@@ -28,5 +28,5 @@ class MobileDetectionMiddleware(object):
     """Middleware to detect if a useragent is mobile and set a session accordingly"""
     def process_request(self, request):
         mobile = is_mobile_browser(request)
-        request.is_mobile = mobile
+        request.is_mobile = mobile and request.site.mobile_enabled()
 

@@ -204,6 +204,9 @@ class Site(models.Model):
             'data': data
         }
 
+    def mobile_enabled(self):
+        return True if self.subdomain == 'slicecafe' else False
+
 
 class Location(models.Model):
     RECEIPT_EMAIL = 1
