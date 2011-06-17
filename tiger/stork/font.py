@@ -32,6 +32,9 @@ class FontComponent(BaseComponent):
     def get_css(self, font=None):
         return render_to_string('stork/font.css', {'component': self, 'ff': font or self.instance.font})
 
+    def get_mobile_css(self, font=None):
+        return render_to_string('stork/mobile-font.css', {'component': self, 'ff': font or self.instance.font})
+
     def webfont(self):
         return self.get_value(self.id)
 

@@ -28,6 +28,7 @@ class this.ItemDetailView extends Backbone.View
     events:
         "click #toggle-name": "toggleName"
         "click #toggle-extras": "toggleExtras"
+        "click input[type='submit']": "addToCart"
 
     render: =>
         item = @model
@@ -45,6 +46,7 @@ class this.ItemDetailView extends Backbone.View
     toggleName: (e) =>
         nameTag = @$("#add-name")
         e.preventDefault()
+        $(e.target).remove();
         nameTag.show()
 
     toggleExtras: (e) ->
@@ -60,3 +62,22 @@ class this.ItemDetailView extends Backbone.View
         else
             extras.show()
                 #anim {'height':'auto'}, .35, 'ease-in'
+                 
+    addToCart: =>
+        #TODO: I wants spinny.  This shouldn't be a lengthy operation, but since everything
+        # else in the menu takes just a few ms, it will seem long in comparison.
+        # Zepto's missing "serialize", so we have to build a param object
+        params = _.reduce (@$ "input,select,textarea").not("[type='submit']"), ((memo, field) ->
+            memo[($ field).attr "name"] = ($ field).val()
+            return memo), {}
+            
+        $.post (@model.get "cart_url"), ($.param params), (data) =>
+            newData = JSON.parse data
+            if newData.error
+                #TODO put data.msg somewhere and make it perty
+                alert newData.msg
+            else
+                #TODO beautify this
+                alert "#{@model.get "name"} successfully added to your order."
+                App.cart.refresh newData
+            

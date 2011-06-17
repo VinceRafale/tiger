@@ -5,7 +5,7 @@ from django.utils.cache import patch_vary_headers
 
 from tiger.utils.site import RequestSite
 
-LOCAL_SUBDOMAIN = getattr(settings, "LOCAL_DOMAIN", None)
+LOCAL_SUBDOMAIN = getattr(settings, "LOCAL_SUBDOMAIN", None)
 
 
 class DomainDetectionMiddleware(object):

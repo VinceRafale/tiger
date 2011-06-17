@@ -8,9 +8,52 @@
         <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
         <link rel="apple-touch-icon-precomposed" href="http://media.meirish.com/images/appIcon.png">
         <title>{{ site.name }}</title>
+        <style id="font-face-fonts">
+        {% if not fonts_are_cached %}
+        {% for fontname, attrs in site.font_data.data.items %}
+        {{ attrs.font_face }}
+        {% endfor %}
+        {% endif %}
+        </style>
+        <script type='text/javascript'>
+        var font_key = "{{ font_key }}",
+            font_face_tag = document.getElementById("font-face-fonts");
+
+        function createCookie(name,value,days) {
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime()+(days*24*60*60*1000));
+                var expires = "; expires="+date.toGMTString();
+            }
+            else var expires = "";
+            document.cookie = name+"="+value+expires+"; path=/";
+        }
+
+        function readCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0;i < ca.length;i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1,c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+            }
+            return null;
+        }
+
+        if (readCookie("font_key") !== font_key) {
+            localStorage.setItem("fontface", font_face_tag.innerHTML);
+            createCookie("font_key", font_key, 365);
+        } else {
+            font_face_tag.innerHTML = localStorage.getItem("fontface");
+        }
+        </script>
         {% compress css %}
         <style type="text/x-scss" media="screen">
         {% build_css site.theme %}
+        {% for fontname, attrs in site.font_data.data.items %}
+        ${{ fontname }}: {{ fontname }}, {{ attrs.stack|safe }};
+        {% endfor %}
+
 
 //$headerfontcolor: rgba(119,255,0,1.0);
 //$bodyfontcolor: rgba(255,255,255,1.0);
@@ -37,20 +80,24 @@
 //$footerlink: rgba(0,0,0,1.0);
 //$footerlinkhover: rgba(0,0,0,1.0)
 
-$darkBlue:#1f7be5;
-$lightBlue:#4a9bea;
 @mixin button{
   border-radius:5px;
-    color: #fff;
+    color: $buttontext;
     text-decoration: none;
-    background-color: rgba(0,0,0,.7);
+    background-color: $buttoncolor;
     padding: 5px 10px;
     display: inline-block;
     margin: 0 2px;
 }
+.btn{
+  @include button;
+}
 @mixin border-box{
   -webkit-box-sizing: border-box;
     box-sizing: border-box;
+}
+@mixin round-corners($radius){
+  border-radius: $radius;
 }
 @mixin ul-reset{
   padding: 0;
@@ -62,27 +109,66 @@ body, html{
     margin: 0; 
     padding: 0;
     background-color: $centercolor;
-    font-size: 14px;
+    font-size: 15px;
+    font-family: $bodyfont;
     color: $bodyfontcolor;
 }
 body{
   width: 100%;
   @include border-box;
 }
+h1,h2,h3 {
+    font-family: $headerfont;
+    font-weight: bold;
+    line-height: 1.4;
+    color: $headerfontcolor;
+}
+h1{
+  font-size: 1.3rem;
+}
+h2{ 
+  font-size: 1.15rem;
+}
+h3{
+  margin: 1rem 0 .25rem 0;
+  font-size: 1rem;
+}
 div.section, section{
   position:relative;
-    display: block; 
-    clear: both; 
-    padding: 0 1rem;
+  display: block; 
+  clear: both; 
+  padding: 0 1rem;
 }
+input, select, label, textarea{
+  font-size: 1.15em;
+  @include border-box;
+}
+label, textarea{
+  display: block;
+}
+textarea, input[name="label"]{
+  width: 100%;
+}
+input[type="submit"]{
+  @include button;
+  font-size: 17px;
+  font-style: bold;
+  margin: 1rem 0;
+}
+input[type="checkbox"], input[type="radio"]{
+  display: inline-block;
+  width: auto;
+}
+
 p{
-  font-size: 16px;
-    line-height: 1.2;
+  font-size: 15px;
+  line-height: 1.4;
 }
   a:active{
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
-  -webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,$lightBlue), color-stop(100%,$darkBlue));
-  color: #fff !important;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
+  -webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
+  color: $buttontext !important;
+  text-shadow: 0 1px 0 fade-out(invert($buttontext), .5);
 }
 #home{
   display:block;
@@ -91,8 +177,8 @@ p{
     top:0;
 }
 
-nav ul{
-  list-display-type: none;
+nav ul, .prices{
+    list-style-type: none;
     margin: 0;
     padding: 0;
 }
@@ -121,16 +207,20 @@ nav ul{
   max-width: 50%; 
   background-size: auto auto;
 }
+.place-order{
+  border-bottom: 1px solid $accentcolor;
+  overflow: auto;
+  padding: .5rem 0;
+}
 div.cart{
-  background: black;
+  background: $mastheadbackgroundcolor;
   color: #fff;
   padding: 5px;
   overflow: auto;
   a.button{
     @include button;
-      background: rgba(255,255,255, .2);
       float: right;
-      font: normal 12px/1 sans-serif;
+      font: normal 14px/1 sans-serif;
   }
 }
 .maplink{
@@ -147,15 +237,15 @@ div.cart{
     -webkit-transition: all 350ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
   position:absolute;
   width: 100%;
-  background: white;
+  background: lighten($centercolor, 20%);
   top: 0;
   overflow-x:hidden;
   left: 0;
   -webkit-transform: translate3d(100%, 0, 0);
   height: auto;
-  padding-bottom: 2em;
+  padding-bottom: 2rem;
   > *{
-    padding: 0 1em;
+    padding: 0 1rem;
   }
 }
 #contact:target{
@@ -166,7 +256,6 @@ div.cart{
     width: 46%;
     margin: 0 1%;
     display: inline-block;
-    font-size: 16px;
     text-align: center;
   }
   #facebook{
@@ -177,25 +266,101 @@ body.menu section{
 }
 #sectionList, #items, .upgrades ul{
     @include ul-reset;
-    li a{
+    li{
+    overflow: hidden;
+    a{
       display: block;
         padding: 0 1rem;
         text-decoration: none;
         color: inherit;
         font-size: 1.2rem;
-        border: 1px solid rgba(0,0,0,.5);
+        border: 1px solid grayscale($accentcolor);
         border-width: 1px 0 1px 0;
-        border-top-color: rgba(255,255,255, .3);
-        h3{
-          margin: 1rem 0 0 0;
-        }
+        border-top-color: fade-out(grayscale($accentcolor), .7);
         p{
-          font-size: 80%;
           margin: 0 0 1rem 0;
         }
       }
-
+      a:active h3{
+        color: $buttontext;
+      }
+    }
 }
+.extra label{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    border-bottom: 1px solid #ccc;
+    padding: .5rem;
+      .extra-name{
+          -webkit-box-flex: 1;
+          margin: 0;
+          color: $bodyfontcolor;
+          font-family: $bodyfont;
+        }
+      .price{
+          -webkit-box-flex: 1;
+          font-family: $emphasisfont;
+          color: $buttoncolor;
+          line-height: 1.4;
+          font-size: 14px;
+      }
+}
+h2.price{ text-align: right;}
+#sectionDetail > p, #sectionDetail .breadcrumb,
+h1, #itemDetail, footer{ padding: 0 1rem;}
+#itemDetail h1{ padding: 0; }
+header{
+  background: $mastheadbackgroundcolor;
+  color: $mastheadtextcolor;
+  border-bottom: 1px solid $accentcolor;
+  h2 a{color: $mastheadtextcolor;}
+}
+footer{
+  border: 1px solid $accentcolor;
+  border-width: 1px 0;
+  background: $footerbackground;
+  overflow: hidden;
+  margin: 1rem 0 0 0;
+  color: $footertext;
+  a{color: $footerlink}
+  }
+  @mixin block-input{
+    font:inherit;
+    display: block;
+    @include round-corners(5px);
+  }
+  label {
+    font-size: 1.15rem;
+    input{
+      @include block-input;
+      width: 100%;
+       }
+  }
+  input[name="notes"], input[name="label"] {
+      @include block-input;
+  }
+  input[type="submit"].ordering{
+    -webkit-appearance: none;
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  select{
+    width: 100%;
+    display:block;
+    font-size: 1.15rem;
+  }
+  .breadcrumbs a {
+    color: $buttoncolor;
+    font-size: .9rem;
+  } 
+  .breadcrumbs a::before{
+    content: '< ';
+    text-decoration: none;
+    height: 5px;
+    width: 5px;
+    position: relative;
+  }
         </style>
         {% endcompress %}
     </head>
@@ -294,7 +459,7 @@ body.menu section{
     <h1>Contact {{site.name}}</h1>
         {% if site.location_set.count == 1 %}
         {% with site.location_set.all.0 as location %}
-        <a href="http://maps.google.com/?q={{ location.address|iriencode }}" class="maplink" style="background-image: url('http://maps.google.com/maps/api/staticmap?size=640x200&maptype=roadmap&markers=color:red%7C{{ location.address|iriencode }}&sensor=true');">
+        <a href="http://maps.google.com/?q={{ location.address|iriencode }}" class="maplink" style="background: url('http://maps.google.com/maps/api/staticmap?size=640x200&maptype=roadmap&markers=color:red%7C{{ location.address|iriencode }}&sensor=true') center center no-repeat !important;">
     </a>
         {% if location.address %}
         <address>
@@ -335,13 +500,21 @@ body.menu section{
         {% endblock %}
 
 </div>
-
+{{ menu_is_cached }}
+        {% if not menu_is_cached %}
+        <script id="menu-data" type="text/json">
+        {{ site.menu_json.data|safe }}
+        </script>
+        {% endif %}
         {% compress js %}
         <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/zepto.js"></script>
         <script type="text/javascript" charset="utf-8">
+
             // do some dom ready magic here for menu perhaps?
         $(document).ready(function(){
+                {# hash to be stored in cookie to check for menu updates #}
+                var menu_key = "{{ menu_key }}";
                 $('.back-link').bind('touch click', function(e){
                     e.preventDefault();
                     $('body').css('height','auto');
@@ -350,11 +523,13 @@ body.menu section{
                 });
                 $('.contact').bind('touch click', function(e){
                     var cHeight = $('#contact').height();
-                    console.log(cHeight);
-                        $('body').css('height',cHeight+'px');
-                        
-                 });
-            });
+                    $('body').css('height',cHeight+'px');
+                });
+                if (readCookie("menu_key") !== menu_key) {
+                    localStorage.setItem("menu", $("#menu-data").text());
+                    createCookie("menu_key", menu_key, 365);
+                }
+        });
         </script>
             {% endcompress %}
             {% block js %}

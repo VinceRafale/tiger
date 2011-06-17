@@ -4,11 +4,12 @@ from decimal import Decimal
 import random
 
 from django.core.mail import EmailMessage
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
 from django.contrib.localflavor.us.models import *
 from django.contrib.sessions.models import Session
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.utils.http import int_to_base36, base36_to_int
@@ -24,6 +25,7 @@ from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable, PricePo
 from tiger.core.messages import *
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler
+from tiger.utils.cache import KeyChain
 from tiger.utils.hours import *
 from tiger.utils.pdf import render_to_pdf
 
@@ -202,7 +204,6 @@ class Item(models.Model):
             return [self.text_price]
         return []
 
-
     def for_json(self, drilldown=True):
         data = {
             "id": self.id,
@@ -217,7 +218,8 @@ class Item(models.Model):
                 "choices": [c.for_json() for c in self.sidedishgroup_set.all()],
                 "spicy": self.spicy,
                 "vegetarian": self.vegetarian,
-                "ordering": self.ordering
+                "ordering": self.ordering,
+                "cart_url": self.get_absolute_url() + "order/"
             })
         else:
             # data for cart, and for building line items in JavaScript
@@ -704,9 +706,35 @@ def create_defaults(sender, instance, created, **kwargs):
                 )
 
 
+def reset_menu_json(site):
+    KeyChain.menu_json.invalidate(site.id)
+
+def reset_by_section_or_item(sender, instance, created, **kwargs):
+    reset_menu_json(instance.site)
+
+def reset_by_upgrade_variant_or_choice_set(sender, instance, created, **kwargs):
+    reset_menu_json(instance.item.site)
+
+def reset_by_choice(sender, instance, created, **kwargs):
+    reset_menu_json(instance.group.item.site)
+
 payment_was_successful.connect(register_paypal_payment)
 payment_was_flagged.connect(register_paypal_payment)
 post_save.connect(new_site_setup)
 post_save.connect(item_social_handler, sender=Item)
 post_save.connect(pdf_caching_handler, sender=Item)
 post_save.connect(create_defaults, sender=Item)
+
+post_save.connect(reset_by_section_or_item, sender=Item)
+post_save.connect(reset_by_section_or_item, sender=Section)
+post_save.connect(reset_by_upgrade_variant_or_choice_set, sender=Upgrade)
+post_save.connect(reset_by_upgrade_variant_or_choice_set, sender=Variant)
+post_save.connect(reset_by_upgrade_variant_or_choice_set, sender=SideDishGroup)
+post_save.connect(reset_by_choice, sender=SideDish)
+
+pre_delete.connect(reset_by_section_or_item, sender=Item)
+pre_delete.connect(reset_by_section_or_item, sender=Section)
+pre_delete.connect(reset_by_upgrade_variant_or_choice_set, sender=Upgrade)
+pre_delete.connect(reset_by_upgrade_variant_or_choice_set, sender=Variant)
+pre_delete.connect(reset_by_upgrade_variant_or_choice_set, sender=SideDishGroup)
+pre_delete.connect(reset_by_choice, sender=SideDish)

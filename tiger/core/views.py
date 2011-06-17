@@ -50,9 +50,8 @@ def section_detail(request, section_id, section_slug):
     return render_custom(request, 'core/section_detail.html', 
         {'section': s})
 
-def section_json(request, section_id):
-    s = get_object_or_404(Section, id=section_id, site=request.site)
-    return HttpResponse(json.dumps(s.for_json()))
+def section_json(request):
+    return HttpResponse(request.site.get_menu_json())
     
 def item_detail_abbr(request, section, item):
     try:
@@ -85,6 +84,11 @@ def order_item(request, section_id, section_slug, item_id, item_slug):
     try:
         assert request.site.is_open(request.location) and i.is_available(request.location)
     except OrderingError, e:
+        if request.is_mobile:
+            return HttpResponse(json.dumps({
+                'error': True,
+                'msg': e.msg
+            }))
         messages.warning(request, e.msg) 
         return HttpResponseRedirect(e.redirect_to)
     OrderForm = get_order_form(i)
@@ -93,11 +97,16 @@ def order_item(request, section_id, section_slug, item_id, item_slug):
         form = OrderForm(request.POST, location=request.location)
         if form.is_valid():
             request.cart.add(i, form)
-            msg = """%s added to your order. You can 
-            <a href="%s">complete your order now</a> or <a href="/menu/">add more items</a>.""" % (
-                i.name, reverse('preview_order'))
-            messages.success(request, msg) 
-            return HttpResponseRedirect(i.section.get_absolute_url())
+            if request.is_mobile:
+                return HttpResponse(request.cart.to_json())   
+            else:
+                msg = """%s added to your order. You can 
+                <a href="%s">complete your order now</a> or <a href="/menu/">add more items</a>.""" % (
+                    i.name, reverse('preview_order'))
+                messages.success(request, msg) 
+                return HttpResponseRedirect(i.section.get_absolute_url())
+        elif request.is_mobile:
+            return HttpResponse(json.dumps(form._errors))
     else:
         form = OrderForm(location=request.location)
     return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': '%.2f' % total, 'sections': request.site.section_set.all()})

@@ -1,15 +1,18 @@
-import os
 from datetime import date, datetime
+import hashlib
+import os
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.localflavor.us.models import *
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
+from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
 
 from dateutil.relativedelta import *
@@ -175,6 +178,31 @@ class Site(models.Model):
         if user.is_superuser:
             return True
         return False
+
+    @cachedmethod(KeyChain.menu_json)
+    def menu_json(self):
+        data = json.dumps([section.for_json() for section in self.section_set.all()])
+        md5 = hashlib.md5(data).hexdigest()
+        return {
+            'data': data,
+            'md5': md5
+        }
+
+    @cachedmethod(KeyChain.font_data)
+    def font_data(self):
+        from tiger.stork import Stork
+        stork = Stork(self.theme)
+        data = dict(
+            (font.id, {
+                'stack': font.instance.font.stack,
+                'font_face': font.get_mobile_css()
+            })
+            for font in stork.fonts
+        )
+        return {
+            'md5': hashlib.md5(json.dumps(data)).hexdigest(),
+            'data': data
+        }
 
 
 class Location(models.Model):
@@ -383,6 +411,7 @@ def refresh_theme(sender, instance, created, **kwargs):
             return
         KeyChain.template.invalidate(site.id)
         KeyChain.skin.invalidate(site.id)
+        KeyChain.font_data.invalidate(site.id)
 
 
 post_save.connect(new_site_setup, sender=Site)

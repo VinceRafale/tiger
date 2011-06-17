@@ -4,6 +4,7 @@ class this.MenuController extends Backbone.Controller
         "section/:id": "sectionDetail",
         "section/:id/item/:id": "itemDetail",
         "section/:id/item/:id/order": "orderItem"
+        "review": "reviewOrder"
 
     sectionList: ->
         view = new SectionListView {collection: App.sections}
@@ -30,4 +31,7 @@ class this.MenuController extends Backbone.Controller
         $("#container").children().remove()
         $("#container").append view.render().el
 
-    
+    reviewOrder: ->
+        view = new CartView {collection: App.cart}
+        $("#container").children().remove()
+        $("#container").append view.render().el
