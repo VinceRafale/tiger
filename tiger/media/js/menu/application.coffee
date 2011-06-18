@@ -11,5 +11,19 @@ this.App =
         if not App.controller?
             App.controller = new MenuController
             Backbone.history.start()
+        ($ "#menu-main").attr "href", "/menu/#"
+
+    # Returns a unicode spinny character generator function!
+    spinner: ->
+        index = 0
+        states = [
+            "\u2596"
+            "\u2598"
+            "\u259D"
+            "\u2597"
+        ]
+        spin = ->
+            index = (index + 1) % states.length
+            states[index]
 
 App.init()

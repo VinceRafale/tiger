@@ -67,6 +67,12 @@ class this.ItemDetailView extends Backbone.View
         #TODO: I wants spinny.  This shouldn't be a lengthy operation, but since everything
         # else in the menu takes just a few ms, it will seem long in comparison.
         # Zepto's missing "serialize", so we have to build a param object
+        spinner =  App.spinner()
+        spinnerContainer = @$ "input[type='submit']"
+        cycle = setInterval (->
+            spinnerContainer.val spinner()
+        ), 300
+
         params = _.reduce (@$ "input,select,textarea").not("[type='submit'],[type='checkbox']"), ((memo, field) ->
             memo[($ field).attr "name"] = ($ field).val()
             return memo), {}
@@ -79,9 +85,13 @@ class this.ItemDetailView extends Backbone.View
                     memo[key] = [($ field).val()]
             return memo), {}
         _.extend params, checkboxes
+
             
         $.post (@model.get "cart_url"), ($.param params, null, true), (data) =>
             newData = JSON.parse data
+            clearInterval cycle
+            spinner = null
+            spinnerContainer.val "Add to order"
             if newData.error
                 #TODO put data.msg somewhere and make it perty
                 alert newData.msg

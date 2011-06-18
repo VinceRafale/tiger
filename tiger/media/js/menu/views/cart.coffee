@@ -33,11 +33,18 @@ class LineItemView extends Backbone.View
             total: @model.total
             price: @model.price
         }
-        console.log context
         $(@el).html(template context)
         return this
 
     removeItem: (e) =>
         e.preventDefault()
-        $.get (($ e.target).attr "href"), (data) =>
+        target = $ e.target
+        spinner =  App.spinner()
+        cycle = setInterval (->
+            target.html spinner()
+        ), 300
+        
+        $.get (target.attr "href"), (data) =>
+            clearInterval cycle
+            spinner = null
             App.cart.refresh (JSON.parse data)
