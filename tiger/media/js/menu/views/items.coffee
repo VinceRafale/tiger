@@ -103,7 +103,7 @@ class this.ItemDetailView extends Backbone.View
                         # going to count on that.
                         input.before "<span class='error'>#{err[0]}</span>"
             else
-                alert "#{@model.get "name"} successfully added to your order."
                 App.cart.refresh newData
                 (@$ "span.error").remove()
-            
+                location.hash = (/#section\/\d+/.exec location.hash)[0]
+                alert "#{@model.get "name"} successfully added to your order."
