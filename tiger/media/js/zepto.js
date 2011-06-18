@@ -57,7 +57,7 @@ var Zepto = (function() {
     var element, display;
     if (!elementDisplay[nodeName]) {
       element = document.createElement(nodeName);
-      document.body.insertAdjacentElement("beforeEnd", element);
+      document.body.appendChild(element);
       display = getComputedStyle(element, '').getPropertyValue("display");
       element.parentNode.removeChild(element);
       display == "none" && (display = "block");
@@ -88,7 +88,8 @@ var Zepto = (function() {
       if (isA(selector)) dom = compact(selector);
       else if (selector instanceof Element || selector === window || selector === document)
         dom = [selector], selector = null;
-      else if (fragmentRE.test(selector)) dom = fragment(selector);
+      else if (fragmentRE.test(selector))
+        dom = fragment(selector), selector = null;
       else if (selector.nodeType && selector.nodeType == 3) dom = [selector];
       else dom = $$(document, selector);
       return Z(dom, selector);
@@ -117,9 +118,13 @@ var Zepto = (function() {
     push: emptyArray.push,
     indexOf: emptyArray.indexOf,
     concat: emptyArray.concat,
+    slice: function(){
+      return $(slice.apply(this, arguments));
+    },
     ready: function(callback){
       if (document.readyState == 'complete' || document.readyState == 'loaded') callback();
-      document.addEventListener('DOMContentLoaded', callback, false); return this;
+      document.addEventListener('DOMContentLoaded', callback, false);
+      return this;
     },
     get: function(idx){ return idx === undefined ? this : this[idx] },
     size: function(){ return this.length },
@@ -156,7 +161,9 @@ var Zepto = (function() {
       }
       return $(nodes);
     },
-    eq: function(idx){ return $(this[idx]) },
+    eq: function(idx){
+      return idx === -1 ? this.slice(idx) : this.slice(idx, + idx + 1);
+    },
     first: function(){ return $(this[0]) },
     last: function(){ return $(this[this.length - 1]) },
     find: function(selector){
@@ -205,12 +212,29 @@ var Zepto = (function() {
     },
     replaceWith: function(newContent) {
       return this.each(function() {
-        var element = $(this),
-            prev = element.prev();
-        element.remove();
-        prev.after(newContent);
+        var par=this.parentNode,next=this.nextSibling;
+        $(this).remove();
+        next ? $(next).before(newContent) : $(par).append(newContent);
       });
     },
+	  wrap: function(newContent) {
+		  return this.each(function() {
+			  $(this).wrapAll($(newContent)[0].cloneNode());
+		  });
+	  },
+	  wrapAll: function(newContent) {
+		  if (this[0]) {
+			  $(this[0]).before(newContent = $(newContent));
+			  newContent.append(this);
+		  }
+		  return this;
+	  },
+	  unwrap: function(){
+	    this.parent().each(function(){
+	      $(this).replaceWith($(this).children());
+	    });
+	    return this;
+	  },
     hide: function(){
       return this.css("display", "none")
     },
@@ -393,7 +417,7 @@ var Zepto = (function() {
     var id = zid(element), set = (handlers[id] || (handlers[id] = []));
     events.split(/\s/).forEach(function(event){
       var callback = delegate || fn;
-      var proxyfn = function(event) { return callback(event, event.data) };
+      var proxyfn = function(event) { return callback.call(element, event, event.data) };
       var handler = $.extend(parse(event), {fn: fn, proxy: proxyfn, sel: selector, del: delegate, i: set.length});
       set.push(handler);
       element.addEventListener(handler.e, proxyfn, false);
@@ -424,8 +448,8 @@ var Zepto = (function() {
   $.fn.one = function(event, callback){
     return this.each(function(){
       var self = this;
-      add(this, event, function wrapper(){
-        callback();
+      add(this, event, function wrapper(evt){
+        callback.call(self, evt);
         remove(self, event, arguments.callee);
       });
     });
@@ -481,9 +505,9 @@ var Zepto = (function() {
   function detect(ua){
     var ua = ua, os = {},
       android = ua.match(/(Android)\s+([\d.]+)/),
-      iphone = ua.match(/(iPhone\sOS)\s([\d_]+)/),
       ipad = ua.match(/(iPad).*OS\s([\d_]+)/),
-      webos = ua.match(/(webOS)\/([\d.]+)/),
+      iphone = !ipad && ua.match(/(iPhone\sOS)\s([\d_]+)/),
+      webos = ua.match(/(webOS)[\s\/]([\d.]+)/),
       blackberry = ua.match(/(BlackBerry).*Version\/([\d.]+)/);
     if (android) os.android = true, os.version = android[2];
     if (iphone) os.ios = true, os.version = iphone[2].replace(/_/g, '.'), os.iphone = true;
@@ -505,7 +529,11 @@ var Zepto = (function() {
       if (key === 'opacity') opacity = properties[key];
       else transforms.push(key + '(' + properties[key] + ')');
 
-    $.isFunction(callback) && this.one('webkitTransitionEnd', callback);
+    if (parseFloat(duration) !== 0) {
+      $.isFunction(callback) && this.one('webkitTransitionEnd', callback);
+    } else {
+      setTimeout(callback, 0);
+    }
 
     return this.css({
       '-webkit-transition': 'all ' + (duration !== undefined ? duration : 0.5) + 's ' + (ease || ''),
@@ -623,19 +651,32 @@ var Zepto = (function() {
     return this;
   };
 
-  $.param = function(obj, v){
-    var result = [], add = function(key, value){
-      result.push(encodeURIComponent(v ? v + '[' + key + ']' : key)
-        + '=' + encodeURIComponent(value));
+  $.param = function(obj, v, traditional){
+    var objLength, result = [], add = function(key, value){
+      var name;
+      if (!traditional) {
+        name = v ? v + '[' + key + ']' : key;
+      } else {
+        name = key;
+      }
+      result.push(encodeURIComponent(name) + '=' + encodeURIComponent(value));
       },
       isObjArray = $.isArray(obj);
 
-    for(key in obj)
-      if(isObject(obj[key]))
-        result.push($.param(obj[key], (v ? v + '[' + key + ']' : key)));
-      else
-        add(isObjArray ? '' : key, obj[key]);
-
+    if (isObjArray && traditional) {
+      objLength = obj.length;
+      for (var i = 0; i < objLength; i++) {
+        add(key, obj[i]);
+      }
+    } else {
+      for(key in obj) {
+        if(isObject(obj[key])) {
+          result.push($.param(obj[key], (v ? v + '[' + key + ']' : key), traditional));
+        } else {
+          add(isObjArray ? '' : key, obj[key]);
+        }
+      }
+    }
     return result.join('&').replace('%20', '+');
   };
 })(Zepto);

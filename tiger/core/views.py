@@ -106,7 +106,11 @@ def order_item(request, section_id, section_slug, item_id, item_slug):
                 messages.success(request, msg) 
                 return HttpResponseRedirect(i.section.get_absolute_url())
         elif request.is_mobile:
-            return HttpResponse(json.dumps(form._errors))
+            return HttpResponse(json.dumps({
+                'error': True,
+                'msg': "Please correct the highlighted errors.",
+                'fields': form._errors
+            }))
     else:
         form = OrderForm(location=request.location)
     return render_custom(request, 'core/order_form.html', {'item': i, 'form': form, 'total': '%.2f' % total, 'sections': request.site.section_set.all()})
@@ -134,6 +138,8 @@ def preview_order(request):
 @online_ordering
 def remove_item(request):
     request.cart.remove(request.GET.get('id'))
+    if request.is_mobile:
+        return HttpResponse(request.cart.to_json())
     return HttpResponseRedirect(reverse('preview_order'))
 
 def share_coupon(request, coupon_id):

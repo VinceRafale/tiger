@@ -205,7 +205,7 @@ class Site(models.Model):
         }
 
     def mobile_enabled(self):
-        return True if self.subdomain == 'slicecafe' else False
+        return True #if self.subdomain == 'slicecafe' else False
 
 
 class Location(models.Model):

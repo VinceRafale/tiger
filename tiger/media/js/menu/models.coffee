@@ -59,13 +59,7 @@ class LineItem extends Backbone.Model
         section_id = @get "section_id"
         item_id = @get "item_id"
         item = App.sections.get(section_id).items.get(item_id)
-        extra_ids = extra.id for extra in @get "upgrades"
-        @extras = extra for extra in item.extras.filter (x) -> x.id in extra_ids
         @price = item.prices.get (@get "variant").id
-        choice_ids = choice_id for choice in @get "sides"
-        @choices = []
-        item.choice_sets.each (choice) =>
-            @choices.push (choices.choices.filter (c) -> c.id in choice_ids)
         @item = item
             
 

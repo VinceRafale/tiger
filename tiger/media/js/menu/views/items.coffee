@@ -67,17 +67,33 @@ class this.ItemDetailView extends Backbone.View
         #TODO: I wants spinny.  This shouldn't be a lengthy operation, but since everything
         # else in the menu takes just a few ms, it will seem long in comparison.
         # Zepto's missing "serialize", so we have to build a param object
-        params = _.reduce (@$ "input,select,textarea").not("[type='submit']"), ((memo, field) ->
+        params = _.reduce (@$ "input,select,textarea").not("[type='submit'],[type='checkbox']"), ((memo, field) ->
             memo[($ field).attr "name"] = ($ field).val()
             return memo), {}
+        checkboxes = _.reduce (@$  "[type='checkbox']"), ((memo, field) ->
+            key = ($ field).attr "name"
+            if ($ field).attr "checked"
+                if memo[key]
+                    memo[key].push ($ field).val()
+                else
+                    memo[key] = [($ field).val()]
+            return memo), {}
+        _.extend params, checkboxes
             
-        $.post (@model.get "cart_url"), ($.param params), (data) =>
+        $.post (@model.get "cart_url"), ($.param params, null, true), (data) =>
             newData = JSON.parse data
             if newData.error
                 #TODO put data.msg somewhere and make it perty
                 alert newData.msg
+                if newData.fields
+                    for field, err of newData.fields then do =>
+                        input = (@$ "[name='#{field}']")
+                        # Error is an array, because that's how Django rolls.  In practice
+                        # there are virtually never multiple errors on one field, and we're
+                        # going to count on that.
+                        input.before "<span class='error'>#{err[0]}</span>"
             else
-                #TODO beautify this
                 alert "#{@model.get "name"} successfully added to your order."
                 App.cart.refresh newData
+                (@$ "span.error").remove()
             

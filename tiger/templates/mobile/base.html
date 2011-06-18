@@ -49,6 +49,12 @@
         </script>
         {% compress css %}
         <style type="text/x-scss" media="screen">
+        /* HEY MATTHEW MAKE ME MO BETTA */
+        span.error {
+            display:block;
+            background-color:#eebbbb;
+            color:#552222;
+        }
         {% build_css site.theme %}
         {% for fontname, attrs in site.font_data.data.items %}
         ${{ fontname }}: {{ fontname }}, {{ attrs.stack|safe }};
@@ -371,7 +377,7 @@ footer{
         <div class="cart">
             {% if site.enable_orders %}
             {% if cart|length %}
-            <a class="button ordering" href="{% url preview_order %}">{{ cart|length }} </a>
+            <a class="button ordering" href="/menu/#review">{{ cart|length }} </a>
             {% else %}
             <div class="place-order">
                 <span>Hungry?</span>
@@ -500,17 +506,15 @@ footer{
         {% endblock %}
 
 </div>
-{{ menu_is_cached }}
         {% if not menu_is_cached %}
         <script id="menu-data" type="text/json">
         {{ site.menu_json.data|safe }}
         </script>
         {% endif %}
-        {% compress js %}
         <script type="text/javascript" src="{{ MEDIA_URL }}js/underscore.js"></script>
         <script type="text/javascript" src="{{ MEDIA_URL }}js/zepto.js"></script>
         <script type="text/javascript" charset="utf-8">
-
+        var ONLINE_ORDERING = {{ site.enable_orders|lower }};
             // do some dom ready magic here for menu perhaps?
         $(document).ready(function(){
                 {# hash to be stored in cookie to check for menu updates #}
@@ -531,7 +535,6 @@ footer{
                 }
         });
         </script>
-            {% endcompress %}
             {% block js %}
             {% endblock %}
         </body>
