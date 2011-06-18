@@ -27,3 +27,4 @@ this.App =
             states[index]
 
 App.init()
+new CartSummaryView()

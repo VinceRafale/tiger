@@ -1,3 +1,22 @@
+class CartSummaryView extends Backbone.View
+    el: $ "div.cart"
+
+    initialize: ->
+        App.cart.bind "refresh", @render
+        @render()
+
+    render: =>
+        if App.cart.size() > 0
+            @el.html "<a class='button ordering' href='/menu/#review'>#{App.cart.size()} </a>"
+        else
+            @el.html """
+            <div class="place-order">
+            <span>Hungry?</span>
+            <a class="button primary" href="/menu/#">Place an order</a>
+            </div>
+            """
+
+
 class CartView extends Backbone.View
     tagName: "div"
 
