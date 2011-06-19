@@ -169,23 +169,44 @@ def share_coupon(request, coupon_id):
 
 @online_ordering
 def add_coupon(request):
-    code = request.GET.get('cc')
-    if code is None:
+    if request.GET.get('cc'):
+        find_by = {'id': request.GET.get('cc')} 
+    elif request.GET.get('coupon_code'): 
+        find_by = {'short_code': request.GET.get('coupon_code')}
+    else:
         raise Http404
-    coupon = get_object_or_404(Coupon, id=code, site=request.site)
+    coupon = get_object_or_404(Coupon, site=request.site, **find_by)
     if not request.cart:
         return HttpResponseRedirect('?'.join([reverse('add_coupon'), request.META['QUERY_STRING']]))
     if request.cart.has_coupon:
-        messages.error(request, 'You already have a coupon in your cart.')   
+        ERROR = 'You already have a coupon in your cart.'
+        if request.is_mobile:
+            return HttpResponse(json.dumps({
+                'error': True,
+                'msg': ERROR
+            }))
+        messages.error(request, ERROR)
     else:
+        SUCCESS = 'Coupon added to your cart successfully.'
         request.cart.add_coupon(coupon)
-        messages.success(request, 'Coupon added to your cart successfully.')   
+        if request.is_mobile:
+            return HttpResponse(json.dumps({
+                'msg': SUCCESS,
+                'cart': request.cart.to_json()
+            }))
+        messages.success(request, SUCCESS)   
     return HttpResponseRedirect(reverse('menu_home'))
 
 @online_ordering
 def clear_coupon(request):
+    SUCCESS = 'Your coupon has been removed.'
     request.cart.remove_coupon()
-    messages.success(request, 'Your coupon has been removed.')   
+    if request.is_mobile:
+        return HttpResponse(json.dumps({
+            'msg': SUCCESS,
+            'cart': request.cart.to_json()
+        }))
+    messages.success(request, SUCCESS)
     return HttpResponseRedirect(reverse('preview_order'))
 
 @online_ordering

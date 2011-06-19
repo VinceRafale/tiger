@@ -20,6 +20,10 @@ class CartSummaryView extends Backbone.View
 class CartView extends Backbone.View
     tagName: "div"
 
+    events:
+        "click input[type='submit']": "submitCoupon"
+        "click #clear-coupon": "clearCoupon"
+
     initialize: ->
         @collection.bind "refresh", @render
 
@@ -29,6 +33,8 @@ class CartView extends Backbone.View
             subtotal: @collection.subtotal
             taxes: @collection.taxes
             total_plus_tax: @collection.total_plus_tax
+            coupon: @collection.coupon
+            discount: @collection.discount
         }
 
         @collection.each (section) =>
@@ -39,8 +45,28 @@ class CartView extends Backbone.View
     renderOne: (line_item) =>
         view = new LineItemView {model: line_item}
         contents = view.render().el
-        @$("tr.taxes").before contents
+        @$("tr.totals-first").before contents
 
+    submitCoupon: (e) =>
+        e.preventDefault()
+        $.get "#{(@$ "form").attr "action"}?coupon_code=#{(@$ "input[type='text']").val()}", (data) =>
+            newData = JSON.parse data
+            if newData.error
+                #TODO put data.msg somewhere and make it perty
+                alert newData.msg
+            else
+                alert newData.msg
+                [line_items, cart_data] = JSON.parse newData.cart
+                App.cart.refreshCart line_items, cart_data
+
+    clearCoupon: (e) =>
+        e.preventDefault()
+        $.get (($ e.target).attr "href"), (data) =>
+            newData = JSON.parse data
+            alert newData.msg
+            [line_items, cart_data] = JSON.parse newData.cart
+            App.cart.refreshCart line_items, cart_data
+             
 
 class LineItemView extends Backbone.View
     tagName: "tr"

@@ -651,6 +651,15 @@ class Coupon(models.Model):
             return False
         return True
 
+    def for_json(self):
+        return {
+            'id': self.id,
+            'discount_type': self.discount_type,
+            'dollars_off': self.dollars_off,
+            'percent_off': self.percent_off,
+            'short_code': self.short_code
+        }
+
 
 class CouponUse(models.Model):
     coupon = models.ForeignKey(Coupon)

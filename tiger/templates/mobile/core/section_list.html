@@ -99,18 +99,29 @@ Choose a menu section
         <th>Total</th>
         <th></th>
     </tr>
-    <tr class="taxes">
-        <td class="item">Tax ({{ site.ordersettings.tax_rate }}%)</td>
+    <% if (coupon) { %>
+    <tr class="coupon totals-first">
+        <td class="item"><%= coupon %></td>
         <td></td>
         <td></td>
-        <td>$<%= taxes %></td>
-        <td class="remove"></td>
+        <td>-$<%= discount %></td>
+        <td class="remove"><a id="clear-coupon" href="{% url clear_coupon %}">[x]</a></td>
     </tr>
     <tr class="subtotal">
+    <% } else { %>
+    <tr class="subtotal totals-first">
+    <% } %>
         <td class="item">Total</td>
         <td></td>
         <td></td>
         <td>$<%= subtotal %></td>
+        <td class="remove"></td>
+    </tr>
+    <tr class="taxes">
+        <td class="item">Tax ({{ location.tax_rate }}%)</td>
+        <td></td>
+        <td></td>
+        <td>$<%= taxes %></td>
         <td class="remove"></td>
     </tr>
     <tr class="total">
@@ -121,6 +132,14 @@ Choose a menu section
         <td class="remove"></td>
     </tr>
 </table>
+<% if (!coupon) { %>
+<form method="GET" class="coupon" action="{% url add_coupon %}">
+<label for="id_coupon_code">Coupon code:</label>
+<input name="coupon_code" id="id_coupon_code" type="text" />
+<input type="submit" class="button primary" value="Add" />
+</form>
+<% } %>
+<a class="button primary" href="{% url send_order %}">Continue</a>
 </script>
 <script id="line-item-template" type="text/html">
 <td class="item">

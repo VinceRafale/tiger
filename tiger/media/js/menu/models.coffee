@@ -67,7 +67,15 @@ class Cart extends Backbone.Collection
     model: LineItem
 
     initialize: (models, options) ->
+        @setOptions (options)
+
+    setOptions: (options) ->
         @subtotal = options.subtotal
         @taxes = options.taxes
         @total_plus_tax = options.total_plus_tax
-        
+        @coupon = options.coupon
+        @discount = options.discount
+
+    refreshCart: (models, options) ->
+        @setOptions options
+        @refresh models
