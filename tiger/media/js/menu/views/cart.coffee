@@ -53,9 +53,9 @@ class CartView extends Backbone.View
             newData = JSON.parse data
             if newData.error
                 #TODO put data.msg somewhere and make it perty
-                alert newData.msg
+                App.alert newData.msg
             else
-                alert newData.msg
+                App.alert newData.msg
                 [line_items, cart_data] = JSON.parse newData.cart
                 App.cart.refreshCart line_items, cart_data
 
@@ -63,7 +63,7 @@ class CartView extends Backbone.View
         e.preventDefault()
         $.get (($ e.target).attr "href"), (data) =>
             newData = JSON.parse data
-            alert newData.msg
+            App.alert newData.msg
             [line_items, cart_data] = JSON.parse newData.cart
             App.cart.refreshCart line_items, cart_data
              

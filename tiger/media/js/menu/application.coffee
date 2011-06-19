@@ -26,5 +26,8 @@ this.App =
             index = (index + 1) % states.length
             states[index]
 
+    alert: (msg) ->
+        alert msg
+
 App.init()
 new CartSummaryView()
