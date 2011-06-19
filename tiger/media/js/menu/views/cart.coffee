@@ -25,7 +25,11 @@ class CartView extends Backbone.View
 
     render: =>
         template = _.template $("#review-order").text()
-        @el.innerHTML = template {}
+        @el.innerHTML = template {
+            subtotal: @collection.subtotal
+            taxes: @collection.taxes
+            total_plus_tax: @collection.total_plus_tax
+        }
 
         @collection.each (section) =>
             @renderOne section
@@ -35,7 +39,7 @@ class CartView extends Backbone.View
     renderOne: (line_item) =>
         view = new LineItemView {model: line_item}
         contents = view.render().el
-        @$("table").append contents
+        @$("tr.taxes").before contents
 
 
 class LineItemView extends Backbone.View
@@ -66,4 +70,5 @@ class LineItemView extends Backbone.View
         $.get (target.attr "href"), (data) =>
             clearInterval cycle
             spinner = null
-            App.cart.refresh (JSON.parse data)
+            [line_items, cart_data] = JSON.parse data
+            App.cart.refresh line_items, cart_data

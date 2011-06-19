@@ -91,7 +91,7 @@ Choose a menu section
 <script id="review-order" type="text/html">
 <h2>Review your order</h2>
 
-<table>
+<table id="line-items">
     <tr>
         <th>Item</th>
         <th>Price</th>
@@ -99,7 +99,27 @@ Choose a menu section
         <th>Total</th>
         <th></th>
     </tr>
-
+    <tr class="taxes">
+        <td class="item">Tax ({{ site.ordersettings.tax_rate }}%)</td>
+        <td></td>
+        <td></td>
+        <td>$<%= taxes %></td>
+        <td class="remove"></td>
+    </tr>
+    <tr class="subtotal">
+        <td class="item">Total</td>
+        <td></td>
+        <td></td>
+        <td>$<%= subtotal %></td>
+        <td class="remove"></td>
+    </tr>
+    <tr class="total">
+        <td class="item">Total w/ tax</td>
+        <td></td>
+        <td></td>
+        <td>$<%= total_plus_tax %></td>
+        <td class="remove"></td>
+    </tr>
 </table>
 </script>
 <script id="line-item-template" type="text/html">
@@ -128,7 +148,9 @@ Choose a menu section
 <td class="remove"><a href="{% url remove_item %}?id=<%= id %>">[x]</a></td>
 </script>
 <script type="text/javascript">
-    var line_items = {{ cart.to_json|safe|default:"[]" }};
+    var cart_dump = {{ cart.to_json|safe|default:"[]" }},
+        line_items = cart_dump[0],
+        cart_data = cart_dump[1];
 </script>
 {% load compress %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone.js"></script>

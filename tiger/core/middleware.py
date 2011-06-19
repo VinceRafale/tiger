@@ -14,7 +14,7 @@ from tiger.utils.site import RequestSite
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
-            return str(obj)
+            return "%0.2f" % obj
         return json.JSONEncoder.default(self, obj)
 
 
@@ -140,12 +140,16 @@ class Cart(object):
         return self.total() + self.taxes()
 
     def to_json(self):
-        return json.dumps(
+        return json.dumps([
             [
                 dict(item, id=id)
                 for id, item in self.contents.items()
             ],
-        cls=DecimalEncoder)
+            {
+                'subtotal': self.total(),
+                'total_plus_tax': self.total_plus_tax(),
+                'taxes': self.taxes()
+        }], cls=DecimalEncoder)
 
 
 class ShoppingCartMiddleware(object):

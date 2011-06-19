@@ -65,3 +65,9 @@ class LineItem extends Backbone.Model
 
 class Cart extends Backbone.Collection
     model: LineItem
+
+    initialize: (models, options) ->
+        @subtotal = options.subtotal
+        @taxes = options.taxes
+        @total_plus_tax = options.total_plus_tax
+        
