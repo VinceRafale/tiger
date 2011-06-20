@@ -56,16 +56,14 @@ class CartView extends Backbone.View
                 App.alert newData.msg
             else
                 App.alert newData.msg
-                [line_items, cart_data] = JSON.parse newData.cart
-                App.cart.refreshCart line_items, cart_data
+                App.cart.refreshCart (JSON.parse newData.cart)...
 
     clearCoupon: (e) =>
         e.preventDefault()
         $.get (($ e.target).attr "href"), (data) =>
             newData = JSON.parse data
             App.alert newData.msg
-            [line_items, cart_data] = JSON.parse newData.cart
-            App.cart.refreshCart line_items, cart_data
+            App.cart.refreshCart (JSON.parse newData.cart)...
              
 
 class LineItemView extends Backbone.View
