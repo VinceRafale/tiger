@@ -21,6 +21,9 @@ Choose a menu section
         <a href="/menu/#">Menu</a> <a href="#section/<%= section.id %>"><%= section.get("name") %></a>
     </div>
     <h1><%= name %></h1>
+    <% if (schedule) { %>
+    <p class="warning"><%= schedule %></p>
+    <% } %>
     <p><%= description %></p>
 
     <% if (prices.length > 1) { %>

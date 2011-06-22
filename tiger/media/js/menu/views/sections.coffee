@@ -34,7 +34,10 @@ class this.SectionDetailView extends Backbone.View
     id: "sectionDetail"
 
     render: =>
-        template = _.template "<div class='breadcrumb'> <a href='/menu/'>Menu</a></div><h1><%= name %></h1><p><%= description %></p><ul id='items'></ul>"
+        template = _.template """<div class='breadcrumb'> <a href='/menu/'>Menu</a></div><h1><%= name %></h1><p><%= description %></p>
+    <% if (schedule) { %>
+    <p class="warning"><%= schedule %></p>
+    <% } %><ul id='items'></ul>"""
         context = @model.attributes
         $(@el).html(template context)
         @itemList = new ItemListView {

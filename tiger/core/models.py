@@ -91,7 +91,9 @@ class Section(models.Model):
             "name": self.name,
             "description": self.description,
             "items": [i.for_json() for i in self.item_set.all()],
-            "ordering": self.ordering
+            "ordering": self.ordering,
+            "schedule": SECTION_NOT_AVAILABLE % (
+                self.name, self.schedule.display) if self.schedule else ''
         }
 
 
@@ -219,7 +221,9 @@ class Item(models.Model):
                 "spicy": self.spicy,
                 "vegetarian": self.vegetarian,
                 "ordering": self.ordering,
-                "cart_url": self.get_absolute_url() + "order/"
+                "cart_url": self.get_absolute_url() + "order/",
+                "schedule": ITEM_NOT_AVAILABLE_SCHEDULE % (
+                    self.name, self.schedule.display) if self.schedule else ''
             })
         else:
             # data for cart, and for building line items in JavaScript
