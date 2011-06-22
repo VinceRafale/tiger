@@ -216,6 +216,7 @@ class Item(models.Model):
             # data for building complete menu in JavaScript
             data.update({
                 "prices": [p.for_json() for p in self.variant_set.all()],
+                "price_override": self.text_price if self.available_online and self.text_price else "",
                 "extras": [x.for_json() for x in self.upgrade_set.all()],
                 "choices": [c.for_json() for c in self.sidedishgroup_set.all()],
                 "spicy": self.spicy,

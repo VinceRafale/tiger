@@ -26,7 +26,10 @@ Choose a menu section
     <% } %>
     <p><%= description %></p>
 
-    <% if (prices.length > 1) { %>
+
+    <% if (price_override) { %>
+    <h2 class="price"> <%= price_override %> </h2>
+    <% } else if (prices.length > 1) { %>
         <ul class="prices"> 
             <% prices.each(function (price, i) { %>
               <li>
