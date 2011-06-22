@@ -97,6 +97,7 @@
 }
 .btn{
   @include button;
+  margin:.5rem 0;
 }
 @mixin border-box{
   -webkit-box-sizing: border-box;
@@ -139,6 +140,15 @@ h3{
   margin: 1rem 0 .25rem 0;
   font-size: 1rem;
 }
+a {
+    color: $buttoncolor;
+}
+th, td{vertical-align: top;
+text-align: left;
+}
+td.total{
+text-align: right;
+}
 div.section, section{
   position:relative;
   display: block; 
@@ -151,6 +161,7 @@ input, select, label, textarea{
 }
 label, textarea{
   display: block;
+  margin: .75rem 0 0 0;
 }
 textarea, input[name="label"]{
   width: 100%;
@@ -170,7 +181,7 @@ p{
   font-size: 15px;
   line-height: 1.4;
 }
-  a:active{
+a:active{
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
   -webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
   color: $buttontext !important;
@@ -250,22 +261,64 @@ div.cart{
   -webkit-transform: translate3d(100%, 0, 0);
   height: auto;
   padding-bottom: 2rem;
-  > *{
-    padding: 0 1rem;
+
+  address, h2{
+    padding-left: 1em;
+    margin-bottom: 0;
   }
+  .box-wrap{
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+  }
+  .hours{
+  text-align: right;
+  }
+  .communicate{
+  text-align: left;
+  }
+  .map-link{
+    margin-bottom: 1em;
+  }
+  .half{
+    padding: 1em .5em;
+    -webkit-box-flex: 1;
+  }
+  .twitter{
+    background: url({{MEDIA_URL}}img/twitter_newbird_white.png) center 10px 
+    no-repeat;
+  }
+  .facebook{
+    background: url({{ MEDIA_URL }}img/f_logo.png) center 10px no-repeat;
+  }
+  .twitter, .facebook{
+    background-size: auto 50px;
+    padding:.75em ;
+    margin: 1em;
+    background-color: rgba(0,0,0,.4);
+    text-align: center;
+    min-height: 50px;
+    border-radius:15px;
+    border-bottom: 1px solid rgba(255,255,255, .3);
+    a{
+        padding-top:60px;
+        display: block;
+        border-radius:12px;
+    }
+  }
+}
+
+.mailchimp{
+    background-color: rgba(0,0,0,.4);
+    text-align: center;
+    border-radius:15px;
+    padding: 1em;
+    margin: 1em;
+    border-bottom: 1px solid rgba(255,255,255, .3);
+
 }
 #contact:target{
   -webkit-transform: translate3d(0, 0, 0);
   overflow:auto;
-  #twitter, #facebook{
-  @include border-box;
-    width: 46%;
-    margin: 0 1%;
-    display: inline-block;
-    text-align: center;
-  }
-  #facebook{
-  }
 }
 body.menu section{
   padding: 0;
@@ -273,24 +326,34 @@ body.menu section{
 #sectionList, #items, .upgrades ul{
     @include ul-reset;
     li{
-    overflow: hidden;
-    a{
-      display: block;
-        padding: 0 1rem;
-        text-decoration: none;
-        color: inherit;
-        font-size: 1.2rem;
-        border: 1px solid grayscale($accentcolor);
-        border-width: 1px 0 1px 0;
-        border-top-color: fade-out(grayscale($accentcolor), .7);
-        p{
-          margin: 0 0 1rem 0;
-        }
-      }
-      a:active h3{
-        color: $buttontext;
-      }
+    @if lightness($centercolor) <= 50 {
+        // color is dark, so make the top lighter
+        background: -webkit-gradient(linear, left top, left bottom,
+        color-stop(0%,lighten($centercolor, 15%)), color-stop(60%,$centercolor));
+    } @else {
+        // color is light so make the bottom darker
+        background: -webkit-gradient(linear, left top, left
+        bottom,color-stop(0%,$centercolor), color-stop(60%,darken($centercolor,
+        15%)));
     }
+        overflow: hidden;
+        a{
+            display: block;
+            padding: 0 1rem;
+            text-decoration: none;
+            color: inherit;
+            font-size: 1.2rem;
+            border: 1px solid grayscale($accentcolor);
+            border-width: 1px 0 1px 0;
+            border-top-color: fade-out(grayscale($accentcolor), .7);
+            p{
+              margin: 0 0 1rem 0;
+            }
+          }
+          a:active h3{
+            color: $buttontext;
+          }
+        }
 }
 .extra label{
     display: -webkit-box;
@@ -311,6 +374,7 @@ body.menu section{
           font-size: 14px;
       }
 }
+
 h2.price{ text-align: right;}
 #sectionDetail > p, #sectionDetail .breadcrumb,
 h1, #itemDetail, footer{ padding: 0 1rem;}
@@ -347,9 +411,14 @@ footer{
   }
   input[type="submit"].ordering{
     -webkit-appearance: none;
+    border:none;
+
+  background: -webkit-gradient(linear, left top, left bottom,
+  color-stop(0%,lighten($buttoncolor, 25%)), color-stop(100%,$buttoncolor));
     display: block;
     width: 100%;
     text-align: center;
+    text-shadow: 0 1px 0 rgba(255,255,255,.75);
   }
   select{
     width: 100%;
@@ -461,43 +530,53 @@ footer{
         {% endif %}
         {% endblock %}
 <div id="contact">
-    <a href="#home" class="back-link"><<Back</a>
+    <a href="#home" class="back-link btn">&larr; Back</a>
     <h1>Contact {{site.name}}</h1>
         {% if site.location_set.count == 1 %}
         {% with site.location_set.all.0 as location %}
-        <a href="http://maps.google.com/?q={{ location.address|iriencode }}" class="maplink" style="background: url('http://maps.google.com/maps/api/staticmap?size=640x200&maptype=roadmap&markers=color:red%7C{{ location.address|iriencode }}&sensor=true') center center no-repeat !important;">
-    </a>
-        {% if location.address %}
-        <address>
-        <p>{{ location.street }}</p>
-        <p>{{ location.city }}, {{ location.state }} {{ location.zip_code }}</p>
-        </address>
-        {% endif %}
+        <div class="box-wrap">
+        <div class="half hours">
+        {{ location.schedule.mobile_schedule|default:'[your restaurant hours]' }}
+        </div>
+        <div class="half communicate">
         <p> {% if location.phone %}{{ location.phone }}{% else %}[your phone number ]{% endif %}</p>
         <p>{% if location.fax_number %}Fax: {{ location.fax_number }}{% endif %}</p>
         {% if location.email %}
         <p>{{ location.email_display }}</p>
         {% endif %}
-        {{ location.schedule.mobile_schedule|default:'[your restaurant hours]' }}
+    </div>
+</div>
+<div class="map-link">
+        <a href="http://maps.google.com/?q={{ location.address|iriencode }}" class="maplink" style="background: url('http://maps.google.com/maps/api/staticmap?size=640x200&maptype=roadmap&markers=color:red%7C{{ location.address|iriencode }}&sensor=true') center center no-repeat !important;">
+    </a>
+        {% if location.address %}
+        <address>
+        <span>{{ location.street }}</spanp>
+        <span>{{ location.city }}, {{ location.state }} {{ location.zip_code }}</span>
+        </address>
+        {% endif %}
+    </div>
         {% endwith %}
         {% endif %}
-
+        <h2>Connect with us</h2>
+        <div class="box-wrap">
         {% if site.twitter %}
-        <div id="twitter">
-            <a href="http://twitter.com/{{ site.twitter }}">We're @{{ site.twitter }} on Twitter</a>
+        <div class="twitter half">
+            <a href="http://twitter.com/{{ site.twitter }}" target="_blank">@{{ site.twitter }} on Twitter</a>
         </div>
         {% endif %}
         {% if site.facebook %}
-        <div id="facebook">
-            <a href="{{ site.facebook }}">Like us on Facebook</a>
+        <div class="facebook half">
+            <a href="{{ site.facebook }}" target="_blank">Like us on Facebook</a>
         </div>
         {% endif %}
+        </div>
 
         {% block mail %}
         {% if site.mailchimp %}
-        <div id="mailchimp">
+        <div class="mailchimp">
             <form method="POST" action="{% url mailing_list_signup %}">
-                <p>Join our mailing list!</p>
+                <h2>Join our mailing list!</h2>
                 <em>just enter you email below to receive updates</em>
                 <input type="text" name="email" /> <input type="submit" value="Join" />
             </form>

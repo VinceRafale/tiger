@@ -89,6 +89,7 @@ Choose a menu section
     <% } %>
 </script>
 <script id="review-order" type="text/html">
+<section>
 <h2>Review your order</h2>
 
 <table>
@@ -124,8 +125,9 @@ Choose a menu section
 </td>
 <td>$<%= price.get("price") %></td>
 <td><%= quantity %></td>
-<td><%= total %></td>
+<td class="total"><%= total %></td>
 <td class="remove"><a href="{% url remove_item %}?id=<%= id %>">[x]</a></td>
+</section>
 </script>
 <script type="text/javascript">
     var line_items = {{ cart.to_json|safe|default:"[]" }};
