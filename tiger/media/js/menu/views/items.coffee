@@ -94,7 +94,7 @@ class this.ItemDetailView extends Backbone.View
             spinnerContainer.val "Add to order"
             if newData.error
                 #TODO put data.msg somewhere and make it perty
-                alert newData.msg
+                App.alert newData.msg
                 if newData.fields
                     for field, err of newData.fields then do =>
                         input = (@$ "[name='#{field}']")
@@ -103,7 +103,7 @@ class this.ItemDetailView extends Backbone.View
                         # going to count on that.
                         input.before "<span class='error'>#{err[0]}</span>"
             else
-                App.cart.refresh newData
+                App.cart.refreshCart newData...
                 (@$ "span.error").remove()
                 location.hash = (/#section\/\d+/.exec location.hash)[0]
-                alert "#{@model.get "name"} successfully added to your order."
+                App.alert "#{@model.get "name"} successfully added to your order."

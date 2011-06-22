@@ -91,7 +91,9 @@ class Section(models.Model):
             "name": self.name,
             "description": self.description,
             "items": [i.for_json() for i in self.item_set.all()],
-            "ordering": self.ordering
+            "ordering": self.ordering,
+            "schedule": SECTION_NOT_AVAILABLE % (
+                self.name, self.schedule.display) if self.schedule else ''
         }
 
 
@@ -214,12 +216,15 @@ class Item(models.Model):
             # data for building complete menu in JavaScript
             data.update({
                 "prices": [p.for_json() for p in self.variant_set.all()],
+                "price_override": self.text_price if self.available_online and self.text_price else "",
                 "extras": [x.for_json() for x in self.upgrade_set.all()],
                 "choices": [c.for_json() for c in self.sidedishgroup_set.all()],
                 "spicy": self.spicy,
                 "vegetarian": self.vegetarian,
                 "ordering": self.ordering,
-                "cart_url": self.get_absolute_url() + "order/"
+                "cart_url": self.get_absolute_url() + "order/",
+                "schedule": ITEM_NOT_AVAILABLE_SCHEDULE % (
+                    self.name, self.schedule.display) if self.schedule else ''
             })
         else:
             # data for cart, and for building line items in JavaScript
@@ -650,6 +655,15 @@ class Coupon(models.Model):
         if not (date_is_valid and has_clicks_available):
             return False
         return True
+
+    def for_json(self):
+        return {
+            'id': self.id,
+            'discount_type': self.discount_type,
+            'dollars_off': self.dollars_off,
+            'percent_off': self.percent_off,
+            'short_code': self.short_code
+        }
 
 
 class CouponUse(models.Model):

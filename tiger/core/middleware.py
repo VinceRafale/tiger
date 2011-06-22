@@ -14,7 +14,7 @@ from tiger.utils.site import RequestSite
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
-            return str(obj)
+            return "%0.2f" % obj
         return json.JSONEncoder.default(self, obj)
 
 
@@ -86,7 +86,7 @@ class Cart(object):
         self._save({})
 
     def add_coupon(self, coupon):
-        self['coupon'] = coupon.__dict__
+        self['coupon'] = coupon.for_json()
 
     def remove_coupon(self, coupon=None):
         #TODO: remove this keyword argument entirely
@@ -140,12 +140,19 @@ class Cart(object):
         return self.total() + self.taxes()
 
     def to_json(self):
-        return json.dumps(
-            [
-                dict(item, id=id)
-                for id, item in self.contents.items()
-            ],
-        cls=DecimalEncoder)
+        options = {
+            'subtotal': self.total(),
+            'total_plus_tax': self.total_plus_tax(),
+            'taxes': self.taxes(),
+            'coupon': self.coupon_display(),
+            'discount': self.discount()
+        }
+        line_items = [
+            dict(item, id=id)
+            for id, item in self.contents.items()
+            if id != 'coupon'
+        ]
+        return json.dumps([line_items, options], cls=DecimalEncoder)
 
 
 class ShoppingCartMiddleware(object):

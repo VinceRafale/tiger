@@ -7,7 +7,7 @@ this.App =
         for section in sections
             do (section) ->
                 App.sections.add(new Section section)
-        @cart = new Cart line_items
+        @cart = new Cart line_items, cart_data
         if not App.controller?
             App.controller = new MenuController
             Backbone.history.start()
@@ -25,6 +25,9 @@ this.App =
         spin = ->
             index = (index + 1) % states.length
             states[index]
+
+    alert: (msg) ->
+        alert msg
 
 App.init()
 new CartSummaryView()

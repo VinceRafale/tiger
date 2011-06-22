@@ -20,12 +20,22 @@ class CartSummaryView extends Backbone.View
 class CartView extends Backbone.View
     tagName: "div"
 
+    events:
+        "click input[type='submit']": "submitCoupon"
+        "click #clear-coupon": "clearCoupon"
+
     initialize: ->
         @collection.bind "refresh", @render
 
     render: =>
         template = _.template $("#review-order").text()
-        @el.innerHTML = template {}
+        @el.innerHTML = template {
+            subtotal: @collection.subtotal
+            taxes: @collection.taxes
+            total_plus_tax: @collection.total_plus_tax
+            coupon: @collection.coupon
+            discount: @collection.discount
+        }
 
         @collection.each (section) =>
             @renderOne section
@@ -35,8 +45,26 @@ class CartView extends Backbone.View
     renderOne: (line_item) =>
         view = new LineItemView {model: line_item}
         contents = view.render().el
-        @$("table").append contents
+        @$("tr.totals-first").before contents
 
+    submitCoupon: (e) =>
+        e.preventDefault()
+        $.get "#{(@$ "form").attr "action"}?coupon_code=#{(@$ "input[type='text']").val()}", (data) =>
+            newData = JSON.parse data
+            if newData.error
+                #TODO put data.msg somewhere and make it perty
+                App.alert newData.msg
+            else
+                App.alert newData.msg
+                App.cart.refreshCart (JSON.parse newData.cart)...
+
+    clearCoupon: (e) =>
+        e.preventDefault()
+        $.get (($ e.target).attr "href"), (data) =>
+            newData = JSON.parse data
+            App.alert newData.msg
+            App.cart.refreshCart (JSON.parse newData.cart)...
+             
 
 class LineItemView extends Backbone.View
     tagName: "tr"
@@ -66,4 +94,5 @@ class LineItemView extends Backbone.View
         $.get (target.attr "href"), (data) =>
             clearInterval cycle
             spinner = null
-            App.cart.refresh (JSON.parse data)
+            [line_items, cart_data] = JSON.parse data
+            App.cart.refresh line_items, cart_data

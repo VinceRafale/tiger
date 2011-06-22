@@ -21,9 +21,15 @@ Choose a menu section
         <a href="/menu/#">Menu</a> <a href="#section/<%= section.id %>"><%= section.get("name") %></a>
     </div>
     <h1><%= name %></h1>
+    <% if (schedule) { %>
+    <p class="warning"><%= schedule %></p>
+    <% } %>
     <p><%= description %></p>
 
-    <% if (prices.length > 1) { %>
+
+    <% if (price_override) { %>
+    <h2 class="price"> <%= price_override %> </h2>
+    <% } else if (prices.length > 1) { %>
         <ul class="prices"> 
             <% prices.each(function (price, i) { %>
               <li>
@@ -92,7 +98,7 @@ Choose a menu section
 <section>
 <h2>Review your order</h2>
 
-<table>
+<table id="line-items">
     <tr>
         <th>Item</th>
         <th>Price</th>
@@ -100,8 +106,47 @@ Choose a menu section
         <th>Total</th>
         <th></th>
     </tr>
-
+    <% if (coupon) { %>
+    <tr class="coupon totals-first">
+        <td class="item"><%= coupon %></td>
+        <td></td>
+        <td></td>
+        <td>-$<%= discount %></td>
+        <td class="remove"><a id="clear-coupon" href="{% url clear_coupon %}">[x]</a></td>
+    </tr>
+    <tr class="subtotal">
+    <% } else { %>
+    <tr class="subtotal totals-first">
+    <% } %>
+        <td class="item">Total</td>
+        <td></td>
+        <td></td>
+        <td>$<%= subtotal %></td>
+        <td class="remove"></td>
+    </tr>
+    <tr class="taxes">
+        <td class="item">Tax ({{ location.tax_rate }}%)</td>
+        <td></td>
+        <td></td>
+        <td>$<%= taxes %></td>
+        <td class="remove"></td>
+    </tr>
+    <tr class="total">
+        <td class="item">Total w/ tax</td>
+        <td></td>
+        <td></td>
+        <td>$<%= total_plus_tax %></td>
+        <td class="remove"></td>
+    </tr>
 </table>
+<% if (!coupon) { %>
+<form method="GET" class="coupon" action="{% url add_coupon %}">
+<label for="id_coupon_code">Coupon code:</label>
+<input name="coupon_code" id="id_coupon_code" type="text" />
+<input type="submit" class="button primary" value="Add" />
+</form>
+<% } %>
+<a class="button primary" href="{% url send_order %}">Continue</a>
 </script>
 <script id="line-item-template" type="text/html">
 <td class="item">
@@ -130,7 +175,9 @@ Choose a menu section
 </section>
 </script>
 <script type="text/javascript">
-    var line_items = {{ cart.to_json|safe|default:"[]" }};
+    var cart_dump = {{ cart.to_json|safe|default:"[]" }},
+        line_items = cart_dump[0],
+        cart_data = cart_dump[1];
 </script>
 {% load compress %}
 <script type="text/javascript" src="{{ MEDIA_URL }}js/backbone.js"></script>
