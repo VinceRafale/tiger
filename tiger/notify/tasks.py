@@ -85,7 +85,7 @@ class PublishToFacebookTask(Task):
                     facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
                 )
         except facebook.GraphAPIError, e:
-            self.retry([uid, msg, link_title, href], kwargs,
+            self.retry([uid, msg, link, href], kwargs,
                 countdown=60 * 5, exc=e)
 
 
