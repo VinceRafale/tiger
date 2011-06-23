@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
 
-from tiger.accounts.forms import DomainForm, GoogleToolsForm
+from tiger.accounts.forms import DomainForm, GoogleToolsForm, MobileSettingsForm
 from tiger.content.forms import *
 from tiger.content.models import *
 
@@ -128,5 +128,18 @@ def google(request):
     else:
         form = GoogleToolsForm(instance=request.site)
     return direct_to_template(request, template='dashboard/content/google.html', extra_context={
+        'form': form
+    })
+
+@login_required
+def mobile(request):
+    if request.method == 'POST':
+        form = MobileSettingsForm(request.POST, instance=request.site)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Mobile settings changed successfully.')
+    else:
+        form = MobileSettingsForm(instance=request.site)
+    return direct_to_template(request, template='dashboard/content/mobile.html', extra_context={
         'form': form
     })

@@ -474,6 +474,14 @@ class GoogleToolsForm(BetterModelForm):
         return tools
 
 
+class MobileSettingsForm(BetterModelForm):
+    class Meta:
+        model = Site
+        fields = (
+            'mobile_on',
+        )
+
+
 class LocationSelectionForm(forms.Form):
     location = forms.ModelChoiceField(queryset=Location.objects.all(), empty_label=None, widget=forms.RadioSelect)
 

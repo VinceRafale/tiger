@@ -16,6 +16,7 @@
 <label>{{ form.promo_code.label }} {{ form.promo_code }} {% if form.promo_code.errors %}{{ form.promo_code.errors }}{% endif %}</label>
 <label>{{ form.price.label }} ${{ form.price }} {% if form.price.errors %}{{ form.price.errors }}{% endif %}</label>
 <h3>Phone features</h3>
+<div>{{ form.has_mobile }} {{ form.has_mobile.label }}</div>
 <p class="help">If you assign a soft cap to SMS or fax communcations, users will receive a warning message before and after each time they send beyond the assigned limit, telling them that they have exceeded the amount included in their plan and will be billed accordingly.  If you assign a hard cap, it will not allow them to send a quantity beyond that number.</p>
 <div>{{ form.fax_cap_type }} of {{ form.fax_cap }} faxed pages per month
 <label class="bump">{{ form.fax_rate.label }} {{ form.fax_rate }}&cent; {% if form.fax_rate.errors %}{{ form.fax_rate.errors }}{% endif %}</label>

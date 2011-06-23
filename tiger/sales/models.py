@@ -17,6 +17,7 @@ from django.utils.http import int_to_base36
 from tiger.sales.exceptions import (PaymentGatewayError, 
     SiteManagementError, SoftCapExceeded, HardCapExceeded)
 from tiger.sms.models import SmsSettings
+from tiger.utils.cache import KeyChain
 from tiger.utils.billing import prorate
 
 
@@ -160,6 +161,7 @@ class Plan(models.Model):
     sms_rate = models.IntegerField('Cost per SMS beyond cap', null=True)
     fax_rate = models.IntegerField('Cost per fax beyond cap in cents', null=True)
     promo_code = models.CharField(max_length=10, null=True)
+    has_mobile = models.BooleanField('Includes mobile web app', default=False)
 
     def __unicode__(self):
         return self.name
@@ -381,4 +383,10 @@ def set_up_account(sender, instance, created, **kwargs):
         instance.save()
 
 
+def invalidate_plan_features(sender, instance, created, **kwargs):
+    for site in instance.site_set.all():
+        KeyChain.mobile_enabled.invalidate(site.id)
+
+
 post_save.connect(set_up_account, sender=Account)
+post_save.connect(invalidate_plan_features, sender=Plan)

@@ -54,6 +54,7 @@ class Site(models.Model):
     credit_card = models.ForeignKey('sales.CreditCard', null=True)
     google_analytics = models.CharField('Google analytics Web Property ID', max_length=30, null=True)
     webmaster_tools = models.TextField(null=True, max_length=255)
+    mobile_on = models.BooleanField(default=False)
 
     def natural_key(self):
         return (self.subdomain,)
@@ -63,6 +64,10 @@ class Site(models.Model):
             return 'http://' + self.domain
         else:
             return self.tiger_domain()
+
+    def save(self, *args, **kwargs):
+        super(Site, self).save(*args, **kwargs)
+        KeyChain.mobile_enabled.invalidate(self.id)
 
     def tiger_domain(self, secure=False):
         return 'https://%s.takeouttiger.com' % self.subdomain
@@ -204,8 +209,9 @@ class Site(models.Model):
             'data': data
         }
 
+    @cachedmethod(KeyChain.mobile_enabled)
     def mobile_enabled(self):
-        return True #if self.subdomain == 'slicecafe' else False
+        return self.plan.has_mobile and self.mobile_on
 
 
 class Location(models.Model):

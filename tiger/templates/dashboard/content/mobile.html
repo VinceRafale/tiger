@@ -1,0 +1,30 @@
+{% extends 'dashboard/content/home.html' %}
+
+{% block body-class %}{{ block.super }} mobile{% endblock %}
+
+{% block help %}
+{% endblock %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block h2 %}
+Mobile Web App settings
+{% endblock %}
+
+{% block content %}
+<form method="POST" action=".">
+    <label>
+    {{ form.mobile_on }} Enable mobile web application
+    </label>
+    <p class="help">When enabled, Takeout Tiger will detect iPhones and Android devices and serve them a version of your site that is highly optimized for advanced smartphones.  Online ordering features and multiple locations are not yet supported.</p>
+    <div class="save-row clearfix">
+    <a class="cancel" href="{% url dashboard_content %}">Cancel</a>
+    <input type="submit" value="Save" class="submit buttonTop" />
+    </div>
+</form>
+{% endblock %}
+
+{% block js %}
+{% endblock %}
+

@@ -17,6 +17,7 @@ urlpatterns = patterns('tiger.dashboard.content.views',
     url(r'^get-images/$', 'get_images', name='dashboard_get_images'),
     url(r'^look/docs/$', 'look_docs', name='look_docs'),
     url(r'^google/$', 'google', name='google'),
+    url(r'^mobile/$', 'mobile', name='mobile'),
 )
 
 
