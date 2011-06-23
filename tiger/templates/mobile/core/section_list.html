@@ -24,34 +24,37 @@ Choose a menu section
     <% if (schedule) { %>
     <p class="warning"><%= schedule %></p>
     <% } %>
-    <p><%= description %></p>
-
-
     <% if (price_override) { %>
     <h2 class="price"> <%= price_override %> </h2>
     <% } else if (prices.length > 1) { %>
-        <ul class="prices"> 
+        <div class="prices"> 
             <% prices.each(function (price, i) { %>
-              <li>
+             <% if (ONLINE_ORDERING) { %>
+              <div>
                 <label for="id_variant_<%= i %>">
                   <input type="radio" id="id_variant_<%= i %>" value="<%= price.id %>" name="prices" /> 
                   <%= price.get("description") %>
                   $<%= price.get("price") %>
                 </label>
-              </li> 
+              </div> 
+             <% } else { %>
+                <span>
+                  <%= price.get("description") %>
+                  $<%= price.get("price") %>
+                  <% if (i !== prices.length -1){ %> / <% } %>
+                </span>
+             <% } %>
             <% }); %>
-        </ul> 
+        </div> 
     <% } else if (prices.length === 1) { %>
     <h2 class="price"> $<%= prices.at(0).get("price") %> </h2>
-
     <% } %>
-
+    <p><%= description %></p>
     <% if (ONLINE_ORDERING) { %>
     <label id="qty"> 
         Quantity
         <input type="number" name="quantity" value="1" id="id_quantity" /> 
     </label> 
-
 
     <% if (choice_sets.length > 0) { %>
         <% choice_sets.each(function (choice_set, i) { %>
@@ -64,7 +67,7 @@ Choose a menu section
                 </select> 
             </div> 
             <% }); %>
-        <% } %>
+    <% } %>
 
     <% if (extras.length > 0) { %>
         <a href="#" data-text="Hide Extras" class="btn small" id="toggle-extras">Add Extras</a>
