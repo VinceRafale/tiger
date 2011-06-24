@@ -727,10 +727,12 @@ def reset_by_section_or_item(sender, instance, created, **kwargs):
     reset_menu_json(instance.site)
 
 def reset_by_upgrade_variant_or_choice_set(sender, instance, created, **kwargs):
-    reset_menu_json(instance.item.site)
+    if instance.item:
+        reset_menu_json(instance.item.site)
 
 def reset_by_choice(sender, instance, created, **kwargs):
-    reset_menu_json(instance.group.item.site)
+    if instance.group.item:
+        reset_menu_json(instance.group.item.site)
 
 payment_was_successful.connect(register_paypal_payment)
 payment_was_flagged.connect(register_paypal_payment)
