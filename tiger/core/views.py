@@ -321,7 +321,7 @@ def mailing_list_signup(request):
     else:
         error_msg = 'Please enter a valid e-mail address.'
         messages.error(request, error_msg)
-    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER') or '/')
 
 def change_location(request):
     if request.site.location_set.count() == 1:
