@@ -154,7 +154,7 @@ class Site(models.Model):
         )
 
     def prorate(self, amt):
-        return prorate(self.signup_date, amt)
+        return prorate(self.signup_date + timedelta(days=self.account.trial_period), amt)
 
     @property
     def is_suspended(self):

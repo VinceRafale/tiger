@@ -63,6 +63,22 @@ class BillingTestCase(TestCase):
         invoice = site.create_invoice()
         self.assertEqual(invoice.monthly_fee, site.plan.monthly_cost)
 
+    def test_no_bill_if_in_trial(self):
+        """If the signup date for a site is more than one month in the past, the
+        first invoice generated should contain a monthly charge full the full cost
+        of the plan.
+        """
+        site = self.site
+        account = site.account
+        account.trial_period = 90
+        account.save()
+        current_month = date.today().replace(day=1)
+        last_day_of_previous_month = current_month - timedelta(days=1)
+        site.signup_date = last_day_of_previous_month - timedelta(days=40)
+        site.save()
+        invoice = site.create_invoice()
+        self.assertEqual(invoice.monthly_fee, 0)
+
     def test_fax_is_billed(self):
         site = self.site
         current_month = date.today().replace(day=1)
