@@ -1,0 +1,82 @@
+<script id="review-order" type="text/html">
+<section>
+<h2>Review your order</h2>
+
+<table id="line-items">
+    <tr>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Total</th>
+        <th></th>
+    </tr>
+    <% if (coupon) { %>
+    <tr class="coupon totals-first">
+        <td class="item"><%= coupon %></td>
+        <td></td>
+        <td></td>
+        <td>-$<%= discount %></td>
+        <td class="remove"><a id="clear-coupon" href="{% url clear_coupon %}">[x]</a></td>
+    </tr>
+    <tr class="subtotal">
+    <% } else { %>
+    <tr class="subtotal totals-first">
+    <% } %>
+        <td class="item">Total</td>
+        <td></td>
+        <td></td>
+        <td>$<%= subtotal %></td>
+        <td class="remove"></td>
+    </tr>
+    <tr class="taxes">
+        <td class="item">Tax ({{ location.tax_rate }}%)</td>
+        <td></td>
+        <td></td>
+        <td>$<%= taxes %></td>
+        <td class="remove"></td>
+    </tr>
+    <tr class="total">
+        <td class="item">Total w/ tax</td>
+        <td></td>
+        <td></td>
+        <td>$<%= total_plus_tax %></td>
+        <td class="remove"></td>
+    </tr>
+</table>
+<% if (!coupon) { %>
+<form method="GET" class="coupon" action="{% url add_coupon %}">
+<label for="id_coupon_code">Coupon code:</label>
+<input name="coupon_code" id="id_coupon_code" type="text" />
+<input type="submit" class="button primary" value="Add" />
+</form>
+<% } %>
+<a class="button primary" href="{% url send_order %}">Continue</a>
+</script>
+
+<script id="line-item-template" type="text/html">
+<td class="item">
+<%= item.get("name") %> 
+<% if (item.prices.size() > 1) { %>
+(<%= price.description %>)
+<% } %>
+<% if (_.any([upgrades.length, sides.length, notes])) { %>
+    <ul>
+    <% _(sides).each(function(side) { %>
+        <li><%= side.name %><% if (Number(side.price) > 0) { %>: $<%= upgrade.price %> per item<% } %></li>
+    <% }); %>
+    <% _(upgrades).each(function(upgrade) { %>
+        <li><%= upgrade.name %>: $<%= upgrade.price %> per item</li>
+    <% }); %>
+    <% if (notes) { %>
+        <li><%= notes %></li>
+    <% } %>
+    </ul>
+<% } %>
+</td>
+<td>$<%= price.get("price") %></td>
+<td><%= quantity %></td>
+<td class="total"><%= total %></td>
+<td class="remove"><a href="{% url remove_item %}?id=<%= id %>">[x]</a></td>
+</section>
+</script>
+

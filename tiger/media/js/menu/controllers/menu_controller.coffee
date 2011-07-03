@@ -7,12 +7,14 @@ class this.MenuController extends Backbone.Controller
         "review": "reviewOrder"
 
     sectionList: ->
+        window.scrollTo(0,1)
         view = new SectionListView {collection: App.sections}
         $("#container").children().remove()
         $("#container").append view.render().el
         $("#container").prepend('<h1>Our Menu</h1>');
 
     sectionDetail: (sectionId) ->
+        window.scrollTo(0,1)
         section = App.sections.get sectionId
         view = new SectionDetailView {model: section}
         container = $('#container')
@@ -25,6 +27,7 @@ class this.MenuController extends Backbone.Controller
         container.append view.render().el
         
     itemDetail: (sectionId, itemId) ->
+        window.scrollTo(0,1)
         section = App.sections.get sectionId
         item = section.items.get itemId
         view = new ItemDetailView {model: item, section:section}
@@ -32,6 +35,7 @@ class this.MenuController extends Backbone.Controller
         $("#container").append view.render().el
 
     reviewOrder: ->
+        window.scrollTo(0,1)
         view = new CartView {collection: App.cart}
         $("#container").children().remove()
         $("#container").append view.render().el
