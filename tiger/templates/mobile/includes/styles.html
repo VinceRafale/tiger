@@ -1,0 +1,401 @@
+{% load stork_tags %}
+<style type="text/x-scss" media="screen">
+/* HEY MATTHEW MAKE ME MO BETTA */
+span.error {
+    display:block;
+    background-color:#eebbbb;
+    color:#552222;
+}
+{% build_css site.theme %}
+{% for fontname, attrs in site.font_data.data.items %}
+${{ fontname }}: {{ fontname }}, {{ attrs.stack|safe }};
+{% endfor %}
+
+
+//$headerfontcolor: rgba(119,255,0,1.0);
+//$bodyfontcolor: rgba(255,255,255,1.0);
+//$accentcolor: rgba(247,10,10,1.0);
+//$centercolor: rgba(0,0,0,1.0);
+//$backgroundcolor: rgba(0,0,0,1.0);
+//$mastheadbackgroundcolor: rgba(0,0,0,1.0);
+//$mastheadtextcolor: rgba(145,255,0,1.0);
+//$menuitembackground: rgba(247,255,0,1.0);
+//$menuitembackgroundhover: rgba(255,255,0,1.0);
+//$menuitemtext: rgba(0,0,0,1.0);
+//$menuitemtexthover: rgba(0,0,0,1.0);
+//$menubackgroundcolor: rgba(247,255,0,1.0);
+//$buttoncolor: rgba(255,255,0,1.0);
+//$buttonbackgroundhover: rgba(255,255,0,1.0);
+//$buttontext: rgba(0,0,0,1.0);
+//$buttontexthover: rgba(0,0,0,1.0);
+//$orderbuttonbackground: rgba(255,255,0,1.0);
+//$orderbuttonbackgroundhover: rgba(255,255,0,1.0);
+//$orderbuttontext: rgba(0,0,0,1.0);
+//$orderbuttontexthover: rgba(0,0,0,1.0);
+//$footerbackground: rgba(247,255,0,1.0);
+//$footertext: rgba(0,0,0,1.0);
+//$footerlink: rgba(0,0,0,1.0);
+//$footerlinkhover: rgba(0,0,0,1.0)
+
+@mixin button{
+border-radius:5px;
+color: $buttontext;
+text-decoration: none;
+background-color: $buttoncolor;
+padding: 5px 10px;
+display: inline-block;
+margin: 0 2px;
+}
+.btn{
+@include button;
+margin:.5rem 0;
+}
+@mixin border-box{
+-webkit-box-sizing: border-box;
+box-sizing: border-box;
+}
+@mixin round-corners($radius){
+border-radius: $radius;
+}
+@mixin ul-reset{
+padding: 0;
+margin: 0;
+list-style-type:none;
+}
+body, html{
+overflow-x: hidden;
+margin: 0; 
+padding: 0;
+background-color: $centercolor;
+font-size: 15px;
+font-family: $bodyfont;
+color: $bodyfontcolor;
+}
+body{
+width: 100%;
+@include border-box;
+}
+h1,h2,h3 {
+font-family: $headerfont;
+font-weight: bold;
+line-height: 1.4;
+color: $headerfontcolor;
+}
+h1{
+font-size: 1.3rem;
+}
+h2{ 
+font-size: 1.15rem;
+}
+h3{
+margin: 1rem 0 .25rem 0;
+font-size: 1rem;
+}
+a {
+color: $buttoncolor;
+}
+th, td{vertical-align: top;
+text-align: left;
+}
+td.total{
+text-align: right;
+}
+.clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; overflow: hidden; }
+.clearfix:after { clear: both; }
+div.section, section{
+position:relative;
+display: block; 
+clear: both; 
+padding: 0 1rem;
+}
+input, select, label, textarea{
+font-size: 1.15em;
+@include border-box;
+}
+label, textarea{
+display: block;
+margin: .75rem 0 0 0;
+}
+textarea, input[name="label"]{
+width: 100%;
+}
+input[type="submit"]{
+@include button;
+font-size: 17px;
+font-style: bold;
+margin: 1rem 0;
+}
+input[type="checkbox"], input[type="radio"]{
+display: inline-block;
+width: auto;
+}
+
+p{
+font-size: 15px;
+line-height: 1.4;
+}
+a:active{
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
+-webkit-tap-hightlight-color:-webkit-gradient(linear, left top, left bottom, color-stop(0%,lighten($buttoncolor, 15%)), color-stop(100%,$buttoncolor));
+color: $buttontext !important;
+text-shadow: 0 1px 0 fade-out(invert($buttontext), .5);
+}
+#home{
+display:block;
+visibility: hidden;
+position: absolute;
+top:0;
+}
+
+nav ul, .prices{
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+#banner{
+overflow: auto; 
+padding: .5em;
+h2{
+max-width: 50%;
+float: left; 
+margin: 0;
+}
+nav{
+float:right;
+padding: 5px;
+ul li{
+display: inline-block;
+}
+a{
+@include button;
+}
+}
+}
+.inset-left{
+float:left; 
+margin: 0 10px 10px 0;
+max-width: 50%; 
+background-size: auto auto;
+}
+.place-order{
+border-bottom: 1px solid $accentcolor;
+overflow: auto;
+padding: .5rem 0;
+}
+div.cart{
+background: $mastheadbackgroundcolor;
+color: #fff;
+padding: 5px;
+overflow: auto;
+a.button{
+@include button;
+float: right;
+font: normal 14px/1 sans-serif;
+}
+}
+.maplink{
+@include border-box;
+display: block; 
+height: 220px;
+width: 100%;
+background-position: center 10px;
+background-repeat: no-repeat;
+background-color: rgba(0,0,0,.3);
+}
+#contact{
+@include border-box;
+-webkit-transition: all 350ms cubic-bezier(0.455, 0.030, 0.515, 0.955);
+position:absolute;
+width: 100%;
+background: lighten($centercolor, 20%);
+top: 0;
+overflow-x:hidden;
+left: 0;
+-webkit-transform: translate3d(100%, 0, 0);
+height: auto;
+padding-bottom: 2rem;
+
+address, h2{
+padding-left: 1em;
+margin-bottom: 0;
+}
+.box-wrap{
+display: -webkit-box;
+-webkit-box-orient: horizontal;
+}
+.hours{
+text-align: right;
+}
+.communicate{
+text-align: left;
+}
+.map-link{
+margin-bottom: 1em;
+}
+.half{
+padding: 1em .5em;
+-webkit-box-flex: 1;
+}
+.twitter{
+background: url({{MEDIA_URL}}img/twitter_newbird_white.png) center 10px 
+no-repeat;
+}
+.facebook{
+background: url({{ MEDIA_URL }}img/f_logo.png) center 10px no-repeat;
+}
+.twitter, .facebook{
+background-size: auto 50px;
+padding:.75em ;
+margin: 1em;
+background-color: rgba(0,0,0,.4);
+text-align: center;
+min-height: 50px;
+border-radius:15px;
+border-bottom: 1px solid rgba(255,255,255, .3);
+a{
+padding-top:60px;
+display: block;
+border-radius:12px;
+}
+}
+}
+
+.mailchimp{
+background-color: rgba(0,0,0,.4);
+text-align: center;
+border-radius:15px;
+padding: 1em;
+margin: 1em;
+border-bottom: 1px solid rgba(255,255,255, .3);
+
+}
+#contact:target{
+-webkit-transform: translate3d(0, 0, 0);
+overflow:auto;
+}
+body.menu section{
+padding: 0;
+}
+#sectionList, #items, .upgrades ul{
+@include ul-reset;
+li{
+@if lightness($centercolor) <= 50 {
+// color is dark, so make the top lighter
+background: -webkit-gradient(linear, left top, left bottom,
+color-stop(0%,lighten($centercolor, 15%)), color-stop(60%,$centercolor));
+} @else {
+// color is light so make the bottom darker
+background: -webkit-gradient(linear, left top, left
+bottom,color-stop(0%,$centercolor), color-stop(60%,darken($centercolor,
+15%)));
+}
+overflow: hidden;
+a{
+    display: block;
+    padding: 0 1rem;
+    text-decoration: none;
+    color: inherit;
+    font-size: 1.2rem;
+    border: 1px solid grayscale($accentcolor);
+    border-width: 1px 0 1px 0;
+    border-top-color: fade-out(grayscale($accentcolor), .7);
+    p{
+      margin: 0 0 1rem 0;
+    }
+  }
+  a:active div h3{
+    color: $buttontext;
+  }
+}
+}
+.name-part{
+float: left;
+max-width: 80%;
+}
+.price-part{
+float: right;
+padding: 1em .5em;
+}
+.extra label{
+display: -webkit-box;
+-webkit-box-orient: horizontal;
+border-bottom: 1px solid #ccc;
+padding: .5rem;
+.extra-name{
+  -webkit-box-flex: 1;
+  margin: 0;
+  color: $bodyfontcolor;
+  font-family: $bodyfont;
+}
+.price{
+  -webkit-box-flex: 1;
+  font-family: $emphasisfont;
+  color: $buttoncolor;
+  line-height: 1.4;
+  font-size: 14px;
+}
+}
+
+h2.price{ text-align: right;}
+#sectionDetail > p, #sectionDetail .breadcrumb,
+h1, #itemDetail, footer{ padding: 0 1rem;}
+#itemDetail h1{ padding: 0; }
+header{
+background: $mastheadbackgroundcolor;
+color: $mastheadtextcolor;
+border-bottom: 1px solid $accentcolor;
+h2 a{color: $mastheadtextcolor;}
+}
+footer{
+border: 1px solid $accentcolor;
+border-width: 1px 0;
+background: $footerbackground;
+overflow: hidden;
+margin: 1rem 0 0 0;
+color: $footertext;
+a{color: $footerlink}
+}
+@mixin block-input{
+font:inherit;
+display: block;
+@include round-corners(5px);
+}
+label {
+font-size: 1.15rem;
+input{
+@include block-input;
+width: 100%;
+}
+}
+input[name="notes"], input[name="label"] {
+@include block-input;
+}
+input[type="submit"].ordering{
+-webkit-appearance: none;
+border:none;
+
+background: -webkit-gradient(linear, left top, left bottom,
+color-stop(0%,lighten($buttoncolor, 25%)), color-stop(100%,$buttoncolor));
+display: block;
+width: 100%;
+text-align: center;
+text-shadow: 0 1px 0 rgba(255,255,255,.75);
+}
+select{
+width: 100%;
+display:block;
+font-size: 1.15rem;
+}
+.breadcrumbs a {
+color: $buttoncolor;
+font-size: .9rem;
+} 
+.breadcrumbs a::before{
+content: '< ';
+text-decoration: none;
+height: 5px;
+width: 5px;
+position: relative;
+}
+</style>
+

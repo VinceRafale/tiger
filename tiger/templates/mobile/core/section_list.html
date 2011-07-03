@@ -14,169 +14,27 @@ Choose a menu section
     <a href='#section/<%= id %>'><h3><%= name %></h3><p><%= description %></p></a>
 </script>
 <script id="item-list" type="text/html">
-    <a href='#section/<%= section_id %>/item/<%= id %>'><h3><%= name %></h3><p><%= description %></p></a>
-</script>
-<script id="order-item" type="text/html">
-    <div class="breadcrumbs">
-        <a href="/menu/#">Menu</a> <a href="#section/<%= section.id %>"><%= section.get("name") %></a>
-    </div>
-    <h1><%= name %></h1>
-    <% if (schedule) { %>
-    <p class="warning"><%= schedule %></p>
+  <a href='#section/<%= section_id %>/item/<%= id %>' class="clearfix">
+    <div class="name-part">
+    <h3><%= name %></h3><p><%= description %></p>
+  </div>
+  <div class="price-part">
+    <span>
+    <% if (prices.length > 1) { %>
+      from 
     <% } %>
-    <% if (price_override) { %>
-    <h2 class="price"> <%= price_override %> </h2>
-    <% } else if (prices.length > 1) { %>
-        <div class="prices"> 
-            <% prices.each(function (price, i) { %>
-             <% if (ONLINE_ORDERING) { %>
-              <div>
-                <label for="id_variant_<%= i %>">
-                  <input type="radio" id="id_variant_<%= i %>" value="<%= price.id %>" name="prices" /> 
-                  <%= price.get("description") %>
-                  $<%= price.get("price") %>
-                </label>
-              </div> 
-             <% } else { %>
-                <span>
-                  <%= price.get("description") %>
-                  $<%= price.get("price") %>
-                  <% if (i !== prices.length -1){ %> / <% } %>
-                </span>
-             <% } %>
-            <% }); %>
-        </div> 
-    <% } else if (prices.length === 1) { %>
-    <h2 class="price"> $<%= prices.at(0).get("price") %> </h2>
-    <% } %>
-    <p><%= description %></p>
-    <% if (ONLINE_ORDERING) { %>
-    <label id="qty"> 
-        Quantity
-        <input type="number" name="quantity" value="1" id="id_quantity" /> 
-    </label> 
-
-    <% if (choice_sets.length > 0) { %>
-        <% choice_sets.each(function (choice_set, i) { %>
-            <div class="upgrades"> 
-                <label>Your choice of:</label> 
-                <select name="side_<%= choice_set.id %>"> 
-                    <% choice_set.choices.each(function (choice, j) { %>
-                        <option id="id_side_<%= choice_set.id %>_<%= j %>" value="<%= choice.id %>" /> <%= choice.get("name") %></option> 
-                        <% }); %>
-                </select> 
-            </div> 
-            <% }); %>
-    <% } %>
-
-    <% if (extras.length > 0) { %>
-        <a href="#" data-text="Hide Extras" class="btn small" id="toggle-extras">Add Extras</a>
-        <div class="upgrades extras"> 
-            <ul> 
-                <% extras.each(function (extra, i) { %>
-                  <li class="extra">
-                    <label for="id_upgrades_<%= i %>">
-                      <input type="checkbox" name="upgrades" value="<%= extra.id %>" id="id_upgrades_<%= i %>" /> 
-                      <h3 class="extra-name"><%= extra.get("name") %></h3>
-                      <em class="price">$<%= extra.get("price") %></em>
-                    </label>
-                  </li> 
-                    <% }); %>
-            </ul> 
-        </div> 
-        <% } %>
-
-    <label for="id_notes">Special instructions (&quot;No MSG&quot;, &quot;Extra lettuce&quot;)</label> 
-    <textarea type="text" name="notes" id="id_notes" ></textarea>
-
-    <a href="#" id="toggle-name" class="btn">Ordering for multiple people?</a> 
-    <div id="add-name" style="display:none;"> 
-        <label for="id_label">Enter a name here and we&#39;ll label this item for that person.</label> 
-        <input type="text" name="label" id="id_label" /> 
-    </div> 
-    <input id="submit" class="button ordering" type="submit" value="Add to order" /> 
-    <% } %>
-</script>
-<script id="review-order" type="text/html">
-<section>
-<h2>Review your order</h2>
-
-<table id="line-items">
-    <tr>
-        <th>Item</th>
-        <th>Price</th>
-        <th>Qty</th>
-        <th>Total</th>
-        <th></th>
-    </tr>
-    <% if (coupon) { %>
-    <tr class="coupon totals-first">
-        <td class="item"><%= coupon %></td>
-        <td></td>
-        <td></td>
-        <td>-$<%= discount %></td>
-        <td class="remove"><a id="clear-coupon" href="{% url clear_coupon %}">[x]</a></td>
-    </tr>
-    <tr class="subtotal">
+    <% if (prices[0]) { %>
+      $<%= prices[0].price %>
     <% } else { %>
-    <tr class="subtotal totals-first">
+      $<%= prices.at(0).get('price') %>
     <% } %>
-        <td class="item">Total</td>
-        <td></td>
-        <td></td>
-        <td>$<%= subtotal %></td>
-        <td class="remove"></td>
-    </tr>
-    <tr class="taxes">
-        <td class="item">Tax ({{ location.tax_rate }}%)</td>
-        <td></td>
-        <td></td>
-        <td>$<%= taxes %></td>
-        <td class="remove"></td>
-    </tr>
-    <tr class="total">
-        <td class="item">Total w/ tax</td>
-        <td></td>
-        <td></td>
-        <td>$<%= total_plus_tax %></td>
-        <td class="remove"></td>
-    </tr>
-</table>
-<% if (!coupon) { %>
-<form method="GET" class="coupon" action="{% url add_coupon %}">
-<label for="id_coupon_code">Coupon code:</label>
-<input name="coupon_code" id="id_coupon_code" type="text" />
-<input type="submit" class="button primary" value="Add" />
-</form>
-<% } %>
-<a class="button primary" href="{% url send_order %}">Continue</a>
+    </span> 
+  </div>
+
+  </a>
 </script>
-<script id="line-item-template" type="text/html">
-<td class="item">
-<%= item.get("name") %> 
-<% if (item.prices.size() > 1) { %>
-(<%= price.description %>)
-<% } %>
-<% if (_.any([upgrades.length, sides.length, notes])) { %>
-    <ul>
-    <% _(sides).each(function(side) { %>
-        <li><%= side.name %><% if (Number(side.price) > 0) { %>: $<%= upgrade.price %> per item<% } %></li>
-    <% }); %>
-    <% _(upgrades).each(function(upgrade) { %>
-        <li><%= upgrade.name %>: $<%= upgrade.price %> per item</li>
-    <% }); %>
-    <% if (notes) { %>
-        <li><%= notes %></li>
-    <% } %>
-    </ul>
-<% } %>
-</td>
-<td>$<%= price.get("price") %></td>
-<td><%= quantity %></td>
-<td class="total"><%= total %></td>
-<td class="remove"><a href="{% url remove_item %}?id=<%= id %>">[x]</a></td>
-</section>
-</script>
+{% include "mobile/includes/order_item.html" %}
+{% include "mobile/includes/review_order.html" %}
 <script type="text/javascript">
     var cart_dump = {{ cart.to_json|safe|default:"[]" }},
         line_items = cart_dump[0],
