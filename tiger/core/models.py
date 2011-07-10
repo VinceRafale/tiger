@@ -200,11 +200,9 @@ class Item(models.Model):
     def pricing(self):
         """Returns either `price_list` or `text_price` so that values can be looped 
         over all black-box-like."""
-        if self.available_online:
-            return self.price_list
-        if self.text_price:
+        if self.text_price and not self.available_online:
             return [self.text_price]
-        return []
+        return self.price_list
 
     def for_json(self, drilldown=True):
         data = {
