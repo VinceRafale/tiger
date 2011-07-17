@@ -64,7 +64,7 @@
                 <li><a href="#contact" class="contact">Contact</a></li>
         {% block cart %}
             {% if site.enable_orders %}
-            <li>
+            <li class="cart">
             {% if cart|length %}
             <a class="button ordering" href="/menu/#review">Cart ({{ cart|length }}) </a>
             {% else %}
