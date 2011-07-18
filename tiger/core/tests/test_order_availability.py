@@ -53,6 +53,28 @@ def setup_timeslots(dt):
         create_timeslots(schedule, dt, 30, 30)
     return _setup
 
+def setup_schedule_with_gaps():
+    if not Site.objects.count():
+        load_fixtures('tiger.fixtures')
+    site = Site.objects.all()[0]
+    site.plan, created = Plan.objects.get_or_create(has_online_ordering=True)
+    site.save()
+    location, = site.location_set.all()
+    location.eod_buffer = 0
+    location.tax_rate = '6.25'
+    site.enable_orders = True
+    site.save()
+    schedule = location.schedule
+    if schedule is None:
+        schedule = location.schedule = Schedule.objects.create(site=site)
+    location.save()
+    for day in (0, 2, 4): # Mon, Wed, Fri
+        TimeSlot.objects.create(
+            dow=day, schedule=schedule,
+            start=(datetime(2011, 7, 17, 9, 0)).time(),
+            stop=(datetime(2011, 7, 17, 17, 0)).time()
+        )
+
 
 def setup_section_timeslots(dt):
     def _setup():
@@ -357,3 +379,21 @@ def test_valid_pickup_time_west_tz():
 @with_setup(lambda: (setup_timeslots(0), setup_order_validation(), set_timezone('Canada/Newfoundland')), teardown_timeslots)
 def test_valid_pickup_time_east_tz():
     valid_pickup_time('Canada/Newfoundland')
+
+@with_setup(setup_schedule_with_gaps, teardown_timeslots)
+def test_arbitrary_open_day():
+    site = Site.objects.all()[0]
+    location = site.location_set.all()[0]
+    schedule = location.schedule
+    tz = timezone(location.timezone)
+    now = tz.localize(datetime(2011, 7, 18, 12, 0))     
+    assert schedule.is_open(location, now) == 'open'
+
+@with_setup(setup_schedule_with_gaps, teardown_timeslots)
+def test_arbitrary_closed_day():
+    site = Site.objects.all()[0]
+    location = site.location_set.all()[0]
+    schedule = location.schedule
+    tz = timezone(location.timezone)
+    now = tz.localize(datetime(2011, 7, 19, 12, 0))     
+    assert schedule.is_open(location, now) == 'closed'
