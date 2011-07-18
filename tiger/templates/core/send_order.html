@@ -35,7 +35,13 @@ form li {margin-left:0;}
         {{ form.ready_by.errors }}
         {% endif %}
         <div>{{ form.ready_by.label }}<br />
-        {{ form.ready_by }}
+        <span class="today">today</span>
+        {% if form.day.errors %}
+        {{ form.day.errors }}
+        {% endif %}
+        <span {% if form.day.value %}rel="date"{% endif %} style="display:none;" class="future-day">{{ form.day }}<br/></span>
+        at {{ form.ready_by }}<br/>
+        <a id="change-date" href="#">(change date)</a>
         </div>
         {% if form.method.errors %}
         {{ form.method.errors }}
@@ -98,12 +104,22 @@ $(function () {
     if ($(":radio[value='3']").attr("checked")) {
         $(".delivery-options").show();
     }
+    if ($("span.future-day").attr("rel") == "date") {
+        $("span.today,#change-date").hide();
+        $("span.future-day").show();
+    }
     $(":radio").click(function () {
         if ($(this).val() == '3') {
             $(".delivery-options").show();
         } else {
             $(".delivery-options").hide();
         }
+        return false;
+    });
+    $("#change-date").click(function () {
+        $("span.today,#change-date").hide();
+        $("span.future-day").show();
+        return false;
     });
 });
 </script>

@@ -17,6 +17,8 @@ from tiger.core.models import *
 from tiger.dashboard.widgets import ImageChooserWidget
 from tiger.utils.forms import BetterModelForm
 from tiger.utils.geocode import geocode, GeocodeError
+from tiger.utils.hours import TIME_OPEN
+
 
 
 
@@ -169,14 +171,19 @@ class OrderForm(forms.ModelForm):
             day = self.cleaned_data.get('day')
             if day is None:
                 day = timezone(settings.TIME_ZONE).localize(datetime.now()).astimezone(loc_zone).date()
+            else:
+                if location.schedule.is_open(location, loc_zone.localize(datetime.combine(day, ready_by))) != TIME_OPEN:
+                    raise forms.ValidationError("We won't be open at %s on %s." % (ready_by.strftime("%H:%M%P"), day.strftime("%b %d, %Y")))
             ready_by = loc_zone.localize(datetime.combine(day, ready_by))
             server_tz = timezone(settings.TIME_ZONE)
             if ready_by < server_tz.localize(datetime.now() + timedelta(minutes=lead_time)):
                 raise forms.ValidationError('%s orders must be placed %d minutes in advance.' % (method_display, lead_time))
+            self.ready_by = ready_by
         return cleaned_data
 
     def save(self, commit=True):
         instance = super(OrderForm, self).save(commit=False)
+        instance.ready_by = self.ready_by
         request = self.request
         instance.total = request.cart.total()
         instance.tax = request.cart.taxes()
