@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 import hashlib
 import os
 
@@ -359,25 +359,30 @@ class TimeSlot(models.Model):
     def pretty_stop(self):
         return self._pretty_time(self.stop)
 
-    def prepped_start(self, location, day):
-        return self.site.localize(datetime.combine(day, self.start), location)
-
-    def prepped_stop(self, location, day):
-        stop = self.site.localize(datetime.combine(day, self.stop), location)
-        if self.stop < self.start:
-            stop += timedelta(days=1)
-        return stop
+    def prep(self, location, day, t):
+        return location.get_timezone().localize(datetime.combine(day, t))
 
     def get_availability(self, location, now, buff=0):
-        start_dt = self.prepped_start(location, now.date())
-        stop_dt = self.prepped_stop(location, now.date())
+        as_tz = now.astimezone(location.get_timezone())
+        date_in_tz = as_tz.date()
+        start_dt = self.prep(location, date_in_tz, self.start)
+        stop_dt = self.prep(location, date_in_tz, self.stop)
+        if self.spans_midnight(): 
+            if self.is_tomorrow(now):
+                start_dt -= timedelta(days=1)
+            else:
+                stop_dt += timedelta(days=1)
         if start_dt < now < stop_dt:
             if start_dt < now < stop_dt - timedelta(seconds=buff*60):
                 return TIME_OPEN
             return TIME_EOD
 
-    def now(self):
-        return datetime.now()
+    def spans_midnight(self):
+        return self.stop < self.start
+
+    def is_tomorrow(self, now):
+        return now.weekday() % 7 == (self.dow + 1) % 7
+
 
     @property
     def site(self):
