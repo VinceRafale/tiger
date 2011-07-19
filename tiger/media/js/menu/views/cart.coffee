@@ -1,5 +1,5 @@
 class CartSummaryView extends Backbone.View
-    el: $ "div.cart"
+    el: $ "li.cart"
 
     initialize: ->
         App.cart.bind "refresh", @render
@@ -7,13 +7,10 @@ class CartSummaryView extends Backbone.View
 
     render: =>
         if App.cart.size() > 0
-            @el.html "<a class='button ordering' href='/menu/#review'>#{App.cart.size()} </a>"
+            @el.html "<a class='button ordering' href='/menu/#review'>Cart (#{App.cart.size()}) </a>"
         else
             @el.html """
-            <div class="place-order">
-            <span>Hungry?</span>
-            <a class="button primary" href="/menu/#">Place an order</a>
-            </div>
+            <a class="button primary" href="/menu/#">Order</a>
             """
 
 
