@@ -6,6 +6,7 @@ import urllib2
 from django import forms
 from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.forms import *
+from django.forms.extras.widgets import SelectDateWidget
 
 from authorize.aim import Api
 from pytz import timezone
@@ -16,6 +17,8 @@ from tiger.core.models import *
 from tiger.dashboard.widgets import ImageChooserWidget
 from tiger.utils.forms import BetterModelForm
 from tiger.utils.geocode import geocode, GeocodeError
+from tiger.utils.hours import TIME_OPEN
+
 
 
 
@@ -103,10 +106,11 @@ def get_item_form(site):
 
 class OrderForm(forms.ModelForm):
     ready_by = SelectableTimeField(required=True)
+    day = forms.DateField(required=False, widget=SelectDateWidget())
 
     class Meta:
         model = Order
-        exclude = ('status', 'unread', 'pickup', 'session_key',)
+        exclude = ('status', 'unread', 'ready_by', 'session_key',)
 
     def __init__(self, data=None, request=None, *args, **kwargs):
         super(OrderForm, self).__init__(data, *args, **kwargs)
@@ -128,15 +132,13 @@ class OrderForm(forms.ModelForm):
             raise forms.ValidationError(msg)
         return method
 
-    def clean_ready_by(self):
-        ready_by = self.cleaned_data.get('ready_by')
-        if not ready_by:
-            raise forms.ValidationError('This field is required.')
-        # check that there is not a date discrepancy across time zones
-        today = date.today()
-        loc_zone = self.location.get_timezone()
-        today = timezone(settings.TIME_ZONE).localize(datetime.now()).astimezone(loc_zone).date()
-        return loc_zone.localize(datetime.combine(today, ready_by))
+    def clean_day(self):
+        day = self.cleaned_data.get('day')
+        if not day:
+            return day
+        if day <= date.today():
+            raise forms.ValidationError("Order-ahead date must be in the future.")
+        return day
 
     def clean(self):
         cleaned_data = super(OrderForm, self).clean()
@@ -164,13 +166,24 @@ class OrderForm(forms.ModelForm):
         ready_by = self.cleaned_data.get('ready_by')
         method_display = dict(Order.METHOD_CHOICES).get(method)
         if ready_by and method_display:
+            # check that there is not a date discrepancy across time zones
+            loc_zone = self.location.get_timezone()
+            day = self.cleaned_data.get('day')
+            if day is None:
+                day = timezone(settings.TIME_ZONE).localize(datetime.now()).astimezone(loc_zone).date()
+            else:
+                if location.schedule.is_open(location, loc_zone.localize(datetime.combine(day, ready_by))) != TIME_OPEN:
+                    raise forms.ValidationError("We won't be open at %s on %s." % (ready_by.strftime("%H:%M%P"), day.strftime("%b %d, %Y")))
+            ready_by = loc_zone.localize(datetime.combine(day, ready_by))
             server_tz = timezone(settings.TIME_ZONE)
             if ready_by < server_tz.localize(datetime.now() + timedelta(minutes=lead_time)):
                 raise forms.ValidationError('%s orders must be placed %d minutes in advance.' % (method_display, lead_time))
+            self.ready_by = ready_by
         return cleaned_data
 
     def save(self, commit=True):
         instance = super(OrderForm, self).save(commit=False)
+        instance.ready_by = self.ready_by
         request = self.request
         instance.total = request.cart.total()
         instance.tax = request.cart.taxes()

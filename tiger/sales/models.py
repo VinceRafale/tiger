@@ -79,6 +79,7 @@ class Account(models.Model):
     sms = models.ForeignKey('sms.SmsSettings', null=True)
     secret = models.CharField(max_length=32, default='')
     credit_card = models.ForeignKey(CreditCard, null=True)
+    trial_period = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'accounts_account'

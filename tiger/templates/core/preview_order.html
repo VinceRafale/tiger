@@ -23,7 +23,12 @@
                 <li>{{ upgrade.name }}: ${{ upgrade.price|floatformat:"-2" }} per item</li>
             {% endfor %}
             {% for side in item.sides %}
-                <li>{{ side }}</li>
+                <li>
+                    {{ side.name }}
+                    {% if side.price != '0.00' %}
+                    (add ${{ side.price }})
+                    {% endif %}
+                </li>
             {% endfor %}
             {% if item.notes %}
                 <li>{{ item.notes }}</li>

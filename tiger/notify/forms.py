@@ -32,7 +32,6 @@ class PublishForm(BetterModelForm):
         updates. For Twitter, it will be truncated if it (plus the link to your
         site that we insert) exceeds 140 characters.
     """)
-    add_coupon = forms.BooleanField(label='Include a coupon?', required=False)
     add_pdf = forms.BooleanField(label='Include a menu as an attachment?', required=False)
     fax = forms.BooleanField(label='One of your fax lists', required=False)
     fax_list = forms.ModelChoiceField(queryset=FaxList.objects.all(), required=False)
@@ -57,7 +56,6 @@ class PublishForm(BetterModelForm):
 
     def __init__(self, data=None, files=None, site=None, *args, **kwargs):
         super(PublishForm, self).__init__(data=data, files=files, *args, **kwargs)
-        self.fields['coupon'].queryset = site.coupon_set.all()
         self.fields['fax_list'].queryset = site.faxlist_set.all()
         self.fields['pdf'].queryset = site.pdfmenu_set.all()
         self.site = site

@@ -6,6 +6,8 @@ from dateutil.relativedelta import *
 
 def prorate(signup_date, amount):
     today = date.today()
+    if signup_date > today:
+        return Decimal("0.00")
     if today.day != 1:
         today = (today + relativedelta(months=1)).replace(day=1)
     one_month_ago = today + relativedelta(months=-1)

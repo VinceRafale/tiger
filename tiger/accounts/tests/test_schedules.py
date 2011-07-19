@@ -63,23 +63,23 @@ def check_time_display(start, stop, expected):
 def test_within_timeslot_spanning_midnight():
     if not Site.objects.count():
         load_fixtures('tiger.fixtures')
-    now = datetime.now() 
+    location = Location.objects.all()[0]
+    now = location.get_timezone().localize(datetime.now())
     schedule = Schedule.objects.create(site=Site.objects.all()[0])
     timeslot = TimeSlot(schedule=schedule, start=time(23,0), stop=time(1, 0), dow=now.weekday())
     # need to test both sides of date divide
     # before open
-    timeslot.now = lambda: now.replace(hour=22)
-    location = Location.objects.all()[0]
-    assert_equal(timeslot.get_availability(location), None)
+    t = now.replace(hour=22)
+    assert_equal(timeslot.get_availability(location, t), None)
     # while open, before midnight
-    timeslot.now = lambda: now.replace(hour=23, minute=30)
-    assert_equal(timeslot.get_availability(location), TIME_OPEN)
+    t= now.replace(hour=23, minute=30)
+    assert_equal(timeslot.get_availability(location, t), TIME_OPEN)
     # while open, after midnight
-    timeslot.now = lambda: now.replace(hour=0, minute=30) + timedelta(days=1)
-    assert_equal(timeslot.get_availability(location), TIME_OPEN)
+    t = now.replace(hour=0, minute=30) + timedelta(days=1)
+    assert_equal(timeslot.get_availability(location, t), TIME_OPEN)
     # after close
-    timeslot.now = lambda: now.replace(hour=2, minute=30) + timedelta(days=1)
-    assert_equal(timeslot.get_availability(location), None)
+    t = now.replace(hour=2, minute=30) + timedelta(days=1)
+    assert_equal(timeslot.get_availability(location, t), None)
 
 
 def test_timeslot_form_validation():

@@ -85,7 +85,7 @@ class PublishToFacebookTask(Task):
                     facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
                 )
         except facebook.GraphAPIError, e:
-            self.retry([uid, msg, link_title, href], kwargs,
+            self.retry([uid, msg, link, href], kwargs,
                 countdown=60 * 5, exc=e)
 
 
@@ -96,12 +96,8 @@ class PublishTask(Task):
         site = release.site
         social = site.social
         msg = release.title
-        if release.coupon:
-            short_url = reverse('coupon_short_code', kwargs={'item_id': int_to_base36(release.coupon.id)})
-            link_title = 'Use it now'
-        else:
-            short_url = reverse('press_short_code', kwargs={'item_id': int_to_base36(release.id)})
-            link_title = 'Read on our site'
+        short_url = reverse('press_short_code', kwargs={'item_id': int_to_base36(release.id)})
+        link_title = 'Read on our site'
         short_url = unicode(site) + short_url
         if site.twitter() and twitter:
             if release.visible:

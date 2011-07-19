@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 import hashlib
 import os
 
@@ -154,7 +154,7 @@ class Site(models.Model):
         )
 
     def prorate(self, amt):
-        return prorate(self.signup_date, amt)
+        return prorate(self.signup_date + timedelta(days=self.account.trial_period), amt)
 
     @property
     def is_suspended(self):
@@ -322,15 +322,20 @@ class Schedule(models.Model):
     def get_absolute_url(self):
         return 'edit_schedule', (), {'schedule_id': self.id}
 
-    def is_open(self, location, buff=0):
+    def is_open(self, location, now=None, buff=0):
+        if now is None:
+            server_tz = timezone(settings.TIME_ZONE)
+            now = server_tz.localize(datetime.now())
         return is_available(
             timeslots=self.timeslot_set.all(), 
             location=location,
+            now=now,
             buff=buff
         )
 
     def mobile_schedule(self):
         return calculate_hour_string(self.timeslot_set.all(), for_mobile=True)
+
 
 class TimeSlot(models.Model):
     schedule = models.ForeignKey(Schedule)
@@ -354,28 +359,30 @@ class TimeSlot(models.Model):
     def pretty_stop(self):
         return self._pretty_time(self.stop)
 
-    def prepped_start(self, location):
-        return self.site.localize(datetime.combine(date.today(), self.start), location)
+    def prep(self, location, day, t):
+        return location.get_timezone().localize(datetime.combine(day, t))
 
-    def prepped_stop(self, location):
-        stop = self.site.localize(datetime.combine(date.today(), self.stop), location)
-        if self.stop < self.start:
-            stop += timedelta(days=1)
-        return stop
-
-    def get_availability(self, location, buff=0):
-        now = self.now()
-        start_dt = self.prepped_start(location)
-        stop_dt = self.prepped_stop(location)
-        server_tz = timezone(settings.TIME_ZONE)
-        server_now = server_tz.localize(now)
-        if start_dt < server_now < stop_dt:
-            if start_dt < server_now < stop_dt - timedelta(seconds=buff*60):
+    def get_availability(self, location, now, buff=0):
+        as_tz = now.astimezone(location.get_timezone())
+        date_in_tz = as_tz.date()
+        start_dt = self.prep(location, date_in_tz, self.start)
+        stop_dt = self.prep(location, date_in_tz, self.stop)
+        if self.spans_midnight(): 
+            if self.is_tomorrow(now):
+                start_dt -= timedelta(days=1)
+            else:
+                stop_dt += timedelta(days=1)
+        if start_dt < now < stop_dt:
+            if start_dt < now < stop_dt - timedelta(seconds=buff*60):
                 return TIME_OPEN
             return TIME_EOD
 
-    def now(self):
-        return datetime.now()
+    def spans_midnight(self):
+        return self.stop < self.start
+
+    def is_tomorrow(self, now):
+        return now.weekday() % 7 == (self.dow + 1) % 7
+
 
     @property
     def site(self):

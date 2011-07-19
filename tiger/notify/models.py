@@ -126,7 +126,6 @@ class Release(models.Model):
     body = models.TextField(blank=True)
     body_html = models.TextField(blank=True, editable=False)
     pdf = models.ForeignKey(PdfMenu, verbose_name='Select one of your PDF menus', null=True, blank=True)
-    coupon = models.ForeignKey('core.Coupon', null=True, blank=True)
     time_sent = models.DateTimeField(editable=False)
     fax_transaction = models.CharField(null=True, blank=True, max_length=100, editable=False)
     twitter = models.CharField(max_length=200, null=True, editable=False)
