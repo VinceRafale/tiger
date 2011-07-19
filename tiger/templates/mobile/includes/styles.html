@@ -205,6 +205,7 @@ float: right;
 font: normal 14px/1 sans-serif;
 }
 }
+.arrow{ font-size: 70%;}
 .maplink{
 @include border-box;
 display: block; 
@@ -213,6 +214,38 @@ width: 100%;
 background-position: center 10px;
 background-repeat: no-repeat;
 background-color: rgba(0,0,0,.3);
+}
+.box-wrap{
+display: -webkit-box;
+-webkit-box-orient: horizontal;
+}
+.half, .ready-by select{
+padding: 1em .5em;
+-webkit-box-flex: 1;
+}
+
+.ready-by select{
+    margin: 0 3px;
+}
+select{
+border: 1px;
+}
+.methods{
+    ul{ 
+display: -webkit-box;
+-webkit-box-orient: horizontal;
+        margin: 1em 0; 
+        padding: 0;
+        width: 100%;
+        li { list-style-type: none;
+            -webkit-box-flex: 1;
+        }
+    }
+}
+.half.button{
+display: block;
+padding: 1em .5em;
+margin: 0 5px;
 }
 #contact{
 @include border-box;
@@ -231,10 +264,7 @@ address, h2{
 padding-left: 1em;
 margin-bottom: 0;
 }
-.box-wrap{
-display: -webkit-box;
--webkit-box-orient: horizontal;
-}
+
 .hours{
 text-align: right;
 }
@@ -244,10 +274,7 @@ text-align: left;
 .map-link{
 margin-bottom: 1em;
 }
-.half{
-padding: 1em .5em;
--webkit-box-flex: 1;
-}
+
 .twitter{
 background: url({{MEDIA_URL}}img/twitter_newbird_white.png) center 10px 
 no-repeat;
@@ -392,16 +419,16 @@ width: 100%;
 input[name="notes"], input[name="label"] {
 @include block-input;
 }
-input[type="submit"].ordering{
--webkit-appearance: none;
-border:none;
-
-background: -webkit-gradient(linear, left top, left bottom,
-color-stop(0%,lighten($buttoncolor, 25%)), color-stop(100%,$buttoncolor));
-display: block;
-width: 100%;
-text-align: center;
-text-shadow: 0 1px 0 rgba(255,255,255,.75);
+input[type="submit"].ordering, .primary{
+    -webkit-appearance: none;
+    font-size: 17px;
+    border:none;
+    background: -webkit-gradient(linear, left top, left bottom,
+    color-stop(0%,lighten($buttoncolor, 25%)), color-stop(100%,$buttoncolor));
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255,255,255,.75);
 }
 select{
 width: 100%;

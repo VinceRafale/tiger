@@ -1,0 +1,121 @@
+{% extends base %}
+
+{% block extrahead %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js"></script>
+<style type="text/css">
+form ul {list-style-type:none;}
+form li {margin-left:0;}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Your contact information</h1>
+<p>Fill in the fields below so that we can identify you with your {{ site.name }} order.</p>
+{% if site.ordersettings.send_page_text %}
+{{ site.ordersettings.send_page_text|linebreaks }}
+{% endif %}
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
+<form class="send" method="POST" action=".">
+        {% if form.name.errors %}
+        {{ form.name.errors }}
+        {% endif %}
+        <label>{{ form.name.label }}<br />
+        {{ form.name }}
+        </label>
+        {% if form.phone.errors %}
+        {{ form.phone.errors }}
+        {% endif %}
+        <label>{{ form.phone.label }}<br />
+        {{ form.phone }}
+        </label>
+        {% if form.ready_by.errors %}
+        {{ form.ready_by.errors }}
+        {% endif %}
+        <div>{{ form.ready_by.label }}<br />
+        <span class="today">today</span>
+        {% if form.day.errors %}
+        {{ form.day.errors }}
+        {% endif %}
+        <span {% if form.day.value %}rel="date"{% endif %} style="display:none;" class="future-day">{{ form.day }}<br/></span>
+        at 
+        <div class="box-wrap ready-by">
+        {{ form.ready_by }}
+        </div>
+        <a id="change-date" href="#">(change date)</a>
+        </div>
+        {% if form.method.errors %}
+        {{ form.method.errors }}
+        {% endif %}
+        <div class="methods">
+            <h2>{{ form.method.label }}</h2>
+        {{ form.method }}
+        </div>
+        <div class="delivery-options" style="display:none;">
+            {% if form.street.errors %}
+            {{ form.street.errors }}
+            {% endif %}
+            <label>{{ form.street.label }}<br />
+            {{ form.street }}
+            </label>
+            {% if form.city.errors %}
+            {{ form.city.errors }}
+            {% endif %}
+            <label>{{ form.city.label }}<br />
+            {{ form.city }}
+            </label>
+            {% if form.state.errors %}
+            {{ form.state.errors }}
+            {% endif %}
+            <label>{{ form.state.label }}<br />
+            {{ form.state }}
+            </label>
+            {% if form.zip.errors %}
+            {{ form.zip.errors }}
+            {% endif %}
+            <label>{{ form.zip.label }}<br />
+            {{ form.zip }}
+            </label>
+        </div>
+    {% with site.ordersettings as settings %}
+    <div class="box-wrap">
+    {% if settings.takes_payment %}
+        {% if not settings.require_payment %}
+            <input class="button primary half" id="submit" type="submit" value="Pay with cash" />
+        {% endif %}
+            <input class="button primary half" id="pay" type="submit" name="pay" value="Pay online" />
+    {% else %}
+    <input class="button primary" id="submit" type="submit" value="Send" />
+    {% endif %}
+    </div>
+    {% endwith %}
+</form>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function () {
+    if ($(":radio[value='3']").attr("checked")) {
+        $(".delivery-options").show();
+    }
+    if ($("span.future-day").attr("rel") == "date") {
+        $("span.today,#change-date").hide();
+        $("span.future-day").show();
+    }
+    $(":radio").click(function () {
+        if ($(this).val() == '3') {
+            $(".delivery-options").show();
+        } else {
+            $(".delivery-options").hide();
+        }
+        return false;
+    });
+    $("#change-date").click(function () {
+        $("span.today,#change-date").hide();
+        $("span.future-day").show();
+        return false;
+    });
+});
+</script>
+{% endblock %}

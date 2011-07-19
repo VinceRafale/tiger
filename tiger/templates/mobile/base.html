@@ -60,13 +60,13 @@
             {% block menu %}
             <nav>
             <ul>
-                <li><a id="menu-main" href="{% url menu_home %}">Menu</a></li>
-                <li><a href="#contact" class="contact">Contact</a></li>
+                <li><a id="menu-main" class="button primary" href="{% url menu_home %}">Menu</a></li>
+                <li><a href="#contact" class="contact button primary">Contact</a></li>
         {% block cart %}
             {% if site.enable_orders %}
             <li class="cart">
             {% if cart|length %}
-            <a class="button ordering" href="/menu/#review">Cart ({{ cart|length }}) </a>
+            <a class="button primary ordering" href="/menu/#review">Cart ({{ cart|length }}) </a>
             {% else %}
             <a class="button primary" href="{% url menu_home %}">Order</a>
             {% endif %}
@@ -74,7 +74,7 @@
             {% endif %}
         {% endblock %}
 
-       <li><a class="more-menu" href="#more-menu">More &#9660;</a></li>
+        <li><a class="more-menu button primary" href="#more-menu">More <span class="arrow">&#9660;</span></a></li>
 
             </ul>
             </nav>
