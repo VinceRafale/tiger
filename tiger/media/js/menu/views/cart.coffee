@@ -7,7 +7,7 @@ class CartSummaryView extends Backbone.View
 
     render: =>
         if App.cart.size() > 0
-            @el.html "<a class='button ordering' href='/menu/#review'>Cart (#{App.cart.size()}) </a>"
+            @el.html "<a class='button primary ordering' href='/menu/#review'>Cart (#{App.cart.size()}) </a>"
         else
             @el.html """
             <a class="button primary" href="/menu/#">Order</a>

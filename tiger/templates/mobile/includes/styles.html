@@ -123,11 +123,16 @@ margin: .75rem 0 0 0;
 textarea, input[name="label"]{
 width: 100%;
 }
-input[type="submit"]{
+input[type="submit"], .submit{
 @include button;
 font-size: 17px;
 font-style: bold;
 margin: 1rem 0;
+padding: 1em .5em;
+}
+input.inline{
+width: auto;
+padding: .5em;
 }
 input[type="checkbox"], input[type="radio"]{
 display: inline-block;
@@ -377,6 +382,7 @@ padding: .5rem;
 
 h2.price{ text-align: right;}
 #sectionDetail > p, #sectionDetail .breadcrumb,
+.review,
 h1, #itemDetail, footer{ padding: 0 1rem;}
 #itemDetail h1{ padding: 0; }
 header{
@@ -421,11 +427,11 @@ input[name="notes"], input[name="label"] {
 }
 input[type="submit"].ordering, .primary{
     -webkit-appearance: none;
+    -webkit-box-sizing: border-box;
     font-size: 17px;
     border:none;
     background: -webkit-gradient(linear, left top, left bottom,
     color-stop(0%,lighten($buttoncolor, 25%)), color-stop(100%,$buttoncolor));
-    display: block;
     width: 100%;
     text-align: center;
     text-shadow: 0 1px 0 rgba(255,255,255,.75);
@@ -448,12 +454,18 @@ position: relative;
 }
 table{
     -webkit-box-sizing: padding-box;
-    width: 90%;
-    margin: 0 1em;
+    border: 1px solid $buttoncolor;
 }
 th{
     background: $buttoncolor;
     color: $buttontext;
 }
+th, td{padding: 5px;}
+td.currency{text-align: right;}
+td.quant{text-align: center;}
+tr.subtotal td, tr.total td, tr.taxes td{
+  background: lighten($centercolor, 10%);
+}
+td.remove a{ margin: 0;}
 </style>
 

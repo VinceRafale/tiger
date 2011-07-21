@@ -1,8 +1,8 @@
 <script id="review-order" type="text/html">
-<section>
-<h2>Review your order</h2>
+<div class="review">
+<h1>Review your order</h1>
 
-<table id="line-items">
+<table id="line-items" cellpadding="0" cellspacing=0>
     <tr>
         <th>Item</th>
         <th>Price</th>
@@ -15,7 +15,7 @@
         <td class="item"><%= coupon %></td>
         <td></td>
         <td></td>
-        <td>-$<%= discount %></td>
+        <td class="currency">-$<%= discount %></td>
         <td class="remove"><a id="clear-coupon" href="{% url clear_coupon %}">[x]</a></td>
     </tr>
     <tr class="subtotal">
@@ -25,21 +25,21 @@
         <td class="item">Total</td>
         <td></td>
         <td></td>
-        <td>$<%= subtotal %></td>
+        <td class="currency">$<%= subtotal %></td>
         <td class="remove"></td>
     </tr>
     <tr class="taxes">
         <td class="item">Tax ({{ location.tax_rate }}%)</td>
         <td></td>
         <td></td>
-        <td>$<%= taxes %></td>
+        <td class="currency">$<%= taxes %></td>
         <td class="remove"></td>
     </tr>
     <tr class="total">
         <td class="item">Total w/ tax</td>
         <td></td>
         <td></td>
-        <td>$<%= total_plus_tax %></td>
+        <td class="currency">$<%= total_plus_tax %></td>
         <td class="remove"></td>
     </tr>
 </table>
@@ -47,10 +47,11 @@
 <form method="GET" class="coupon" action="{% url add_coupon %}">
 <label for="id_coupon_code">Coupon code:</label>
 <input name="coupon_code" id="id_coupon_code" type="text" />
-<input type="submit" class="btn primary" value="Add" />
+<input type="submit" class="inline primary" value="Add" />
 </form>
 <% } %>
-<a class="btn primary" href="{% url send_order %}">Continue</a>
+<a class="btn primary submit" href="{% url send_order %}">Continue</a>
+</div>
 </script>
 
 <script id="line-item-template" type="text/html">
@@ -73,10 +74,11 @@
     </ul>
 <% } %>
 </td>
-<td>$<%= price.get("price") %></td>
-<td><%= quantity %></td>
-<td class="total"><%= total %></td>
-<td class="remove"><a href="{% url remove_item %}?id=<%= id %>">[x]</a></td>
+<td class="currency">$<%= price.get("price") %></td>
+<td class="quant"><%= quantity %></td>
+<td class="total currency">$<%= total %></td>
+<td class="remove"><a href="{% url remove_item %}?id=<%= id %>"
+        class="btn">x</a></td>
 </section>
 </script>
 

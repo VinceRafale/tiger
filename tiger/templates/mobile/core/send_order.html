@@ -96,14 +96,15 @@ form li {margin-left:0;}
 {% block js %}
 <script type="text/javascript">
 $(function () {
-    if ($(":radio[value='3']").attr("checked")) {
+    if ($("input[value='3']").attr("checked")) {
         $(".delivery-options").show();
     }
     if ($("span.future-day").attr("rel") == "date") {
         $("span.today,#change-date").hide();
         $("span.future-day").show();
     }
-    $(":radio").click(function () {
+    $("input[type=radio]").bind('click', function (e) {
+        e.preventDefault();
         if ($(this).val() == '3') {
             $(".delivery-options").show();
         } else {
@@ -111,7 +112,8 @@ $(function () {
         }
         return false;
     });
-    $("#change-date").click(function () {
+    $("#change-date").bind('click',function (e) {
+        e.preventDefault();
         $("span.today,#change-date").hide();
         $("span.future-day").show();
         return false;
