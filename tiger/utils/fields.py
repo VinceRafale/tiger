@@ -20,8 +20,8 @@ class HoursAndMinutesField(forms.MultiValueField):
     
     def __init__(self, *args, **kwargs):
         fields = (
-            forms.CharField(),
-            forms.CharField(),
+            forms.IntegerField(),
+            forms.IntegerField(),
         )
         super(HoursAndMinutesField, self).__init__(fields, *args, **kwargs)
 
