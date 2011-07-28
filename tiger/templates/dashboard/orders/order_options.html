@@ -14,7 +14,7 @@ p .olControlDrawFeaturePolygonItemInactive {
 background-position:-26px 0;
 }
 #id_delivery_minimum {width:45px;}
-#id_eod_buffer, #id_lead_time, #id_delivery_lead_time {width:25px;}
+.hours-and-minutes {width:22px; text-align:right;}
 </style>
 {% endblock %}
 
@@ -39,12 +39,12 @@ Online ordering options for {{ form.instance }}
 {{ form.dine_in }} {{ form.dine_in.label }}
 {{ form.takeout }} {{ form.takeout.label }}
 {{ form.delivery }} {{ form.delivery.label }}
-<label>Dine-in/takeoout orders must be placed {{ form.lead_time }} minutes in advance {% if form.lead_time.errors %}{{ form.lead_time.errors }}{% endif %}</label> 
-<label for='eod_buffer'>Stop taking orders {{ form.eod_buffer }} minutes prior to closing {% if form.eod_buffer.errors %} {{ form.eod_buffer.errors }} {% endif %}</label>
+<label>Dine-in/takeoout orders must be placed {{ form.lead_time }} in advance {% if form.lead_time.errors %}{{ form.lead_time.errors }}{% endif %}</label> 
+<label for='eod_buffer'>Stop taking orders {{ form.eod_buffer }} prior to closing {% if form.eod_buffer.errors %} {{ form.eod_buffer.errors }} {% endif %}</label>
 <div id="delivery-options">
 <h4>Delivery options</h4>
 <label id="delivery-minimum">{{ form.delivery_minimum.label }} {{ form.delivery_minimum }} {% if form.delivery_minimum.errors %} {{ form.delivery_minimum.errors }} {% endif %}</label>
-<label>Delivery orders must be placed {{ form.delivery_lead_time }} minutes in advance {% if form.delivery_lead_time.errors %}{{ form.delivery_lead_time.errors }}{% endif %}</label> 
+<label>Delivery orders must be placed {{ form.delivery_lead_time }} in advance {% if form.delivery_lead_time.errors %}{{ form.delivery_lead_time.errors }}{% endif %}</label> 
 </div>
 <h3>How do you want to receive orders?</h3>
 {% if form.receive_via.errors %}

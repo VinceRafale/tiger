@@ -16,6 +16,7 @@ from olwidget.widgets import EditableMap
 from tiger.accounts.models import (Account, Subscriber, Site, TimeSlot, 
     SalesRep, FaxList, Schedule, Location)
 from tiger.utils.forms import BetterModelForm
+from tiger.utils.fields import HoursAndMinutesField
 from tiger.utils.geocode import geocode, GeocodeError
 from tiger.sales.models import CreditCard
 
@@ -365,6 +366,9 @@ class OrderSettingsForm(BetterModelForm):
         widget=forms.RadioSelect, choices=Location.RECEIPT_CHOICES, coerce=int)
     order_email = forms.EmailField(label='E-mail address for receiving orders', required=False)
     order_fax = USPhoneNumberField(label='Fax number for receiving orders', required=False)
+    lead_time = HoursAndMinutesField()
+    delivery_lead_time = HoursAndMinutesField()
+    eod_buffer = HoursAndMinutesField()
 
     class Meta:
         model = Location
