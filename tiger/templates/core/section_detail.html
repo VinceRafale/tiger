@@ -30,7 +30,7 @@
             {% endif %}
         </div>
         <div>
-            {% if location.enable_orders and item.available_online %}
+            {% if location.enable_orders and item.available_online and not section.no_online_orders %}
             <a class="button ordering" href="{% url order_item section.id section.slug item.id item.slug %}">add to order</a>
             {% endif %}
             <ul> 

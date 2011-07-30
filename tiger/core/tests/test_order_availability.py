@@ -201,6 +201,31 @@ def test_item_schedule_closed():
     item = Item.objects.all()[0]
     assert item.is_available(Location.objects.all()[0])
 
+def disable_section():
+    item = Item.objects.all()[0]
+    item.archived = False
+    location = Location.objects.all()[0]
+    location.enable_orders = True
+    location.save()
+    stockinfo = item.locationstockinfo_set.get(location=location)
+    stockinfo.out_of_stock = False
+    stockinfo.save()
+    section = item.section
+    section.no_online_orders = True
+    section.save()
+
+def enable_section():
+    item = Item.objects.all()[0]
+    section = item.section
+    section.no_online_orders = False
+    section.save()
+
+@with_setup(disable_section, enable_section)
+@raises(SectionNotAvailable)
+def test_item_section_disabled():
+    item = Item.objects.all()[0]
+    assert item.is_available(Location.objects.all()[0])
+
 
 @raises(ItemNotAvailable)
 def test_item_archived():
@@ -301,6 +326,16 @@ class ItemDisplayTestCase(TestCase):
         self.stockinfo.save()
         response = self.client.get(self.item.get_absolute_url())
         self.assertContains(response, ITEM_NOT_AVAILABLE % self.item.name)
+
+    def test_section_disabled(self):
+        section = self.item.section
+        section.no_online_orders = True
+        section.save()
+        location, = Location.objects.all()
+        location.enable_orders = True
+        location.save()
+        response = self.client.get(self.item.get_absolute_url())
+        self.assertContains(response, SECTION_DISABLED % section.name)
 
 
 def setup_order_validation():
