@@ -53,6 +53,7 @@ class Section(models.Model):
     slug = models.SlugField(editable=False)
     ordering = models.PositiveIntegerField(editable=False, default=1)
     schedule = models.ForeignKey('accounts.Schedule', null=True, blank=True)
+    no_online_orders = models.BooleanField('Disable online ordering for all items in this section', default=False)
 
     class Meta:
         verbose_name = 'menu section'
@@ -78,6 +79,8 @@ class Section(models.Model):
         return get_price_list(self)
 
     def is_available(self, location):
+        if self.no_online_orders and location.enable_orders: 
+            raise SectionNotAvailable(SECTION_DISABLED % self.name, self.get_absolute_url())
         if self.schedule is None:
             return True
         if self.schedule.is_open(location) != TIME_OPEN:

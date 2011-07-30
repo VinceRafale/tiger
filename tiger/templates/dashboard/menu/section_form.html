@@ -16,6 +16,9 @@
     <label>{{ form.description.label }} {% if form.description.errors %} {{ form.description.errors }} {% endif %}<br />
     {{ form.description }}
     </label>
+    <label>{{ form.no_online_orders }}
+    {{ form.no_online_orders.label }}
+    </label>
     <div class="clear"></div>
     <div class="save-row clearfix">
     <a class="cancel" href="{% url dashboard_menu %}">Cancel</a>
