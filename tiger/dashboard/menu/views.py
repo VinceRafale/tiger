@@ -251,7 +251,7 @@ def flag_item(request):
     lookup, val = request.POST.items()[0]
     attr, pk = lookup.split('-')
     item = Item.objects.get(id=pk)
-    val = True if val == 'true' else False
+    val = True if val == 'checked' else False
     if attr == 'archived':
         item.archived = val
         item.save()
