@@ -93,7 +93,7 @@ class Section(models.Model):
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "items": [i.for_json() for i in self.item_set.all()],
+            "items": [i.for_json() for i in self.item_set.active()],
             "ordering": self.ordering,
             "schedule": SECTION_NOT_AVAILABLE % (
                 self.name, self.schedule.display) if self.schedule else ''
