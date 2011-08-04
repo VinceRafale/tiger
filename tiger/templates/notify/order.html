@@ -75,28 +75,7 @@
         {% for id, item in cart %}
             <tr>
                 <td class="item">
-                {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}
-                {% if item.upgrades or item.notes or item.sides %}
-                    <ul>
-                    {% for upgrade in item.upgrades %}
-                        <li>{{ upgrade.name }}: ${{ upgrade.price|floatformat:"-2" }} per item</li>
-                    {% endfor %}
-                    {% for side in item.sides %}
-                        <li>
-                        {{ side.name }}
-                        {% if side.price != '0.00' %}
-                        (add ${{ side.price }})
-                        {% endif %}
-                        </li>
-                    {% endfor %}
-                    {% if item.notes %}
-                        <li>{{ item.notes }}</li>
-                    {% endif %}
-                    </ul>
-                {% endif %}
-                {% if item.label %}
-                <p><strong>Label for:</strong> {{ item.label }}</p>
-                {% endif %}
+                {% include 'core/includes/item_details.html' %}
                 </td>
                 <td>${{ item.variant.price|floatformat:"-2" }}</td>
                 <td>{{ item.quantity }}</td>

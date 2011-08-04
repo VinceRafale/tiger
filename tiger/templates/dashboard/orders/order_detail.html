@@ -34,29 +34,7 @@ FIXME
         {% for id, item in cart %}
             <tr class="{% cycle '' 'shaded' %}">
                 <td class="item">
-                {{ item.name }}{% if item.variant.description != "default" %} ({{ item.variant.description }}){% endif %}
-            {% if item.upgrades or item.notes or item.sides %}
-                    <ul>
-                    {% for upgrade in item.upgrades %}
-                        <li>{{ upgrade.name }}: ${{ upgrade.price|floatformat:"-2" }} per item</li>
-                    {% endfor %}
-                    {% for side in item.sides %}
-                        <li>
-                        {{ side.name }}
-                        {% if side.price != '0.00' %}
-                        (add ${{ side.price }})
-                        {% endif %}
-                        </li>
-                    {% endfor %}
-                    {% if item.notes %}
-                        <li>{{ item.notes }}</li>
-                    {% endif %}
-                    </ul>
-                {% endif %}
-                {% if item.label %}
-                <br />
-                <strong>Label for:</strong> {{ item.label }}
-                {% endif %}
+                {% include 'core/includes/item_details.html' %}
                 </td>
                 <td class="total">${{ item.variant.price|floatformat:"-2" }}</td>
                 <td class="qty">{{ item.quantity }}</td>
