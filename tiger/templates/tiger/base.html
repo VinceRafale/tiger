@@ -1,35 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--[if lt IE 7]> <html class="ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
 <head>
-    <meta charset="utf-8" />
-    <title>{{ site.name }} {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/reset.css" />
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/text.css" />
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/960.css" />
-    <link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" />
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/dashboard.css" />
-    <!--[if IE]>
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/ie.css" type="text/css" media="screen" charset="utf-8"></link>
-    <![endif]--> 
-    <style type="text/css">
-        #content {margin-top:50px;}
-        #login {margin-top:60px; background-color:white; border:1px solid grey; padding:20px;}
-    </style>
+	<meta charset="utf-8">
+	<title>Takeout Tiger</title>
+	<!--[if lt IE 9]>
+		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" href="{{ MEDIA_URL }}css/home.css">
+	<script type="text/javascript" src="http://use.typekit.com/ghf7rvg.js"></script>
+	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 </head>
 <body>
-    <div id="content" class="container_12">
-        <div class="grid_4 alpha">
-            <img src="{{ MEDIA_URL }}img/tiger.png" />
-        </div>
-        <div class="grid_5 omega">
-            <div id="login">
-                {% block content %}
+	<header>
+		<nav>
+			<div class="wrap">
+				<div id="tiger"></div>
+				<ul>
+					<li><a href="#">Contact Us</a></li>
+					<li><a href="#">Blog</a></li>
+				</ul>
+			</div>	
+		</nav>	
+	</header>
+	<section id="intro">
+		<div class="wrap">
+			<h1>TAKEOUT TIGER</h1>
+			<h2>Your all-in-one custom restaurant website builder &amp; turnkey marketing platform.</h2>
+			<ul>
+				<li>Custom Restaurant Website</li>
+				<li>Online Ordering</li>
+				<li>Social Media &amp; Email Integration</li>
+				<li>Online Menu Tools</li>
+				<li>Instant Mobile Access</li>
+				<li>Map Integration</li>
+				<li>PDF Menu Generation</li>
+				<li>All Web-Based - No Downloads</li>
+			</ul>
+			<a href="#websites" class="learn-more">Learn More</a>
+		</div>
+		<aside id="logos">
+			<div class="wrap">
+				<img src="img/img_logos.png" alt="Logos" width="939" height="69">
+			</div>
+		</aside>
+	</section>
+	<section id="websites">
+		<div class="wrap">
+			<img src="img/img_websites.png" alt="Websites" width="960" height="545">
+			<aside>
+				<h1>Your website. Your way.</h1>
+				<ul>
+					<li>We give you a subdomain, but you can use your own domain too!</li>
+					<li>SSL is provided on your subdomain gratis!</li>
+					<li>Choose one of our themes and make it your own with our rich customization tools. Or contact us for tailor-made designs!</li>
+				</ul>
+			</aside>
+		</div>	
+	</section>
+	<section id="social">
+		<div class="wrap">
+			<figure></figure>
+			<aside>
+				<h1>Type Once. Publish Everywhere.</h1>
+				<ul>
+					<li>Integrated Blog</li>
+					<li>Twitter/Facebook Integration for blog &amp; menus</li>
+					<li>MailChimp Integration for Mailing Lists</li>
+					<li>Automated PDF Menu Generation</li>
+				</ul>
+				<p>
+                At Takeout Tiger, we believe you shouldn't have to maintain a dozen
+                different copies of your menu.  We make it <strong>dead simple</strong> to
+                update your menu on the web and help you get that information into as many
+                places as possible.
+
+                Need to keep your Twitter followers and Facebook fans current on menu
+                changes?  Connect your accounts to Takeout Tiger and <strong>automatically
+                post new menu items</strong> to your wall and stream.
+
+                Tired of scanning your menu and uploading it to your site?  Use Takeout
+                Tiger to automatically generate new search-engine-friendly PDFs every time
+                you change a menu item.  They're <strong>print quality</strong>, too, so
+                you can print 'em out and stuff them in with takeout orders!
+                </p>
+			</aside>
+		</div>
+	</section>
+	<section id="orders">
+		<div class="wrap">
+			<aside>
+				<h1>Now, take more orders online.</h1>
+				<p>
+                If your Takeout Tiger menu didn't already simplify your life
+                enough, how's this: online ordering, integrated directly into
+                your website.  No links to third-party sites &amp; the Takeout
+                Tiger online ordering experience is truly seamless for the
+                customer.  You can be up and running with online orders in as
+                little as five minutes, and we've
+                got plenty of options for fine-tuning if you have more robust
+                needs. 
+                </p>
+				<ul>
+					<li>Effortless Online Order <b>AVAILABLE</b></li>
+					<li>Orders Delivered by Fax or Email <b>AVAILABLE</b></li>
+					<li>One-Click Disabling/Enabling <b>AVAILABLE</b></li>
+				</ul>
+			</aside>
+			<figure>
+				<img src="img/img_menu.png" alt="menu" width="533" height="661">
+			</figure>
+		</div>
+	</section>
+	<section id="mobile">
+		<div class="wrap">
+			<figure></figure>
+			<ul>
+				<li>Take the Mobile Market by Storm</li>
+				<li>Stay on top with a beautiful, mobile-optimized site</li>
+				<li>Let customers order with their phone on the go</li>
+				<li>Reward loyalty with mobile offers using our SMS marketing tools</li>
+			</ul>	
+			<aside>
+				<p>Are you prepared for the shift from desktops to phones that double as PCs?  We are. Takeout Tiger will automatically detect smartphones and load a special web application just for your site, with all the brand colors from your desktop design.  Our mobile web app provides one of the fastest mobile browsing experiences you can imagine and gives the user nice fat buttons, making it a breeze to place an order with your thumb.</p>
+				<p>Of course, not every customer has an iPhone or an Android.  That's why we built our powerful SMS marketing system.  You'll get a dedicated SMS number for your restaurant and a robust messaging dashboard in your Takeout Tiger site.  What could be better that texting a coupon to your subscribers just when they are deciding where to head for lunch?</p>
+			</aside>
+		</div>
+	</section>
+	<section id="get-started">
+		<div class="wrap">
+			<aside>
+				<h2>Ready to take your restaurant marketing to the masses?</h2>
+				<h1><b>Get started</b> with takeout tiger today.</h1>
+                {% block main %}
+				<a href="/signup/#get-started" class="sign-up">Sign Up</a>
                 {% endblock %}
-            </div>
-        </div>
-    </div>
+				<p>Would you like one of our reps to contact you? Just <a href="#">click here</a>.</p>
+			</aside>
+		</div>
+	</section>
+	<footer>
+		<div class="wrap">
+			<ul>
+				<li><a href="#">Sign Up Today</a></li>
+				<li><a href="#">Contact Us</a></li>
+				<li><a href="#">Follow Us On Twitter</a></li>
+				<li>2011 Takeout Tiger. All rights reserved</li>
+			</ul>			
+		</div>
+	</footer>
 </body>
 </html>
-
-
-
