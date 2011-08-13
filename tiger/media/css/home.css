@@ -7,11 +7,47 @@ body, select, input, textarea {color: #333;}
 ::selection {background: #6c8fa0; color: #fff; text-shadow: none;} 
 a:link {-webkit-tap-highlight-color: #fcd700;} 
 
+@font-face {
+    font-family: 'museo-slab';
+    src: url('../fonts/museo_slab_300-webfont.eot');
+    src: url('../fonts/museo_slab_300-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/museo_slab_300-webfont.woff') format('woff'),
+         url('../fonts/museo_slab_300-webfont.ttf') format('truetype'),
+         url('../fonts/museo_slab_300-webfont.svg#MuseoSlab300') format('svg');
+    font-weight: 300;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'museo-slab';
+    src: url('../fonts/Museo_Slab_500-webfont.eot');
+    src: url('../fonts/Museo_Slab_500-webfont.eot?iefix') format('eot'),
+         url('../fonts/Museo_Slab_500-webfont.woff') format('woff'),
+         url('../fonts/Museo_Slab_500-webfont.ttf') format('truetype'),
+         url('../fonts/Museo_Slab_500-webfont.svg#webfontyumMOUTD') format('svg');
+    font-weight: 500;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'museo-slab';
+    src: url('../fonts/museo_slab_1000-webfont.eot');
+    src: url('../fonts/museo_slab_1000-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/museo_slab_1000-webfont.woff') format('woff'),
+         url('../fonts/museo_slab_1000-webfont.ttf') format('truetype'),
+         url('../fonts/museo_slab_1000-webfont.svg#MuseoSlab1000') format('svg');
+    font-weight: 900;
+    font-style: normal;
+
+}
+
 
 /* Typekit
 --------------------------------------------- */
 #intro h1, #intro h2, #websites h1, #websites li, #social h1, #social li, #orders li, #mobile li, #get-started h1, #get-started h2, #get-started p, form label { font-family: museo-slab; }
-#intro li, #orders li b { font-family: myriad-pro; }
+#intro li, #orders li b { font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif; }
 
 
 /* Main
@@ -40,8 +76,8 @@ header li a { font: italic 10px/1 Georgia, serif; color: #7c888c; text-decoratio
 }
 
 #intro h1, #intro h2, #intro ul { margin-left: 410px; width: 460px; }
-#intro h1 { font-size: 50px; color: #e4e2be; line-height: 1; font-weight: 1000; }
-#intro h2 { font-size: 22px; color: #fafafa; line-height: 1.455; font-weight: 100; }
+#intro h1 { font-size: 50px; color: #e4e2be; line-height: 1; font-weight: 900; }
+#intro h2 { font-size: 22px; color: #fafafa; line-height: 1.455; font-weight: 300; }
 #intro ul { color: #fafafa; text-transform: uppercase; font-size: 0; margin-top: 32px; }
 #intro li { font-size: 12px; display: inline-block; width: 210px; height: 12px; margin-bottom: 18px; padding-left: 18px; position: relative; }
 #intro li:before { display: block; width: 14px; position: absolute; left: 0; top: 2px; height: 12px; content: ""; background: url(../img/sprites.png) 0 -525px no-repeat; }
@@ -68,9 +104,9 @@ header li a { font: italic 10px/1 Georgia, serif; color: #7c888c; text-decoratio
 }
  
 #websites aside { background: #071f26; width: 340px; position: absolute; left: 0; bottom: 0; z-index: 15; padding-top: 30px; }
-#websites h1 { background: #e4e2be; font-size: 18px; color: #11282f; padding: 0 0 0 28px; height: 28px; line-height: 28px; text-transform: uppercase; font-weight: 1000; }
+#websites h1 { background: #e4e2be; font-size: 18px; color: #11282f; padding: 0 0 0 28px; height: 28px; line-height: 28px; text-transform: uppercase; font-weight: 900; }
 #websites ul { margin: 20px 0 0 28px; }
-#websites li { font-size: 14px; font-weight: 100; color: rgba(255,255,255,0.9); position: relative; padding-left: 18px; margin-bottom: 18px; }
+#websites li { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.9); position: relative; padding-left: 18px; margin-bottom: 18px; padding-right:10px;}
 #websites li:before { display: block; width: 14px; position: absolute; left: 0; top: 2px; height: 12px; content: ""; background: url(../img/sprites.png) 0 -537px no-repeat; }
 
 
@@ -81,11 +117,11 @@ header li a { font: italic 10px/1 Georgia, serif; color: #7c888c; text-decoratio
 #social:before { width: 100%; height: 6px; position: absolute; top: -6px; display: block; content: ""; background: url(../img/bg_social-header.png) 0 0 repeat-x; }
 #social:after { width: 100%; height: 6px; position: absolute; bottom: -6px; display: block; content: ""; background: url(../img/bg_social-footer.png) 0 0 repeat-x; }
 #social aside { width: 360px; position: absolute; right: 0; top: 95px; }
-#social h1 { font-size: 18px; font-weight: 1000;  text-transform: uppercase; }
+#social h1 { font-size: 18px; font-weight: 900;  text-transform: uppercase; }
 #social li { font-size: 14px; }
-#social p { font: italic 14px/1.833 serif; }
+#social p { font: 14px/1.833 serif; }
 #social ul { margin: 30px 0 25px; }
-#social li { font-size: 14px; font-weight: 100; position: relative; padding-left: 18px; margin-bottom: 18px; }
+#social li { font-size: 14px; font-weight: 300; position: relative; padding-left: 18px; margin-bottom: 18px; }
 #social li:before { display: block; width: 14px; position: absolute; left: 0; top: 2px; height: 12px; content: ""; background: url(../img/sprites.png) 0 -561px no-repeat; }
 #social figure { width: 511px; height: 266px; position: absolute; top: 140px; left: 0; background: url(../img/sprites.png) 0 -75px no-repeat; }
 
@@ -119,7 +155,7 @@ header li a { font: italic 10px/1 Georgia, serif; color: #7c888c; text-decoratio
 
 #orders aside { width: 320px; position: absolute; left: 80px; top: 130px; z-index: 15; }
 #orders h1 { height: 135px; text-indent: -999em; background: url(../img/sprites.png) 0 -375px no-repeat; margin-bottom: 30px; }
-#orders p { font: italic 14px/1.833 serif; margin-bottom: 30px; }
+#orders p { font: 14px/1.833 serif; margin-bottom: 30px; }
 #orders li { font-size: 14px; display: block; height: 20px; line-height: 20px; }
 #orders li b { float: right; font-size: 12px; font-weight: normal; }
 #orders figure { position: absolute; top: 55px; right: 0; z-index: 15; width: 533px; height: 661px; }
@@ -138,7 +174,7 @@ header li a { font: italic 10px/1 Georgia, serif; color: #7c888c; text-decoratio
 #mobile li:first-child::before { display: none; }
 #mobile li { font-size: 14px; position: relative; padding-left: 18px; margin-bottom: 20px; }
 #mobile li:before { display: block; width: 14px; position: absolute; left: 0; top: 2px; height: 12px; content: ""; background: url(../img/sprites.png) 0 -549px no-repeat; }
-#mobile p { font: italic 14px/1.833 serif; color: #11282f; margin-bottom: 20px; }
+#mobile p { font: 14px/1.833 serif; color: #11282f; margin-bottom: 20px; }
 
 
 /* Get Started
@@ -155,7 +191,7 @@ header li a { font: italic 10px/1 Georgia, serif; color: #7c888c; text-decoratio
 }
 
 #get-started aside { position: absolute; top: 125px; left: 90px; width: 675px; }
-#get-started h1 { font-size: 50px; line-height: 1; color: #e4e2be; font-weight: 1000; text-transform: uppercase; margin-bottom: 30px; }
+#get-started h1 { font-size: 50px; line-height: 1; color: #e4e2be; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; }
 #get-started h2 { font-size: 22px; color: rgb(253,253,253); color: rgba(255,255,255,0.9); font-weight: normal; }
 #get-started h1 b { color: #f68f1e; }
 #get-started p { font-size: 14px; display: inline-block; color: #e4e2be; line-height: 43px; height: 43px; }

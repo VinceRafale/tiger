@@ -9,7 +9,7 @@ handler404 = 'tiger.utils.views.tiger404'
 handler500 = 'tiger.utils.views.tiger500'
 
 urlpatterns = patterns('',
-    url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'tiger/base.html'}, name='home'),
+    url(r'^$', 'django.views.generic.simple.direct_to_template', {'template': 'tiger/index.html'}, name='home'),
     url(r'^robots.txt$', 'django.views.generic.simple.direct_to_template', {'template': 'tiger/robots.txt'}),
     url(r'^blog/', include('tiger.glass.urls')),
 )
