@@ -113,7 +113,7 @@ class SmsSignupBase(SmsView):
         context = super(SmsSignupBase, self).get_context_data(**kwargs)
         area_code = self.request.GET.get('area_code') or self.get_area_code()
         try:
-            response = self.account().request('/2010-04-01/Accounts/%s/AvailablePhoneNumbers/us/Local.json' % settings.TWILIO_ACCOUNT_SID, 'GET', dict(AreaCode=area_code))
+            response = self.account().request('/2010-04-01/Accounts/%s/AvailablePhoneNumbers/US/Local.json' % settings.TWILIO_ACCOUNT_SID, 'GET', dict(AreaCode=area_code))
         except:
             available_numbers = []
         else:
