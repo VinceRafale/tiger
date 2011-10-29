@@ -23,7 +23,9 @@ class CampaignForm(BetterModelForm):
     def __init__(self, data=None, site=None, *args, **kwargs):
         super(CampaignForm, self).__init__(data, *args, **kwargs)
         if len(site.sms.keywords) > 1:
-            self.fields['keyword'] = forms.ChoiceField(label='Subscriber list', choices=[(l, l) for l in site.sms.keywords])
+            choices = [(l, l) for l in site.sms.keywords]
+            choices.append(('', 'All of your lists'))
+            self.fields['keyword'] = forms.ChoiceField(label='Subscriber list', choices=choices)
         self.site = site
 
     def clean(self):

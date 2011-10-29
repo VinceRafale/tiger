@@ -186,8 +186,6 @@ class IndieCustomerTestCase(TestCase):
         self.site.managed = False
         self.site.save()
         self.client = Client(HTTP_HOST='foo.takeouttiger.com')
-        from django.conf import settings
-        settings.DEBUG = True
 
     def tearDown(self):
         Invoice.objects.all().delete()

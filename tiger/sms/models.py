@@ -165,7 +165,9 @@ class Campaign(models.Model):
     completed = models.BooleanField(default=False, editable=False)
 
     def set_subscribers(self):
-        subscribers = self.settings.smssubscriber_set.active().filter(tag__iexact=self.keyword)
+        subscribers = self.settings.smssubscriber_set.active()
+        if self.keyword:
+            subscribers = subscribers.filter(tag__iexact=self.keyword)
         if self.filter_on and self.filter_value:
             subscribers = subscribers.filter(**{self.filter_on: self.filter_value})
         if self.starred is not None:

@@ -14,6 +14,7 @@ class CouponFeaturesTestCase(TestCase):
         'tiger.tiger_settings': (
             'MIDDLEWARE_CLASSES',
             'INSTALLED_APPS',
+            'TEMPLATE_CONTEXT_PROCESSORS',
         )
     }
 

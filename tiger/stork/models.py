@@ -7,10 +7,6 @@ from imagekit.models import ImageModel
 
 from tiger.stork.font_choices import WebFonts
 
-from cumulus.storage import CloudFilesStorage
-
-cloudfiles_storage = CloudFilesStorage()
-
 
 class Theme(ImageModel):
     name = models.CharField(max_length=100)

@@ -201,7 +201,11 @@ def create_campaign(request):
             if tag is not None:
                 campaign.keyword = tag
             else:
-                campaign.keyword = request.site.sms.keywords[0]
+                keywords = request.site.sms.keywords
+                if len(keywords) == 1:
+                    campaign.keyword = request.site.sms.keywords[0]
+                else:
+                    campaign.keyword = ''
             campaign.save()
             campaign.set_subscribers()
             campaign.queue()

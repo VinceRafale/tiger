@@ -1,6 +1,5 @@
 from django.conf import settings
-from django.core.cache import cache
-from django.http import HttpResponseNotFound, HttpResponsePermanentRedirect, HttpResponseRedirect, get_host
+from django.http import HttpResponseRedirect
 from django.utils.cache import patch_vary_headers
 
 from tiger.utils.site import RequestSite
