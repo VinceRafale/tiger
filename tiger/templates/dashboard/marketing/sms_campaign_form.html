@@ -10,6 +10,9 @@ When choosing to filter by zip code or city, please bear in mind that Takeout Ti
 
 {% block content %}
 
+{% if form.non_field_errors %}
+{{ form.non_field_errors }}
+{% endif %}
 <form class="sms-form" method="POST" action=".">
     <label>{{ form.title.label }} {% if form.title.errors %} {{ form.title.errors }} {% endif %}<br />
     {{ form.title }}
