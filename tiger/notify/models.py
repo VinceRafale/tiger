@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.core.cache import cache
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
@@ -116,7 +117,7 @@ class ReleaseManager(models.Manager):
     use_for_related_fields = True
 
     def visible(self):
-        return self.filter(visible=True)
+        return self.filter(Q(visible=True) & (Q(publish_time__isnull=True) | Q(publish_time__lte=datetime.now())))
 
 
 class Release(models.Model):
@@ -127,6 +128,7 @@ class Release(models.Model):
     body_html = models.TextField(blank=True, editable=False)
     pdf = models.ForeignKey(PdfMenu, verbose_name='Select one of your PDF menus', null=True, blank=True)
     time_sent = models.DateTimeField(editable=False)
+    publish_time = models.DateTimeField(null=True)
     fax_transaction = models.CharField(null=True, blank=True, max_length=100, editable=False)
     twitter = models.CharField(max_length=200, null=True, editable=False)
     facebook = models.CharField(max_length=200, null=True, editable=False)
