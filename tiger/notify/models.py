@@ -1,21 +1,15 @@
-import urllib
 from datetime import datetime
 
-from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
 from django.core.cache import cache
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.utils import simplejson as json
 
 import facebook
 from greatape import MailChimp
 from markdown import markdown
-import oauth2 as oauth
 
 from tiger.content.models import PdfMenu
 from tiger.notify.fax import FaxMachine
@@ -161,6 +155,31 @@ class Release(models.Model):
 
     def get_body_text(self):
         return render_to_string('notify/release_mail.txt', {'release': self})
+
+    def send_mailchimp(self):
+        site = self.site
+        social = site.social
+        if social.mailchimp_send_blast != Social.CAMPAIGN_NO_CREATE:
+            mailchimp = MailChimp(social.mailchimp_api_key)
+            campaign_id = mailchimp.campaignCreate(
+                type='regular',
+                options={
+                    'list_id': social.mailchimp_list_id,
+                    'subject': self.title,
+                    'from_email': social.mailchimp_from_email,
+                    'from_name': site.name,
+                    'to_name': '%s subscribers' % site.name,
+                },
+                content={
+                    'html': self.get_body_html(),
+                    'text': self.get_body_text()
+            })
+            if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
+                mailchimp.campaignSendNow(cid=campaign_id)
+            data_center = social.mailchimp_api_key.split('-')[1]
+            Release.objects.filter(id=self.id).update(
+                mailchimp = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
+            )
                 
     def send_fax(self, fax_list):
         site = self.site
@@ -196,150 +215,6 @@ def new_site_setup(sender, instance, created, **kwargs):
         Site = models.get_model('accounts', 'site')
         if isinstance(instance, Site):
             Social.objects.create(site=instance)
-
-
-class ApiCall(models.Model):
-    SERVICE_FACEBOOK = 'facebook'
-    SERVICE_MAILCHIMP = 'mailchimp'
-    SERVICE_TWITTER = 'twitter'
-    SERVICE_CHOICES = (
-        (SERVICE_FACEBOOK, 'Facebook'),
-        (SERVICE_MAILCHIMP, 'MailChimp'),
-        (SERVICE_TWITTER, 'Twitter'),
-    )
-    STATUS_PENDING = 1
-    STATUS_SUCCESS = 2
-    STATUS_ERROR = 3
-    STATUS_CHOICES = (
-        (STATUS_PENDING, 'Pending'),
-        (STATUS_SUCCESS, 'Success'),
-        (STATUS_ERROR, 'Error'),
-    )
-    release = models.ForeignKey(Release, null=True)
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
-    social = models.ForeignKey(Social)
-    service = models.CharField(choices=SERVICE_CHOICES, max_length=20)
-    queued_at = models.DateTimeField(editable=False, default=datetime.now)
-    finished_at = models.DateTimeField(null=True)
-    url = models.URLField(max_length=255, null=True)
-    msg = models.CharField(max_length=255, null=True)
-    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PENDING)
-    content = models.CharField(max_length=255)
-
-    def save(self, *args, **kwargs):
-        new = False
-        if not self.id:
-            new = True
-        super(ApiCall, self).save(*args, **kwargs)
-        if new:
-            from tiger.notify.tasks import ApiCallTask
-            ApiCallTask.delay(self.id)
-
-    def set_status(self, status):
-        self.status = status
-        if status != ApiCall.STATUS_PENDING:
-            self.finished_at = datetime.now()
-
-    def push_to_service(self):
-        getattr(self, 'push_to_%s' % self.service)()
-
-    def get_client(self):
-        return getattr(self, 'get_%s_client' % self.service)()
-
-    def get_twitter_client(self):
-        access_token = oauth.Token(self.social.twitter_token, self.social.twitter_secret) 
-        consumer = oauth.Consumer(settings.TWITTER_CONSUMER_KEY, settings.TWITTER_CONSUMER_SECRET)
-        return oauth.Client(consumer, access_token)
-
-    def get_facebook_client(self):
-        return facebook.GraphAPI(self.social.facebook_page_token)
-
-    def get_mailchimp_client(self):
-        return MailChimp(self.social.mailchimp_api_key)
-
-    def push_to_twitter(self):
-        client = self.get_client()
-        response, content = client.request(
-            'http://api.twitter.com/1/statuses/update.json', 
-            method='POST',
-            body=urllib.urlencode({'status': self.content})
-        )
-        results = json.loads(content)
-        if 'error' in results:
-            self.msg = results['error']
-            self.set_status(ApiCall.STATUS_ERROR)
-        else:
-            msg_id = results['id']
-            self.url = 'http://twitter.com/%s/status/%s' % (self.social.twitter_screen_name, msg_id)
-            self.set_status(ApiCall.STATUS_SUCCESS)
-        self.save()
-
-    def push_to_facebook(self):
-        data = self.content_object.get_api_data()
-        graph = self.get_client()
-        # The following should all be pushed into a get_api_data method for various things...
-        """
-        kwds = {'message': data['title']}
-        if site.facebook() and fb:
-            kwds = {}
-            if release.visible:
-                kwds.update(dict(name=link_title, link=short_url)) 
-        if link is not None:
-            kwds.update({
-                'link': content.short_url(),
-                'name': content.link_title()
-            })
-        """
-        try:
-            post = graph.put_object("me", "feed", **data)
-        except facebook.GraphAPIError, e:
-            self.set_status(ApiCall.STATUS_ERROR)
-            self.msg = e.messages
-        else:
-            msg_id = post['id'].split('_')[1]
-            self.url = '%s?story_fbid=%s' % (social.facebook_url, msg_id)
-            self.set_status(ApiCall.STATUS_SUCCESS)
-        self.save()
-
-    def push_to_mailchimp(self):
-        release = self.release
-        site = release.site
-        social = site.social
-        if social.mailchimp_send_blast != Social.CAMPAIGN_NO_CREATE:
-            mailchimp = MailChimp(social.mailchimp_api_key)
-            try:
-                campaign_id = mailchimp.campaignCreate(
-                    type='regular',
-                    options={
-                        'list_id': social.mailchimp_list_id,
-                        'subject': release.title,
-                        'from_email': social.mailchimp_from_email,
-                        'from_name': site.name,
-                        'to_name': '%s subscribers' % site.name,
-                    },
-                    content={
-                        'html': release.get_body_html(),
-                        'text': release.get_body_text()
-                })
-            except Exception, e:
-                self.set_status(ApiCall.STATUS_ERROR)
-                self.msg = 'Campaign could not be created.'
-                self.save()
-                raise
-            data_center = social.mailchimp_api_key.split('-')[1]
-            self.url = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
-            if social.mailchimp_send_blast == Social.CAMPAIGN_SEND:
-                try:
-                    mailchimp.campaignSendNow(cid=campaign_id)
-                except Exception, e:
-                    self.set_status(ApiCall.STATUS_ERROR)
-                    self.msg = 'Campaign created but failed to send.'
-                    self.save()
-                    raise
-                self.set_status(ApiCall.STATUS_SUCCESS)
-            self.save()
 
 
 post_save.connect(new_site_setup)
