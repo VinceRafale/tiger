@@ -91,14 +91,14 @@ FB.init({appId: '314120522290', status: true, cookie: true, xfbml: true});
 function requestAuthorization() {
     FB.login(function (response) {
         if (response.session) {
-            if (response.perms) {
+            if (response.scope) {
                 $.post("{% url register_id %}", {}, function (data) {
                     $("#facebook").html(data);
                 });
             } else {
             }
         }
-    }, {perms: 'manage_pages,publish_stream,offline_access'});
+    }, {scope: 'manage_pages,publish_stream,offline_access'});
 }
 
 
