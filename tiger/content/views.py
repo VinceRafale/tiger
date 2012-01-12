@@ -9,8 +9,8 @@ def home(request):
     return render_custom(request, 'content/page.html', {'page': page})
 
 
-def page_detail(request, slug):
-    page = Content.objects.get(site=request.site, slug=slug)
+def page_detail(request, id, slug):
+    page = Content.objects.get(site=request.site, id=id)
     return render_custom(request, 'content/page.html', {'page': page})
 
 
