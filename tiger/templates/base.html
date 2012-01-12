@@ -15,13 +15,9 @@
 
 {% block menu %}
 <ul>
-    <li><a href="/">Home</a></li>
-    <li><a href="{% url menu_home %}">Menu</a></li>
-    <li><a href="/about/">About</a></li>
-    <li><a href="/find-us/">Find Us</a></li>
-    {% if site.has_news %}
-    <li><a href="/news/">News</a></li>
-    {% endif %}
+    {% for menu_item in menu_items %}
+    <li><a href="{{ menu_item.get_absolute_url }}">{{ menu_item.title }}</a></li>
+    {% endfor %}
 </ul>
 {% endblock %}
 

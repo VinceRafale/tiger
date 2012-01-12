@@ -9,10 +9,14 @@ handler404 = 'tiger.utils.views.handler404'
 handler500 = 'tiger.utils.views.handler500'
 
 urlpatterns = patterns('tiger.utils.views',
-    url(r'^$', 'render_custom', {'template': 'homepage.html'}, name='home'),
     url(r'^robots.txt$', 'robots'),
     url(r'^about/$', 'render_custom', {'template': 'about.html'}, name='about'),
     url(r'^find-us/$', 'render_custom', {'template': 'find-us.html'}, name='find-us'),
+)
+
+urlpatterns += patterns('tiger.content.views',
+    url(r'^$', 'home', name='home'),
+    url(r'^pages/(\d+)/([\w-]+)/$', 'page_detail', name='page_detail'),
 )
 
 order_patterns = patterns('tiger.core.views',

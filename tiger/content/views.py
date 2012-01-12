@@ -1,7 +1,17 @@
 from django.shortcuts import get_object_or_404
 
-from tiger.content.models import ItemImage
+from tiger.content.models import ItemImage, Content, MenuItem
 from tiger.utils.views import render_custom
+
+
+def home(request):
+    page = MenuItem.objects.get(position=1, site=request.site).page
+    return render_custom(request, 'content/page.html', {'page': page})
+
+
+def page_detail(request, slug):
+    page = Content.objects.get(site=request.site, slug=slug)
+    return render_custom(request, 'content/page.html', {'page': page})
 
 
 def image_detail(request, image_id, slug):

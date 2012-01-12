@@ -14,6 +14,39 @@ from tiger.utils.pdf import render_to_pdf
 
 DEFAULT_CONTENT = 'Welcome to Takeout Tiger.  You can edit this content in your dashboard under Site > Content.'
 
+
+class MenuItem(models.Model):
+    MENU = 'menu'
+    PAGE = 'page'
+    UPLOAD = 'upload'
+    URL = 'url'
+    site = models.ForeignKey('accounts.Site')
+    title = models.CharField(max_length=30)
+    position = models.PositiveIntegerField(editable=False, null=True)
+    url = models.URLField(null=True, blank=True)
+    upload = models.FileField(upload_to='uploads', null=True, blank=True)
+    page = models.ForeignKey('Content', null=True, blank=True)
+    link_type = models.CharField(max_length=20)
+
+    class Meta:
+        ordering = ('position',)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.position = MenuItem.objects.filter(site=self.site).count() + 1
+        super(MenuItem, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        if self.position == 1:
+            return '/'
+        return {
+            MenuItem.MENU: lambda: '/menu/',
+            MenuItem.PAGE: lambda: self.page.get_absolute_url(),
+            MenuItem.UPLOAD: lambda: self.upload.url,
+            MenuItem.URL: lambda: self.url
+        }[self.link_type]()
+
+
 class Content(models.Model):
     TYPE_HOMEPAGE = 'homepage'
     TYPE_FINDUS = 'find-us'
@@ -28,6 +61,11 @@ class Content(models.Model):
         TYPE_FINDUS: 'Find us',
         TYPE_ABOUT: 'About us',
     }
+    LINK_TITLES = {
+        TYPE_HOMEPAGE: 'Home',
+        TYPE_FINDUS: 'Find us',
+        TYPE_ABOUT: 'About',
+    }
     site = models.ForeignKey('accounts.Site')
     slug = models.SlugField(editable=False)
     title = models.CharField(max_length=200, default='')
@@ -38,9 +76,16 @@ class Content(models.Model):
     def save(self, *args, **kwargs):
         super(Content, self).save(*args, **kwargs)
         cache.delete('%d-%s' % (self.site.id, self.slug))
+        if MenuItem.objects.filter(page=self).count() == 0:
+            MenuItem.objects.create(site=self.site, page=self, link_type=MenuItem.PAGE, title=Content.LINK_TITLES[self.slug])
 
     def is_default(self):
         return self.text == DEFAULT_CONTENT
+
+    @models.permalink
+    def get_absolute_url(self):
+        return 'page_detail', [self.id, self.slug], {}
+        
 
 
 class ItemImage(ImageModel):
