@@ -4,10 +4,12 @@ from django.http import HttpResponse
 def sitemap(request):
     site = request.site
     site_name = str(site)
-    urls = ['%s/' % site_name]
+    urls = []
     # content pages
-    for slug in ('find-us', 'about', 'menu'):
-        urls.append('%s/%s/' % (site_name, slug))
+    urls.extend([
+        site_name + item.get_absolute_url() 
+        for item in site.menuitem_set.all()
+    ])
     # section pages
     urls.extend([
         site_name + section.get_absolute_url() 

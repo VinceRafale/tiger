@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, Http404, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponsePermanentRedirect, HttpResponseServerError, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader, RequestContext, Template
 from django.template.loader import get_template, select_template
@@ -10,6 +10,7 @@ from django.utils.http import base36_to_int
 from django.views.generic.simple import direct_to_template
 
 from tiger.stork import Stork
+from tiger.content.models import Content
 
 
 def render_custom(request, template, context=None):
@@ -117,3 +118,15 @@ def robots(request):
 
 def render_static(request):
     return render_custom(request, 'maintenance.html')
+
+
+def redirect_about(request):
+    page = get_object_or_404(Content, site=request.site, slug='about') 
+    return HttpResponsePermanentRedirect(page.get_absolute_url())
+
+
+def redirect_find_us(request):
+    page = get_object_or_404(Content, site=request.site, slug='find-us') 
+    return HttpResponsePermanentRedirect(page.get_absolute_url())
+
+

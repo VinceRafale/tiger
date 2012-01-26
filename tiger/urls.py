@@ -10,8 +10,8 @@ handler500 = 'tiger.utils.views.handler500'
 
 urlpatterns = patterns('tiger.utils.views',
     url(r'^robots.txt$', 'robots'),
-    url(r'^about/$', 'render_custom', {'template': 'about.html'}, name='about'),
-    url(r'^find-us/$', 'render_custom', {'template': 'find-us.html'}, name='find-us'),
+    (r'^about/$', 'redirect_about'),
+    (r'^find-us/$', 'redirect_find_us'),
 )
 
 urlpatterns += patterns('tiger.content.views',
