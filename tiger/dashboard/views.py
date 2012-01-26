@@ -62,3 +62,6 @@ def change_location(request):
     location_id = request.POST.get('loc')
     request.session['dashboard-location'] = request.site.location_set.get(id=location_id)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER') or '/dashboard/menu/')
+
+def channel_file(request):
+    return direct_to_template(request, template='dashboard/channel_file.html')

@@ -3,6 +3,7 @@ from tiger.dashboard.forms import PasswordResetForm
 
 urlpatterns = patterns('tiger.dashboard.views',
     url(r'^$', 'dashboard', name='dashboard'),
+    url(r'^channel.html$', 'channel_file', name='channel_file'),
     url(r'^login/$', 'login', name='auth_login'),
     url(r'^change-location/$', 'change_location', name='dashboard_change_location'),
 )

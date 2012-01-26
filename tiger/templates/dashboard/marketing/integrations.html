@@ -17,6 +17,37 @@ Social media integrations
 {% endblock %}
 
 {% block content %}
+<script type="text/javascript">
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '314120522290', // App ID
+      channelUrl : '//{{ site.subdomain }}.takeouttiger.com/dashboard/channel.html', // Channel File
+      status     : true, // check login status
+      cookie     : true, // enable cookies to allow the server to access the session
+      xfbml      : true  // parse XFBML
+    });
+
+$("#facebook-button").click(function () {
+	FB.getLoginStatus(function (response) {
+		if (response.session) {
+			FB.logout(function(response) {
+				requestAuthorization();
+			});
+		} else {
+			requestAuthorization();
+		}
+	});
+});
+  };
+
+  // Load the SDK Asynchronously
+  (function(d){
+     var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+     js = d.createElement('script'); js.id = id; js.async = true;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     d.getElementsByTagName('head')[0].appendChild(js);
+   }(document));
+</script>
 
         <h3>Twitter</h3>
         <p>
@@ -84,10 +115,7 @@ Social media integrations
 
 {% block js %}
 <div id="fb-root"></div>
-<script src="https://connect.facebook.net/en_US/all.js"></script>
 <script>
-FB.init({appId: '314120522290', status: true, cookie: true, xfbml: true});
-
 function requestAuthorization() {
     FB.login(function (response) {
         if (response.session) {
@@ -102,18 +130,8 @@ function requestAuthorization() {
 }
 
 
+
 $(function () {
-	$("#facebook-button").click(function () {
-		FB.getLoginStatus(function (response) {
-			if (response.session) {
-				FB.logout(function(response) {
-					requestAuthorization();
-				});
-			} else {
-				requestAuthorization();
-			}
-		});
-	});
     $("label.ajax-checkbox input").live("click", function () {
         params = {};
         params[$(this).attr("name")] = $(this).attr("checked");
