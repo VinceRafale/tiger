@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils import simplejson as json
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import DomainForm, GoogleToolsForm, MobileSettingsForm
@@ -13,9 +14,48 @@ from tiger.utils.views import add_edit_site_object, delete_site_object
 
 @login_required
 def home(request):
+    menu_data = [
+            {
+                'id': item.id,
+                'title': item.title,
+                'position': item.position,
+                'page': item.page_data
+            }
+            for item in request.site.menuitem_set.all()
+    ]
     return direct_to_template(request, template='dashboard/content/content.html', extra_context={
-        'pdfs': request.site.pdfmenu_set.all()
+        'menu_items_data': json.dumps(menu_data)
     })
+
+@login_required
+def add_edit_page(request, page_id=None):
+    instance = None
+    if page_id is not None:
+        instance = Content.objects.get(site=request.site, id=page_id)
+    if request.method == 'POST':
+        form = ContentForm(request.POST, site=request.site, instance=instance)
+        if form.is_valid():
+            page = form.save(commit=False)
+            page.site = request.site
+            page.save()
+            messages.success(request, '"%s" page %s successfully.' % (page.title, "updated" if instance else "created"))
+            return HttpResponseRedirect(reverse('dashboard_content'))
+    else:
+        form = ContentForm(site=request.site, instance=instance)
+    return direct_to_template(request, template='dashboard/content/page_form.html', extra_context={
+        'page': instance,
+        'form': form
+    })
+
+
+@login_required
+def reorder_menu_items(request):
+    section_ids = request.POST.getlist('item_ids')
+    for i, obj_id in enumerate(section_ids):
+        obj = MenuItem.objects.get(id=obj_id[3:])
+        obj.position = i + 1
+        obj.save()
+    return HttpResponse('')
 
 @login_required
 def add_edit_pdf(request, pdf_id=None):

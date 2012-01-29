@@ -3,25 +3,55 @@
 {% block body-class %}{{ block.super }}content{% endblock %}
 
 {% block h2 %}
-Primary page content
+Main Menu
 {% endblock %}
 
 {% block help %}
 <p>In addition to your menu and your news feed, the three pages below provide your visitors information about your site. When adding text to these pages, think about what words people might search for that you would want to bring up your site, and be sure to include them in the content.</p>
 {% endblock %}
 
+{% block extrahead %}
+<style>
+	#menu-items {
+		clear:right;
+	}
+	#menu-items li {
+		border-radius:6px;
+		background-color:#fff;
+		margin-left:0;
+		margin-top:10px;
+		padding:6px 10px;
+	}
+	#menu-items div.title-bar {
+		background-color: #34484F;
+		color:#fff;
+		padding:3px 5px;
+		border-radius:4px;
+	}
+	#menu-items p {
+		color: #444;
+		font-style: italic;
+		margin-top:10px;
+		margin-bottom:10px;
+	}
+</style>
+{% endblock %}
+
 {% load content_tags %}
 {% block content %}
-        <h3>Your homepage <a href="{% url dashboard_edit_content "homepage" %}">Edit</a> <a target="_blank" href="{% url home %}">View on site</a></h3>
-        <h4>{% get_title site "homepage" %}</h4>
-        {% get_body site "homepage" %}
-        
-		<h3>Your &#8220;About&#8221; page <a href="{% url dashboard_edit_content "about" %}">Edit</a> <a target="_blank" href="{% url about %}">View on site</a></h3>
-        <h4>{% get_title site "about" %}</h4>
-        {% get_body site "about" %}
 
-        <h3>Your &#8220;Find us&#8221; page <a href="{% url dashboard_edit_content "find-us" %}">Edit</a> <a target="_blank" href="{% url find-us %}">View on site</a></h3>
-        <h4>{% get_title site "find-us" %}</h4>
-        {% get_body site "find-us" %}
+<span class="buttons">
+	<a href="{% url add_page %}">+New Page</a>
+</span>
+<div id="menu-items">
+	<ul></ul>
+</div>
 
+{% endblock %}
+
+{% block js %}
+<script type="application/json" id="menu-items-data">
+	{{ menu_items_data|safe }}
+</script>
+<script src="{{ MEDIA_URL }}js/vendor/require.js" data-main="{{ MEDIA_URL }}js/dashboard/main_menu/init"></script>
 {% endblock %}

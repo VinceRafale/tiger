@@ -7,11 +7,14 @@
 {% block body-class %}{{ block.super }} content{% endblock %}
 
 {% block h2 %}
-Edit your "Find Us" blurb
+{% if instance %}
+Edit your "{{ page.title }}" page
+{% else %}
+Create a new page
+{% endif %}
 {% endblock %}
 
 {% block help %}
-<p>This text, along with a map using the address you entered in the "Location" section, will appear on the "Find Us" page.</p>
 {% endblock %}
 
 {% block content %}
@@ -20,6 +23,10 @@ Edit your "Find Us" blurb
 {{ form.title }}
 <label>{{ form.text.label }} {% if form.text.errors %} {{ form.text.errors }} {% endif %}</label>
 {{ form.text }}
+<label>{{ form.image.label }} {% if form.image.errors %} {{ form.image.errors }} {% endif %}</label>
+{{ form.image }}
+<label>{{ form.showcase.label }} {% if form.showcase.errors %} {{ form.showcase.errors }} {% endif %}</label>
+{{ form.showcase }}
 <div class="clear"></div>
 <div class="save-row clearfix">
 <a class="cancel" href="{% url dashboard_content %}">Cancel</a>
@@ -29,7 +36,7 @@ Edit your "Find Us" blurb
 {% endblock %}
 
 {% block js %}
-
 {% endblock %}
+
 
 

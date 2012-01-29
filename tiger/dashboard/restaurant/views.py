@@ -42,23 +42,6 @@ def delete_location(request, location_id):
     return HttpResponseRedirect(reverse('dashboard_location'))
 
 @login_required
-def edit_content(request, slug):
-    instance = Content.objects.get(site=request.site, slug=slug)
-    if request.method == 'POST':
-        form = ContentForm(request.POST, site=request.site, instance=instance)
-        if form.is_valid():
-            content = form.save(commit=False)
-            content.site = request.site
-            content.save()
-            messages.success(request, 'Content updated successfully.')
-            return HttpResponseRedirect(reverse('dashboard_content'))
-    else:
-        form = ContentForm(site=request.site, instance=instance)
-    return direct_to_template(request, template='dashboard/content/%s_form.html' % slug, extra_context={
-        'form': form
-    })
-
-@login_required
 def schedule_list(request):
     schedules = request.site.schedule_set.all()
     return direct_to_template(request, template='dashboard/restaurant/schedule_list.html', extra_context={

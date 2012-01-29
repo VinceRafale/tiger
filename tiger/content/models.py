@@ -3,6 +3,7 @@ import os.path
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
@@ -46,6 +47,17 @@ class MenuItem(models.Model):
             MenuItem.URL: lambda: self.url
         }[self.link_type]()
 
+    @property
+    def page_data(self):
+        p = self.page
+        return {
+                'title': p.title,
+                'text': p.text[:100] + '...',
+                'url': p.get_absolute_url(),
+                'edit_url': reverse('edit_page', args=[p.id])
+        }
+
+
 
 class Content(models.Model):
     TYPE_HOMEPAGE = 'homepage'
@@ -74,10 +86,12 @@ class Content(models.Model):
     showcase = models.ForeignKey('ItemImage', null=True, blank=True, related_name='showcased_content_set')
 
     def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
         super(Content, self).save(*args, **kwargs)
         cache.delete('%d-%s' % (self.site.id, self.slug))
         if MenuItem.objects.filter(page=self).count() == 0:
-            MenuItem.objects.create(site=self.site, page=self, link_type=MenuItem.PAGE, title=Content.LINK_TITLES[self.slug])
+            MenuItem.objects.create(site=self.site, page=self, link_type=MenuItem.PAGE, title=Content.LINK_TITLES.get(self.slug, self.title))
 
     def is_default(self):
         return self.text == DEFAULT_CONTENT
