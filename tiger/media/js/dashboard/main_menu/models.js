@@ -6,7 +6,7 @@ define(function (require) {
 
   MenuItems = Backbone.Collection.extend({
     model: MenuItem,
-    url: "./menu_items",
+    url: "./menu-items",
     comparator: function(menuItem) {
       return menuItem.get("position");
     }

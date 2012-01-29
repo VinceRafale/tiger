@@ -83,9 +83,8 @@ class StepThree(Step):
         
 
 class StepFour(Step):
-    conditions = tuple(
-        lambda site: not Content.objects.get(site=site, slug=slug).is_default()
-        for slug in Content.CONTENT_TYPES
+    conditions = (
+        lambda site: not any([c.is_default() for c in Content.objects.filter(site=site)]),
     )
     name = 'Edit info pages'
     link = 'http://www.youtube.com/watch?v=YRP8FuVYycI'

@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from django.views.generic.simple import direct_to_template
 
@@ -47,6 +48,17 @@ def add_edit_page(request, page_id=None):
         'form': form
     })
 
+@login_required
+def delete_menu_item(request, menu_item_id):
+    if request.method != 'DELETE':
+        raise Http404
+    menu_item = get_object_or_404(MenuItem, id=menu_item_id)
+    if not menu_item.page:
+        raise Http404
+    menu_item.page.delete()
+    return HttpResponse('')
+
+    
 
 @login_required
 def reorder_menu_items(request):

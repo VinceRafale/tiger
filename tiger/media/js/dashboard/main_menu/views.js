@@ -8,6 +8,12 @@ define(function (require) {
 
   var MenuItemView = Backbone.View.extend({
     tagName: "li",
+    events: {
+      "click a.delete": "destroy"
+    },
+    init: function () {
+      _.bindAll(this, "destroy");
+    },
     render: function () {
       var m = this.model,
           t = (!!m.get("page")) ? pageItemTemplate : nonPageItemTemplate;
@@ -15,6 +21,15 @@ define(function (require) {
       this.el.innerHTML = t(m.toJSON());
       $(this.el).attr("id", "mi-" + m.id);
       return this;
+    },
+    destroy: function () {
+      var self = this;
+      this.model.destroy({
+        success: function(model, response) {
+          $(self.el).fadeOut(function () {self.remove(); });
+        }
+      });
+      return false;
     }
   });
 
