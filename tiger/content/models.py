@@ -50,6 +50,8 @@ class MenuItem(models.Model):
     @property
     def page_data(self):
         p = self.page
+        if not p:
+            return None
         return {
                 'title': p.title,
                 'text': p.text[:100] + '...',
