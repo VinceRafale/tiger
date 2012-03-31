@@ -72,7 +72,7 @@ def twitter_return(request):
         raise Exception("Invalid response from Twitter.")
     access_token = dict(cgi.parse_qsl(content))
     try:
-        social = Social.objects.get(twitter_screen_name=access_token['screen_name'])
+        social = Social.objects.get(twitter_screen_name__iexact=access_token['screen_name'])
     except Social.DoesNotExist:
        return direct_to_template(request, template='notify/bad_twitter_name.html')
     social.twitter_token = access_token['oauth_token']
