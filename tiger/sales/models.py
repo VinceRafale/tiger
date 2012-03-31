@@ -209,9 +209,7 @@ class Plan(models.Model):
         cap = getattr(self, '%s_cap' % service)
         if 0 < cap < num:
             cap_type = getattr(self, '%s_cap_type' % service)
-            if cap_type == Plan.CAP_SOFT:
-                raise SoftCapExceeded
-            elif cap_type == Plan.CAP_HARD:
+            if cap_type == Plan.CAP_HARD:
                 raise HardCapExceeded
         return True
 
