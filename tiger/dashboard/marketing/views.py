@@ -260,18 +260,14 @@ def remove_facebook(request):
 def register_id(request):
     cookie = facebook.get_user_from_cookie(
         request.COOKIES, settings.FB_API_KEY, settings.FB_API_SECRET)
-    access_token = cookie['access_token']
+    access_token = request.POST.get('accessToken')
     social = request.site.social
     social.facebook_token = access_token
     social.save()
     pages = social.facebook_pages
-    if pages is None:
-        return HttpResponse(render_to_string(social.facebook_fragment))
-    if len(pages) == 1:
-        return HttpResponse(render_to_string(social.facebook_fragment, {
-            'social': social 
-        }))
-    return get_facebook_pages_form(request)
+    return HttpResponse(render_to_string(social.facebook_fragment, {
+        'social': social 
+    }))
 
 ###############################################################################
 # MAILCHIMP INTEGRATION VIEWS

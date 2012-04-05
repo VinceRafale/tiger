@@ -29,7 +29,7 @@ Social media integrations
 
 $("#facebook-button").click(function () {
 	FB.getLoginStatus(function (response) {
-		if (response.session) {
+		if (response.authResponse) {
 			FB.logout(function(response) {
 				requestAuthorization();
 			});
@@ -61,20 +61,25 @@ $("#facebook-button").click(function () {
         </p>
         <h3>Facebook</h3>
         <div>
-            {% if not site.social.facebook_token %}
-                <a id="facebook-button" href="#">Connect</a>
-            {% else %}
-                <a id="deauthorize" href="{% url dashboard_remove_facebook %}">Deauthorize</a>
-            {% endif %}
+                <a id="facebook-button" 
+		{% if site.social.facebook_token %}
+		style="display:none;"
+		{% endif %}
+		href="#">Connect</a>
+                <a id="deauthorize" 
+		{% if not site.social.facebook_token %}
+		style="display:none;"
+		{% endif %}
+		href="{% url dashboard_remove_facebook %}">Deauthorize</a>
         </div>
-        {% if site.social.facebook_token %}
         <p id="facebook">
 
+        {% if site.social.facebook_token %}
         {% with site.social as social %}
         {% include social.facebook_fragment %}
         {% endwith %}
-        </p>
         {% endif %}
+        </p>
         <h3>Mailchimp</h3>
         <div id="mailchimp-settings">
         {% if not site.social.mailchimp_api_key %}
@@ -118,13 +123,12 @@ $("#facebook-button").click(function () {
 <script>
 function requestAuthorization() {
     FB.login(function (response) {
-        if (response.session) {
-            if (response.scope) {
-                $.post("{% url register_id %}", {}, function (data) {
+        if (response.authResponse) {
+                $.post("{% url register_id %}", $.param(response.authResponse), function (data) {
                     $("#facebook").html(data);
+		    $("#facebook-button").hide();
+		    $("#deauthorize").show();
                 });
-            } else {
-            }
         }
     }, {scope: 'manage_pages,publish_stream,offline_access'});
 }
