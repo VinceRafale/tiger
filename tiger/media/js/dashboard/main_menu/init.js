@@ -13,6 +13,7 @@ require(["app/models", "app/views"], function(models, views) {
       parsedData = JSON.parse(data),
       MenuItems = new models.MenuItems(parsedData),
       view = new views.MenuItemsView({collection: MenuItems});
+      new views.ControlsView();
 
   view.render();
 });

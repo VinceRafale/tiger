@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tiger.dashboard.content.views',
     url(r'^$', 'home', name='dashboard_content'),
+    url(r'^menu-items$', 'create_menu_item', name='create_menu_item'),
     url(r'^menu-items/(\d+)$', 'delete_menu_item', name='delete_menu_item'),
     url(r'^menu-items/reorder/$', 'reorder_menu_items', name='reorder_menu_items'),
     url(r'^pages/add/$', 'add_edit_page', name='add_page'),

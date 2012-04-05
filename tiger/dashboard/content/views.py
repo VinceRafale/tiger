@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson as json
 from django.views.generic.simple import direct_to_template
@@ -16,12 +16,7 @@ from tiger.utils.views import add_edit_site_object, delete_site_object
 @login_required
 def home(request):
     menu_data = [
-            {
-                'id': item.id,
-                'title': item.title,
-                'position': item.position,
-                'page': item.page_data
-            }
+            item.as_json()
             for item in request.site.menuitem_set.all()
     ]
     return direct_to_template(request, template='dashboard/content/content.html', extra_context={
@@ -49,13 +44,24 @@ def add_edit_page(request, page_id=None):
     })
 
 @login_required
+def create_menu_item(request):
+    if request.method != 'POST':
+        raise Http404
+    payload = json.loads(request.raw_post_data)
+    item = MenuItem.objects.create(site=request.site, **payload)
+    return HttpResponse(json.dumps(item.as_json()))
+
+@login_required
 def delete_menu_item(request, menu_item_id):
     if request.method != 'DELETE':
         raise Http404
     menu_item = get_object_or_404(MenuItem, id=menu_item_id)
-    if not menu_item.page:
+    if menu_item.url in ('/news/', '/menu/'):
         raise Http404
-    menu_item.page.delete()
+    if menu_item.page is not None:
+        menu_item.page.delete()
+    else:
+        menu_item.delete()
     return HttpResponse('')
 
     

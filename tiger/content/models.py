@@ -47,6 +47,16 @@ class MenuItem(models.Model):
             MenuItem.URL: lambda: self.url
         }[self.link_type]()
 
+    def as_json(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'position': self.position,
+            'linkType': self.link_type,
+            'page': self.page_data,
+            'url': self.url
+        }
+
     @property
     def page_data(self):
         p = self.page

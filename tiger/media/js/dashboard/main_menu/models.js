@@ -13,7 +13,7 @@ define(function (require) {
   });
 
   return {
-    MenuItem: MenuItems,
+    MenuItem: MenuItem,
     MenuItems: MenuItems
   };
 });

@@ -41,6 +41,6 @@ LOGGING = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-LOCAL_SUBDOMAIN = 'SpinellaPastaBar'
+LOCAL_SUBDOMAIN = 'foo'
 
 CACHING_DISABLED = True
