@@ -2,14 +2,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
-from django.views.generic.create_update import update_object
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import LocationForm, TimeSlotForm
 from tiger.accounts.models import TimeSlot, Schedule, Location
-from tiger.content.forms import ContentForm
-from tiger.content.models import Content
-from tiger.utils.hours import *
+from tiger.utils import hours
 from tiger.utils.views import add_edit_site_object
 
 
@@ -55,7 +52,7 @@ def add_edit_schedule(request, schedule_id=None):
         schedule = Schedule.objects.get(id=schedule_id)
     def get_forms(data=None):
         forms = []
-        for dow, label in DOW_CHOICES:
+        for dow, label in hours.DOW_CHOICES:
             instance = None
             if schedule is not None:
                 try:

@@ -1,11 +1,10 @@
 import json
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -13,26 +12,20 @@ from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 from django.utils.safestring import mark_safe
 
-import facebook
 from markdown import markdown
 
-from tiger.accounts.forms import *
-from tiger.accounts.models import *
+from tiger.accounts.forms import SubscriberForm, FaxListForm
+from tiger.accounts.models import FaxList, Subscriber
 from tiger.core.forms import CouponCreationForm
 from tiger.core.models import Coupon
-from tiger.notify.forms import *
-from tiger.notify.models import Fax, Release
-from tiger.notify.tasks import PublishTask
+from tiger.notify.forms import PublishForm, MailChimpForm, UpdatePublishForm, TwitterForm
+from tiger.notify.models import Release, ApiCall
 from tiger.utils.cache import KeyChain
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
 @login_required
 def home(request):
     site = request.site
-    total_pages = Fax.objects.filter(site=site).aggregate(Sum('page_count'))['page_count__sum']
-    this_month = datetime(datetime.now().year, datetime.now().month, 1)
-    pages_for_month = Fax.objects.filter(
-        site=site, completion_time__gte=this_month).aggregate(Sum('page_count'))['page_count__sum']
     return direct_to_template(request, template='dashboard/marketing/integrations.html', extra_context={
         'FB_API_KEY': settings.FB_API_KEY,
         'mailchimp_form': MailChimpForm(instance=site.social)
@@ -52,7 +45,8 @@ def integration_settings(request):
 @login_required
 def publish_list(request):
     return direct_to_template(request, template='dashboard/marketing/publish_list.html', extra_context={
-        'items': request.site.release_set.order_by('-time_sent')
+        'items': request.site.release_set.order_by('-time_sent'),
+        'ApiCall': ApiCall
     })
     
 @login_required
@@ -72,19 +66,26 @@ def publish(request, release_id=None):
         if form.is_valid():
             release = form.save(commit=False)
             release.site = request.site
+            when = form.cleaned_data['when']
+            if when == 'later':
+                release.publish_time = form.cleaned_data['publish_time']
             release.save()
             cleaned_data = form.cleaned_data
-            PublishTask.delay(release.id, 
-                twitter=cleaned_data.get('twitter'),
-                fb=cleaned_data.get('facebook'),
-                mailchimp=cleaned_data.get('mailchimp'),
-                fax_list = cleaned_data.get('fax_list')
-            )
+            for service in ('twitter', 'facebook', 'mailchimp',):
+                s = cleaned_data.get(service)
+                if s:
+                    ApiCall.objects.create(release=release, task_name='tiger.notify.tasks.%sTask' % service.title())
             KeyChain.news.invalidate(request.site.id)
             messages.success(request, 'News item published successfully.')
             return HttpResponseRedirect(reverse('dashboard_publish'))
     else:
-        form = PublishForm(site=request.site)
+        now = datetime.now()
+        minutes = now.minute
+        now += timedelta(minutes=5 - minutes % 5)
+        form = PublishForm(site=request.site, initial={
+            'publish_date': date.today(),
+            'publish_time': now.time()
+        })
     return direct_to_template(request, template='dashboard/marketing/publish.html', extra_context={
         'form': form
     })
@@ -258,13 +259,10 @@ def remove_facebook(request):
 
 @login_required
 def register_id(request):
-    cookie = facebook.get_user_from_cookie(
-        request.COOKIES, settings.FB_API_KEY, settings.FB_API_SECRET)
     access_token = request.POST.get('accessToken')
     social = request.site.social
     social.facebook_token = access_token
     social.save()
-    pages = social.facebook_pages
     return HttpResponse(render_to_string(social.facebook_fragment, {
         'social': social 
     }))

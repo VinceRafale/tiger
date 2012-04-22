@@ -1,11 +1,9 @@
-from datetime import date, datetime, time
+from datetime import datetime, timedelta
 import hashlib
 import os
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.localflavor.us.models import *
-from django.core.cache import cache
+from django.contrib.localflavor.us.models import USStateField, PhoneNumberField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.contrib.gis.db import models
@@ -15,8 +13,6 @@ from django.template.defaultfilters import slugify
 from django.utils import simplejson as json
 from django.utils.safestring import mark_safe
 
-from dateutil.relativedelta import *
-
 import pytz
 from pytz import timezone
 
@@ -24,8 +20,8 @@ from tiger.core.exceptions import NoOnlineOrders, ClosingTimeBufferError, Restau
 from tiger.utils.cache import cachedmethod, KeyChain
 from tiger.utils.billing import prorate
 from tiger.utils.geocode import geocode, GeocodeError
-from tiger.utils.hours import *
-from tiger.sales.models import SalesRep, Account, Invoice, Charge
+from tiger.utils import hours
+from tiger.sales.models import Account, Invoice
 from tiger.sms.models import SmsSettings
 from tiger.stork import Stork
 from tiger.stork.models import Theme
@@ -106,8 +102,8 @@ class Site(models.Model):
         schedule = location.schedule
         eod_buffer = location.eod_buffer
         availability = schedule.is_open(buff=location.eod_buffer, location=location)
-        if availability != TIME_OPEN:
-            if availability == TIME_EOD:
+        if availability != hours.TIME_OPEN:
+            if availability == hours.TIME_EOD:
                 raise ClosingTimeBufferError("Sorry!  Orders must be placed within %d minutes of closing." % eod_buffer, '/')
             raise RestaurantNotOpen("""%s is currently closed. Please try ordering during normal
             restaurant hours, %s.""" % (self.name, schedule.display), '/')
@@ -195,7 +191,6 @@ class Site(models.Model):
 
     @cachedmethod(KeyChain.font_data)
     def font_data(self):
-        from tiger.stork import Stork
         stork = Stork(self.theme)
         data = dict(
             (font.id, {
@@ -326,7 +321,7 @@ class Schedule(models.Model):
         if now is None:
             server_tz = timezone(settings.TIME_ZONE)
             now = server_tz.localize(datetime.now())
-        return is_available(
+        return hours.is_available(
             timeslots=self.timeslot_set.all(), 
             location=location,
             now=now,
@@ -334,13 +329,13 @@ class Schedule(models.Model):
         )
 
     def mobile_schedule(self):
-        return calculate_hour_string(self.timeslot_set.all(), for_mobile=True)
+        return hours.calculate_hour_string(self.timeslot_set.all(), for_mobile=True)
 
 
 class TimeSlot(models.Model):
     schedule = models.ForeignKey(Schedule)
     section = models.ForeignKey('core.Section', null=True, editable=False)
-    dow = models.IntegerField(choices=DOW_CHOICES)
+    dow = models.IntegerField(choices=hours.DOW_CHOICES)
     start = models.TimeField()
     stop = models.TimeField()
 
@@ -374,8 +369,8 @@ class TimeSlot(models.Model):
                 stop_dt += timedelta(days=1)
         if start_dt < now < stop_dt:
             if start_dt < now < stop_dt - timedelta(seconds=buff*60):
-                return TIME_OPEN
-            return TIME_EOD
+                return hours.TIME_OPEN
+            return hours.TIME_EOD
 
     def spans_midnight(self):
         return self.stop < self.start
@@ -409,7 +404,7 @@ class Subscriber(models.Model):
 def new_site_setup(sender, instance, created, **kwargs):
     if created:
         schedule = Schedule.objects.create(site=instance, master=True)
-        location = Location.objects.create(site=instance, schedule=schedule)
+        Location.objects.create(site=instance, schedule=schedule)
         theme = Theme.objects.create(name=instance.name)
         sms = SmsSettings.objects.create(reseller_network=instance.reseller_network)
         instance.sms = sms

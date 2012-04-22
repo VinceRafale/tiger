@@ -1,10 +1,7 @@
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.simple import direct_to_template
-from django.template.loader import render_to_string
 from django.utils import simplejson as json
 
-from tiger.stork.constants import *
 from tiger.stork import Stork
 from tiger.stork.models import FontStack
 
@@ -73,11 +70,11 @@ def save(request, redirect_to, callback=None):
 
 def preview_html(request, key):
     stork = Stork(request.site.theme)
-    form = stork[key].save(request.POST)
+    stork[key].save(request.POST)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
 def revert_html(request, key):
     stork = Stork(request.site.theme)
-    form = stork[key].revert()
+    stork[key].revert()
     return HttpResponseRedirect(request.META['HTTP_REFERER'])

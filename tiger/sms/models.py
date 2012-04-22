@@ -1,16 +1,12 @@
 from datetime import datetime, date
 import random
 
-from django.conf import settings
-from django.contrib.localflavor.us.models import *
+from django.contrib.localflavor.us.models import PhoneNumberField, USStateField
 from django.db import models, connection
 from django.utils import simplejson as json
 from django.utils.dateformat import format
 
-from pytz import timezone
 from picklefield.fields import PickledObjectField
-
-import twilio
 
 from tiger.utils.models import Message
 from tiger.sms.sender import Sender, BaseSender

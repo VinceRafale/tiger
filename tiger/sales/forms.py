@@ -5,7 +5,6 @@ from hashlib import sha1
 import yaml
 
 from django import forms
-from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -307,7 +306,7 @@ class CreatePlanForm(BetterModelForm):
     def clean_promo_code(self):
         promo_code = self.cleaned_data.get('promo_code')
         try:
-            plan = Plan.objects.get(promo_code=promo_code)
+            Plan.objects.get(promo_code=promo_code)
         except Plan.DoesNotExist:
             return promo_code
         raise forms.ValidationError("That promo code is already taken.")

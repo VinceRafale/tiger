@@ -1,11 +1,10 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 import re
-import urllib
-import urllib2
 
 from django import forms
+from django.conf import settings
 from django.contrib.gis.geos import Point
-from django.contrib.localflavor.us.forms import *
+from django.contrib.localflavor.us.forms import USStateSelect, USZipCodeField
 from django.forms.extras.widgets import SelectDateWidget
 
 from authorize.aim import Api
@@ -13,10 +12,10 @@ from pytz import timezone
 
 from tiger.core.exceptions import PricePointNotAvailable
 from tiger.core.fields import SelectableTimeField
-from tiger.core.models import *
+from tiger.core.models import Item, Order, Coupon, OrderSettings, Variant, Upgrade, SideDish, Section
 from tiger.dashboard.widgets import ImageChooserWidget
 from tiger.utils.forms import BetterModelForm
-from tiger.utils.geocode import geocode, GeocodeError
+from tiger.utils.geocode import geocode
 from tiger.utils.hours import TIME_OPEN
 
 

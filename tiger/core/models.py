@@ -3,11 +3,10 @@ from datetime import datetime, date
 from decimal import Decimal
 import random
 
+from django.conf import settings
 from django.core.mail import EmailMessage
-from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.contrib.gis.db import models
-from django.contrib.localflavor.us.models import *
 from django.contrib.sessions.models import Session
 from django.db.models.signals import post_save, pre_delete
 from django.template.defaultfilters import slugify
@@ -22,11 +21,11 @@ from pytz import timezone
 
 from tiger.content.handlers import pdf_caching_handler
 from tiger.core.exceptions import SectionNotAvailable, ItemNotAvailable, PricePointNotAvailable
-from tiger.core.messages import *
+from tiger.core import messages as core_messages
 from tiger.notify.fax import FaxMachine
 from tiger.notify.handlers import item_social_handler
 from tiger.utils.cache import KeyChain
-from tiger.utils.hours import *
+from tiger.utils import hours
 from tiger.utils.pdf import render_to_pdf
 
 
@@ -80,11 +79,11 @@ class Section(models.Model):
 
     def is_available(self, location):
         if self.no_online_orders and location.enable_orders: 
-            raise SectionNotAvailable(SECTION_DISABLED % self.name, self.get_absolute_url())
+            raise SectionNotAvailable(core_messages.SECTION_DISABLED % self.name, self.get_absolute_url())
         if self.schedule is None:
             return True
-        if self.schedule.is_open(location) != TIME_OPEN:
-            raise SectionNotAvailable(SECTION_NOT_AVAILABLE % (
+        if self.schedule.is_open(location) != hours.TIME_OPEN:
+            raise SectionNotAvailable(core_messages.SECTION_NOT_AVAILABLE % (
                 self.name, self.schedule.display), self.get_absolute_url())
         return True
 
@@ -95,7 +94,7 @@ class Section(models.Model):
             "description": self.description,
             "items": [i.for_json() for i in self.item_set.active()],
             "ordering": self.ordering,
-            "schedule": SECTION_NOT_AVAILABLE % (
+            "schedule": core_messages.SECTION_NOT_AVAILABLE % (
                 self.name, self.schedule.display) if self.schedule else ''
         }
 
@@ -179,13 +178,13 @@ class Item(models.Model):
 
     def is_available(self, location):
         assert self.section.is_available(location)
-        if self.schedule and self.schedule.is_open(location) != TIME_OPEN:
-            raise ItemNotAvailable(ITEM_NOT_AVAILABLE_SCHEDULE % (self.name, self.schedule.display), 
+        if self.schedule and self.schedule.is_open(location) != hours.TIME_OPEN:
+            raise ItemNotAvailable(core_messages.ITEM_NOT_AVAILABLE_SCHEDULE % (self.name, self.schedule.display), 
                 self.get_absolute_url())
         if self.archived or self.out_of_stock(location):
-            raise ItemNotAvailable(ITEM_NOT_AVAILABLE % self.name, redirect_to=self.get_absolute_url())
+            raise ItemNotAvailable(core_messages.ITEM_NOT_AVAILABLE % self.name, redirect_to=self.get_absolute_url())
         if not self.available_online and location.enable_orders:
-            raise ItemNotAvailable(ITEM_NOT_AVAILABLE_ONLINE % self.name, self.get_absolute_url())
+            raise ItemNotAvailable(core_messages.ITEM_NOT_AVAILABLE_ONLINE % self.name, self.get_absolute_url())
         return True
 
     def out_of_stock(self, location):
@@ -265,9 +264,6 @@ class Variant(models.Model):
         return mark_safe(s)
 
     def save(self, *args, **kwargs):
-        new = False
-        if not self.id:
-            new = True
         self.price = self.price.quantize(Decimal('0.01'))
         super(Variant, self).save(*args, **kwargs)
         if self.item:
@@ -281,8 +277,8 @@ class Variant(models.Model):
     def is_available(self, location):
         if self.schedule is None:
             return True
-        if self.schedule.is_open(location) != TIME_OPEN:
-            raise PricePointNotAvailable(PRICEPOINT_NOT_AVAILABLE % (
+        if self.schedule.is_open(location) != hours.TIME_OPEN:
+            raise PricePointNotAvailable(core_messages.PRICEPOINT_NOT_AVAILABLE % (
                 self.description, self.schedule.display), self.item.get_absolute_url())
         return True
 

@@ -2,11 +2,11 @@ from datetime import date, datetime
 from decimal import Decimal
 import hashlib
 
-from dateutil.relativedelta import *
+from dateutil.relativedelta import relativedelta 
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.localflavor.us.models import *
+from django.contrib.localflavor.us.models import PhoneNumberField, USStateField
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models, connection
@@ -14,8 +14,7 @@ from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 from django.utils.http import int_to_base36
 
-from tiger.sales.exceptions import (PaymentGatewayError, 
-    SiteManagementError, SoftCapExceeded, HardCapExceeded)
+from tiger.sales.exceptions import (PaymentGatewayError, SiteManagementError, HardCapExceeded)
 from tiger.sms.models import SmsSettings
 from tiger.utils.cache import KeyChain
 from tiger.utils.billing import prorate
@@ -182,7 +181,6 @@ class Plan(models.Model):
 
     @property
     def monthly_cost(self):
-        account = self.account
         if not self.has_online_ordering:
             return self._from_account_or_default('basic_price', '50.00')
         if not self.multiple_locations:

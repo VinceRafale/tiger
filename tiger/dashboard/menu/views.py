@@ -1,20 +1,19 @@
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import get_model
-from django.forms.models import inlineformset_factory
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic.simple import direct_to_template
 
-from tiger.core.forms import *
-from tiger.core.models import *
-from tiger.accounts.forms import TimeSlotForm, ScheduleSelectForm
-from tiger.accounts.models import TimeSlot
-from tiger.utils.views import add_edit_site_object, delete_site_object
+from tiger.core.forms import SideDishForm, SectionForm, get_item_form, VariantForm, UpgradeForm
+from tiger.core.models import SideDishGroup, Variant, Upgrade, SideDish, Section, Item
+from tiger.accounts.forms import ScheduleSelectForm
+from tiger.utils.views import delete_site_object
 
 def _reorder_objects(model, id_list):
     for i, obj_id in enumerate(id_list):
@@ -58,7 +57,6 @@ def add_edit_menu(request, object_type, object_id=None):
             obj = form.save(commit=False)
             obj.site = request.site
             obj.save()
-            verb = 'edited' if instance else 'created'
             if instance:
                 redirect_to = reverse('dashboard_menu')
                 msg = '%s updated successfully.' % object_type.title()

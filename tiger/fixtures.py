@@ -1,11 +1,10 @@
-import faker
 from poseur.fixtures import FakeModel, FakeField
 
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from tiger.accounts.models import *
-from tiger.core.models import *
+from tiger.accounts.models import Account, Site
+from tiger.core.models import Item, Section, Variant, Order
 
 
 class FakeUser(FakeModel):

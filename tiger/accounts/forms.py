@@ -1,24 +1,23 @@
 import hashlib
 from datetime import time, date
 
-from lxml.html import fromstring, fragment_fromstring
+from lxml.html import fragment_fromstring
 
 from django import forms
 from django.conf import settings
 from django.core.mail import mail_admins
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import Point, fromstr, GEOSException
-from django.contrib.localflavor.us.us_states import STATE_CHOICES
-from django.contrib.localflavor.us.forms import *
+from django.contrib.gis.geos import fromstr, GEOSException
+from django.contrib.localflavor.us.forms import USPhoneNumberField
 
 from olwidget.widgets import EditableMap
 
 from tiger.accounts.models import (Account, Subscriber, Site, TimeSlot, 
-    SalesRep, FaxList, Schedule, Location)
+    FaxList, Schedule, Location)
 from tiger.utils.forms import BetterModelForm
 from tiger.utils.fields import HoursAndMinutesField
-from tiger.utils.geocode import geocode, GeocodeError
-from tiger.sales.models import CreditCard
+from tiger.utils.geocode import GeocodeError
+from tiger.sales.models import SalesRep, CreditCard
 
 
 class SubscriberForm(BetterModelForm):
@@ -233,7 +232,6 @@ class CreditCardForm(BetterModelForm):
 
     def __init__(self, *args, **kwargs):
         instance = kwargs['instance']
-        user = instance.user
         initial = {
             'first_name': instance.user.first_name,
             'last_name': instance.user.last_name,

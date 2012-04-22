@@ -6,8 +6,9 @@ from django.template.loader import render_to_string
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import OrderSettingsForm
-from tiger.core.forms import OrderPaymentForm, GeocodeError, OrderMessageForm
+from tiger.core.forms import OrderPaymentForm, OrderMessageForm
 from tiger.core.models import Order
+from tiger.utils.geocode import GeocodeError
 
 
 def online_ordering_required(func):

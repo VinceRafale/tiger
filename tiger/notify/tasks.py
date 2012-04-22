@@ -1,16 +1,12 @@
-import httplib
 import json
 import urllib
 import urllib2
 
 from django.conf import settings
-from django.core import mail
 from django.core.urlresolvers import reverse
-from django.db.models import get_model
 from django.utils.http import int_to_base36
 
 import facebook
-import twilio
 from celery.task import Task
 import oauth2 as oauth
 

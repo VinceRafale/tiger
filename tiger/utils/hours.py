@@ -1,6 +1,3 @@
-from datetime import datetime, timedelta
-from django.conf import settings
-from pytz import timezone
 from django.utils.safestring import mark_safe
 
 
@@ -26,7 +23,6 @@ TIME_EOD = 'eod'
 TIME_CLOSED = 'closed'
 
 def is_available(timeslots, location, now, buff=0):
-    site_tz = timezone(location.timezone)
     timeslots = timeslots.filter(dow=now.weekday())
     if not timeslots.count():
         return TIME_CLOSED

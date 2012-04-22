@@ -2,7 +2,7 @@ import calendar
 from datetime import date
 from decimal import Decimal
 
-from dateutil.relativedelta import *
+from dateutil.relativedelta import relativedelta 
 
 def prorate(signup_date, amount):
     today = date.today()

@@ -8,8 +8,8 @@ from django.utils import simplejson as json
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.forms import DomainForm, GoogleToolsForm, MobileSettingsForm
-from tiger.content.forms import *
-from tiger.content.models import *
+from tiger.content.forms import ContentForm, PdfMenuForm, AddImageForm, EditImageForm
+from tiger.content.models import Content, MenuItem, PdfMenu, ItemImage
 
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
