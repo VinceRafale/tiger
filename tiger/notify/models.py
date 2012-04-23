@@ -126,13 +126,16 @@ class Release(models.Model):
     slug = models.SlugField(editable=False)
     body = models.TextField(blank=True)
     body_html = models.TextField(blank=True, editable=False)
-    pdf = models.ForeignKey(PdfMenu, verbose_name='Select one of your PDF menus', null=True, blank=True)
-    time_sent = models.DateTimeField(editable=False)
     publish_time = models.DateTimeField(null=True, blank=True, default=datetime.now)
     fax_transaction = models.CharField(null=True, blank=True, max_length=100, editable=False)
     twitter = models.CharField(max_length=200, null=True, editable=False)
     facebook = models.CharField(max_length=200, null=True, editable=False)
     mailchimp = models.CharField(max_length=200, null=True, editable=False)
+    send_twitter = models.BooleanField('Twitter', default=False)
+    send_facebook = models.BooleanField('Facebook', default=False)
+    send_mailchimp = models.BooleanField('MailChimp', default=False)
+    send_fax = models.BooleanField('One of your fax lists', default=False)
+    fax_list = models.ForeignKey('accounts.FaxList', null=True, blank=True)
     visible = models.BooleanField('Under "News" on your site', default=False)
     objects = ReleaseManager()
 
@@ -156,7 +159,16 @@ class Release(models.Model):
     def get_body_text(self):
         return render_to_string('notify/release_mail.txt', {'release': self})
 
-    def send_mailchimp(self):
+    def send_all(self):
+        from tiger.notify.tasks import PublishTask
+        PublishTask.delay(self.id, 
+            twitter=self.send_twitter, 
+            fb=self.send_facebook, 
+            mailchimp=self.send_mailchimp,
+            fax_list=self.fax_list if self.send_fax else False
+        )
+
+    def dispatch_mailchimp(self):
         site = self.site
         social = site.social
         if social.mailchimp_send_blast != Social.CAMPAIGN_NO_CREATE:
@@ -181,7 +193,7 @@ class Release(models.Model):
                 mailchimp = 'http://%s.admin.mailchimp.com/campaigns/show?id=%s' % (data_center, campaign_id)
             )
                 
-    def send_fax(self, fax_list):
+    def dispatch_fax(self, fax_list):
         site = self.site
         social = site.social
         fax_machine = FaxMachine(site)

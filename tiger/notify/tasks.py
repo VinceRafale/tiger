@@ -2,6 +2,7 @@ import json
 import urllib
 import urllib2
 
+from django.db.models import get_model
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.http import int_to_base36
@@ -27,7 +28,7 @@ class SendFaxTask(Task):
         release = Release.objects.get(id=release_id)
         fax_list = FaxList.objects.get(id=fax_list_id)
         try:
-            return release.send_fax(fax_list)
+            return release.dispatch_fax(fax_list)
         except FaxServiceError, e:
             self.retry([release_id], kwargs,
                 countdown=60 * 1, exc=e)
@@ -37,7 +38,7 @@ class SendMailChimpTask(Task):
     def run(self, release_id, **kwargs):
         Release = get_model('notify', 'release')
         release = Release.objects.get(id=release_id)
-        release.send_mailchimp()
+        release.dispatch_mailchimp()
     
 
 class TweetNewItemTask(Task):
@@ -81,7 +82,7 @@ class PublishToFacebookTask(Task):
                     facebook = '%s?story_fbid=%s' % (release.site.social.facebook_url, msg_id)
                 )
         except facebook.GraphAPIError, e:
-            self.retry([uid, msg, link, href], kwargs,
+            self.retry([uid, msg, link, name], kwargs,
                 countdown=60 * 5, exc=e)
 
 

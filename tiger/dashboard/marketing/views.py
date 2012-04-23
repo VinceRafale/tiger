@@ -19,7 +19,7 @@ from tiger.accounts.models import FaxList, Subscriber
 from tiger.core.forms import CouponCreationForm
 from tiger.core.models import Coupon
 from tiger.notify.forms import PublishForm, MailChimpForm, UpdatePublishForm, TwitterForm
-from tiger.notify.models import Release, ApiCall
+from tiger.notify.models import Release
 from tiger.utils.cache import KeyChain
 from tiger.utils.views import add_edit_site_object, delete_site_object
 
@@ -45,8 +45,7 @@ def integration_settings(request):
 @login_required
 def publish_list(request):
     return direct_to_template(request, template='dashboard/marketing/publish_list.html', extra_context={
-        'items': request.site.release_set.order_by('-time_sent'),
-        'ApiCall': ApiCall
+        'items': request.site.release_set.order_by('-publish_time')
     })
     
 @login_required
@@ -70,11 +69,8 @@ def publish(request, release_id=None):
             if when == 'later':
                 release.publish_time = form.cleaned_data['publish_time']
             release.save()
-            cleaned_data = form.cleaned_data
-            for service in ('twitter', 'facebook', 'mailchimp',):
-                s = cleaned_data.get(service)
-                if s:
-                    ApiCall.objects.create(release=release, task_name='tiger.notify.tasks.%sTask' % service.title())
+            if when == 'now':
+                release.send_all()
             KeyChain.news.invalidate(request.site.id)
             messages.success(request, 'News item published successfully.')
             return HttpResponseRedirect(reverse('dashboard_publish'))
@@ -84,7 +80,8 @@ def publish(request, release_id=None):
         now += timedelta(minutes=5 - minutes % 5)
         form = PublishForm(site=request.site, initial={
             'publish_date': date.today(),
-            'publish_time': now.time()
+            'publish_time': now.time(),
+            'when': 'now'
         })
     return direct_to_template(request, template='dashboard/marketing/publish.html', extra_context={
         'form': form

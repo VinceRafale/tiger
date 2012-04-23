@@ -33,9 +33,7 @@ class PublishForm(BetterModelForm):
         updates. For Twitter, it will be truncated if it (plus the link to your
         site that we insert) exceeds 140 characters.
     """)
-    add_pdf = forms.BooleanField(label='Include a menu as an attachment?', required=False)
-    fax = forms.BooleanField(label='One of your fax lists', required=False)
-    fax_list = forms.ModelChoiceField(queryset=FaxList.objects.all(), required=False)
+    send_fax = forms.BooleanField(label='One of your fax lists', required=False)
     body = forms.CharField(widget=MarkItUpWidget, help_text=mark_safe("""
 
         This text will appear as the body for this publication on your website,
@@ -47,18 +45,20 @@ class PublishForm(BetterModelForm):
         for users who can't view HTML mail.
 
     """), required=False)
-    twitter = forms.BooleanField(required=False)
-    facebook = forms.BooleanField(required=False)
-    mailchimp = forms.BooleanField(required=False)
+    when = forms.ChoiceField(widget=forms.RadioSelect, choices=(
+        ('now', 'Publish immediately'),
+        ('later', 'Schedule for the future'),
+    ))
+    publish_date = forms.DateField(widget=SelectDateWidget, required=False)
+    publish_time = SelectableTimeField(required=False)
 
     class Meta:
         model = Release
-        exclude = ('site', 'twitter', 'facebook', 'mailchimp',)
+        exclude = ('site', 'twitter', 'facebook', 'mailchimp', 'publish_time',)
 
     def __init__(self, data=None, files=None, site=None, *args, **kwargs):
         super(PublishForm, self).__init__(data=data, files=files, *args, **kwargs)
         self.fields['fax_list'].queryset = site.faxlist_set.all()
-        self.fields['pdf'].queryset = site.pdfmenu_set.all()
         self.site = site
 
     def clean_twitter(self):
@@ -84,6 +84,15 @@ class PublishForm(BetterModelForm):
         if fax and self.site.is_suspended:
             raise forms.ValidationError('Faxing charges are 10 cents per page delivered.  You do not have a valid credit card on file.  Please update your payment information.')
         return fax
+
+    def clean_publish_time(self):
+        publish_time = self.cleaned_data.get('publish_time')
+        if publish_time:
+            publish_date = self.cleaned_data.get('publish_date')
+            publish_time = datetime.combine(publish_date, publish_time)
+            if publish_time <= datetime.now():
+                raise forms.ValidationError('Scheduled posts must be scheduled for the future.')
+        return publish_time
 
 
 class UpdatePublishForm(forms.ModelForm):

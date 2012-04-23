@@ -27,10 +27,6 @@ Publish to the web
 <span class="errorlist">There are errors below.</span>
 {% endif %}
 <form method="POST">
-<div class='checkbox-select'>
-<label>{{ form.add_pdf }} {{ form.add_pdf.label }}</label> {{ form.pdf }}
-</div>
-<div class="clear"></div>
 <label>
 <h3>Title text </h3>
 <p class="help">{{ form.title.help_text }}</p>
@@ -53,28 +49,39 @@ Publish to the web
 <label>{{ form.visible }} {{ form.visible.label }}</label>
 </div>
 <div class='checkbox-select'>
-{% if form.twitter.errors %}
-{{ form.twitter.errors }}
+{% if form.send_twitter.errors %}
+{{ form.send_twitter.errors }}
 {% endif %}
-<label>{{ form.twitter }} {{ form.twitter.label }}</label>
+<label>{{ form.send_twitter }} {{ form.send_twitter.label }}</label>
 </div>
 <div class='checkbox-select'>
-{% if form.facebook.errors %}
-{{ form.facebook.errors }}
+{% if form.send_facebook.errors %}
+{{ form.send_facebook.errors }}
 {% endif %}
-<label>{{ form.facebook }} {{ form.facebook.label }}</label>
+<label>{{ form.send_facebook }} {{ form.send_facebook.label }}</label>
 </div>
 <div class='checkbox-select'>
-{% if form.mailchimp.errors %}
-{{ form.mailchimp.errors }}
+{% if form.send_mailchimp.errors %}
+{{ form.send_mailchimp.errors }}
 {% endif %}
-<label>{{ form.mailchimp }} {{ form.mailchimp.label }}</label>
+<label>{{ form.send_mailchimp }} {{ form.send_mailchimp.label }}</label>
 </div>
 <div class='checkbox-select'>
-{% if form.fax.errors %}
-{{ form.fax.errors }}
+{% if form.send_fax.errors %}
+{{ form.send_fax.errors }}
 {% endif %}
-<label>{{ form.fax }} {{ form.fax.label }}</label> {{ form.fax_list }}
+<label>{{ form.send_fax }} {{ form.send_fax.label }}</label> {{ form.fax_list }}
+<div class="clear"></div>
+<h3>When do you want to send this?</h3>
+<div class='checkbox-select'>
+    {{ form.when }}
+    <div class="clear"></div>
+    <div class="publish-time" style="display:none;">
+    {% if form.publish_time.errors %}
+    {{ form.publish_time.errors }}
+    {% endif %}
+    {{ form.publish_date }} @ {{ form.publish_time }}
+    </div>
 </div>
 <div class="clear"></div>
 <div class="save-row clearfix">
@@ -87,26 +94,27 @@ Publish to the web
 {% block js %}
 <script type="text/javascript">
 $(function () {
-    $("#id_pdf,#id_coupon,#id_fax_list").hide();
-    $("#id_add_pdf,#id_add_coupon,#id_fax").each(function () {
+    $("#id_fax_list").hide();
+    $("#id_send_fax").each(function () {
         if ($(this).attr("checked")) {
             $(this).parent().next(":input").show();
         }
     });
-    $("#id_add_pdf,#id_add_coupon,#id_fax").click(function () {
+    $("#id_send_fax").click(function () {
         if ($(this).attr("checked")) {
             $(this).parent().next(":input").show();
         } else {
             $(this).parent().next(":input").hide();
         }
     });
-    $("#id_coupon").change(function () {
-        couponId = $(this).val();
-        if (couponId) {
-            $.get("fetch-coupon/", $.param({coupon: couponId}), function (data) {
-               $("#id_title").val(data['boilerplate']); 
-               $("#id_coupon").after('<label id="copy-coupon">Link to add coupon to an order: <input readonly value="' + data['short_url'] + '" /> This will automatically be added to Twitter and Facebook updates.</label>');
-            }, "json");
+    if ($("input[name='when']:checked").val() === "later") {
+        $("div.publish-time").show();
+    }
+    $("input[name='when']").change(function () {
+        if ($(this).val() === "now") {
+            $("div.publish-time").hide();
+        } else {
+            $("div.publish-time").show();
         }
     });
     $("#id_body").keyup(function () {
