@@ -1,14 +1,13 @@
 import json
 
-from django.contrib.auth import login, authenticate
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import get_object_or_404
 
 from tiger.sales.forms import SiteSignupForm, SignupRedirectForm
-from tiger.accounts.models import Site, SalesRep
-from tiger.sales.models import Account, Plan
+from tiger.accounts.models import Site
+from tiger.sales.models import Account, SalesRep
 from tiger.utils.forms import SpanErrorList
 
 
@@ -30,7 +29,7 @@ def signup(request, reseller_secret, plan_secret):
     if request.method == 'POST':
         form = SiteSignupForm(request.POST, account=account, plan=plan, error_class=SpanErrorList)
         if form.is_valid():
-            instance = form.save()
+            form.save()
             return HttpResponseRedirect(unicode(form.site) + reverse('dashboard', urlconf='tiger.urls'))
     else:
         form = SiteSignupForm(account=account, plan=plan)
@@ -46,7 +45,7 @@ def domain_check(request):
     subdomain = request.POST.get('subdomain', '')
     data = {}
     try:
-        site = Site.objects.get(subdomain=subdomain)
+        Site.objects.get(subdomain=subdomain)
     except Site.DoesNotExist:
         data['available'] = True
     else:
@@ -60,7 +59,7 @@ def validate_coupon(request):
     code = request.POST.get('coupon', '')
     data = {}
     try:
-        rep = SalesRep.objects.get(code=code)
+        SalesRep.objects.get(code=code)
     except SalesRep.DoesNotExist:
         data['valid'] = True
     else:
