@@ -11,7 +11,6 @@ import facebook
 from greatape import MailChimp
 from markdown import markdown
 
-from tiger.content.models import PdfMenu
 from tiger.notify.fax import FaxMachine
 from tiger.utils.cache import KeyChain
 from tiger.utils.models import Message

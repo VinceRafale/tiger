@@ -223,7 +223,7 @@ class Item(models.Model):
                 "vegetarian": self.vegetarian,
                 "ordering": self.ordering,
                 "cart_url": self.get_absolute_url() + "order/",
-                "schedule": ITEM_NOT_AVAILABLE_SCHEDULE % (
+                "schedule": core_messages.ITEM_NOT_AVAILABLE_SCHEDULE % (
                     self.name, self.schedule.display) if self.schedule else ''
             })
         else:

@@ -82,7 +82,7 @@ def twitter_return(request):
 
 def press_list(request):
     return render_custom(request, 'notify/press_list.html', 
-        {'releases': request.site.release_set.filter(visible=True).order_by('-time_sent')})
+        {'releases': request.site.release_set.filter(visible=True).order_by('-publish_time')})
 
 def press_detail(request, object_id, slug):
     press = get_object_or_404(Release, id=object_id, site=request.site, visible=True)
