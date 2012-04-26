@@ -1,14 +1,27 @@
-import hashlib
-import time
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.utils import simplejson as json
 
 from tiger.core.models import Coupon
 from tiger.utils.site import RequestSite
+
+
+def get_random_string(length=12, allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
+    """
+    Returns a random string of length characters from the set of a-z, A-Z, 0-9
+    for use as a salt.
+
+    The default length of 12 with the a-z, A-Z, 0-9 character set returns
+    a 71-bit salt. log_2((26+26+10)^12) =~ 71 bits
+    """
+    import random
+    try:
+        random = random.SystemRandom()
+    except NotImplementedError:
+        pass
+    return ''.join([random.choice(allowed_chars) for i in range(length)])
 
 
 class DecimalEncoder(json.JSONEncoder):
@@ -182,9 +195,7 @@ class ShoppingCartMiddleware(object):
             session_key = request.GET['cs']
             response.set_cookie(str(cookie_name), session_key)
         elif session_key is None:
-            session_key = hashlib.md5(
-                cookie_name + settings.SECRET_KEY + str(time.time())
-            ).hexdigest()
+            session_key = get_random_string(32, '0123456789abcdef')
             Session.objects.create(
                 session_key=session_key, 
                 session_data=Session.objects.encode({}), 
