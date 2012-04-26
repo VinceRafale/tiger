@@ -16,9 +16,6 @@ def deploy(branch):
         run('touch bin/tiger.wsgi')
         sudo('/etc/init.d/celeryd stop')
         sudo('/etc/init.d/celeryd start')
-        append("""
-import os
-os.environ['CELERY_LOADER'] = 'django'""", 'bin/django.wsgi')
 
 @hosts(staging)
 def deploy_staging():

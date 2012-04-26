@@ -16,7 +16,7 @@
 {% for release in releases %}
     <li{% cycle ' class="shaded"' '' %}>
         <h4><a href="{{ release.get_absolute_url }}">{{ release.title }}</a></h4>
-        <p><em>Published {{ release.time_sent|date }}</em></p>
+        <p><em>Published {{ release.publish_time|date }}</em></p>
         {% if release.body %}
         {{ release.body_html|striptags|truncatewords_html:30 }}
         {% endif %}

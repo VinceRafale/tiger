@@ -1,6 +1,6 @@
 from mock import Mock, patch
 import faker
-from should_dsl import should, should_not
+from should_dsl import should
 
 from tiger.accounts.models import Site
 from tiger.sales.models import Plan
