@@ -67,7 +67,7 @@ def add_edit_schedule(request, schedule_id=None):
         if all(form.is_valid() for form in forms):
             if schedule is None:
                 schedule = Schedule.objects.create(site=request.site)
-            for dow, form in zip([dow for dow, label in DOW_CHOICES], forms):
+            for dow, form in zip([dow for dow, label in hours.DOW_CHOICES], forms):
                 instance = form.save()
                 # overridden save() will return None if no times are given for a day
                 if instance is not None:
@@ -81,7 +81,7 @@ def add_edit_schedule(request, schedule_id=None):
             return HttpResponseRedirect(reverse('edit_hours'))
     else:
         forms = get_forms()
-    form_list = zip([label for dow, label in DOW_CHOICES], forms)
+    form_list = zip([label for dow, label in hours.DOW_CHOICES], forms)
     extra_context = {'form_list': form_list, 'schedule': schedule}
     return direct_to_template(request, template='dashboard/restaurant/hours.html', extra_context=extra_context)
 
@@ -101,12 +101,12 @@ def delete_schedule(request, schedule_id):
 @login_required
 def fetch_hours(request):
     forms = []
-    for dow, label in DOW_CHOICES:
+    for dow, label in hours.DOW_CHOICES:
         form = TimeSlotForm(request.POST, prefix=dow)
         forms.append(form)
     if all(form.is_valid() for form in forms):
         instances = []
-        for dow, form in zip([dow for dow, label in DOW_CHOICES], forms):
+        for dow, form in zip([dow for dow, label in hours.DOW_CHOICES], forms):
             instance = form.save(commit=False)
             if instance:
                 instance.dow = dow

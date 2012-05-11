@@ -121,7 +121,7 @@ class ReleaseManager(models.Manager):
 
 class Release(models.Model):
     site = models.ForeignKey('accounts.Site')
-    title = models.CharField(max_length=140)
+    title = models.TextField()
     slug = models.SlugField(editable=False)
     body = models.TextField(blank=True)
     body_html = models.TextField(blank=True, editable=False)

@@ -3,6 +3,7 @@ from errors import StorkConfigurationError
 from font_choices import WebFonts
 
 from django import forms
+from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 
 from tiger.stork.models import Font, FontStack
