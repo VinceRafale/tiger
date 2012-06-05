@@ -14,6 +14,7 @@ def deploy(branch):
         run('bin/django migrate')
         run('touch bin/django.wsgi')
         run('touch bin/tiger.wsgi')
+        run('touch bin/reseller.wsgi')
         sudo('/etc/init.d/celeryd stop')
         sudo('/etc/init.d/celeryd start')
 

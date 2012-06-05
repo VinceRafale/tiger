@@ -225,6 +225,8 @@ def new_site_setup(sender, instance, created, **kwargs):
         if isinstance(instance, Site):
             for content_type in Content.CONTENT_TYPES:
                 Content.objects.create(site=instance, slug=content_type, title=Content.CONTENT_TYPE_TITLES[content_type])
+            MenuItem.objects.create(site=instance, title='Menu', link_type=MenuItem.MENU)
+            MenuItem.objects.create(site=instance, title='News', link_type=MenuItem.URL, url='/news/')
 
 
 post_save.connect(new_site_setup)
