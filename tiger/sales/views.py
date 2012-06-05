@@ -1,21 +1,18 @@
 import re
 
-import yaml
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.db import connection
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.simple import direct_to_template
 
 from tiger.accounts.models import Site
 from tiger.sales.forms import (AuthenticationForm, CreateSiteForm, 
     CreatePlanForm, EditSiteForm, CreateResellerAccountForm, ImportMenuForm,)
-from tiger.sales.models import Plan
+from tiger.sales.models import Plan, Invoice
 
 
 @csrf_protect
@@ -138,6 +135,7 @@ def create_edit_restaurant(request, restaurant_id=None):
             restaurant = form.save(commit=False)
             restaurant.managed = True
             restaurant.save()
+            restaurant.send_confirmation_email()
             messages.success(request, 'Restaurant %s successfully.' % ('edited' if instance else 'created'))
             return HttpResponseRedirect(reverse('restaurant_list'))
     else:
