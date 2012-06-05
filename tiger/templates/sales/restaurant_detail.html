@@ -7,10 +7,6 @@
 {% endblock %}
 
 {% block content %}
-        <a href="{% url import_menu restaurant.id %}">Import menu</a>
-        <p>Registered e-mail: {{ restaurant.user.email }} 
-            <form action="{% url email_restaurant restaurant.id %}" method="POST"><input type="submit" value="Resend account confirmation e-mail" />
-        </p>
         <p>Active as of {{ restaurant.signup_date|date }}</p>
         <p>Current plan: {{ restaurant.plan }}</p>
         {% with restaurant.location_set.all.0 as loc %}
@@ -22,6 +18,10 @@
             {% endif %}
             </p>
         {% endwith %}
+        <p>Registered e-mail: {{ restaurant.user.email }} 
+            <form action="{% url email_restaurant restaurant.id %}" method="POST"><input type="submit" value="Resend account confirmation e-mail" />
+        </p>
+        <a href="{% url import_menu restaurant.id %}">Import menu</a>
 
 <a href="{% url delete_restaurant restaurant.id %}">Delete this restaurant</a>
 {% endblock %}

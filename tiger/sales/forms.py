@@ -254,7 +254,6 @@ class CreateSiteForm(BetterModelForm):
             'subdomain',
             'email',
             'plan',
-            'reseller_network',
         )
 
     def __init__(self, data=None, account=None, *args, **kwargs):

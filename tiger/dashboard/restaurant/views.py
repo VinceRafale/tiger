@@ -16,7 +16,8 @@ def home(request):
 
 @login_required
 def location_list(request):
-    if not request.site.plan.multiple_locations:
+    plan = request.site.plan
+    if not plan or not request.site.plan.multiple_locations:
         return HttpResponseRedirect(reverse('edit_location', args=[request.site.location_set.all()[0].id]))
     return direct_to_template(request, template='dashboard/restaurant/location_list.html', extra_context={})
 
