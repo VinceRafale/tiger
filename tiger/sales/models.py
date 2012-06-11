@@ -1,6 +1,6 @@
+import uuid
 from datetime import date, datetime
 from decimal import Decimal
-import hashlib
 
 from dateutil.relativedelta import relativedelta 
 
@@ -12,7 +12,6 @@ from django.core.urlresolvers import reverse
 from django.db import models, connection
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
-from django.utils.http import int_to_base36
 
 from tiger.sales.exceptions import (PaymentGatewayError, SiteManagementError, HardCapExceeded)
 from tiger.sms.models import SmsSettings
@@ -21,9 +20,7 @@ from tiger.utils.billing import prorate
 
 
 def convert_to_secret(i):
-    hash = hashlib.md5(str(i)).hexdigest()
-    hash_as_int = int(hash, 16)
-    return int_to_base36(hash_as_int)
+    return uuid.uuid1().hex
 
 
 class SalesRep(models.Model):
