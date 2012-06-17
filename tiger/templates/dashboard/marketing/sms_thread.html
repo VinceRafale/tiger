@@ -32,7 +32,7 @@ This number is not on your subscriber list.
 </ul>
 <div class="save-row clearfix">
 <a class="cancel" href="{% url inbox %}">Back to Conversations</a>
-{% if subscriber and not subscriber.is_active %}
+{% if not subscriber or subscriber.is_active %}
 <input type="submit" value="Reply" class="submit buttonTop" />
 {% endif %}
 </div>

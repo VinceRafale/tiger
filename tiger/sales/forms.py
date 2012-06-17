@@ -298,6 +298,8 @@ class CreateSiteForm(BetterModelForm):
 
 
 class CreatePlanForm(BetterModelForm):
+    sms_rate = forms.IntegerField(required=False)
+
     class Meta:
         model = Plan
         exclude = ('account', 'secret',)

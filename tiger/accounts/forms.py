@@ -213,7 +213,7 @@ class SignupForm(forms.ModelForm):
 
 
 class DomainForm(BetterModelForm):
-    domain = forms.URLField(required=True)
+    domain = forms.RegexField(required=True, regex=r'[\w-]+\.[\w-]{2,4}')
 
     class Meta:
         model = Site

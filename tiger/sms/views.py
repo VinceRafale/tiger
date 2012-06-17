@@ -318,6 +318,7 @@ def thread_detail(request, phone_number):
         subscriber = None
     return direct_to_template(request, template='dashboard/marketing/sms_thread.html', extra_context={
         'number': phone_number,
+        'subscriber_id': phone_number,
         'thread': SMS.objects.thread_for(settings=request.site.sms, phone_number=phone_number),
         'subscriber': subscriber
     })

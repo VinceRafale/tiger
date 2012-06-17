@@ -14,6 +14,10 @@ from tiger.sales.forms import (AuthenticationForm, CreateSiteForm,
     CreatePlanForm, EditSiteForm, CreateResellerAccountForm, ImportMenuForm,)
 from tiger.sales.models import Plan, Invoice
 
+import logging
+
+logging.basicConfig(filename='/home/threadsafe/log/django.log', level=logging.DEBUG)
+
 
 @csrf_protect
 def login(request, redirect_field_name='next'):
@@ -84,7 +88,7 @@ def create_plan(request, plan_id=None):
             plan = form.save(commit=False)
             plan.account = account
             plan.save()
-            messages.success(request, 'Plan %s successfully.' % 'edited' if instance else 'created')
+            messages.success(request, 'Plan %s successfully.' % ('edited' if instance else 'created'))
             return HttpResponseRedirect(reverse('plan_list'))
     else:
         form = CreatePlanForm(instance=instance)
