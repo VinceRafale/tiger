@@ -219,6 +219,17 @@ class DomainForm(BetterModelForm):
         model = Site
         fields = ('domain',)
 
+    def __init__(self, data=None, instance=None, initial=None, *args, **kwargs):
+        if instance is not None:
+             initial = {'domain': instance.domain.split('.', 1)[1]}
+        super(DomainForm, self).__init__(data=data, instance=instance, initial=initial, *args, **kwargs)
+
+    def clean_domain(self):
+        domain = self.cleaned_data.get('domain')
+        if domain is not None:
+            domain = 'www.' + domain
+        return domain
+
 
 class CreditCardForm(BetterModelForm):
     first_name = forms.CharField()

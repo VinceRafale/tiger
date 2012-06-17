@@ -153,6 +153,9 @@ def custom_domain(request):
         form = DomainForm(request.POST, instance=request.site)
         if form.is_valid():
             form.save()
+            site = request.site
+            site.custom_domain = True
+            site.save()
             messages.success(request, 'Custom domain added successfully.')
     else:
         form = DomainForm(instance=request.site)
