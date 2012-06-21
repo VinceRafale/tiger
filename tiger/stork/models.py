@@ -3,12 +3,13 @@ import time
 from datetime import datetime
 from django.core.files.base import ContentFile
 from django.db import models
-from imagekit.models import ImageModel
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from tiger.stork.font_choices import WebFonts
 
 
-class Theme(ImageModel):
+class Theme(models.Model):
     name = models.CharField(max_length=100)
     saved_at = models.DateTimeField(auto_now=True)
     bundled_css = models.FileField(upload_to='stork/css', null=True)
@@ -16,10 +17,10 @@ class Theme(ImageModel):
     screenshot = models.ImageField(upload_to='screenshots', null=True, blank=True, default='')
     description = models.TextField(blank=True)
     notes = models.TextField(blank=True, default='')
-
-    class IKOptions:
-        spec_module = 'tiger.content.specs'
-        image_field = 'screenshot'
+    thumb = ImageSpecField([ResizeToFill(75, 75)], image_field='screenshot')
+    small = ImageSpecField([ResizeToFill(100, 100)], image_field='screenshot')
+    medium = ImageSpecField([ResizeToFill(240, 240)], image_field='screenshot')
+    large = ImageSpecField([ResizeToFill(500, 500)], image_field='screenshot')
 
     def update(self, css):
         filename = '%d-%d.css' % (self.id, int(time.mktime(datetime.now().timetuple())))

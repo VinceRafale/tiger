@@ -8,7 +8,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 
-from imagekit.models import ImageModel
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 from pyPdf import PdfFileReader
 
 from tiger.utils.pdf import render_to_pdf
@@ -114,7 +115,7 @@ class Content(models.Model):
         
 
 
-class ItemImage(ImageModel):
+class ItemImage(models.Model):
     """Associates an image and its sizes with a user so that images 
     can easily be swapped out on menu items.
     """
@@ -123,9 +124,10 @@ class ItemImage(ImageModel):
     image = models.ImageField(upload_to='uploaded_images')
     slug = models.SlugField(editable=False, default='')
     description = models.TextField(blank=True, default='')
-
-    class IKOptions:
-        spec_module = 'tiger.content.specs'
+    thumb = ImageSpecField([ResizeToFill(75, 75)], image_field='image')
+    small = ImageSpecField([ResizeToFill(100, 100)], image_field='image')
+    medium = ImageSpecField([ResizeToFill(240, 240)], image_field='image')
+    large = ImageSpecField([ResizeToFill(500, 500)], image_field='image')
 
     def __unicode__(self):
         return self.title
