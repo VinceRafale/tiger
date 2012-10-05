@@ -220,7 +220,7 @@ class DomainForm(BetterModelForm):
         fields = ('domain',)
 
     def __init__(self, data=None, instance=None, initial=None, *args, **kwargs):
-        if instance is not None:
+        if instance.domain is not None:
              initial = {'domain': instance.domain.split('.', 1)[1]}
         super(DomainForm, self).__init__(data=data, instance=instance, initial=initial, *args, **kwargs)
 
