@@ -1,6 +1,8 @@
 import json
 
 from django.core.urlresolvers import reverse
+from django.contrib.auth.views import password_reset as default_reset
+from django.contrib.auth.forms import PasswordResetForm
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.views.generic.simple import direct_to_template
 from django.shortcuts import get_object_or_404
@@ -9,6 +11,17 @@ from tiger.sales.forms import SiteSignupForm, SignupRedirectForm
 from tiger.accounts.models import Site
 from tiger.sales.models import Account, SalesRep
 from tiger.utils.forms import SpanErrorList
+
+
+def get_password_reset_form(request):
+    class SitePasswordResetForm(PasswordResetForm):
+        def save(self, *args, **kwargs):
+            super(SitePasswordResetForm, self).save(domain_override=request.site.tiger_domain, *args, **kwargs)
+    return SitePasswordResetForm
+
+
+def password_reset(request, **kwargs):
+    return default_reset(request, password_reset_form=get_password_reset_form(request), **kwargs)
 
 
 def signup_redirect(request):
