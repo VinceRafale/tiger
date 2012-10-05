@@ -16,7 +16,7 @@ from tiger.utils.forms import SpanErrorList
 def get_password_reset_form(request):
     class SitePasswordResetForm(PasswordResetForm):
         def save(self, *args, **kwargs):
-            super(SitePasswordResetForm, self).save(domain_override=request.site.tiger_domain, *args, **kwargs)
+            super(SitePasswordResetForm, self).save(domain_override=request.site.tiger_domain(), *args, **kwargs)
     return SitePasswordResetForm
 
 
